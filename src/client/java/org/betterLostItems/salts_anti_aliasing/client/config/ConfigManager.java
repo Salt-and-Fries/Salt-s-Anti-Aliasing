@@ -1,0 +1,78 @@
+package org.betterLostItems.salts_anti_aliasing.client.config;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import net.fabricmc.loader.api.FabricLoader;
+import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.Consumer;
+
+public final class ConfigManager {
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    private final Path configPath;
+    private AntiAliasingConfig config = new AntiAliasingConfig();
+
+    private ConfigManager(Path configPath) {
+        this.configPath = configPath;
+        config.sanitize();
+    }
+
+    public static ConfigManager createDefault() {
+        Path configDir = FabricLoader.getInstance().getConfigDir();
+        return new ConfigManager(configDir.resolve(SaltsAntiAliasing.MOD_ID + ".json"));
+    }
+
+    public synchronized void load() {
+        if (Files.notExists(configPath)) {
+            save();
+            return;
+        }
+
+        try (Reader reader = Files.newBufferedReader(configPath)) {
+            AntiAliasingConfig loaded = GSON.fromJson(reader, AntiAliasingConfig.class);
+            config = loaded == null ? new AntiAliasingConfig() : loaded;
+            config.sanitize();
+        } catch (IOException | JsonSyntaxException exception) {
+            SaltsAntiAliasing.LOGGER.warn("Falling back to default config after failing to read {}", configPath, exception);
+            config = new AntiAliasingConfig();
+            config.sanitize();
+            save();
+        }
+    }
+
+    public synchronized AntiAliasingConfig snapshot() {
+        return config.copy();
+    }
+
+    public synchronized AntiAliasingMode mode() {
+        return config.mode;
+    }
+
+    public synchronized boolean recordMetricsEnabled() {
+        return config.recordMetrics;
+    }
+
+    public synchronized void edit(Consumer<AntiAliasingConfig> editor) {
+        editor.accept(config);
+        config.sanitize();
+        save();
+    }
+
+    public synchronized void save() {
+        try {
+            Files.createDirectories(configPath.getParent());
+            try (Writer writer = Files.newBufferedWriter(configPath)) {
+                GSON.toJson(config, writer);
+            }
+        } catch (IOException exception) {
+            SaltsAntiAliasing.LOGGER.error("Failed to save config to {}", configPath, exception);
+        }
+    }
+}

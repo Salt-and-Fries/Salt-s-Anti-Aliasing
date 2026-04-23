@@ -1,0 +1,100 @@
+{
+  "targets": {
+    "swap": {},
+    "rcas": {}
+  },
+  "passes": [
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "salts_anti_aliasing:post/fsr1_upscale",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main",
+          "bilinear": true
+        }
+      ],
+      "output": "swap",
+      "uniforms": {
+        "Fsr1Config": [
+          {
+            "name": "SourceScale",
+            "type": "float",
+            "value": 0.67
+          },
+          {
+            "name": "EdgeBlend",
+            "type": "float",
+            "value": 0.48
+          },
+          {
+            "name": "DetailBoost",
+            "type": "float",
+            "value": 0.18
+          },
+          {
+            "name": "ClampBoost",
+            "type": "float",
+            "value": 0.14
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "salts_anti_aliasing:post/rcas_sharpen",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap",
+          "bilinear": true
+        }
+      ],
+      "output": "rcas",
+      "uniforms": {
+        "RcasConfig": [
+          {
+            "name": "Sharpness",
+            "type": "float",
+            "value": 0.25
+          },
+          {
+            "name": "EdgeLimit",
+            "type": "float",
+            "value": 0.22
+          },
+          {
+            "name": "ClampBoost",
+            "type": "float",
+            "value": 0.12
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "rcas"
+        }
+      ],
+      "output": "minecraft:main",
+      "uniforms": {
+        "BlitConfig": [
+          {
+            "name": "ColorModulate",
+            "type": "vec4",
+            "value": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

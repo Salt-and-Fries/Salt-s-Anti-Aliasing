@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.betterLostItems.salts_anti_aliasing.mixin.client",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "AbstractSelectionListAccessor",
+    "GlCommandEncoderMixin",
+    "GameRendererMixin",
+    "KeyboardHandlerMixin",
+    "MinecraftMixin",
+    "OptionsListEntryAccessor",
+    "PostChainAccessor",
+    "PostPassAccessor",
+    "RenderTargetMixin",
+    "VideoSettingsScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

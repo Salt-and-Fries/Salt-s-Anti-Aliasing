@@ -1,0 +1,93 @@
+{
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "salts_anti_aliasing:post/edge_debug",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main",
+          "bilinear": true
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth_buffer": true
+        }
+      ],
+      "output": "swap",
+      "uniforms": {
+        "FxaaConfig": [
+          {
+            "name": "SubpixelBlend",
+            "type": "float",
+            "value": 1.35
+          },
+          {
+            "name": "EdgeThreshold",
+            "type": "float",
+            "value": 0.038
+          },
+          {
+            "name": "EdgeThresholdMin",
+            "type": "float",
+            "value": 0.006
+          },
+          {
+            "name": "SearchRadius",
+            "type": "float",
+            "value": 6.0
+          },
+          {
+            "name": "ColorWeight",
+            "type": "float",
+            "value": 1.25
+          },
+          {
+            "name": "DepthWeight",
+            "type": "float",
+            "value": 3.25
+          },
+          {
+            "name": "VarianceGuard",
+            "type": "float",
+            "value": 0.26
+          },
+          {
+            "name": "EdgeConfidenceScale",
+            "type": "float",
+            "value": 1.85
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "output": "minecraft:main",
+      "uniforms": {
+        "BlitConfig": [
+          {
+            "name": "ColorModulate",
+            "type": "vec4",
+            "value": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

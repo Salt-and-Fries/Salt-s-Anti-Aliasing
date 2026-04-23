@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "salts_anti_aliasing",
+  "version": "${version}",
+  "name": "Salt's Anti Aliasing",
+  "description": "Client-side anti-aliasing, sharpening, and upscale pipeline foundation for Minecraft.",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": [
+      "org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingDataGenerator"
+    ],
+    "client": [
+      "org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient"
+    ],
+    "main": [
+      "org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing"
+    ]
+  },
+  "mixins": [
+    "salts_anti_aliasing.mixins.json",
+    {
+      "config": "salts_anti_aliasing.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

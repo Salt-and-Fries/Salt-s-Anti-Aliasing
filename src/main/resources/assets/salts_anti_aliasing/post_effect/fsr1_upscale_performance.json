@@ -1,0 +1,68 @@
+{
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "salts_anti_aliasing:post/fsr1_upscale",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main",
+          "bilinear": true
+        }
+      ],
+      "output": "swap",
+      "uniforms": {
+        "Fsr1Config": [
+          {
+            "name": "SourceScale",
+            "type": "float",
+            "value": 0.67
+          },
+          {
+            "name": "EdgeBlend",
+            "type": "float",
+            "value": 0.48
+          },
+          {
+            "name": "DetailBoost",
+            "type": "float",
+            "value": 0.18
+          },
+          {
+            "name": "ClampBoost",
+            "type": "float",
+            "value": 0.14
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "output": "minecraft:main",
+      "uniforms": {
+        "BlitConfig": [
+          {
+            "name": "ColorModulate",
+            "type": "vec4",
+            "value": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
