@@ -27,7 +27,7 @@ vec3 sampleScene(vec2 offset) {
 }
 
 void main() {
-    vec2 sourceTexel = 1.0 / max(OutSize * max(SourceScale, 0.01), vec2(1.0));
+    vec2 sourceTexel = 1.0 / max(InSize, vec2(1.0));
 
     vec3 center = texture(InSampler, texCoord).rgb;
     vec3 north = sampleScene(vec2(0.0, -sourceTexel.y));

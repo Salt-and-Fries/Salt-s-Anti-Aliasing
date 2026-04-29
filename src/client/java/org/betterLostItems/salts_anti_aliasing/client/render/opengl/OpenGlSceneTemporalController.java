@@ -50,6 +50,7 @@ public final class OpenGlSceneTemporalController {
     private float previousJitterUvY;
     private float currentJitterClipX;
     private float currentJitterClipY;
+    private final Matrix4f jitteredProjection = new Matrix4f();
     private Vec3 lastCameraPosition;
     private float lastCameraXRot;
     private float lastCameraYRot;
@@ -97,7 +98,7 @@ public final class OpenGlSceneTemporalController {
             return projectionMatrix;
         }
 
-        Matrix4f jitteredProjection = new Matrix4f(projectionMatrix);
+        jitteredProjection.set(projectionMatrix);
         jitteredProjection.m20(jitteredProjection.m20() + currentJitterClipX);
         jitteredProjection.m21(jitteredProjection.m21() + currentJitterClipY);
         return jitteredProjection;
@@ -142,6 +143,8 @@ public final class OpenGlSceneTemporalController {
         if (postChain == null) {
             return;
         }
+
+        OpenGlDynamicUniforms.updateTaa(postChain, this);
 
         FrameGraphBuilder frameGraphBuilder = new FrameGraphBuilder();
         ResourceHandle<RenderTarget> mainHandle = frameGraphBuilder.importExternal("salts_taa_main", mainTarget);

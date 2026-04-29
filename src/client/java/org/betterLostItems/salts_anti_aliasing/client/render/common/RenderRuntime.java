@@ -70,7 +70,7 @@ public final class RenderRuntime {
     }
 
     public AntiAliasingMode activeMode() {
-        return configManager.snapshot().mode;
+        return configManager.mode();
     }
 
     public AntiAliasingConfig configSnapshot() {

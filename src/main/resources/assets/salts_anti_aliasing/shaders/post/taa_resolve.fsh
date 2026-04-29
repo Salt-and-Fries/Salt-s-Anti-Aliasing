@@ -40,7 +40,7 @@ float sampleDepth(sampler2D depthSampler, vec2 offset) {
 void main() {
     vec2 texel = 1.0 / InSize;
     vec2 historyUv = clamp(
-        texCoord + vec2(PreviousJitterX - CurrentJitterX, PreviousJitterY - CurrentJitterY),
+        texCoord + vec2(PreviousJitterX - CurrentJitterX, PreviousJitterY - CurrentJitterY) * texel,
         vec2(0.0),
         vec2(1.0)
     );

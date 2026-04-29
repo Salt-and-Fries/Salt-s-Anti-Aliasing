@@ -5,10 +5,10 @@ import net.minecraft.network.chat.Component;
 import java.util.Locale;
 
 public enum NisUpscaleQualityPreset {
-    QUALITY(0.85f, 0.16f),
-    BALANCED(0.77f, 0.22f),
-    PERFORMANCE(0.67f, 0.28f),
-    ULTRA_PERFORMANCE(0.59f, 0.34f);
+    QUALITY(0.77f, 0.16f),
+    BALANCED(0.67f, 0.22f),
+    PERFORMANCE(0.59f, 0.28f),
+    ULTRA_PERFORMANCE(0.50f, 0.34f);
 
     private final float scaleFactor;
     private final float sharpenStrength;

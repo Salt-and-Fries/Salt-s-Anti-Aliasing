@@ -110,7 +110,7 @@ public final class OpenGlSceneMsaaController {
         }
 
         try {
-            syncMainTargetIfNeeded(true, true);
+            syncMainTargetIfNeeded(true, false);
         } catch (RuntimeException exception) {
             disableAfterFailure("Disabling OpenGL MSAA scene rendering after a resolve failure", exception);
         } finally {
@@ -160,7 +160,6 @@ public final class OpenGlSceneMsaaController {
 
     public void onRenderPassFinished() {
         if (mainPassInProgress) {
-            syncMainTargetIfNeeded(true, true);
             mainPassInProgress = false;
         }
     }

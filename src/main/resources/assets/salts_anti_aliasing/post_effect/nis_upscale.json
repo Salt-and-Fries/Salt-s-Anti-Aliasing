@@ -1,7 +1,5 @@
 {
-  "targets": {
-    "swap": {}
-  },
+  "targets": {},
   "passes": [
     {
       "vertex_shader": "minecraft:core/screenquad",
@@ -9,11 +7,11 @@
       "inputs": [
         {
           "sampler_name": "In",
-          "target": "minecraft:main",
+          "target": "salts_anti_aliasing:scene_color",
           "bilinear": true
         }
       ],
-      "output": "swap",
+      "output": "minecraft:main",
       "uniforms": {
         "NisSharpenConfig": [
           {
@@ -30,31 +28,6 @@
             "name": "ClampBoost",
             "type": "float",
             "value": 0.18
-          }
-        ]
-      }
-    },
-    {
-      "vertex_shader": "minecraft:core/screenquad",
-      "fragment_shader": "minecraft:post/blit",
-      "inputs": [
-        {
-          "sampler_name": "In",
-          "target": "swap"
-        }
-      ],
-      "output": "minecraft:main",
-      "uniforms": {
-        "BlitConfig": [
-          {
-            "name": "ColorModulate",
-            "type": "vec4",
-            "value": [
-              1.0,
-              1.0,
-              1.0,
-              1.0
-            ]
           }
         ]
       }
