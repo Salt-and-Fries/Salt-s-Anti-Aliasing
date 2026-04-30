@@ -1,0 +1,172 @@
+{
+  "targets": {
+    "edge_mask": {},
+    "edges": {},
+    "weights": {},
+    "resolved": {}
+  },
+  "passes": [
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "salts_anti_aliasing:post/geometry_edge_mask",
+      "inputs": [
+        {
+          "sampler_name": "Color",
+          "target": "minecraft:main",
+          "bilinear": true
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth_buffer": true
+        }
+      ],
+      "output": "edge_mask",
+      "uniforms": {
+        "EdgeMaskConfig": [
+          {
+            "name": "IncludeBlockBoundaries",
+            "type": "float",
+            "value": 1.0
+          },
+          {
+            "name": "DepthLow",
+            "type": "float",
+            "value": 0.0000008
+          },
+          {
+            "name": "DepthHigh",
+            "type": "float",
+            "value": 0.00008
+          },
+          {
+            "name": "BoundaryStrength",
+            "type": "float",
+            "value": 0.06
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "salts_anti_aliasing:post/smaa_edge_detect_masked",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main"
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth_buffer": true
+        },
+        {
+          "sampler_name": "EdgeMask",
+          "target": "edge_mask",
+          "bilinear": true
+        }
+      ],
+      "output": "edges",
+      "uniforms": {
+        "SmaaEdgeConfig": [
+          {
+            "name": "EdgeThreshold",
+            "type": "float",
+            "value": 0.065
+          },
+          {
+            "name": "LocalContrastFactor",
+            "type": "float",
+            "value": 1.35
+          },
+          {
+            "name": "DiagonalFactor",
+            "type": "float",
+            "value": 0.35
+          },
+          {
+            "name": "AvoidTextures",
+            "type": "float",
+            "value": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "salts_anti_aliasing:post/smaa_weight_blend",
+      "inputs": [
+        {
+          "sampler_name": "Color",
+          "target": "minecraft:main"
+        },
+        {
+          "sampler_name": "Edges",
+          "target": "edges"
+        }
+      ],
+      "output": "weights",
+      "uniforms": {
+        "SmaaWeightConfig": [
+          {
+            "name": "SearchStrength",
+            "type": "float",
+            "value": 0.55
+          },
+          {
+            "name": "CornerRounding",
+            "type": "float",
+            "value": 0.30
+          },
+          {
+            "name": "MaxBlend",
+            "type": "float",
+            "value": 0.60
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "salts_anti_aliasing:post/smaa_neighborhood_blend",
+      "inputs": [
+        {
+          "sampler_name": "Color",
+          "target": "minecraft:main",
+          "bilinear": true
+        },
+        {
+          "sampler_name": "Weights",
+          "target": "weights",
+          "bilinear": true
+        }
+      ],
+      "output": "resolved"
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "resolved"
+        }
+      ],
+      "output": "minecraft:main",
+      "uniforms": {
+        "BlitConfig": [
+          {
+            "name": "ColorModulate",
+            "type": "vec4",
+            "value": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

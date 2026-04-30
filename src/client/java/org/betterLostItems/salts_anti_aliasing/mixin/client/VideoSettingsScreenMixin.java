@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import org.betterLostItems.salts_anti_aliasing.mixin.client.OptionsListEntryAccessor;
 import org.betterLostItems.salts_anti_aliasing.client.gui.AvoidTexturesToggleButtonFactory;
 import org.betterLostItems.salts_anti_aliasing.client.gui.AntiAliasingVideoButtonFactory;
+import org.betterLostItems.salts_anti_aliasing.client.gui.BlockBoundaryToggleButtonFactory;
 import org.betterLostItems.salts_anti_aliasing.client.gui.MsaaSampleSliderWidget;
 import org.betterLostItems.salts_anti_aliasing.client.gui.SpatialUpscaleQualitySliderWidget;
 import org.betterLostItems.salts_anti_aliasing.client.gui.SharpnessSliderWidget;
@@ -35,6 +36,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
     private SsaaScaleSliderWidget saltsAntiAliasing$ssaaSlider;
     private SpatialUpscaleQualitySliderWidget saltsAntiAliasing$upscaleSlider;
     private Button saltsAntiAliasing$avoidTexturesToggle;
+    private Button saltsAntiAliasing$blockBoundaryToggle;
 
     protected VideoSettingsScreenMixin(Screen lastScreen, Options options, Component title) {
         super(lastScreen, options, title);
@@ -61,6 +63,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         saltsAntiAliasing$ssaaSlider = new SsaaScaleSliderWidget(runtime);
         saltsAntiAliasing$upscaleSlider = new SpatialUpscaleQualitySliderWidget(runtime);
         saltsAntiAliasing$avoidTexturesToggle = AvoidTexturesToggleButtonFactory.create(runtime);
+        saltsAntiAliasing$blockBoundaryToggle = BlockBoundaryToggleButtonFactory.create(runtime);
 
         saltsAntiAliasing$addPackedControlRows(weatherWidget);
 
@@ -108,8 +111,16 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         }
 
         if (saltsAntiAliasing$avoidTexturesToggle != null) {
-            saltsAntiAliasing$avoidTexturesToggle.active = antiAliasingAvailable && activeMode != AntiAliasingMode.OFF;
+            saltsAntiAliasing$avoidTexturesToggle.active =
+                    antiAliasingAvailable && activeMode.usesTextureAvoidanceControl();
             AvoidTexturesToggleButtonFactory.refresh(saltsAntiAliasing$avoidTexturesToggle, SaltsAntiAliasingClient.runtime());
+        }
+
+        if (saltsAntiAliasing$blockBoundaryToggle != null) {
+            RenderRuntime runtime = SaltsAntiAliasingClient.runtime();
+            saltsAntiAliasing$blockBoundaryToggle.active =
+                    antiAliasingAvailable && activeMode.usesTextureAvoidanceControl() && runtime.avoidAaOnTextures();
+            BlockBoundaryToggleButtonFactory.refresh(saltsAntiAliasing$blockBoundaryToggle, runtime);
         }
     }
 
@@ -149,6 +160,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         widgets.add(saltsAntiAliasing$msaaSlider);
         widgets.add(saltsAntiAliasing$ssaaSlider);
         widgets.add(saltsAntiAliasing$avoidTexturesToggle);
+        widgets.add(saltsAntiAliasing$blockBoundaryToggle);
 
         if (weatherWidget != null) {
             widgets.add(weatherWidget);

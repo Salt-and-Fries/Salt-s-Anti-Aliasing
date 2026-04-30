@@ -148,6 +148,15 @@ public final class RenderRuntime {
         return configManager.snapshot().avoidAaOnTextures;
     }
 
+    public boolean accountForBlockBoundaries() {
+        return configManager.snapshot().accountForBlockBoundaries;
+    }
+
+    public boolean toggleAccountForBlockBoundaries() {
+        configManager.edit(config -> config.accountForBlockBoundaries = !config.accountForBlockBoundaries);
+        return configManager.snapshot().accountForBlockBoundaries;
+    }
+
     public boolean debugViewsEnabled() {
         return configManager.snapshot().debugViewsEnabled;
     }

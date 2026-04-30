@@ -38,6 +38,8 @@
   "options.salts_anti_aliasing.fsr1_upscale_quality.tooltip": "Controls the render scale for the FSR1-based modes. Higher presets stay closer to native quality, while lower presets favor speed. Use it to decide how aggressive the upscale should be.",
   "options.salts_anti_aliasing.avoid_textures": "Avoid AA on Textures: %s",
   "options.salts_anti_aliasing.avoid_textures.tooltip": "Limits anti-aliasing to geometry-depth edges where possible, preserving texture detail on flat block faces.",
+  "options.salts_anti_aliasing.block_boundaries": "Block Boundary Mask: %s",
+  "options.salts_anti_aliasing.block_boundaries.tooltip": "Adds texture-suppressed block and grid boundary cues to the edge mask. Turn it off if the extra mask pass costs too much performance.",
   "options.salts_anti_aliasing.nis_upscale_quality.quality": "Quality",
   "options.salts_anti_aliasing.nis_upscale_quality.balanced": "Balanced",
   "options.salts_anti_aliasing.nis_upscale_quality.performance": "Performance",

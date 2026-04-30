@@ -22,6 +22,7 @@ final class OpenGlDynamicUniforms {
     private static final String FXAA_UNIFORM = "FxaaConfig";
     private static final String SMAA_EDGE_UNIFORM = "SmaaEdgeConfig";
     private static final String FSR1_UNIFORM = "Fsr1Config";
+    private static final String EDGE_MASK_UNIFORM = "EdgeMaskConfig";
     private static final float NIS_EDGE_BOOST = 1.1f;
     private static final float NIS_CLAMP_BOOST = 0.18f;
     private static final float RCAS_EDGE_LIMIT = 0.22f;
@@ -50,6 +51,7 @@ final class OpenGlDynamicUniforms {
             writeFxaaUniform(customUniforms, config.avoidAaOnTextures);
             writeSmaaEdgeUniform(customUniforms, config.avoidAaOnTextures);
             writeFsr1Uniform(customUniforms, config);
+            writeEdgeMaskUniform(customUniforms, config);
             if (config.mode == AntiAliasingMode.NIS_SHARPEN) {
                 writeNisSharpenUniform(customUniforms, config.sharpenStrength, config.avoidAaOnTextures);
             } else if (config.mode == AntiAliasingMode.NIS_UPSCALE) {
@@ -69,7 +71,11 @@ final class OpenGlDynamicUniforms {
     }
 
     static void updateTaa(PostChain postChain, OpenGlSceneTemporalController controller, AntiAliasingConfig config) {
-        updateTaa(postChain, controller, config.avoidAaOnTextures);
+        for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
+            Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
+            writeTaaUniform(customUniforms, controller, config.avoidAaOnTextures);
+            writeEdgeMaskUniform(customUniforms, config);
+        }
     }
 
     private static void updateTaa(PostChain postChain, OpenGlSceneTemporalController controller, boolean avoidTextures) {
@@ -110,6 +116,15 @@ final class OpenGlDynamicUniforms {
             bufferData.putFloat(detailBoostForScale(sourceScale));
             bufferData.putFloat(clampBoostForScale(sourceScale));
             bufferData.putFloat(config.avoidAaOnTextures ? 1.0f : 0.0f);
+        });
+    }
+
+    private static void writeEdgeMaskUniform(Map<String, GpuBuffer> customUniforms, AntiAliasingConfig config) {
+        updateUniformBuffer(customUniforms, EDGE_MASK_UNIFORM, bufferData -> {
+            bufferData.putFloat(config.accountForBlockBoundaries ? 1.0f : 0.0f);
+            bufferData.putFloat(0.0000008f);
+            bufferData.putFloat(0.00008f);
+            bufferData.putFloat(0.06f);
         });
     }
 

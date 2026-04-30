@@ -68,6 +68,16 @@ public enum AntiAliasingMode {
         return this == NIS_UPSCALE || this == FSR1_UPSCALE || this == FSR1_RCAS;
     }
 
+    public boolean usesTextureAvoidanceControl() {
+        return this == FXAA
+                || this == SMAA
+                || this == TAA
+                || this == NIS_SHARPEN
+                || this == NIS_UPSCALE
+                || this == FSR1_UPSCALE
+                || this == FSR1_RCAS;
+    }
+
     public AntiAliasingMode next() {
         AntiAliasingMode[] modes = values();
         return modes[(ordinal() + 1) % modes.length];

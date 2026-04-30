@@ -29,17 +29,35 @@ public final class OpenGlSceneScaleController {
     private static final String TARGET_LABEL = "Salt's Scaled Scene";
     private static final Identifier SCENE_TARGET_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":scene_color");
     private static final Identifier NIS_UPSCALE_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":nis_upscale");
+    private static final Identifier NIS_UPSCALE_MASKED_EFFECT =
+            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":nis_upscale_masked");
     private static final Identifier FSR1_QUALITY_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_quality");
     private static final Identifier FSR1_BALANCED_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_balanced");
     private static final Identifier FSR1_PERFORMANCE_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_performance");
     private static final Identifier FSR1_ULTRA_PERFORMANCE_EFFECT =
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_ultra_performance");
+    private static final Identifier FSR1_QUALITY_MASKED_EFFECT =
+            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_quality_masked");
+    private static final Identifier FSR1_BALANCED_MASKED_EFFECT =
+            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_balanced_masked");
+    private static final Identifier FSR1_PERFORMANCE_MASKED_EFFECT =
+            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_performance_masked");
+    private static final Identifier FSR1_ULTRA_PERFORMANCE_MASKED_EFFECT =
+            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_ultra_performance_masked");
     private static final Identifier FSR1_RCAS_QUALITY_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_quality");
     private static final Identifier FSR1_RCAS_BALANCED_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_balanced");
     private static final Identifier FSR1_RCAS_PERFORMANCE_EFFECT =
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_performance");
     private static final Identifier FSR1_RCAS_ULTRA_PERFORMANCE_EFFECT =
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_ultra_performance");
+    private static final Identifier FSR1_RCAS_QUALITY_MASKED_EFFECT =
+            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_quality_masked");
+    private static final Identifier FSR1_RCAS_BALANCED_MASKED_EFFECT =
+            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_balanced_masked");
+    private static final Identifier FSR1_RCAS_PERFORMANCE_MASKED_EFFECT =
+            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_performance_masked");
+    private static final Identifier FSR1_RCAS_ULTRA_PERFORMANCE_MASKED_EFFECT =
+            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_ultra_performance_masked");
     private static final Set<Identifier> EXTERNAL_SCALE_TARGETS = Set.of(PostChain.MAIN_TARGET_ID, SCENE_TARGET_ID);
 
     private final CrossFrameResourcePool resourcePool = new CrossFrameResourcePool(3);
@@ -221,28 +239,28 @@ public final class OpenGlSceneScaleController {
 
     private static Identifier upscaleEffectFor(AntiAliasingConfig config) {
         return switch (config.mode) {
-            case NIS_UPSCALE -> NIS_UPSCALE_EFFECT;
-            case FSR1_UPSCALE -> fsr1EffectFor(config.nisUpscaleQualityPreset);
-            case FSR1_RCAS -> fsr1RcasEffectFor(config.nisUpscaleQualityPreset);
+            case NIS_UPSCALE -> config.avoidAaOnTextures ? NIS_UPSCALE_MASKED_EFFECT : NIS_UPSCALE_EFFECT;
+            case FSR1_UPSCALE -> fsr1EffectFor(config.nisUpscaleQualityPreset, config.avoidAaOnTextures);
+            case FSR1_RCAS -> fsr1RcasEffectFor(config.nisUpscaleQualityPreset, config.avoidAaOnTextures);
             default -> null;
         };
     }
 
-    private static Identifier fsr1EffectFor(NisUpscaleQualityPreset preset) {
+    private static Identifier fsr1EffectFor(NisUpscaleQualityPreset preset, boolean masked) {
         return switch (NisUpscaleQualityPreset.clamp(preset)) {
-            case QUALITY -> FSR1_QUALITY_EFFECT;
-            case BALANCED -> FSR1_BALANCED_EFFECT;
-            case PERFORMANCE -> FSR1_PERFORMANCE_EFFECT;
-            case ULTRA_PERFORMANCE -> FSR1_ULTRA_PERFORMANCE_EFFECT;
+            case QUALITY -> masked ? FSR1_QUALITY_MASKED_EFFECT : FSR1_QUALITY_EFFECT;
+            case BALANCED -> masked ? FSR1_BALANCED_MASKED_EFFECT : FSR1_BALANCED_EFFECT;
+            case PERFORMANCE -> masked ? FSR1_PERFORMANCE_MASKED_EFFECT : FSR1_PERFORMANCE_EFFECT;
+            case ULTRA_PERFORMANCE -> masked ? FSR1_ULTRA_PERFORMANCE_MASKED_EFFECT : FSR1_ULTRA_PERFORMANCE_EFFECT;
         };
     }
 
-    private static Identifier fsr1RcasEffectFor(NisUpscaleQualityPreset preset) {
+    private static Identifier fsr1RcasEffectFor(NisUpscaleQualityPreset preset, boolean masked) {
         return switch (NisUpscaleQualityPreset.clamp(preset)) {
-            case QUALITY -> FSR1_RCAS_QUALITY_EFFECT;
-            case BALANCED -> FSR1_RCAS_BALANCED_EFFECT;
-            case PERFORMANCE -> FSR1_RCAS_PERFORMANCE_EFFECT;
-            case ULTRA_PERFORMANCE -> FSR1_RCAS_ULTRA_PERFORMANCE_EFFECT;
+            case QUALITY -> masked ? FSR1_RCAS_QUALITY_MASKED_EFFECT : FSR1_RCAS_QUALITY_EFFECT;
+            case BALANCED -> masked ? FSR1_RCAS_BALANCED_MASKED_EFFECT : FSR1_RCAS_BALANCED_EFFECT;
+            case PERFORMANCE -> masked ? FSR1_RCAS_PERFORMANCE_MASKED_EFFECT : FSR1_RCAS_PERFORMANCE_EFFECT;
+            case ULTRA_PERFORMANCE -> masked ? FSR1_RCAS_ULTRA_PERFORMANCE_MASKED_EFFECT : FSR1_RCAS_ULTRA_PERFORMANCE_EFFECT;
         };
     }
 

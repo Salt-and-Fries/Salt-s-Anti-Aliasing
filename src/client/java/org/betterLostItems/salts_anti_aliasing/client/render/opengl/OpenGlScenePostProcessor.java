@@ -14,9 +14,15 @@ import org.betterLostItems.salts_anti_aliasing.client.render.common.ScenePostPro
 
 public final class OpenGlScenePostProcessor implements ScenePostProcessor {
     private static final Identifier NIS_SHARPEN_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":nis_sharpen");
+    private static final Identifier NIS_SHARPEN_MASKED_EFFECT =
+            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":nis_sharpen_masked");
     private static final Identifier FXAA_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fxaa");
+    private static final Identifier FXAA_MASKED_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fxaa_masked");
     private static final Identifier EDGE_DEBUG_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":edge_debug");
+    private static final Identifier EDGE_DEBUG_MASKED_EFFECT =
+            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":edge_debug_masked");
     private static final Identifier SMAA_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":smaa");
+    private static final Identifier SMAA_MASKED_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":smaa_masked");
 
     private final CrossFrameResourcePool resourcePool = new CrossFrameResourcePool(3);
     private final EdgeDebugAnalyzer edgeDebugAnalyzer;
@@ -51,7 +57,7 @@ public final class OpenGlScenePostProcessor implements ScenePostProcessor {
 
             edgeDebugAnalyzer.captureIfNeeded(minecraft.getMainRenderTarget(), config);
             if (config.debugViewsEnabled) {
-                processEffect(minecraft, EDGE_DEBUG_EFFECT, config);
+                processEffect(minecraft, config.avoidAaOnTextures ? EDGE_DEBUG_MASKED_EFFECT : EDGE_DEBUG_EFFECT, config);
             }
         } catch (RuntimeException exception) {
             disabledAfterFailure = true;
@@ -74,9 +80,9 @@ public final class OpenGlScenePostProcessor implements ScenePostProcessor {
 
     private static Identifier effectFor(AntiAliasingConfig config) {
         return switch (config.mode) {
-            case NIS_SHARPEN -> NIS_SHARPEN_EFFECT;
-            case FXAA -> FXAA_EFFECT;
-            case SMAA -> SMAA_EFFECT;
+            case NIS_SHARPEN -> config.avoidAaOnTextures ? NIS_SHARPEN_MASKED_EFFECT : NIS_SHARPEN_EFFECT;
+            case FXAA -> config.avoidAaOnTextures ? FXAA_MASKED_EFFECT : FXAA_EFFECT;
+            case SMAA -> config.avoidAaOnTextures ? SMAA_MASKED_EFFECT : SMAA_EFFECT;
             default -> null;
         };
     }

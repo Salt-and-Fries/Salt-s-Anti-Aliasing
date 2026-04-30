@@ -32,6 +32,7 @@ public final class OpenGlSceneTemporalController {
     private static final String HISTORY_TARGET_LABEL = "Salt's TAA History";
     private static final Identifier HISTORY_TARGET_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":taa_history");
     private static final Identifier TAA_EFFECT_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":taa");
+    private static final Identifier TAA_MASKED_EFFECT_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":taa_masked");
     private static final Set<Identifier> EXTERNAL_TARGETS = Set.of(PostChain.MAIN_TARGET_ID, HISTORY_TARGET_ID);
     private static final int BOOTSTRAP_FRAME_COUNT = 8;
     private static final float TAA_BASE_HISTORY_WEIGHT = 0.92f;
@@ -140,7 +141,8 @@ public final class OpenGlSceneTemporalController {
             return;
         }
 
-        PostChain postChain = minecraft.getShaderManager().getPostChain(TAA_EFFECT_ID, EXTERNAL_TARGETS);
+        Identifier effectId = config.avoidAaOnTextures ? TAA_MASKED_EFFECT_ID : TAA_EFFECT_ID;
+        PostChain postChain = minecraft.getShaderManager().getPostChain(effectId, EXTERNAL_TARGETS);
         if (postChain == null) {
             return;
         }

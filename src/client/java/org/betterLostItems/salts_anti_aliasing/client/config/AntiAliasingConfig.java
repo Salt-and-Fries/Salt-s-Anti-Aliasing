@@ -15,6 +15,7 @@ public final class AntiAliasingConfig {
     public float internalResolutionScale = 1.0f;
     public boolean keepHudAtNativeResolution = true;
     public boolean avoidAaOnTextures = false;
+    public boolean accountForBlockBoundaries = false;
     public boolean debugViewsEnabled = false;
     public boolean recordMetrics = false;
     public boolean allowExperimentalVulkan = false;
@@ -31,6 +32,7 @@ public final class AntiAliasingConfig {
         copy.internalResolutionScale = internalResolutionScale;
         copy.keepHudAtNativeResolution = keepHudAtNativeResolution;
         copy.avoidAaOnTextures = avoidAaOnTextures;
+        copy.accountForBlockBoundaries = accountForBlockBoundaries;
         copy.debugViewsEnabled = debugViewsEnabled;
         copy.recordMetrics = recordMetrics;
         copy.allowExperimentalVulkan = allowExperimentalVulkan;
