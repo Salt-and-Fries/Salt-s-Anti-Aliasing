@@ -17,6 +17,7 @@ layout(std140) uniform FxaaConfig {
     float DepthWeight;
     float VarianceGuard;
     float EdgeConfidenceScale;
+    float AvoidTextures;
 };
 
 in vec2 texCoord;
@@ -89,6 +90,8 @@ void main() {
 
     float edgeSignal = max(lumaRange, colorRange * ColorWeight + depthRange * DepthWeight);
     edgeSignal = clamp(edgeSignal * EdgeConfidenceScale, 0.0, 1.0);
+    float geometryMask = smoothstep(0.00002, 0.0012, depthRange);
+    edgeSignal = mix(edgeSignal, geometryMask, step(0.5, AvoidTextures));
     float threshold = max(EdgeThresholdMin, mix(EdgeThreshold * 0.65, EdgeThreshold * 1.35, clamp(variance * 18.0, 0.0, 1.0)));
     float edgeMask = smoothstep(threshold, threshold * 2.3 + 0.012, edgeSignal);
     edgeMask = pow(edgeMask, 0.72);

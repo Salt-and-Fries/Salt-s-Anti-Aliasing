@@ -11,6 +11,11 @@
           "sampler_name": "In",
           "target": "minecraft:main",
           "bilinear": true
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth_buffer": true
         }
       ],
       "output": "swap",
@@ -30,6 +35,11 @@
             "name": "ClampBoost",
             "type": "float",
             "value": 0.18
+          },
+          {
+            "name": "AvoidTextures",
+            "type": "float",
+            "value": 0.0
           }
         ]
       }

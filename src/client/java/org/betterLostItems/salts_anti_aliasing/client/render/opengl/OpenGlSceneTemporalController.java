@@ -18,6 +18,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 
@@ -104,7 +105,7 @@ public final class OpenGlSceneTemporalController {
         return jitteredProjection;
     }
 
-    public void apply(GameRenderer gameRenderer, CrossFrameResourcePool resourcePool) {
+    public void apply(GameRenderer gameRenderer, CrossFrameResourcePool resourcePool, AntiAliasingConfig config) {
         RenderSystem.assertOnRenderThread();
 
         Minecraft minecraft = gameRenderer.getMinecraft();
@@ -144,7 +145,7 @@ public final class OpenGlSceneTemporalController {
             return;
         }
 
-        OpenGlDynamicUniforms.updateTaa(postChain, this);
+        OpenGlDynamicUniforms.updateTaa(postChain, this, config);
 
         FrameGraphBuilder frameGraphBuilder = new FrameGraphBuilder();
         ResourceHandle<RenderTarget> mainHandle = frameGraphBuilder.importExternal("salts_taa_main", mainTarget);

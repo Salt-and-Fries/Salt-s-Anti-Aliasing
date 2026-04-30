@@ -17,6 +17,7 @@ layout(std140) uniform FxaaConfig {
     float DepthWeight;
     float VarianceGuard;
     float EdgeConfidenceScale;
+    float AvoidTextures;
 };
 
 in vec2 texCoord;
@@ -96,9 +97,16 @@ void main() {
         max(max(abs(depthM - depthN), abs(depthM - depthS)), max(abs(depthM - depthW), abs(depthM - depthE))),
         max(max(abs(depthM - depthNW), abs(depthM - depthNE)), max(abs(depthM - depthSW), abs(depthM - depthSE)))
     );
+    float geometryMask = smoothstep(0.00002, 0.0012, depthRange);
+
+    if (AvoidTextures > 0.5 && geometryMask <= 0.001) {
+        fragColor = vec4(rgbM, 1.0);
+        return;
+    }
 
     float edgeSignal = max(lumaRange, colorRange * ColorWeight + depthRange * DepthWeight);
     edgeSignal = clamp(edgeSignal * EdgeConfidenceScale, 0.0, 1.0);
+    edgeSignal = mix(edgeSignal, geometryMask, step(0.5, AvoidTextures));
 
     float threshold = max(EdgeThresholdMin, mix(EdgeThreshold * 0.45, EdgeThreshold * 1.05, clamp(variance * 8.0, 0.0, 1.0)));
     if (edgeSignal < threshold) {
@@ -138,6 +146,7 @@ void main() {
 
     float varianceGuard = 1.0 - clamp(variance / (0.028 + VarianceGuard * 0.08), 0.0, 0.55);
     float blendAmount = clamp(0.22 + edgeSignal * varianceGuard * 1.45, 0.0, 0.96);
+    blendAmount *= mix(1.0, geometryMask, step(0.5, AvoidTextures));
     vec3 resolved = mix(subpixelBlendColor, directionalBlend, clamp(0.52 + edgeSignal * 0.72 + subpixelAlias * 0.28, 0.0, 1.0));
     resolved = clamp(resolved, localMin - vec3(0.03), localMax + vec3(0.03));
     resolved = mix(rgbM, resolved, blendAmount);

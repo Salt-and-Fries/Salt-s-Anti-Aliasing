@@ -36,6 +36,8 @@
   "options.salts_anti_aliasing.nis_upscale_quality.tooltip": "Controls the render scale for NIS Upscale. Higher presets stay sharper, while lower presets push performance harder. Use it when you want to fine-tune the balance between FPS and clarity.",
   "options.salts_anti_aliasing.fsr1_upscale_quality": "FSR1 Upscale: %s",
   "options.salts_anti_aliasing.fsr1_upscale_quality.tooltip": "Controls the render scale for the FSR1-based modes. Higher presets stay closer to native quality, while lower presets favor speed. Use it to decide how aggressive the upscale should be.",
+  "options.salts_anti_aliasing.avoid_textures": "Avoid AA on Textures: %s",
+  "options.salts_anti_aliasing.avoid_textures.tooltip": "Limits anti-aliasing to geometry-depth edges where possible, preserving texture detail on flat block faces.",
   "options.salts_anti_aliasing.nis_upscale_quality.quality": "Quality",
   "options.salts_anti_aliasing.nis_upscale_quality.balanced": "Balanced",
   "options.salts_anti_aliasing.nis_upscale_quality.performance": "Performance",

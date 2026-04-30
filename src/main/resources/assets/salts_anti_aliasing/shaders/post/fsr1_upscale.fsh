@@ -1,6 +1,7 @@
 #version 330
 
 uniform sampler2D InSampler;
+uniform sampler2D DepthSampler;
 
 layout(std140) uniform SamplerInfo {
     vec2 OutSize;
@@ -12,6 +13,7 @@ layout(std140) uniform Fsr1Config {
     float EdgeBlend;
     float DetailBoost;
     float ClampBoost;
+    float AvoidTextures;
 };
 
 in vec2 texCoord;
@@ -30,6 +32,8 @@ void main() {
     vec2 sourceTexel = 1.0 / max(InSize, vec2(1.0));
 
     vec3 center = texture(InSampler, texCoord).rgb;
+    float depthCenter = texture(DepthSampler, texCoord).r;
+    float depthRange = 0.0;
     vec3 north = sampleScene(vec2(0.0, -sourceTexel.y));
     vec3 south = sampleScene(vec2(0.0, sourceTexel.y));
     vec3 west = sampleScene(vec2(-sourceTexel.x, 0.0));
@@ -38,6 +42,10 @@ void main() {
     vec3 northEast = sampleScene(vec2(sourceTexel.x, -sourceTexel.y));
     vec3 southWest = sampleScene(vec2(-sourceTexel.x, sourceTexel.y));
     vec3 southEast = sampleScene(vec2(sourceTexel.x, sourceTexel.y));
+    depthRange = max(depthRange, abs(depthCenter - texture(DepthSampler, texCoord + vec2(0.0, -sourceTexel.y)).r));
+    depthRange = max(depthRange, abs(depthCenter - texture(DepthSampler, texCoord + vec2(0.0, sourceTexel.y)).r));
+    depthRange = max(depthRange, abs(depthCenter - texture(DepthSampler, texCoord + vec2(-sourceTexel.x, 0.0)).r));
+    depthRange = max(depthRange, abs(depthCenter - texture(DepthSampler, texCoord + vec2(sourceTexel.x, 0.0)).r));
 
     float lumaNorth = luma(north);
     float lumaSouth = luma(south);
@@ -86,6 +94,9 @@ void main() {
             )
     );
     vec3 clampPad = (maxNeighborhood - minNeighborhood) * ClampBoost;
+    vec3 outputColor = clamp(reconstructed, minNeighborhood - clampPad, maxNeighborhood + clampPad);
+    float geometryMask = smoothstep(0.00002, 0.0012, depthRange);
+    outputColor = mix(outputColor, center, step(0.5, AvoidTextures) * (1.0 - geometryMask));
 
-    fragColor = vec4(clamp(reconstructed, minNeighborhood - clampPad, maxNeighborhood + clampPad), 1.0);
+    fragColor = vec4(outputColor, 1.0);
 }

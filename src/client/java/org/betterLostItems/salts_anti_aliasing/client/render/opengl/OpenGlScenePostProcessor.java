@@ -40,7 +40,7 @@ public final class OpenGlScenePostProcessor implements ScenePostProcessor {
             }
 
             if (config.mode == AntiAliasingMode.TAA) {
-                OpenGlSceneTemporalController.instance().apply(gameRenderer, resourcePool);
+                OpenGlSceneTemporalController.instance().apply(gameRenderer, resourcePool, config);
             } else {
                 OpenGlSceneTemporalController.instance().resetForInactiveMode();
                 Identifier effectId = effectFor(config);

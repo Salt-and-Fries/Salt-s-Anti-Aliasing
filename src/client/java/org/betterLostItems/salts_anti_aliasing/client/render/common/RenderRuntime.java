@@ -139,6 +139,15 @@ public final class RenderRuntime {
         return backendName() + " -> " + passManager.orderedPassIds();
     }
 
+    public boolean avoidAaOnTextures() {
+        return configManager.snapshot().avoidAaOnTextures;
+    }
+
+    public boolean toggleAvoidAaOnTextures() {
+        configManager.edit(config -> config.avoidAaOnTextures = !config.avoidAaOnTextures);
+        return configManager.snapshot().avoidAaOnTextures;
+    }
+
     public boolean debugViewsEnabled() {
         return configManager.snapshot().debugViewsEnabled;
     }

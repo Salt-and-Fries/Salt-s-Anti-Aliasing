@@ -19,6 +19,7 @@ layout(std140) uniform TaaConfig {
     float PreviousJitterX;
     float PreviousJitterY;
     float CameraMotion;
+    float AvoidTextures;
 };
 
 in vec2 texCoord;
@@ -113,5 +114,7 @@ void main() {
         0.96
     );
     vec3 resolved = mix(spatialResolved, clampedHistory, historyWeight);
+    float geometryMask = smoothstep(0.00002, 0.0012, depthEdge);
+    resolved = mix(resolved, current, step(0.5, AvoidTextures) * (1.0 - geometryMask));
     fragColor = vec4(resolved, 1.0);
 }

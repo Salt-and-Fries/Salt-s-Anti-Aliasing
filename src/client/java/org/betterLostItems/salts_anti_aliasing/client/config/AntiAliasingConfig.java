@@ -14,6 +14,7 @@ public final class AntiAliasingConfig {
     public NisUpscaleQualityPreset nisUpscaleQualityPreset = NisUpscaleQualityPreset.defaultPreset();
     public float internalResolutionScale = 1.0f;
     public boolean keepHudAtNativeResolution = true;
+    public boolean avoidAaOnTextures = false;
     public boolean debugViewsEnabled = false;
     public boolean recordMetrics = false;
     public boolean allowExperimentalVulkan = false;
@@ -29,6 +30,7 @@ public final class AntiAliasingConfig {
         copy.nisUpscaleQualityPreset = nisUpscaleQualityPreset;
         copy.internalResolutionScale = internalResolutionScale;
         copy.keepHudAtNativeResolution = keepHudAtNativeResolution;
+        copy.avoidAaOnTextures = avoidAaOnTextures;
         copy.debugViewsEnabled = debugViewsEnabled;
         copy.recordMetrics = recordMetrics;
         copy.allowExperimentalVulkan = allowExperimentalVulkan;

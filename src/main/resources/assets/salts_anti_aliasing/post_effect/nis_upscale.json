@@ -9,6 +9,11 @@
           "sampler_name": "In",
           "target": "salts_anti_aliasing:scene_color",
           "bilinear": true
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "salts_anti_aliasing:scene_color",
+          "use_depth_buffer": true
         }
       ],
       "output": "minecraft:main",
@@ -28,6 +33,11 @@
             "name": "ClampBoost",
             "type": "float",
             "value": 0.18
+          },
+          {
+            "name": "AvoidTextures",
+            "type": "float",
+            "value": 0.0
           }
         ]
       }

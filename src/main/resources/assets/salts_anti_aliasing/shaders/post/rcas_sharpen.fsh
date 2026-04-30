@@ -1,6 +1,7 @@
 #version 330
 
 uniform sampler2D InSampler;
+uniform sampler2D DepthSampler;
 
 layout(std140) uniform SamplerInfo {
     vec2 OutSize;
@@ -11,6 +12,7 @@ layout(std140) uniform RcasConfig {
     float Sharpness;
     float EdgeLimit;
     float ClampBoost;
+    float AvoidTextures;
 };
 
 in vec2 texCoord;
@@ -25,10 +27,17 @@ void main() {
     vec2 texel = 1.0 / InSize;
 
     vec3 center = texture(InSampler, texCoord).rgb;
+    float depthCenter = texture(DepthSampler, texCoord).r;
     vec3 north = texture(InSampler, texCoord + vec2(0.0, -texel.y)).rgb;
     vec3 south = texture(InSampler, texCoord + vec2(0.0, texel.y)).rgb;
     vec3 west = texture(InSampler, texCoord + vec2(-texel.x, 0.0)).rgb;
     vec3 east = texture(InSampler, texCoord + vec2(texel.x, 0.0)).rgb;
+    float depthRange = max(
+            max(abs(depthCenter - texture(DepthSampler, texCoord + vec2(0.0, -texel.y)).r),
+                abs(depthCenter - texture(DepthSampler, texCoord + vec2(0.0, texel.y)).r)),
+            max(abs(depthCenter - texture(DepthSampler, texCoord + vec2(-texel.x, 0.0)).r),
+                abs(depthCenter - texture(DepthSampler, texCoord + vec2(texel.x, 0.0)).r))
+    );
 
     vec3 minNeighborhood = min(center, min(min(north, south), min(west, east)));
     vec3 maxNeighborhood = max(center, max(max(north, south), max(west, east)));
@@ -42,5 +51,8 @@ void main() {
     vec3 sharpened = center + (center - ring) * sharpenAmount;
 
     vec3 clampPad = range * ClampBoost;
-    fragColor = vec4(clamp(sharpened, minNeighborhood - clampPad, maxNeighborhood + clampPad), 1.0);
+    vec3 outputColor = clamp(sharpened, minNeighborhood - clampPad, maxNeighborhood + clampPad);
+    float geometryMask = smoothstep(0.00002, 0.0012, depthRange);
+    outputColor = mix(outputColor, center, step(0.5, AvoidTextures) * (1.0 - geometryMask));
+    fragColor = vec4(outputColor, 1.0);
 }

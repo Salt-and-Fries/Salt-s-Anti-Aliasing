@@ -70,6 +70,11 @@
             "name": "CameraMotion",
             "type": "float",
             "value": 0.0
+          },
+          {
+            "name": "AvoidTextures",
+            "type": "float",
+            "value": 0.0
           }
         ]
       }

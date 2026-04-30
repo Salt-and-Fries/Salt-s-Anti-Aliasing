@@ -12,6 +12,11 @@
         {
           "sampler_name": "In",
           "target": "minecraft:main"
+        },
+        {
+          "sampler_name": "Depth",
+          "target": "minecraft:main",
+          "use_depth_buffer": true
         }
       ],
       "output": "edges",
@@ -31,6 +36,11 @@
             "name": "DiagonalFactor",
             "type": "float",
             "value": 0.35
+          },
+          {
+            "name": "AvoidTextures",
+            "type": "float",
+            "value": 0.0
           }
         ]
       }

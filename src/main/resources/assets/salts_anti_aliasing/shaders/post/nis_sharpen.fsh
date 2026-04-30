@@ -1,6 +1,7 @@
 #version 330
 
 uniform sampler2D InSampler;
+uniform sampler2D DepthSampler;
 
 layout(std140) uniform SamplerInfo {
     vec2 OutSize;
@@ -11,6 +12,7 @@ layout(std140) uniform NisSharpenConfig {
     float Sharpness;
     float EdgeBoost;
     float ClampBoost;
+    float AvoidTextures;
 };
 
 in vec2 texCoord;
@@ -25,6 +27,7 @@ void main() {
     vec2 texelSize = 1.0 / InSize;
 
     vec3 center = texture(InSampler, texCoord).rgb;
+    float depthCenter = texture(DepthSampler, texCoord).r;
     vec3 north = texture(InSampler, texCoord + vec2(0.0, -texelSize.y)).rgb;
     vec3 south = texture(InSampler, texCoord + vec2(0.0, texelSize.y)).rgb;
     vec3 west = texture(InSampler, texCoord + vec2(-texelSize.x, 0.0)).rgb;
@@ -33,6 +36,12 @@ void main() {
     vec3 northEast = texture(InSampler, texCoord + vec2(texelSize.x, -texelSize.y)).rgb;
     vec3 southWest = texture(InSampler, texCoord + vec2(-texelSize.x, texelSize.y)).rgb;
     vec3 southEast = texture(InSampler, texCoord + vec2(texelSize.x, texelSize.y)).rgb;
+    float depthRange = max(
+            max(abs(depthCenter - texture(DepthSampler, texCoord + vec2(0.0, -texelSize.y)).r),
+                abs(depthCenter - texture(DepthSampler, texCoord + vec2(0.0, texelSize.y)).r)),
+            max(abs(depthCenter - texture(DepthSampler, texCoord + vec2(-texelSize.x, 0.0)).r),
+                abs(depthCenter - texture(DepthSampler, texCoord + vec2(texelSize.x, 0.0)).r))
+    );
 
     vec3 blurred =
             center * 0.25 +
@@ -65,5 +74,7 @@ void main() {
 
     vec3 clampPad = (maxNeighborhood - minNeighborhood) * ClampBoost;
     vec3 outputColor = clamp(sharpened, minNeighborhood - clampPad, maxNeighborhood + clampPad);
+    float geometryMask = smoothstep(0.00002, 0.0012, depthRange);
+    outputColor = mix(outputColor, center, step(0.5, AvoidTextures) * (1.0 - geometryMask));
     fragColor = vec4(outputColor, 1.0);
 }
