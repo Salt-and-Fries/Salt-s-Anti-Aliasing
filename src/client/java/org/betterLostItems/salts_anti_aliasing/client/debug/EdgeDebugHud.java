@@ -3,7 +3,7 @@ package org.betterLostItems.salts_anti_aliasing.client.debug;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
 
@@ -22,7 +22,7 @@ public final class EdgeDebugHud {
     private EdgeDebugHud() {
     }
 
-    public static void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+    public static void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         Minecraft minecraft = Minecraft.getInstance();
         if (runtime == null || !runtime.debugViewsEnabled() || minecraft.level == null) {
@@ -57,7 +57,7 @@ public final class EdgeDebugHud {
 
         for (int i = 0; i < lines.size(); i++) {
             int color = i == 0 ? TITLE_COLOR : TEXT_COLOR;
-            graphics.text(font, lines.get(i), x + BOX_PADDING, y + BOX_PADDING + i * lineHeight, color, true);
+            graphics.drawString(font, lines.get(i), x + BOX_PADDING, y + BOX_PADDING + i * lineHeight, color, true);
         }
     }
 

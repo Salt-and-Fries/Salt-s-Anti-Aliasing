@@ -11,7 +11,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
@@ -84,12 +84,6 @@ public final class OpenGlSceneTemporalController {
     }
 
     public CameraRenderState configureCameraJitter(CameraRenderState cameraRenderState, boolean taaActive) {
-        if (!taaActive) {
-            return cameraRenderState;
-        }
-
-        cameraRenderState.projectionMatrix.m20(cameraRenderState.projectionMatrix.m20() + currentJitterClipX);
-        cameraRenderState.projectionMatrix.m21(cameraRenderState.projectionMatrix.m21() + currentJitterClipY);
         return cameraRenderState;
     }
 

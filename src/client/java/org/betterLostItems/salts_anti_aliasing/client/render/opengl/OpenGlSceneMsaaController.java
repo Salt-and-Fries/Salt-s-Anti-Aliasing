@@ -292,7 +292,7 @@ public final class OpenGlSceneMsaaController {
         GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, msaaFramebufferId);
         GlStateManager._disableScissorTest();
         GlStateManager._depthMask(true);
-        GlStateManager._colorMask(15);
+        GlStateManager._colorMask(true, true, true, true);
 
         int clearMask = 0;
         if (clearColorBuffer) {
