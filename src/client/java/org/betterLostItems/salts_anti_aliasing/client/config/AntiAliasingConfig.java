@@ -1,5 +1,9 @@
 package org.betterLostItems.salts_anti_aliasing.client.config;
 
+/**
+ * Mutable configuration object persisted to disk and copied before render code reads it, keeping
+ * live edits isolated from stored defaults.
+ */
 public final class AntiAliasingConfig {
     public static final float MIN_SHARPEN_STRENGTH = 0.0f;
     public static final float MAX_SHARPEN_STRENGTH = 0.65f;
@@ -18,6 +22,11 @@ public final class AntiAliasingConfig {
     public boolean recordMetrics = false;
     public boolean allowExperimentalVulkan = false;
 
+    /**
+     * Creates an independent mutable copy so callers can inspect or edit configuration without
+     * mutating the live instance unexpectedly.
+     * @return an independent copy of the current object
+     */
     public AntiAliasingConfig copy() {
         AntiAliasingConfig copy = new AntiAliasingConfig();
         copy.mode = mode;
@@ -35,6 +44,10 @@ public final class AntiAliasingConfig {
         return copy;
     }
 
+    /**
+     * Normalizes deserialized or edited values so invalid config cannot leak into render-target
+     * sizing or pass planning.
+     */
     public void sanitize() {
         mode = AntiAliasingMode.clampImplemented(mode);
         if (qualityPreset == null) {
@@ -52,10 +65,20 @@ public final class AntiAliasingConfig {
         internalResolutionScale = clamp(internalResolutionScale, 0.5f, 1.0f);
     }
 
+    /**
+     * Reports whether the current mode needs a separate internal-resolution render target before
+     * presenting to the native output.
+     * @return whether this object requires the described render path
+     */
     public boolean usesInternalResolutionPath() {
         return mode == AntiAliasingMode.SSAA || mode.usesDedicatedUpscalePass();
     }
 
+    /**
+     * Returns the resolution multiplier used for the 3D scene before final resolve or upscale
+     * passes run.
+     * @return render-scale multiplier used for the 3D scene
+     */
     public float sceneRenderScale() {
         return switch (mode) {
             case SSAA -> ssaaScaleLevel.scaleFactor();
@@ -64,6 +87,13 @@ public final class AntiAliasingConfig {
         };
     }
 
+    /**
+     * Clamps the supplied value to an inclusive range before it can affect rendering or persisted configuration.
+     * @param value value supplied by the caller or Minecraft callback
+     * @param min min value supplied by the caller or Minecraft callback
+     * @param max max value supplied by the caller or Minecraft callback
+     * @return value clamped to the supported range
+     */
     private static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
     }

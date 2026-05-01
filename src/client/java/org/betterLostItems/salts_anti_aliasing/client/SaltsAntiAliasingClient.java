@@ -14,6 +14,10 @@ import org.betterLostItems.salts_anti_aliasing.client.debug.EdgeDebugHud;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
 import org.lwjgl.glfw.GLFW;
 
+/**
+ * Client entrypoint that bootstraps the render runtime, registers key bindings, and connects
+ * HUD/debug callbacks.
+ */
 public final class SaltsAntiAliasingClient implements ClientModInitializer {
     private static final Identifier KEY_CATEGORY = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":main");
     private static final Identifier EDGE_DEBUG_HUD = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":edge_debug_hud");
@@ -22,6 +26,10 @@ public final class SaltsAntiAliasingClient implements ClientModInitializer {
     private static RenderRuntime renderRuntime;
     private KeyMapping cycleModeKey;
 
+    /**
+     * Returns runtime for callers that need to coordinate UI, mixin, or render behavior.
+     * @return initialized render runtime
+     */
     public static RenderRuntime runtime() {
         if (renderRuntime == null) {
             throw new IllegalStateException("Salt's Anti Aliasing runtime has not been initialized yet");
@@ -30,10 +38,17 @@ public final class SaltsAntiAliasingClient implements ClientModInitializer {
         return renderRuntime;
     }
 
+    /**
+     * Returns runtime or null for callers that need to coordinate UI, mixin, or render behavior.
+     * @return runtime when initialization has completed, or null during early startup
+     */
     public static RenderRuntime runtimeOrNull() {
         return renderRuntime;
     }
 
+    /**
+     * Coordinates on initialize client within the anti-aliasing render, configuration, or compatibility flow.
+     */
     @Override
     public void onInitializeClient() {
         renderRuntime = RenderRuntime.bootstrap();

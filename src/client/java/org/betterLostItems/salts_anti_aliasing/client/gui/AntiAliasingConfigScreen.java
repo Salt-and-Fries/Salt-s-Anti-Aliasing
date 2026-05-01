@@ -11,6 +11,11 @@ import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntim
 
 import java.util.List;
 
+/**
+ * Implements anti aliasing config screen behavior for Salt's Anti Aliasing. Client-side
+ * configuration UI code that turns render settings into controls the player can change safely at
+ * runtime.
+ */
 public final class AntiAliasingConfigScreen extends OptionsSubScreen {
     private static final String TITLE_KEY = "screen.salts_anti_aliasing.config";
 
@@ -20,10 +25,19 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
     private SsaaScaleSliderWidget ssaaSlider;
     private SpatialUpscaleQualitySliderWidget upscaleSlider;
 
+    /**
+     * Creates a anti aliasing config screen instance with the collaborators or initial state
+     * supplied by the caller.
+     * @param lastScreen last screen value supplied by the caller or Minecraft callback
+     */
     public AntiAliasingConfigScreen(Screen lastScreen) {
         super(lastScreen, Minecraft.getInstance().options, Component.translatable(TITLE_KEY));
     }
 
+    /**
+     * Handles add options as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     */
     @Override
     protected void addOptions() {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
@@ -47,6 +61,9 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
         refreshControlAvailability(runtime.activeMode());
     }
 
+    /**
+     * Handles tick as part of the anti-aliasing render, configuration, or compatibility flow.
+     */
     @Override
     public void tick() {
         super.tick();
@@ -57,6 +74,10 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
         }
     }
 
+    /**
+     * Coordinates refresh control availability within the anti-aliasing render, configuration, or compatibility flow.
+     * @param activeMode active mode value supplied by the caller or Minecraft callback
+     */
     private void refreshControlAvailability(AntiAliasingMode activeMode) {
         boolean antiAliasingAvailable = minecraft != null && !minecraft.useShaderTransparency();
 

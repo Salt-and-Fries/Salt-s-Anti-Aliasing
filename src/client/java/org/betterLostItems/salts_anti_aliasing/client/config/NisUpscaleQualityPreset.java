@@ -23,22 +23,47 @@ public enum NisUpscaleQualityPreset {
         this.sharpenStrength = sharpenStrength;
     }
 
+    /**
+     * Handles scale factor as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return scene resolution multiplier represented by this preset
+     */
     public float scaleFactor() {
         return scaleFactor;
     }
 
+    /**
+     * Handles sharpen strength as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return sharpening strength associated with the selected preset
+     */
     public float sharpenStrength() {
         return sharpenStrength;
     }
 
+    /**
+     * Handles translation key as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return translation key consumed by Minecraft language resources
+     */
     public String translationKey() {
         return "options.salts_anti_aliasing.nis_upscale_quality." + name().toLowerCase(Locale.ROOT);
     }
 
+    /**
+     * Handles default preset as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return default upscale preset used when config omits or loses this value
+     */
     public static NisUpscaleQualityPreset defaultPreset() {
         return BALANCED;
     }
 
+    /**
+     * Clamps the supplied value to an inclusive range before it can affect rendering or persisted configuration.
+     * @param preset quality preset selected by the user or loaded from config
+     * @return value clamped to the supported range
+     */
     public static NisUpscaleQualityPreset clamp(NisUpscaleQualityPreset preset) {
         return preset == null ? defaultPreset() : preset;
     }

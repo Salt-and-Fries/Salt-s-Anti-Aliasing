@@ -15,6 +15,10 @@ import java.nio.ByteOrder;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+/**
+ * Populates runtime uniform values for post-processing shaders so JSON-defined effects can respond
+ * to config, resolution, and history state.
+ */
 final class OpenGlDynamicUniforms {
     private static final String NIS_SHARPEN_UNIFORM = "NisSharpenConfig";
     private static final String RCAS_UNIFORM = "RcasConfig";
@@ -27,9 +31,19 @@ final class OpenGlDynamicUniforms {
 
     private static final Map<GpuBuffer, Integer> LAST_UPLOADED_HASHES = new IdentityHashMap<>();
 
+    /**
+     * Creates a open gl dynamic uniforms instance with the collaborators or initial state supplied
+     * by the caller.
+     */
     private OpenGlDynamicUniforms() {
     }
 
+    /**
+     * Handles update for mode as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @param postChain post chain value supplied by the caller or Minecraft callback
+     * @param config configuration object being normalized, copied, or committed
+     */
     static void updateForMode(PostChain postChain, AntiAliasingConfig config) {
         for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
             Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
@@ -43,6 +57,11 @@ final class OpenGlDynamicUniforms {
         }
     }
 
+    /**
+     * Handles update taa as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param postChain post chain value supplied by the caller or Minecraft callback
+     * @param controller controller value supplied by the caller or Minecraft callback
+     */
     static void updateTaa(PostChain postChain, OpenGlSceneTemporalController controller) {
         for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
             Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
@@ -50,6 +69,11 @@ final class OpenGlDynamicUniforms {
         }
     }
 
+    /**
+     * Coordinates write nis sharpen uniform within the anti-aliasing render, configuration, or compatibility flow.
+     * @param customUniforms custom uniforms value supplied by the caller or Minecraft callback
+     * @param sharpenStrength normalized sharpening amount requested by the user interface
+     */
     private static void writeNisSharpenUniform(Map<String, GpuBuffer> customUniforms, float sharpenStrength) {
         updateUniformBuffer(customUniforms, NIS_SHARPEN_UNIFORM, bufferData -> {
             bufferData.putFloat(sharpenStrength);
@@ -58,6 +82,11 @@ final class OpenGlDynamicUniforms {
         });
     }
 
+    /**
+     * Coordinates write rcas uniform within the anti-aliasing render, configuration, or compatibility flow.
+     * @param customUniforms custom uniforms value supplied by the caller or Minecraft callback
+     * @param sharpenStrength normalized sharpening amount requested by the user interface
+     */
     private static void writeRcasUniform(Map<String, GpuBuffer> customUniforms, float sharpenStrength) {
         updateUniformBuffer(customUniforms, RCAS_UNIFORM, bufferData -> {
             bufferData.putFloat(sharpenStrength);
@@ -66,6 +95,11 @@ final class OpenGlDynamicUniforms {
         });
     }
 
+    /**
+     * Coordinates write taa uniform within the anti-aliasing render, configuration, or compatibility flow.
+     * @param customUniforms custom uniforms value supplied by the caller or Minecraft callback
+     * @param controller controller value supplied by the caller or Minecraft callback
+     */
     private static void writeTaaUniform(Map<String, GpuBuffer> customUniforms, OpenGlSceneTemporalController controller) {
         updateUniformBuffer(customUniforms, TAA_UNIFORM, bufferData -> {
             bufferData.putFloat(controller.baseHistoryWeight());
@@ -80,6 +114,12 @@ final class OpenGlDynamicUniforms {
         });
     }
 
+    /**
+     * Coordinates update uniform buffer within the anti-aliasing render, configuration, or compatibility flow.
+     * @param customUniforms custom uniforms value supplied by the caller or Minecraft callback
+     * @param uniformName uniform name value supplied by the caller or Minecraft callback
+     * @param writer writer value supplied by the caller or Minecraft callback
+     */
     private static void updateUniformBuffer(
             Map<String, GpuBuffer> customUniforms,
             String uniformName,
@@ -115,6 +155,14 @@ final class OpenGlDynamicUniforms {
         }
     }
 
+    /**
+     * Coordinates ensure writable uniform buffer within the anti-aliasing render, configuration, or compatibility flow.
+     * @param customUniforms custom uniforms value supplied by the caller or Minecraft callback
+     * @param uniformName uniform name value supplied by the caller or Minecraft callback
+     * @param previousBuffer previous buffer value supplied by the caller or Minecraft callback
+     * @param initialData initial data value supplied by the caller or Minecraft callback
+     * @return ensure writable uniform buffer produced by this helper
+     */
     private static GpuBuffer ensureWritableUniformBuffer(
             Map<String, GpuBuffer> customUniforms,
             String uniformName,
@@ -138,6 +186,11 @@ final class OpenGlDynamicUniforms {
         return replacement;
     }
 
+    /**
+     * Checks hash without mutating runtime or configuration state.
+     * @param bufferData buffer data value supplied by the caller or Minecraft callback
+     * @return whether the requested state is present
+     */
     private static int hash(ByteBuffer bufferData) {
         ByteBuffer duplicate = bufferData.duplicate();
         int hash = 1;
@@ -147,8 +200,17 @@ final class OpenGlDynamicUniforms {
         return hash;
     }
 
+    /**
+     * Contract for uniform writer behavior so platform-specific code can depend on a small,
+     * testable surface. OpenGL implementation code that owns render-target redirection, post-
+     * processing, and Minecraft framebuffer coordination.
+     */
     @FunctionalInterface
     private interface UniformWriter {
+        /**
+         * Handles write as part of the anti-aliasing render, configuration, or compatibility flow.
+         * @param bufferData buffer data value supplied by the caller or Minecraft callback
+         */
         void write(ByteBuffer bufferData);
     }
 }

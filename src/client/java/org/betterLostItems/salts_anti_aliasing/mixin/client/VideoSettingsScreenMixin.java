@@ -25,6 +25,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implements video settings screen mixin behavior for Salt's Anti Aliasing. Mixin bridge code that
+ * hooks Minecraft internals at narrowly chosen call sites so the renderer can be redirected without
+ * forking vanilla classes.
+ */
 @Mixin(VideoSettingsScreen.class)
 public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
     private static double saltsAntiAliasing$pendingScrollAmount = -1.0d;
@@ -34,6 +39,13 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
     private SsaaScaleSliderWidget saltsAntiAliasing$ssaaSlider;
     private SpatialUpscaleQualitySliderWidget saltsAntiAliasing$upscaleSlider;
 
+    /**
+     * Creates a video settings screen mixin instance with the collaborators or initial state
+     * supplied by the caller.
+     * @param lastScreen last screen value supplied by the caller or Minecraft callback
+     * @param options options value supplied by the caller or Minecraft callback
+     * @param title title value supplied by the caller or Minecraft callback
+     */
     protected VideoSettingsScreenMixin(Screen lastScreen, Options options, Component title) {
         super(lastScreen, options, title);
     }
@@ -86,6 +98,10 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         saltsAntiAliasing$refreshControlAvailability(runtime.activeMode());
     }
 
+    /**
+     * Coordinates refresh control availability within the anti-aliasing render, configuration, or compatibility flow.
+     * @param activeMode active mode value supplied by the caller or Minecraft callback
+     */
     private void saltsAntiAliasing$refreshControlAvailability(AntiAliasingMode activeMode) {
         boolean antiAliasingAvailable = !saltsAntiAliasing$improvedTransparencyEnabled();
 
@@ -111,6 +127,12 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         }
     }
 
+    /**
+     * Handles move inserted controls below anisotropy as part of the anti-aliasing render,
+     * configuration, or compatibility flow.
+     * @param initialEntryCount initial entry count value supplied by the caller or Minecraft
+     * callback
+     */
     private void saltsAntiAliasing$moveInsertedControlsBelowAnisotropy(int initialEntryCount) {
         int anisotropyEntryIndex = saltsAntiAliasing$findEntryIndex(this.options.maxAnisotropyBit());
         if (anisotropyEntryIndex < 0) {
@@ -127,6 +149,12 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         entries.addAll(anisotropyEntryIndex + 1, insertedEntries);
     }
 
+    /**
+     * Handles find entry index as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @param optionInstance option instance value supplied by the caller or Minecraft callback
+     * @return index of the matching video option entry, or -1 when absent
+     */
     private int saltsAntiAliasing$findEntryIndex(OptionInstance<?> optionInstance) {
         AbstractWidget widget = this.list.findOption(optionInstance);
         if (widget == null) {
@@ -144,6 +172,10 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         return -1;
     }
 
+    /**
+     * Coordinates add packed control rows within the anti-aliasing render, configuration, or compatibility flow.
+     * @param weatherWidget weather widget value supplied by the caller or Minecraft callback
+     */
     private void saltsAntiAliasing$addPackedControlRows(AbstractWidget weatherWidget) {
         List<AbstractWidget> widgets = new ArrayList<>();
         widgets.add(saltsAntiAliasing$sharpnessSlider);
@@ -159,10 +191,19 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         this.list.addSmall(widgets);
     }
 
+    /**
+     * Coordinates improved transparency enabled within the anti-aliasing render, configuration, or compatibility flow.
+     * @return whether the operation or state is enabled
+     */
     private boolean saltsAntiAliasing$improvedTransparencyEnabled() {
         return this.minecraft != null && this.minecraft.useShaderTransparency();
     }
 
+    /**
+     * Coordinates detach option widget within the anti-aliasing render, configuration, or compatibility flow.
+     * @param optionInstance option instance value supplied by the caller or Minecraft callback
+     * @return widget detached from the vanilla option list for custom placement
+     */
     private AbstractWidget saltsAntiAliasing$detachOptionWidget(OptionInstance<?> optionInstance) {
         int entryIndex = saltsAntiAliasing$findEntryIndex(optionInstance);
         if (entryIndex < 0) {
@@ -179,6 +220,10 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         return widget;
     }
 
+    /**
+     * Handles entries as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @return mutable video option entries exposed through the mixin accessor
+     */
     private List<Object> saltsAntiAliasing$entries() {
         return ((AbstractSelectionListAccessor) this.list).saltsAntiAliasing$children();
     }

@@ -12,6 +12,10 @@ import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.debug.EdgeDebugAnalyzer;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.ScenePostProcessor;
 
+/**
+ * Executes OpenGL post chains against the scene after world rendering and before HUD/menu rendering
+ * consumes the main target.
+ */
 public final class OpenGlScenePostProcessor implements ScenePostProcessor {
     private static final Identifier NIS_SHARPEN_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":nis_sharpen");
     private static final Identifier FXAA_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fxaa");
@@ -22,10 +26,22 @@ public final class OpenGlScenePostProcessor implements ScenePostProcessor {
     private final EdgeDebugAnalyzer edgeDebugAnalyzer;
     private boolean disabledAfterFailure;
 
+    /**
+     * Creates a open gl scene post processor instance with the collaborators or initial state
+     * supplied by the caller.
+     * @param edgeDebugAnalyzer edge debug analyzer value supplied by the caller or Minecraft
+     * callback
+     */
     public OpenGlScenePostProcessor(EdgeDebugAnalyzer edgeDebugAnalyzer) {
         this.edgeDebugAnalyzer = edgeDebugAnalyzer;
     }
 
+    /**
+     * Handles apply as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param gameRenderer Minecraft game renderer whose scene target or post-processing phase is
+     * being coordinated
+     * @param config configuration object being normalized, copied, or committed
+     */
     @Override
     public void apply(GameRenderer gameRenderer, AntiAliasingConfig config) {
         try {
@@ -62,6 +78,13 @@ public final class OpenGlScenePostProcessor implements ScenePostProcessor {
         }
     }
 
+    /**
+     * Handles process effect as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @param minecraft minecraft value supplied by the caller or Minecraft callback
+     * @param effectId effect id value supplied by the caller or Minecraft callback
+     * @param config configuration object being normalized, copied, or committed
+     */
     private void processEffect(Minecraft minecraft, Identifier effectId, AntiAliasingConfig config) {
         PostChain postChain = minecraft.getShaderManager().getPostChain(effectId, LevelTargetBundle.MAIN_TARGETS);
         if (postChain == null) {
@@ -72,6 +95,11 @@ public final class OpenGlScenePostProcessor implements ScenePostProcessor {
         postChain.process(minecraft.getMainRenderTarget(), resourcePool);
     }
 
+    /**
+     * Handles effect for as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param config configuration object being normalized, copied, or committed
+     * @return effect for produced by this helper
+     */
     private static Identifier effectFor(AntiAliasingConfig config) {
         return switch (config.mode) {
             case NIS_SHARPEN -> NIS_SHARPEN_EFFECT;

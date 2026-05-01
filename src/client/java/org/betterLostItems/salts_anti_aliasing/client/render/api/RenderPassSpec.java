@@ -4,6 +4,10 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Immutable value object carrying render pass spec data between render-planning and runtime code.
+ * Backend-neutral render API code shared by OpenGL, Vulkan placeholders, and pipeline planning.
+ */
 public record RenderPassSpec(
         String id,
         Set<RenderCapability> requiredCapabilities,

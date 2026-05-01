@@ -16,6 +16,10 @@ import org.betterLostItems.salts_anti_aliasing.client.config.MsaaSampleLevel;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 
+/**
+ * Owns OpenGL multisample scene rendering, including redirecting vanilla targets and resolving MSAA
+ * output back into Minecraft's main target.
+ */
 public final class OpenGlSceneMsaaController {
     private static final OpenGlSceneMsaaController INSTANCE = new OpenGlSceneMsaaController();
 
@@ -39,13 +43,28 @@ public final class OpenGlSceneMsaaController {
     private boolean mainDepthDirty;
     private boolean mainPassInProgress;
 
+    /**
+     * Creates a open gl scene msaa controller instance with the collaborators or initial state
+     * supplied by the caller.
+     */
     private OpenGlSceneMsaaController() {
     }
 
+    /**
+     * Handles instance as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @return singleton controller instance
+     */
     public static OpenGlSceneMsaaController instance() {
         return INSTANCE;
     }
 
+    /**
+     * Gives active scene controllers a chance to redirect Minecraft's world rendering into mode-
+     * specific targets.
+     * @param gameRenderer Minecraft game renderer whose scene target or post-processing phase is
+     * being coordinated
+     * @param config configuration object being normalized, copied, or committed
+     */
     public void beginSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
         RenderSystem.assertOnRenderThread();
         resetFrameState();
@@ -90,6 +109,14 @@ public final class OpenGlSceneMsaaController {
         }
     }
 
+    /**
+     * Coordinates override framebuffer within the anti-aliasing render, configuration, or compatibility flow.
+     * @param colorView color view value supplied by the caller or Minecraft callback
+     * @param depthTexture depth texture value supplied by the caller or Minecraft callback
+     * @param originalFramebufferId original framebuffer id value supplied by the caller or
+     * Minecraft callback
+     * @return override framebuffer produced by this helper
+     */
     public Integer overrideFramebuffer(GlTextureView colorView, GpuTexture depthTexture, int originalFramebufferId) {
         if (!active || colorView != mainColorView || depthTexture != mainDepthTexture) {
             return null;
@@ -102,6 +129,13 @@ public final class OpenGlSceneMsaaController {
         return msaaFramebufferId;
     }
 
+    /**
+     * Resolves any redirected scene output back into the target that the rest of Minecraft expects
+     * to read.
+     * @param gameRenderer Minecraft game renderer whose scene target or post-processing phase is
+     * being coordinated
+     * @param config configuration object being normalized, copied, or committed
+     */
     public void endSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
         RenderSystem.assertOnRenderThread();
         if (!active) {
@@ -118,24 +152,41 @@ public final class OpenGlSceneMsaaController {
         }
     }
 
+    /**
+     * Coordinates sync color if needed within the anti-aliasing render, configuration, or compatibility flow.
+     * @param target target value supplied by the caller or Minecraft callback
+     */
     public void syncColorIfNeeded(RenderTarget target) {
         if (target == mainTarget) {
             syncMainTargetIfNeeded(true, false);
         }
     }
 
+    /**
+     * Coordinates sync depth if needed within the anti-aliasing render, configuration, or compatibility flow.
+     * @param target target value supplied by the caller or Minecraft callback
+     */
     public void syncDepthIfNeeded(RenderTarget target) {
         if (target == mainTarget) {
             syncMainTargetIfNeeded(false, true);
         }
     }
 
+    /**
+     * Coordinates sync source depth before copy within the anti-aliasing render, configuration, or compatibility flow.
+     * @param sourceTarget source target value supplied by the caller or Minecraft callback
+     */
     public void syncSourceDepthBeforeCopy(RenderTarget sourceTarget) {
         if (sourceTarget == mainTarget) {
             syncMainTargetIfNeeded(false, true);
         }
     }
 
+    /**
+     * Coordinates mirror clear color if needed within the anti-aliasing render, configuration, or compatibility flow.
+     * @param colorTexture color texture value supplied by the caller or Minecraft callback
+     * @param clearColor clear color value supplied by the caller or Minecraft callback
+     */
     public void mirrorClearColorIfNeeded(GpuTexture colorTexture, int clearColor) {
         if (active && colorTexture == mainColorTexture) {
             clearMsaa(clearColor, true, 1.0d, false);
@@ -143,6 +194,11 @@ public final class OpenGlSceneMsaaController {
         }
     }
 
+    /**
+     * Coordinates mirror clear depth if needed within the anti-aliasing render, configuration, or compatibility flow.
+     * @param depthTexture depth texture value supplied by the caller or Minecraft callback
+     * @param clearDepth clear depth value supplied by the caller or Minecraft callback
+     */
     public void mirrorClearDepthIfNeeded(GpuTexture depthTexture, double clearDepth) {
         if (active && depthTexture == mainDepthTexture) {
             clearMsaa(0, false, clearDepth, true);
@@ -150,6 +206,14 @@ public final class OpenGlSceneMsaaController {
         }
     }
 
+    /**
+     * Handles mirror clear color and depth if needed as part of the anti-aliasing render,
+     * configuration, or compatibility flow.
+     * @param colorTexture color texture value supplied by the caller or Minecraft callback
+     * @param clearColor clear color value supplied by the caller or Minecraft callback
+     * @param depthTexture depth texture value supplied by the caller or Minecraft callback
+     * @param clearDepth clear depth value supplied by the caller or Minecraft callback
+     */
     public void mirrorClearColorAndDepthIfNeeded(GpuTexture colorTexture, int clearColor, GpuTexture depthTexture, double clearDepth) {
         if (active && colorTexture == mainColorTexture && depthTexture == mainDepthTexture) {
             clearMsaa(clearColor, true, clearDepth, true);
@@ -158,17 +222,29 @@ public final class OpenGlSceneMsaaController {
         }
     }
 
+    /**
+     * Coordinates on render pass finished within the anti-aliasing render, configuration, or compatibility flow.
+     */
     public void onRenderPassFinished() {
         if (mainPassInProgress) {
             mainPassInProgress = false;
         }
     }
 
+    /**
+     * Resolves requested samples into a safe fallback or final render value.
+     * @param requestedLevel requested level value supplied by the caller or Minecraft callback
+     * @return resolve requested samples produced by this helper
+     */
     private int resolveRequestedSamples(MsaaSampleLevel requestedLevel) {
         MsaaSampleLevel supportedLevel = MsaaSampleLevel.bestSupported(requestedLevel, queryMaxSupportedSamples());
         return supportedLevel == null ? 0 : supportedLevel.samples();
     }
 
+    /**
+     * Coordinates query max supported samples within the anti-aliasing render, configuration, or compatibility flow.
+     * @return query max supported samples produced by this helper
+     */
     private int queryMaxSupportedSamples() {
         if (cachedMaxSupportedSamples < 0) {
             cachedMaxSupportedSamples = Math.max(1, GL11C.glGetInteger(GL30C.GL_MAX_SAMPLES));
@@ -177,6 +253,13 @@ public final class OpenGlSceneMsaaController {
         return cachedMaxSupportedSamples;
     }
 
+    /**
+     * Handles ensure resources as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @param width width value supplied by the caller or Minecraft callback
+     * @param height height value supplied by the caller or Minecraft callback
+     * @param samples samples value supplied by the caller or Minecraft callback
+     */
     private void ensureResources(int width, int height, int samples) {
         if (msaaFramebufferId != 0 && allocatedWidth == width && allocatedHeight == height && allocatedSamples == samples) {
             return;
@@ -230,6 +313,11 @@ public final class OpenGlSceneMsaaController {
         allocatedSamples = samples;
     }
 
+    /**
+     * Coordinates sync main target if needed within the anti-aliasing render, configuration, or compatibility flow.
+     * @param includeColor include color value supplied by the caller or Minecraft callback
+     * @param includeDepth include depth value supplied by the caller or Minecraft callback
+     */
     private void syncMainTargetIfNeeded(boolean includeColor, boolean includeDepth) {
         if (!active || mainTarget == null || msaaFramebufferId == 0 || resolvedMainFramebufferId == -1) {
             return;
@@ -283,6 +371,13 @@ public final class OpenGlSceneMsaaController {
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousDrawFramebuffer);
     }
 
+    /**
+     * Handles clear msaa as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param clearColor clear color value supplied by the caller or Minecraft callback
+     * @param clearColorBuffer clear color buffer value supplied by the caller or Minecraft callback
+     * @param clearDepth clear depth value supplied by the caller or Minecraft callback
+     * @param clearDepthBuffer clear depth buffer value supplied by the caller or Minecraft callback
+     */
     private void clearMsaa(int clearColor, boolean clearColorBuffer, double clearDepth, boolean clearDepthBuffer) {
         if (msaaFramebufferId == 0) {
             return;
@@ -317,6 +412,9 @@ public final class OpenGlSceneMsaaController {
         GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, previousFramebuffer);
     }
 
+    /**
+     * Coordinates destroy resources within the anti-aliasing render, configuration, or compatibility flow.
+     */
     private void destroyResources() {
         if (msaaColorRenderbufferId != 0) {
             GL30C.glDeleteRenderbuffers(msaaColorRenderbufferId);
@@ -338,6 +436,11 @@ public final class OpenGlSceneMsaaController {
         allocatedSamples = -1;
     }
 
+    /**
+     * Coordinates log fallback if needed within the anti-aliasing render, configuration, or compatibility flow.
+     * @param requestedSamples requested samples value supplied by the caller or Minecraft callback
+     * @param resolvedSamples resolved samples value supplied by the caller or Minecraft callback
+     */
     private void logFallbackIfNeeded(int requestedSamples, int resolvedSamples) {
         if (requestedSamples == resolvedSamples) {
             return;
@@ -356,6 +459,11 @@ public final class OpenGlSceneMsaaController {
         );
     }
 
+    /**
+     * Coordinates disable after failure within the anti-aliasing render, configuration, or compatibility flow.
+     * @param message message value supplied by the caller or Minecraft callback
+     * @param exception exception value supplied by the caller or Minecraft callback
+     */
     private void disableAfterFailure(String message, RuntimeException exception) {
         disabledAfterFailure = true;
         destroyResources();
@@ -363,6 +471,9 @@ public final class OpenGlSceneMsaaController {
         SaltsAntiAliasing.LOGGER.error(message, exception);
     }
 
+    /**
+     * Coordinates reset frame state within the anti-aliasing render, configuration, or compatibility flow.
+     */
     private void resetFrameState() {
         active = false;
         mainTarget = null;

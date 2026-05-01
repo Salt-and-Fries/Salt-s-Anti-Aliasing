@@ -6,6 +6,10 @@ import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderTargetDes
 
 import java.util.List;
 
+/**
+ * Immutable description of the backend, render targets, and passes selected for one rebuilt anti-
+ * aliasing pipeline.
+ */
 public record PipelinePlan(
         RenderBackendType backendType,
         List<RenderTargetDescriptor> targets,

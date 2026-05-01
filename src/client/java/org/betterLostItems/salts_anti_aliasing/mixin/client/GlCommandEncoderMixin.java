@@ -14,6 +14,11 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
 
+/**
+ * Implements gl command encoder mixin behavior for Salt's Anti Aliasing. Mixin bridge code that
+ * hooks Minecraft internals at narrowly chosen call sites so the renderer can be redirected without
+ * forking vanilla classes.
+ */
 @Mixin(targets = "com.mojang.blaze3d.opengl.GlCommandEncoder")
 public abstract class GlCommandEncoderMixin {
     /**

@@ -26,11 +26,21 @@ public final class ConfigManager {
     private final Path configPath;
     private AntiAliasingConfig config = new AntiAliasingConfig();
 
+    /**
+     * Creates a config manager instance with the collaborators or initial state supplied by the
+     * caller.
+     * @param configPath config path value supplied by the caller or Minecraft callback
+     */
     private ConfigManager(Path configPath) {
         this.configPath = configPath;
         config.sanitize();
     }
 
+    /**
+     * Handles create default as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return a newly created instance configured for the current mod/runtime context
+     */
     public static ConfigManager createDefault() {
         Path configDir = FabricLoader.getInstance().getConfigDir();
         return new ConfigManager(configDir.resolve(SaltsAntiAliasing.MOD_ID + ".json"));
@@ -64,10 +74,18 @@ public final class ConfigManager {
         return config.copy();
     }
 
+    /**
+     * Handles mode as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @return active anti-aliasing mode
+     */
     public synchronized AntiAliasingMode mode() {
         return config.mode;
     }
 
+    /**
+     * Coordinates record metrics enabled within the anti-aliasing render, configuration, or compatibility flow.
+     * @return whether the operation or state is enabled
+     */
     public synchronized boolean recordMetricsEnabled() {
         return config.recordMetrics;
     }

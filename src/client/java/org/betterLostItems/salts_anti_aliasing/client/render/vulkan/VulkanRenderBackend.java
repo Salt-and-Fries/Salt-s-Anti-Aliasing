@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Implements vulkan render backend behavior for Salt's Anti Aliasing. Vulkan-facing placeholder
+ * code that advertises capabilities without claiming unfinished GPU behavior.
+ */
 public final class VulkanRenderBackend implements RenderBackend {
     private static final Set<RenderCapability> PLANNED_CAPABILITIES = EnumSet.of(
             RenderCapability.POST_PROCESSING,
@@ -25,21 +29,39 @@ public final class VulkanRenderBackend implements RenderBackend {
 
     private final Map<String, RenderTargetDescriptor> declaredTargets = new LinkedHashMap<>();
 
+    /**
+     * Handles type as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @return backend type implemented by this object
+     */
     @Override
     public RenderBackendType type() {
         return RenderBackendType.VULKAN;
     }
 
+    /**
+     * Checks is available without mutating runtime or configuration state.
+     * @return whether the requested condition is true
+     */
     @Override
     public boolean isAvailable() {
         return false;
     }
 
+    /**
+     * Handles capabilities as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return capability set advertised by this backend
+     */
     @Override
     public Set<RenderCapability> capabilities() {
         return PLANNED_CAPABILITIES;
     }
 
+    /**
+     * Handles declare targets as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @param targets targets value supplied by the caller or Minecraft callback
+     */
     @Override
     public void declareTargets(Collection<RenderTargetDescriptor> targets) {
         declaredTargets.clear();
@@ -48,6 +70,11 @@ public final class VulkanRenderBackend implements RenderBackend {
         }
     }
 
+    /**
+     * Handles declared targets as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return render targets declared by the active backend
+     */
     @Override
     public List<RenderTargetDescriptor> declaredTargets() {
         return List.copyOf(declaredTargets.values());

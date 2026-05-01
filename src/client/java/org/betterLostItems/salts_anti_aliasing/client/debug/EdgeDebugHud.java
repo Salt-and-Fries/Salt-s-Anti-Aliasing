@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Draws the current edge-debug summary into Minecraft's HUD layer when debug views are enabled.
+ */
 public final class EdgeDebugHud {
     private static final int BOX_PADDING = 6;
     private static final int RIGHT_MARGIN = 8;
@@ -19,9 +22,18 @@ public final class EdgeDebugHud {
     private static final int TITLE_COLOR = 0xFFFFFFFF;
     private static final int TEXT_COLOR = 0xFFD0D0D0;
 
+    /**
+     * Creates a edge debug hud instance with the collaborators or initial state supplied by the
+     * caller.
+     */
     private EdgeDebugHud() {
     }
 
+    /**
+     * Handles render as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param graphics graphics value supplied by the caller or Minecraft callback
+     * @param deltaTracker Minecraft frame delta object for the render callback being intercepted
+     */
     public static void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         Minecraft minecraft = Minecraft.getInstance();
@@ -61,6 +73,11 @@ public final class EdgeDebugHud {
         }
     }
 
+    /**
+     * Handles percent as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param value value supplied by the caller or Minecraft callback
+     * @return percentage string clamped for HUD display
+     */
     private static String percent(float value) {
         return String.format(Locale.US, "%.1f%%", value * 100.0f);
     }

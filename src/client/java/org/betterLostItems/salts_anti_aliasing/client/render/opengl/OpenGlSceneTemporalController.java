@@ -26,6 +26,10 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
 
+/**
+ * Maintains temporal jitter and history textures used by temporal anti-aliasing across consecutive
+ * rendered frames.
+ */
 public final class OpenGlSceneTemporalController {
     private static final OpenGlSceneTemporalController INSTANCE = new OpenGlSceneTemporalController();
     private static final String HISTORY_TARGET_LABEL = "Salt's TAA History";
@@ -56,13 +60,27 @@ public final class OpenGlSceneTemporalController {
     private float lastCameraYRot;
     private float cameraMotionAmount;
 
+    /**
+     * Creates a open gl scene temporal controller instance with the collaborators or initial state
+     * supplied by the caller.
+     */
     private OpenGlSceneTemporalController() {
     }
 
+    /**
+     * Handles instance as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @return singleton controller instance
+     */
     public static OpenGlSceneTemporalController instance() {
         return INSTANCE;
     }
 
+    /**
+     * Coordinates prepare frame jitter within the anti-aliasing render, configuration, or compatibility flow.
+     * @param taaActive taa active value supplied by the caller or Minecraft callback
+     * @param width width value supplied by the caller or Minecraft callback
+     * @param height height value supplied by the caller or Minecraft callback
+     */
     public void prepareFrameJitter(boolean taaActive, int width, int height) {
         if (!taaActive) {
             clearJitter();
@@ -83,6 +101,13 @@ public final class OpenGlSceneTemporalController {
         currentJitterClipY = (-currentJitterUvY * 2.0f) / height;
     }
 
+    /**
+     * Coordinates configure camera jitter within the anti-aliasing render, configuration, or compatibility flow.
+     * @param cameraRenderState camera render state value supplied by the caller or Minecraft
+     * callback
+     * @param taaActive taa active value supplied by the caller or Minecraft callback
+     * @return configure camera jitter produced by this helper
+     */
     public CameraRenderState configureCameraJitter(CameraRenderState cameraRenderState, boolean taaActive) {
         if (!taaActive) {
             return cameraRenderState;
@@ -93,6 +118,12 @@ public final class OpenGlSceneTemporalController {
         return cameraRenderState;
     }
 
+    /**
+     * Coordinates jitter projection within the anti-aliasing render, configuration, or compatibility flow.
+     * @param projectionMatrix projection matrix value supplied by the caller or Minecraft callback
+     * @param taaActive taa active value supplied by the caller or Minecraft callback
+     * @return jitter projection produced by this helper
+     */
     public Matrix4fc jitterProjection(Matrix4fc projectionMatrix, boolean taaActive) {
         if (!taaActive) {
             return projectionMatrix;
@@ -104,6 +135,12 @@ public final class OpenGlSceneTemporalController {
         return jitteredProjection;
     }
 
+    /**
+     * Handles apply as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param gameRenderer Minecraft game renderer whose scene target or post-processing phase is
+     * being coordinated
+     * @param resourcePool resource pool value supplied by the caller or Minecraft callback
+     */
     public void apply(GameRenderer gameRenderer, CrossFrameResourcePool resourcePool) {
         RenderSystem.assertOnRenderThread();
 
@@ -159,6 +196,9 @@ public final class OpenGlSceneTemporalController {
         lastLevel = level;
     }
 
+    /**
+     * Coordinates reset for inactive mode within the anti-aliasing render, configuration, or compatibility flow.
+     */
     public void resetForInactiveMode() {
         activeSequence = false;
         historyValid = false;
@@ -168,6 +208,11 @@ public final class OpenGlSceneTemporalController {
         clearCameraMotion();
     }
 
+    /**
+     * Coordinates ensure history target within the anti-aliasing render, configuration, or compatibility flow.
+     * @param width width value supplied by the caller or Minecraft callback
+     * @param height height value supplied by the caller or Minecraft callback
+     */
     private void ensureHistoryTarget(int width, int height) {
         if (historyTarget == null) {
             destroyResources();
@@ -184,6 +229,10 @@ public final class OpenGlSceneTemporalController {
         }
     }
 
+    /**
+     * Coordinates copy current frame to history within the anti-aliasing render, configuration, or compatibility flow.
+     * @param mainTarget main target value supplied by the caller or Minecraft callback
+     */
     private void copyCurrentFrameToHistory(RenderTarget mainTarget) {
         if (historyTarget == null
                 || mainTarget.getColorTextureView() == null
@@ -210,6 +259,9 @@ public final class OpenGlSceneTemporalController {
         historyValid = true;
     }
 
+    /**
+     * Coordinates destroy resources within the anti-aliasing render, configuration, or compatibility flow.
+     */
     private void destroyResources() {
         if (historyTarget != null) {
             historyTarget.destroyBuffers();
@@ -217,42 +269,85 @@ public final class OpenGlSceneTemporalController {
         }
     }
 
+    /**
+     * Coordinates base history weight within the anti-aliasing render, configuration, or compatibility flow.
+     * @return base history weight produced by this helper
+     */
     public float baseHistoryWeight() {
         return TAA_BASE_HISTORY_WEIGHT;
     }
 
+    /**
+     * Handles luma rejection as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return luma rejection produced by this helper
+     */
     public float lumaRejection() {
         return TAA_LUMA_REJECTION;
     }
 
+    /**
+     * Handles depth rejection as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return depth rejection produced by this helper
+     */
     public float depthRejection() {
         return TAA_DEPTH_REJECTION;
     }
 
+    /**
+     * Coordinates neighborhood clamp within the anti-aliasing render, configuration, or compatibility flow.
+     * @return neighborhood clamp produced by this helper
+     */
     public float neighborhoodClamp() {
         return TAA_NEIGHBORHOOD_CLAMP;
     }
 
+    /**
+     * Coordinates current jitter texel x within the anti-aliasing render, configuration, or compatibility flow.
+     * @return current jitter texel x produced by this helper
+     */
     public float currentJitterTexelX() {
         return currentJitterUvX;
     }
 
+    /**
+     * Coordinates current jitter texel y within the anti-aliasing render, configuration, or compatibility flow.
+     * @return current jitter texel y produced by this helper
+     */
     public float currentJitterTexelY() {
         return currentJitterUvY;
     }
 
+    /**
+     * Coordinates previous jitter texel x within the anti-aliasing render, configuration, or compatibility flow.
+     * @return previous jitter texel x produced by this helper
+     */
     public float previousJitterTexelX() {
         return previousJitterUvX;
     }
 
+    /**
+     * Coordinates previous jitter texel y within the anti-aliasing render, configuration, or compatibility flow.
+     * @return previous jitter texel y produced by this helper
+     */
     public float previousJitterTexelY() {
         return previousJitterUvY;
     }
 
+    /**
+     * Coordinates camera motion amount within the anti-aliasing render, configuration, or compatibility flow.
+     * @return camera motion amount produced by this helper
+     */
     public float cameraMotionAmount() {
         return cameraMotionAmount;
     }
 
+    /**
+     * Coordinates update camera motion within the anti-aliasing render, configuration, or compatibility flow.
+     * @param gameRenderer Minecraft game renderer whose scene target or post-processing phase is
+     * being coordinated
+     */
     private void updateCameraMotion(GameRenderer gameRenderer) {
         Camera camera = gameRenderer.getMainCamera();
         if (camera == null || !camera.isInitialized()) {
@@ -279,6 +374,10 @@ public final class OpenGlSceneTemporalController {
         lastCameraYRot = cameraYRot;
     }
 
+    /**
+     * Handles clear jitter as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     */
     private void clearJitter() {
         jitterFrameIndex = 0;
         currentJitterUvX = 0.0f;
@@ -289,6 +388,9 @@ public final class OpenGlSceneTemporalController {
         currentJitterClipY = 0.0f;
     }
 
+    /**
+     * Coordinates clear camera motion within the anti-aliasing render, configuration, or compatibility flow.
+     */
     private void clearCameraMotion() {
         lastCameraPosition = null;
         lastCameraXRot = 0.0f;
@@ -296,10 +398,21 @@ public final class OpenGlSceneTemporalController {
         cameraMotionAmount = 0.0f;
     }
 
+    /**
+     * Clamps the supplied value to the inclusive 0..1 range used by shader uniforms and blend weights.
+     * @param value value supplied by the caller or Minecraft callback
+     * @return value clamped to the inclusive 0..1 range
+     */
     private static float clamp01(float value) {
         return Math.max(0.0f, Math.min(1.0f, value));
     }
 
+    /**
+     * Handles halton as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param index index value supplied by the caller or Minecraft callback
+     * @param base base value supplied by the caller or Minecraft callback
+     * @return halton produced by this helper
+     */
     private static float halton(int index, int base) {
         float result = 0.0f;
         float fraction = 1.0f / base;
@@ -312,19 +425,40 @@ public final class OpenGlSceneTemporalController {
         return result;
     }
 
+    /**
+     * Implements temporal target bundle behavior for Salt's Anti Aliasing. OpenGL implementation
+     * code that owns render-target redirection, post-processing, and Minecraft framebuffer
+     * coordination.
+     */
     private static final class TemporalTargetBundle implements PostChain.TargetBundle {
         private final Map<Identifier, ResourceHandle<RenderTarget>> targets = new HashMap<>();
 
+        /**
+         * Coordinates temporal target bundle within the anti-aliasing render, configuration, or compatibility flow.
+         * @param mainHandle main handle value supplied by the caller or Minecraft callback
+         * @param historyHandle history handle value supplied by the caller or Minecraft callback
+         */
         private TemporalTargetBundle(ResourceHandle<RenderTarget> mainHandle, ResourceHandle<RenderTarget> historyHandle) {
             targets.put(PostChain.MAIN_TARGET_ID, mainHandle);
             targets.put(HISTORY_TARGET_ID, historyHandle);
         }
 
+        /**
+         * Handles replace as part of the anti-aliasing render, configuration, or compatibility
+         * flow.
+         * @param id id value supplied by the caller or Minecraft callback
+         * @param handle handle value supplied by the caller or Minecraft callback
+         */
         @Override
         public void replace(Identifier id, ResourceHandle<RenderTarget> handle) {
             targets.put(id, handle);
         }
 
+        /**
+         * Returns get for callers that need to coordinate UI, mixin, or render behavior.
+         * @param id id value supplied by the caller or Minecraft callback
+         * @return the requested Minecraft or renderer object
+         */
         @Override
         public ResourceHandle<RenderTarget> get(Identifier id) {
             return targets.getOrDefault(id, ResourceHandle.invalid());

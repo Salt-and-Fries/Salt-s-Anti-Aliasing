@@ -8,6 +8,10 @@ import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 
+/**
+ * Samples rendered frames to estimate edge strength and aliasing behavior for the optional edge-
+ * debug HUD.
+ */
 public final class EdgeDebugAnalyzer {
     private static final int ANALYSIS_INTERVAL_FRAMES = 12;
     private static final float EDGE_SIGNAL_THRESHOLD = 0.08f;
@@ -19,10 +23,19 @@ public final class EdgeDebugAnalyzer {
     private int framesUntilCapture;
     private int analysisGeneration;
 
+    /**
+     * Handles latest stats as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return latest edge-debug statistics snapshot
+     */
     public EdgeDebugStats latestStats() {
         return latestStats;
     }
 
+    /**
+     * Handles reset as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param mode anti-aliasing mode requested by UI, hotkey, or loaded config
+     */
     public void reset(AntiAliasingMode mode) {
         analysisGeneration++;
         capturePending = false;
@@ -30,6 +43,11 @@ public final class EdgeDebugAnalyzer {
         latestStats = EdgeDebugStats.unavailable(mode);
     }
 
+    /**
+     * Coordinates capture if needed within the anti-aliasing render, configuration, or compatibility flow.
+     * @param mainTarget main target value supplied by the caller or Minecraft callback
+     * @param config configuration object being normalized, copied, or committed
+     */
     public void captureIfNeeded(RenderTarget mainTarget, AntiAliasingConfig config) {
         if (!config.debugViewsEnabled) {
             if (debugActive) {
@@ -74,6 +92,12 @@ public final class EdgeDebugAnalyzer {
         });
     }
 
+    /**
+     * Handles analyze as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param image image value supplied by the caller or Minecraft callback
+     * @param mode anti-aliasing mode requested by UI, hotkey, or loaded config
+     * @return statistics extracted from the sampled frame buffer
+     */
     private static EdgeDebugStats analyze(NativeImage image, AntiAliasingMode mode) {
         int width = image.getWidth();
         int height = image.getHeight();
@@ -148,6 +172,12 @@ public final class EdgeDebugAnalyzer {
         return new EdgeDebugStats(mode, edgeCoverage, harshRatio, smoothRatio, qualityScore);
     }
 
+    /**
+     * Coordinates choose downscale factor within the anti-aliasing render, configuration, or compatibility flow.
+     * @param width width value supplied by the caller or Minecraft callback
+     * @param height height value supplied by the caller or Minecraft callback
+     * @return sampling divisor chosen to keep readback cost bounded
+     */
     private static int chooseDownscaleFactor(int width, int height) {
         int[] preferredFactors = {4, 3, 2, 1};
         for (int factor : preferredFactors) {
@@ -158,10 +188,22 @@ public final class EdgeDebugAnalyzer {
         return 1;
     }
 
+    /**
+     * Checks is intermediate without mutating runtime or configuration state.
+     * @param sample sample value supplied by the caller or Minecraft callback
+     * @param lowerBand lower band value supplied by the caller or Minecraft callback
+     * @param upperBand upper band value supplied by the caller or Minecraft callback
+     * @return whether the requested condition is true
+     */
     private static int isIntermediate(float sample, float lowerBand, float upperBand) {
         return sample > lowerBand && sample < upperBand ? 1 : 0;
     }
 
+    /**
+     * Handles luma as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param argb argb value supplied by the caller or Minecraft callback
+     * @return perceived brightness used for edge and variance calculations
+     */
     private static float luma(int argb) {
         float red = ARGB.red(argb) / 255.0f;
         float green = ARGB.green(argb) / 255.0f;
@@ -169,10 +211,22 @@ public final class EdgeDebugAnalyzer {
         return red * 0.299f + green * 0.587f + blue * 0.114f;
     }
 
+    /**
+     * Clamps the supplied value to an inclusive range before it can affect rendering or persisted configuration.
+     * @param value value supplied by the caller or Minecraft callback
+     * @param min min value supplied by the caller or Minecraft callback
+     * @param max max value supplied by the caller or Minecraft callback
+     * @return value clamped to the supported range
+     */
     private static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
     }
 
+    /**
+     * Handles min as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param values values value supplied by the caller or Minecraft callback
+     * @return smallest value in the supplied sample set
+     */
     private static float min(float... values) {
         float result = values[0];
         for (int i = 1; i < values.length; i++) {
@@ -181,6 +235,11 @@ public final class EdgeDebugAnalyzer {
         return result;
     }
 
+    /**
+     * Handles max as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param values values value supplied by the caller or Minecraft callback
+     * @return largest value in the supplied sample set
+     */
     private static float max(float... values) {
         float result = values[0];
         for (int i = 1; i < values.length; i++) {

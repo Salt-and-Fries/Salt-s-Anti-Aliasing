@@ -6,6 +6,11 @@ import net.minecraft.network.chat.Component;
 import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPreset;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
 
+/**
+ * Implements spatial upscale quality slider widget behavior for Salt's Anti Aliasing. Client-side
+ * configuration UI code that turns render settings into controls the player can change safely at
+ * runtime.
+ */
 public final class SpatialUpscaleQualitySliderWidget extends AbstractSliderButton {
     private static final int VIDEO_ROW_WIDTH = 150;
     private static final int VIDEO_ROW_HEIGHT = 20;
@@ -14,6 +19,11 @@ public final class SpatialUpscaleQualitySliderWidget extends AbstractSliderButto
 
     private final RenderRuntime runtime;
 
+    /**
+     * Creates a spatial upscale quality slider widget instance with the collaborators or initial
+     * state supplied by the caller.
+     * @param runtime runtime value supplied by the caller or Minecraft callback
+     */
     public SpatialUpscaleQualitySliderWidget(RenderRuntime runtime) {
         super(
                 0,
@@ -28,12 +38,20 @@ public final class SpatialUpscaleQualitySliderWidget extends AbstractSliderButto
         updateMessage();
     }
 
+    /**
+     * Handles update message as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     */
     @Override
     protected void updateMessage() {
         NisUpscaleQualityPreset preset = runtime.upscaleQualityPreset();
         this.setMessage(Component.translatable(LABEL_KEY, ClientText.label(preset)));
     }
 
+    /**
+     * Handles apply value as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     */
     @Override
     protected void applyValue() {
         NisUpscaleQualityPreset preset = selectedPreset(this.value);
@@ -41,6 +59,11 @@ public final class SpatialUpscaleQualitySliderWidget extends AbstractSliderButto
         updateMessage();
     }
 
+    /**
+     * Handles normalize as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param preset quality preset selected by the user or loaded from config
+     * @return slider position normalized to Minecraft's 0..1 widget range
+     */
     private static double normalize(NisUpscaleQualityPreset preset) {
         NisUpscaleQualityPreset[] values = NisUpscaleQualityPreset.values();
         if (values.length <= 1) {
@@ -50,6 +73,12 @@ public final class SpatialUpscaleQualitySliderWidget extends AbstractSliderButto
         return (double) preset.ordinal() / (values.length - 1);
     }
 
+    /**
+     * Handles selected preset as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @param sliderValue slider value supplied by the caller or Minecraft callback
+     * @return upscale preset selected by the current slider position
+     */
     private static NisUpscaleQualityPreset selectedPreset(double sliderValue) {
         NisUpscaleQualityPreset[] values = NisUpscaleQualityPreset.values();
         if (values.length == 0) {

@@ -226,6 +226,16 @@ public final class RenderPipelinePlanner {
         return new PipelinePlan(backend.type(), new ArrayList<>(targets.values()), passes);
     }
 
+    /**
+     * Handles target as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param id id value supplied by the caller or Minecraft callback
+     * @param type type value supplied by the caller or Minecraft callback
+     * @param format format value supplied by the caller or Minecraft callback
+     * @param sizing sizing value supplied by the caller or Minecraft callback
+     * @param scale scale value supplied by the caller or Minecraft callback
+     * @param persistent persistent value supplied by the caller or Minecraft callback
+     * @return render target descriptor for the requested logical target
+     */
     private static RenderTargetDescriptor target(
             String id,
             RenderTargetType type,
@@ -237,6 +247,22 @@ public final class RenderPipelinePlanner {
         return new RenderTargetDescriptor(id, type, format, sizing, scale, persistent);
     }
 
+    /**
+     * Handles add pass as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param passes passes value supplied by the caller or Minecraft callback
+     * @param targets targets value supplied by the caller or Minecraft callback
+     * @param id id value supplied by the caller or Minecraft callback
+     * @param requiredCapabilities required capabilities value supplied by the caller or Minecraft
+     * callback
+     * @param readTargets read targets value supplied by the caller or Minecraft callback
+     * @param writeTargetId write target id value supplied by the caller or Minecraft callback
+     * @param targetType target type value supplied by the caller or Minecraft callback
+     * @param format format value supplied by the caller or Minecraft callback
+     * @param sizing sizing value supplied by the caller or Minecraft callback
+     * @param scale scale value supplied by the caller or Minecraft callback
+     * @param persistent persistent value supplied by the caller or Minecraft callback
+     * @return updated pass list after appending the requested pass
+     */
     private static String addPass(
             List<RenderPassSpec> passes,
             Map<String, RenderTargetDescriptor> targets,
@@ -255,6 +281,11 @@ public final class RenderPipelinePlanner {
         return writeTargetId;
     }
 
+    /**
+     * Coordinates validate backend support within the anti-aliasing render, configuration, or compatibility flow.
+     * @param backend backend value supplied by the caller or Minecraft callback
+     * @param passes passes value supplied by the caller or Minecraft callback
+     */
     private static void validateBackendSupport(RenderBackend backend, List<RenderPassSpec> passes) {
         for (RenderPassSpec pass : passes) {
             if (!backend.supportsAll(pass.requiredCapabilities())) {

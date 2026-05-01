@@ -12,17 +12,36 @@ import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPr
  * Minecraft {@link Component} objects for the Fabric client UI.</p>
  */
 public final class ClientText {
+    /**
+     * Creates a client text instance with the collaborators or initial state supplied by the
+     * caller.
+     */
     private ClientText() {
     }
 
+    /**
+     * Handles label as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param mode anti-aliasing mode requested by UI, hotkey, or loaded config
+     * @return text component shown to the player
+     */
     public static Component label(AntiAliasingMode mode) {
         return Component.translatable(mode.translationKey());
     }
 
+    /**
+     * Handles summary as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param mode anti-aliasing mode requested by UI, hotkey, or loaded config
+     * @return short text component summarizing the current setting
+     */
     public static Component summary(AntiAliasingMode mode) {
         return Component.translatable(mode.translationKey() + ".summary");
     }
 
+    /**
+     * Handles label as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param preset quality preset selected by the user or loaded from config
+     * @return text component shown to the player
+     */
     public static Component label(NisUpscaleQualityPreset preset) {
         return Component.translatable(preset.translationKey());
     }
