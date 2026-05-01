@@ -6,6 +6,10 @@ import net.minecraft.network.chat.Component;
 import org.betterLostItems.salts_anti_aliasing.client.config.MsaaSampleLevel;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
 
+/**
+ * Documents msaa sample slider widget behavior for Salt's Anti Aliasing. Client UI code that turns
+ * runtime configuration into player-facing controls.
+ */
 public final class MsaaSampleSliderWidget extends AbstractSliderButton {
     private static final int VIDEO_ROW_WIDTH = 150;
     private static final int VIDEO_ROW_HEIGHT = 20;
@@ -14,6 +18,11 @@ public final class MsaaSampleSliderWidget extends AbstractSliderButton {
 
     private final RenderRuntime runtime;
 
+    /**
+     * Creates a msaa sample slider widget with the collaborators or initial state supplied by the
+     * caller.
+     * @param runtime runtime supplied by Minecraft or the caller
+     */
     public MsaaSampleSliderWidget(RenderRuntime runtime) {
         super(
                 0,
@@ -28,12 +37,19 @@ public final class MsaaSampleSliderWidget extends AbstractSliderButton {
         updateMessage();
     }
 
+    /**
+     * Coordinates update message within the anti-aliasing render, configuration, or compatibility
+     * flow.
+     */
     @Override
     protected void updateMessage() {
         MsaaSampleLevel level = runtime.msaaSampleLevel();
         this.setMessage(Component.translatable(LABEL_KEY, Component.literal(level.label())));
     }
 
+    /**
+     * Applies value at the renderer phase where it can affect the scene without touching HUD layers.
+     */
     @Override
     protected void applyValue() {
         MsaaSampleLevel selectedLevel = selectedLevel(this.value);
@@ -41,6 +57,11 @@ public final class MsaaSampleSliderWidget extends AbstractSliderButton {
         updateMessage();
     }
 
+    /**
+     * Coordinates normalize within the anti-aliasing render, configuration, or compatibility flow.
+     * @param level level supplied by Minecraft or the caller
+     * @return normalize value produced or selected by this code path
+     */
     private static double normalize(MsaaSampleLevel level) {
         MsaaSampleLevel[] values = MsaaSampleLevel.values();
         if (values.length <= 1) {
@@ -50,6 +71,12 @@ public final class MsaaSampleSliderWidget extends AbstractSliderButton {
         return (double) level.ordinal() / (values.length - 1);
     }
 
+    /**
+     * Coordinates selected level within the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @param sliderValue slider value supplied by Minecraft or the caller
+     * @return selected level value produced or selected by this code path
+     */
     private static MsaaSampleLevel selectedLevel(double sliderValue) {
         MsaaSampleLevel[] values = MsaaSampleLevel.values();
         if (values.length == 0) {

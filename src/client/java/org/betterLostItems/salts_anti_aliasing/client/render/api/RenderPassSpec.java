@@ -4,6 +4,10 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Documents render pass spec behavior for Salt's Anti Aliasing. Backend-neutral rendering API shared
+ * by the planner and backend implementations.
+ */
 public record RenderPassSpec(
         String id,
         Set<RenderCapability> requiredCapabilities,

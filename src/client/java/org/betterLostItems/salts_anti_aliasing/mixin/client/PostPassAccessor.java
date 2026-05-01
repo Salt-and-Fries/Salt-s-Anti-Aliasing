@@ -7,6 +7,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Map;
 
+/**
+ * Documents post pass accessor behavior for Salt's Anti Aliasing. Mixin bridge code for carefully
+ * scoped hooks into Minecraft rendering and options screens.
+ */
 @Mixin(PostPass.class)
 public interface PostPassAccessor {
     @Accessor("customUniforms")

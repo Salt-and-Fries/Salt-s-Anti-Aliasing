@@ -33,6 +33,9 @@ public final class ModernMinecraftHooks {
     private static final long EDGE_DEBUG_TOGGLE_DEBOUNCE_MS = 250L;
     private static long lastEdgeDebugToggleMs;
 
+    /**
+     * Creates a modern minecraft hooks with the collaborators or initial state supplied by the caller.
+     */
     private ModernMinecraftHooks() {
     }
 
@@ -197,18 +200,42 @@ public final class ModernMinecraftHooks {
         return OpenGlSceneMsaaController.instance().overrideFramebuffer(colorTexture, depthTexture, originalFramebufferId);
     }
 
+    /**
+     * Coordinates mirror color clear to msaa within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @param colorTexture color texture supplied by Minecraft or the caller
+     * @param clearColor clear color supplied by Minecraft or the caller
+     */
     public static void mirrorColorClearToMsaa(GpuTexture colorTexture, int clearColor) {
         OpenGlSceneMsaaController.instance().mirrorClearColorIfNeeded(colorTexture, clearColor);
     }
 
+    /**
+     * Coordinates mirror depth clear to msaa within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @param depthTexture depth texture supplied by Minecraft or the caller
+     * @param clearDepth clear depth supplied by Minecraft or the caller
+     */
     public static void mirrorDepthClearToMsaa(GpuTexture depthTexture, double clearDepth) {
         OpenGlSceneMsaaController.instance().mirrorClearDepthIfNeeded(depthTexture, clearDepth);
     }
 
+    /**
+     * Coordinates mirror color depth clear to msaa within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @param colorTexture color texture supplied by Minecraft or the caller
+     * @param clearColor clear color supplied by Minecraft or the caller
+     * @param depthTexture depth texture supplied by Minecraft or the caller
+     * @param clearDepth clear depth supplied by Minecraft or the caller
+     */
     public static void mirrorColorDepthClearToMsaa(GpuTexture colorTexture, int clearColor, GpuTexture depthTexture, double clearDepth) {
         OpenGlSceneMsaaController.instance().mirrorClearColorAndDepthIfNeeded(colorTexture, clearColor, depthTexture, clearDepth);
     }
 
+    /**
+     * Coordinates resolve msaa after render pass within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     */
     public static void resolveMsaaAfterRenderPass() {
         OpenGlSceneMsaaController.instance().onRenderPassFinished();
     }

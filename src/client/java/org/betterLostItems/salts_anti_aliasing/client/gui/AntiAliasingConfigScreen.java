@@ -11,6 +11,10 @@ import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntim
 
 import java.util.List;
 
+/**
+ * Documents anti aliasing config screen behavior for Salt's Anti Aliasing. Client UI code that turns
+ * runtime configuration into player-facing controls.
+ */
 public final class AntiAliasingConfigScreen extends OptionsSubScreen {
     private static final String TITLE_KEY = "screen.salts_anti_aliasing.config";
 
@@ -20,10 +24,18 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
     private SsaaScaleSliderWidget ssaaSlider;
     private SpatialUpscaleQualitySliderWidget upscaleSlider;
 
+    /**
+     * Creates a anti aliasing config screen with the collaborators or initial state supplied by the
+     * caller.
+     * @param lastScreen last screen supplied by Minecraft or the caller
+     */
     public AntiAliasingConfigScreen(Screen lastScreen) {
         super(lastScreen, Minecraft.getInstance().options, Component.translatable(TITLE_KEY));
     }
 
+    /**
+     * Coordinates add options within the anti-aliasing render, configuration, or compatibility flow.
+     */
     @Override
     protected void addOptions() {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
@@ -47,6 +59,9 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
         refreshControlAvailability(runtime.activeMode());
     }
 
+    /**
+     * Coordinates tick within the anti-aliasing render, configuration, or compatibility flow.
+     */
     @Override
     public void tick() {
         super.tick();
@@ -57,6 +72,11 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
         }
     }
 
+    /**
+     * Coordinates refresh control availability within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @param activeMode active mode supplied by Minecraft or the caller
+     */
     private void refreshControlAvailability(AntiAliasingMode activeMode) {
         boolean antiAliasingAvailable = minecraft != null && !minecraft.useShaderTransparency();
 

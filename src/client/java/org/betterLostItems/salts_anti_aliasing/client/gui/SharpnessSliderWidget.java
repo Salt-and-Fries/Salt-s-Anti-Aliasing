@@ -8,6 +8,10 @@ import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntim
 
 import java.util.Locale;
 
+/**
+ * Documents sharpness slider widget behavior for Salt's Anti Aliasing. Client UI code that turns
+ * runtime configuration into player-facing controls.
+ */
 public final class SharpnessSliderWidget extends AbstractSliderButton {
     private static final int VIDEO_ROW_WIDTH = 150;
     private static final int VIDEO_ROW_HEIGHT = 20;
@@ -16,6 +20,11 @@ public final class SharpnessSliderWidget extends AbstractSliderButton {
 
     private final RenderRuntime runtime;
 
+    /**
+     * Creates a sharpness slider widget with the collaborators or initial state supplied by the
+     * caller.
+     * @param runtime runtime supplied by Minecraft or the caller
+     */
     public SharpnessSliderWidget(RenderRuntime runtime) {
         super(
                 0,
@@ -30,6 +39,10 @@ public final class SharpnessSliderWidget extends AbstractSliderButton {
         updateMessage();
     }
 
+    /**
+     * Coordinates update message within the anti-aliasing render, configuration, or compatibility
+     * flow.
+     */
     @Override
     protected void updateMessage() {
         float sharpenStrength = runtime.sharpenStrength();
@@ -37,6 +50,9 @@ public final class SharpnessSliderWidget extends AbstractSliderButton {
         this.setMessage(Component.translatable(LABEL_KEY, Component.literal(percentage)));
     }
 
+    /**
+     * Applies value at the renderer phase where it can affect the scene without touching HUD layers.
+     */
     @Override
     protected void applyValue() {
         float sharpenStrength = denormalize(this.value);
@@ -44,6 +60,11 @@ public final class SharpnessSliderWidget extends AbstractSliderButton {
         updateMessage();
     }
 
+    /**
+     * Coordinates normalize within the anti-aliasing render, configuration, or compatibility flow.
+     * @param sharpenStrength sharpen strength supplied by Minecraft or the caller
+     * @return normalize value produced or selected by this code path
+     */
     private static double normalize(float sharpenStrength) {
         float range = AntiAliasingConfig.MAX_SHARPEN_STRENGTH - AntiAliasingConfig.MIN_SHARPEN_STRENGTH;
         if (range <= 0.0f) {
@@ -53,6 +74,11 @@ public final class SharpnessSliderWidget extends AbstractSliderButton {
         return (sharpenStrength - AntiAliasingConfig.MIN_SHARPEN_STRENGTH) / range;
     }
 
+    /**
+     * Coordinates denormalize within the anti-aliasing render, configuration, or compatibility flow.
+     * @param sliderValue slider value supplied by Minecraft or the caller
+     * @return denormalize value produced or selected by this code path
+     */
     private static float denormalize(double sliderValue) {
         double clampedValue = Math.max(0.0d, Math.min(1.0d, sliderValue));
         float range = AntiAliasingConfig.MAX_SHARPEN_STRENGTH - AntiAliasingConfig.MIN_SHARPEN_STRENGTH;

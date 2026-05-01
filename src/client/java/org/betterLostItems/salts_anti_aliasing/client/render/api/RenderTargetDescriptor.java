@@ -1,5 +1,9 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.api;
 
+/**
+ * Documents render target descriptor behavior for Salt's Anti Aliasing. Backend-neutral rendering API
+ * shared by the planner and backend implementations.
+ */
 public record RenderTargetDescriptor(
         String id,
         RenderTargetType type,

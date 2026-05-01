@@ -1,9 +1,18 @@
 #version 330
+/*
+ * Salt's Anti Aliasing post-processing shader.
+ *
+ * Temporal resolve pass that blends current and historical samples while clamping history to the current neighborhood.
+ * Runtime JSON effects bind the samplers and uniform blocks; these comments describe the pass data flow.
+ */
 
+
+// Scene, history, depth, or helper textures supplied by Minecraft's post-effect chain.
 uniform sampler2D CurrentSampler;
 uniform sampler2D CurrentDepthSampler;
 uniform sampler2D HistorySampler;
 
+// Packed runtime parameters updated from Java when resolution, mode, or config changes.
 layout(std140) uniform SamplerInfo {
     vec2 OutSize;
     vec2 InSize;
@@ -21,6 +30,7 @@ layout(std140) uniform TaaConfig {
     float CameraMotion;
 };
 
+// Full-screen pass coordinates and final color output for the current pixel.
 in vec2 texCoord;
 
 out vec4 fragColor;
@@ -37,7 +47,9 @@ float sampleDepth(sampler2D depthSampler, vec2 offset) {
     return texture(depthSampler, texCoord + offset).r;
 }
 
+// Executes the per-pixel resolve, upscale, sharpen, or debug operation for this pass.
 void main() {
+    // Work in texel-relative offsets so the same math scales across window sizes.
     vec2 texel = 1.0 / InSize;
     vec2 historyUv = clamp(
         texCoord + vec2(PreviousJitterX - CurrentJitterX, PreviousJitterY - CurrentJitterY) * texel,

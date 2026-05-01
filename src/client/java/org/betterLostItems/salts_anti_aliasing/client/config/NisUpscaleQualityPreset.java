@@ -22,10 +22,19 @@ public enum NisUpscaleQualityPreset {
         this.sharpenStrength = sharpenStrength;
     }
 
+    /**
+     * Coordinates scale factor within the anti-aliasing render, configuration, or compatibility flow.
+     * @return scale factor value produced or selected by this code path
+     */
     public float scaleFactor() {
         return scaleFactor;
     }
 
+    /**
+     * Coordinates sharpen strength within the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return sharpen strength value produced or selected by this code path
+     */
     public float sharpenStrength() {
         return sharpenStrength;
     }
@@ -37,10 +46,21 @@ public enum NisUpscaleQualityPreset {
         return "options.salts_anti_aliasing.nis_upscale_quality." + name().toLowerCase(Locale.ROOT);
     }
 
+    /**
+     * Coordinates default preset within the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return default preset value produced or selected by this code path
+     */
     public static NisUpscaleQualityPreset defaultPreset() {
         return BALANCED;
     }
 
+    /**
+     * Clamps the supplied value to the supported range before it can affect rendering or persisted
+     * configuration.
+     * @param preset quality preset selected by config or UI
+     * @return clamp value produced or selected by this code path
+     */
     public static NisUpscaleQualityPreset clamp(NisUpscaleQualityPreset preset) {
         return preset == null ? defaultPreset() : preset;
     }

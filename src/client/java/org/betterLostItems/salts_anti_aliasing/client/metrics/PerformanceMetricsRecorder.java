@@ -22,6 +22,9 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+/**
+ * Collects frame timing and FPS trends into lightweight reports when metrics recording is enabled.
+ */
 public final class PerformanceMetricsRecorder {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final DateTimeFormatter FILE_TIMESTAMP =
@@ -50,6 +53,13 @@ public final class PerformanceMetricsRecorder {
     private final Supplier<AntiAliasingConfig> configSnapshotSupplier;
     private Session activeSession;
 
+    /**
+     * Creates a performance metrics recorder with the collaborators or initial state supplied by the
+     * caller.
+     * @param recordingEnabledSupplier recording enabled supplier supplied by Minecraft or the caller
+     * @param modeSupplier mode supplier supplied by Minecraft or the caller
+     * @param configSnapshotSupplier config snapshot supplier supplied by Minecraft or the caller
+     */
     public PerformanceMetricsRecorder(
             BooleanSupplier recordingEnabledSupplier,
             Supplier<AntiAliasingMode> modeSupplier,
@@ -62,6 +72,11 @@ public final class PerformanceMetricsRecorder {
         this.configSnapshotSupplier = configSnapshotSupplier;
     }
 
+    /**
+     * Coordinates record frame within the anti-aliasing render, configuration, or compatibility flow.
+     * @param frameTimeNs frame duration in nanoseconds
+     * @param displayedFps FPS value reported by Minecraft for the same frame
+     */
     public synchronized void recordFrame(long frameTimeNs, int displayedFps) {
         if (!recordingEnabledSupplier.getAsBoolean()) {
             finishActiveSessionIfNeeded("record_metrics disabled");
@@ -87,10 +102,16 @@ public final class PerformanceMetricsRecorder {
         }
     }
 
+    /**
+     * Coordinates close within the anti-aliasing render, configuration, or compatibility flow.
+     */
     public synchronized void close() {
         finishActiveSessionIfNeeded("client shutdown");
     }
 
+    /**
+     * Coordinates start session within the anti-aliasing render, configuration, or compatibility flow.
+     */
     private void startSession() {
         AntiAliasingConfig startConfig = configSnapshotSupplier.get();
         activeSession = new Session(startConfig, metricsDirectory);
@@ -98,6 +119,11 @@ public final class PerformanceMetricsRecorder {
         writeLatestSnapshot();
     }
 
+    /**
+     * Coordinates finish active session if needed within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @param endedBecause ended because supplied by Minecraft or the caller
+     */
     private void finishActiveSessionIfNeeded(String endedBecause) {
         if (activeSession == null) {
             return;
@@ -108,10 +134,19 @@ public final class PerformanceMetricsRecorder {
         activeSession = null;
     }
 
+    /**
+     * Coordinates write latest snapshot within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     */
     private void writeLatestSnapshot() {
         writeReports(false, "recording");
     }
 
+    /**
+     * Coordinates write reports within the anti-aliasing render, configuration, or compatibility flow.
+     * @param finalReport final report supplied by Minecraft or the caller
+     * @param endedBecause ended because supplied by Minecraft or the caller
+     */
     private void writeReports(boolean finalReport, String endedBecause) {
         if (activeSession == null) {
             return;
@@ -138,16 +173,32 @@ public final class PerformanceMetricsRecorder {
         }
     }
 
+    /**
+     * Coordinates write json within the anti-aliasing render, configuration, or compatibility flow.
+     * @param path path supplied by Minecraft or the caller
+     * @param report report supplied by Minecraft or the caller
+     */
     private static void writeJson(Path path, Object report) throws IOException {
         try (Writer writer = Files.newBufferedWriter(path)) {
             GSON.toJson(report, writer);
         }
     }
 
+    /**
+     * Coordinates round within the anti-aliasing render, configuration, or compatibility flow.
+     * @param value value being transformed or clamped
+     * @return round value produced or selected by this code path
+     */
     private static double round(double value) {
         return round(value, 2);
     }
 
+    /**
+     * Coordinates round within the anti-aliasing render, configuration, or compatibility flow.
+     * @param value value being transformed or clamped
+     * @param decimals decimals supplied by Minecraft or the caller
+     * @return round value produced or selected by this code path
+     */
     private static double round(double value, int decimals) {
         if (!Double.isFinite(value)) {
             return 0.0d;
@@ -157,6 +208,10 @@ public final class PerformanceMetricsRecorder {
         return Math.round(value * scale) / scale;
     }
 
+    /**
+     * Documents session behavior for Salt's Anti Aliasing. Telemetry code for sampling frame health
+     * without changing render output.
+     */
     private static final class Session {
         private final Instant startedAt = Instant.now();
         private final AntiAliasingConfig configAtStart;
@@ -173,6 +228,11 @@ public final class PerformanceMetricsRecorder {
         private long modeSwitches;
         private long lastWrittenAtNano = System.nanoTime();
 
+        /**
+         * Coordinates session within the anti-aliasing render, configuration, or compatibility flow.
+         * @param configAtStart config at start supplied by Minecraft or the caller
+         * @param metricsDirectory metrics directory supplied by Minecraft or the caller
+         */
         private Session(AntiAliasingConfig configAtStart, Path metricsDirectory) {
             this.configAtStart = configAtStart.copy();
             for (AntiAliasingMode mode : AntiAliasingMode.implementedModes()) {
@@ -184,6 +244,13 @@ public final class PerformanceMetricsRecorder {
             this.archiveReportPath = metricsDirectory.resolve(sessionFile);
         }
 
+        /**
+         * Coordinates record frame within the anti-aliasing render, configuration, or compatibility
+         * flow.
+         * @param mode requested anti-aliasing mode
+         * @param frameTimeNs frame duration in nanoseconds
+         * @param displayedFps FPS value reported by Minecraft for the same frame
+         */
         private void recordFrame(AntiAliasingMode mode, long frameTimeNs, int displayedFps) {
             double frameTimeMs = frameTimeNs / NANOS_PER_MILLISECOND;
             double fps = NANOS_PER_SECOND / frameTimeNs;
@@ -244,14 +311,32 @@ public final class PerformanceMetricsRecorder {
             fpsBaseline.push(fps);
         }
 
+        /**
+         * Coordinates should write snapshot within the anti-aliasing render, configuration, or
+         * compatibility flow.
+         * @return should write snapshot value produced or selected by this code path
+         */
         private boolean shouldWriteSnapshot() {
             return System.nanoTime() - lastWrittenAtNano >= WRITE_INTERVAL_NANOS;
         }
 
+        /**
+         * Coordinates mark written within the anti-aliasing render, configuration, or compatibility
+         * flow.
+         */
         private void markWritten() {
             lastWrittenAtNano = System.nanoTime();
         }
 
+        /**
+         * Coordinates create report within the anti-aliasing render, configuration, or compatibility
+         * flow.
+         * @param currentConfig current config supplied by Minecraft or the caller
+         * @param latestReportPath latest report path supplied by Minecraft or the caller
+         * @param finalReport final report supplied by Minecraft or the caller
+         * @param endedBecause ended because supplied by Minecraft or the caller
+         * @return create report value produced or selected by this code path
+         */
         private MetricsReport createReport(
                 AntiAliasingConfig currentConfig,
                 Path latestReportPath,
@@ -293,6 +378,11 @@ public final class PerformanceMetricsRecorder {
             return report;
         }
 
+        /**
+         * Coordinates count modes observed within the anti-aliasing render, configuration, or
+         * compatibility flow.
+         * @return count modes observed value produced or selected by this code path
+         */
         private int countModesObserved() {
             int observed = 0;
             for (int count : modeEntryCounts.values()) {
@@ -304,6 +394,10 @@ public final class PerformanceMetricsRecorder {
         }
     }
 
+    /**
+     * Documents aggregate behavior for Salt's Anti Aliasing. Telemetry code for sampling frame health
+     * without changing render output.
+     */
     private static final class Aggregate {
         private final DoubleSeries fpsSamples = new DoubleSeries();
 
@@ -324,6 +418,13 @@ public final class PerformanceMetricsRecorder {
         private double timeBelow45FpsMs;
         private double timeBelow30FpsMs;
 
+        /**
+         * Coordinates record sample within the anti-aliasing render, configuration, or compatibility
+         * flow.
+         * @param fps fps supplied by Minecraft or the caller
+         * @param frameTimeMs frame time ms supplied by Minecraft or the caller
+         * @param displayedFps FPS value reported by Minecraft for the same frame
+         */
         private void recordSample(double fps, double frameTimeMs, int displayedFps) {
             frames++;
             totalFrameTimeMs += frameTimeMs;
@@ -348,6 +449,12 @@ public final class PerformanceMetricsRecorder {
             }
         }
 
+        /**
+         * Coordinates to summary within the anti-aliasing render, configuration, or compatibility
+         * flow.
+         * @param modeEntries mode entries supplied by Minecraft or the caller
+         * @return to summary value produced or selected by this code path
+         */
         private PerformanceSummary toSummary(int modeEntries) {
             PerformanceSummary summary = new PerformanceSummary();
             summary.modeEntries = modeEntries;
@@ -392,6 +499,13 @@ public final class PerformanceMetricsRecorder {
             return summary;
         }
 
+        /**
+         * Coordinates average lowest within the anti-aliasing render, configuration, or compatibility
+         * flow.
+         * @param sortedAscending sorted ascending supplied by Minecraft or the caller
+         * @param ratio ratio supplied by Minecraft or the caller
+         * @return average lowest value produced or selected by this code path
+         */
         private static double averageLowest(double[] sortedAscending, double ratio) {
             if (sortedAscending.length == 0) {
                 return 0.0d;
@@ -405,6 +519,13 @@ public final class PerformanceMetricsRecorder {
             return total / count;
         }
 
+        /**
+         * Coordinates percentile within the anti-aliasing render, configuration, or compatibility
+         * flow.
+         * @param sortedAscending sorted ascending supplied by Minecraft or the caller
+         * @param percentile percentile supplied by Minecraft or the caller
+         * @return percentile value produced or selected by this code path
+         */
         private static double percentile(double[] sortedAscending, double percentile) {
             if (sortedAscending.length == 0) {
                 return 0.0d;
@@ -422,6 +543,12 @@ public final class PerformanceMetricsRecorder {
             return sortedAscending[lower] * (1.0d - weight) + sortedAscending[upper] * weight;
         }
 
+        /**
+         * Coordinates frame time ms from fps within the anti-aliasing render, configuration, or
+         * compatibility flow.
+         * @param fps fps supplied by Minecraft or the caller
+         * @return frame time ms from fps value produced or selected by this code path
+         */
         private static double frameTimeMsFromFps(double fps) {
             if (!Double.isFinite(fps) || fps <= 0.0d) {
                 return 0.0d;
@@ -429,6 +556,13 @@ public final class PerformanceMetricsRecorder {
             return 1000.0d / fps;
         }
 
+        /**
+         * Coordinates rate per minute within the anti-aliasing render, configuration, or compatibility
+         * flow.
+         * @param count count supplied by Minecraft or the caller
+         * @param minutes minutes supplied by Minecraft or the caller
+         * @return rate per minute value produced or selected by this code path
+         */
         private static double ratePerMinute(long count, double minutes) {
             if (minutes <= 0.0d) {
                 return 0.0d;
@@ -438,16 +572,29 @@ public final class PerformanceMetricsRecorder {
         }
     }
 
+    /**
+     * Documents rolling average behavior for Salt's Anti Aliasing. Telemetry code for sampling frame
+     * health without changing render output.
+     */
     private static final class RollingAverage {
         private final double[] values;
         private int size;
         private int cursor;
         private double sum;
 
+        /**
+         * Coordinates rolling average within the anti-aliasing render, configuration, or compatibility
+         * flow.
+         * @param capacity capacity supplied by Minecraft or the caller
+         */
         private RollingAverage(int capacity) {
             this.values = new double[Math.max(1, capacity)];
         }
 
+        /**
+         * Coordinates push within the anti-aliasing render, configuration, or compatibility flow.
+         * @param value value being transformed or clamped
+         */
         private void push(double value) {
             if (size < values.length) {
                 values[size++] = value;
@@ -461,19 +608,35 @@ public final class PerformanceMetricsRecorder {
             cursor = (cursor + 1) % values.length;
         }
 
+        /**
+         * Coordinates size within the anti-aliasing render, configuration, or compatibility flow.
+         * @return size value produced or selected by this code path
+         */
         private int size() {
             return size;
         }
 
+        /**
+         * Coordinates average within the anti-aliasing render, configuration, or compatibility flow.
+         * @return average value produced or selected by this code path
+         */
         private double average() {
             return size == 0 ? 0.0d : sum / size;
         }
     }
 
+    /**
+     * Documents double series behavior for Salt's Anti Aliasing. Telemetry code for sampling frame
+     * health without changing render output.
+     */
     private static final class DoubleSeries {
         private double[] values = new double[1024];
         private int size;
 
+        /**
+         * Coordinates add within the anti-aliasing render, configuration, or compatibility flow.
+         * @param value value being transformed or clamped
+         */
         private void add(double value) {
             if (size == values.length) {
                 values = Arrays.copyOf(values, values.length * 2);
@@ -481,6 +644,11 @@ public final class PerformanceMetricsRecorder {
             values[size++] = value;
         }
 
+        /**
+         * Coordinates sorted copy within the anti-aliasing render, configuration, or compatibility
+         * flow.
+         * @return sorted copy value produced or selected by this code path
+         */
         private double[] sortedCopy() {
             double[] copy = Arrays.copyOf(values, size);
             Arrays.sort(copy);
@@ -488,6 +656,10 @@ public final class PerformanceMetricsRecorder {
         }
     }
 
+    /**
+     * Documents metrics report behavior for Salt's Anti Aliasing. Telemetry code for sampling frame
+     * health without changing render output.
+     */
     private static final class MetricsReport {
         public ReportMetadata metadata;
         public Thresholds thresholds;
@@ -498,6 +670,10 @@ public final class PerformanceMetricsRecorder {
         public Map<String, PerformanceSummary> perMode;
     }
 
+    /**
+     * Documents report metadata behavior for Salt's Anti Aliasing. Telemetry code for sampling frame
+     * health without changing render output.
+     */
     private static final class ReportMetadata {
         public int reportVersion;
         public String startedAt;
@@ -508,6 +684,10 @@ public final class PerformanceMetricsRecorder {
         public String sessionReportPath;
     }
 
+    /**
+     * Documents thresholds behavior for Salt's Anti Aliasing. Telemetry code for sampling frame health
+     * without changing render output.
+     */
     private static final class Thresholds {
         public double lagSpikeThresholdMs;
         public double severeLagSpikeThresholdMs;
@@ -516,12 +696,20 @@ public final class PerformanceMetricsRecorder {
         public double fpsDropMinimumDelta;
     }
 
+    /**
+     * Documents session summary behavior for Salt's Anti Aliasing. Telemetry code for sampling frame
+     * health without changing render output.
+     */
     private static final class SessionSummary {
         public int modesObserved;
         public long modeSwitches;
         public String currentMode;
     }
 
+    /**
+     * Documents performance summary behavior for Salt's Anti Aliasing. Telemetry code for sampling
+     * frame health without changing render output.
+     */
     private static final class PerformanceSummary {
         public int modeEntries;
         public long framesSampled;

@@ -20,6 +20,9 @@ import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntim
 
 import java.util.Set;
 
+/**
+ * Sodium option-page integration that mirrors this mod's settings into Sodium's configuration UI.
+ */
 public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static final Identifier MODE_ID = id("mode");
     private static final Identifier SHARPNESS_ID = id("sharpness");
@@ -35,6 +38,11 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static final String SSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.ssaa_scale.tooltip";
     private static final String UPSCALE_TOOLTIP_KEY = "options.salts_anti_aliasing.upscale_quality.tooltip";
 
+    /**
+     * Coordinates register config late within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @param builder builder supplied by Minecraft or the caller
+     */
     @Override
     public void registerConfigLate(ConfigBuilder builder) {
         builder.registerOwnModOptions()
@@ -70,6 +78,12 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                         ));
     }
 
+    /**
+     * Coordinates create mode option within the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @param builder builder supplied by Minecraft or the caller
+     * @return create mode option value produced or selected by this code path
+     */
     private static EnumOptionBuilder<AntiAliasingMode> createModeOption(ConfigBuilder builder) {
         return builder.createEnumOption(MODE_ID, AntiAliasingMode.class)
                 .setName(Component.translatable("options.salts_anti_aliasing.mode", Component.empty()))
@@ -86,6 +100,12 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                 .setEnabledProvider(state -> antiAliasingAvailable(), ConfigState.UPDATE_ON_REBUILD);
     }
 
+    /**
+     * Coordinates create msaa samples option within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @param builder builder supplied by Minecraft or the caller
+     * @return create msaa samples option value produced or selected by this code path
+     */
     private static EnumOptionBuilder<MsaaSampleLevel> createMsaaSamplesOption(ConfigBuilder builder) {
         return builder.createEnumOption(MSAA_SAMPLES_ID, MsaaSampleLevel.class)
                 .setName(Component.translatable("options.salts_anti_aliasing.msaa_samples", Component.empty()))
@@ -102,6 +122,12 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                 );
     }
 
+    /**
+     * Coordinates create ssaa scale option within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @param builder builder supplied by Minecraft or the caller
+     * @return create ssaa scale option value produced or selected by this code path
+     */
     private static EnumOptionBuilder<SsaaScaleLevel> createSsaaScaleOption(ConfigBuilder builder) {
         return builder.createEnumOption(SSAA_SCALE_ID, SsaaScaleLevel.class)
                 .setName(Component.translatable("options.salts_anti_aliasing.ssaa_scale", Component.empty()))
@@ -118,6 +144,12 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                 );
     }
 
+    /**
+     * Coordinates create upscale quality option within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @param builder builder supplied by Minecraft or the caller
+     * @return create upscale quality option value produced or selected by this code path
+     */
     private static EnumOptionBuilder<NisUpscaleQualityPreset> createUpscaleQualityOption(ConfigBuilder builder) {
         return builder.createEnumOption(UPSCALE_QUALITY_ID, NisUpscaleQualityPreset.class)
                 .setName(Component.translatable("options.salts_anti_aliasing.upscale_quality", Component.empty()))
@@ -137,17 +169,35 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                 );
     }
 
+    /**
+     * Coordinates id within the anti-aliasing render, configuration, or compatibility flow.
+     * @param path path supplied by Minecraft or the caller
+     * @return id value produced or selected by this code path
+     */
     private static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(SaltsAntiAliasing.MOD_ID, path);
     }
 
+    /**
+     * Coordinates after save within the anti-aliasing render, configuration, or compatibility flow.
+     */
     private static void afterSave() {
     }
 
+    /**
+     * Coordinates anti aliasing available within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @return anti aliasing available value produced or selected by this code path
+     */
     private static boolean antiAliasingAvailable() {
         return !Minecraft.getInstance().useShaderTransparency();
     }
 
+    /**
+     * Coordinates sodium supported modes within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @return sodium supported modes value produced or selected by this code path
+     */
     private static Set<AntiAliasingMode> sodiumSupportedModes() {
         if (!LoadedMods.sodiumLoaded()) {
             return Set.copyOf(AntiAliasingMode.implementedModes());
@@ -158,55 +208,115 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
         return modes;
     }
 
+    /**
+     * Coordinates mode within the anti-aliasing render, configuration, or compatibility flow.
+     * @return mode value produced or selected by this code path
+     */
     private static AntiAliasingMode mode() {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         return runtime == null ? AntiAliasingMode.OFF : runtime.activeMode();
     }
 
+    /**
+     * Updates mode and refreshes dependent render state when the setting affects active passes or
+     * targets.
+     * @param mode requested anti-aliasing mode
+     */
     private static void setMode(AntiAliasingMode mode) {
         SaltsAntiAliasingClient.runtime().setMode(mode);
     }
 
+    /**
+     * Coordinates sharpness percent within the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return sharpness percent value produced or selected by this code path
+     */
     private static int sharpnessPercent() {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         return runtime == null ? defaultSharpnessPercent() : sharpnessPercent(runtime.sharpenStrength());
     }
 
+    /**
+     * Updates sharpness percent and refreshes dependent render state when the setting affects active
+     * passes or targets.
+     * @param percent percent supplied by Minecraft or the caller
+     */
     private static void setSharpnessPercent(int percent) {
         SaltsAntiAliasingClient.runtime().setSharpenStrength(percent / 100.0f);
     }
 
+    /**
+     * Coordinates msaa sample level within the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return msaa sample level value produced or selected by this code path
+     */
     private static MsaaSampleLevel msaaSampleLevel() {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         return runtime == null ? MsaaSampleLevel.defaultLevel() : runtime.msaaSampleLevel();
     }
 
+    /**
+     * Updates msaa sample level and refreshes dependent render state when the setting affects active
+     * passes or targets.
+     * @param level level supplied by Minecraft or the caller
+     */
     private static void setMsaaSampleLevel(MsaaSampleLevel level) {
         SaltsAntiAliasingClient.runtime().setMsaaSampleLevel(level);
     }
 
+    /**
+     * Coordinates ssaa scale level within the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return ssaa scale level value produced or selected by this code path
+     */
     private static SsaaScaleLevel ssaaScaleLevel() {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         return runtime == null ? SsaaScaleLevel.defaultLevel() : runtime.ssaaScaleLevel();
     }
 
+    /**
+     * Updates ssaa scale level and refreshes dependent render state when the setting affects active
+     * passes or targets.
+     * @param level level supplied by Minecraft or the caller
+     */
     private static void setSsaaScaleLevel(SsaaScaleLevel level) {
         SaltsAntiAliasingClient.runtime().setSsaaScaleLevel(level);
     }
 
+    /**
+     * Coordinates upscale quality preset within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @return upscale quality preset value produced or selected by this code path
+     */
     private static NisUpscaleQualityPreset upscaleQualityPreset() {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         return runtime == null ? NisUpscaleQualityPreset.defaultPreset() : runtime.upscaleQualityPreset();
     }
 
+    /**
+     * Updates upscale quality preset and refreshes dependent render state when the setting affects
+     * active passes or targets.
+     * @param preset quality preset selected by config or UI
+     */
     private static void setUpscaleQualityPreset(NisUpscaleQualityPreset preset) {
         SaltsAntiAliasingClient.runtime().setUpscaleQualityPreset(preset);
     }
 
+    /**
+     * Coordinates default sharpness percent within the anti-aliasing render, configuration, or
+     * compatibility flow.
+     * @return default sharpness percent value produced or selected by this code path
+     */
     private static int defaultSharpnessPercent() {
         return sharpnessPercent(AntiAliasingConfig.DEFAULT_SHARPEN_STRENGTH);
     }
 
+    /**
+     * Coordinates sharpness percent within the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @param sharpenStrength sharpen strength supplied by Minecraft or the caller
+     * @return sharpness percent value produced or selected by this code path
+     */
     private static int sharpnessPercent(float sharpenStrength) {
         return Math.round(sharpenStrength * 100.0f);
     }

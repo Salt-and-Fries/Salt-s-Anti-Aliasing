@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Documents edge debug hud behavior for Salt's Anti Aliasing. Debug instrumentation for visualizing
+ * and measuring aliasing behavior.
+ */
 public final class EdgeDebugHud {
     private static final int BOX_PADDING = 6;
     private static final int RIGHT_MARGIN = 8;
@@ -19,9 +23,17 @@ public final class EdgeDebugHud {
     private static final int TITLE_COLOR = 0xFFFFFFFF;
     private static final int TEXT_COLOR = 0xFFD0D0D0;
 
+    /**
+     * Creates a edge debug hud with the collaborators or initial state supplied by the caller.
+     */
     private EdgeDebugHud() {
     }
 
+    /**
+     * Coordinates render within the anti-aliasing render, configuration, or compatibility flow.
+     * @param graphics graphics supplied by Minecraft or the caller
+     * @param deltaTracker Minecraft frame delta supplied by the render callback
+     */
     public static void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         Minecraft minecraft = Minecraft.getInstance();
@@ -61,6 +73,11 @@ public final class EdgeDebugHud {
         }
     }
 
+    /**
+     * Coordinates percent within the anti-aliasing render, configuration, or compatibility flow.
+     * @param value value being transformed or clamped
+     * @return percent value produced or selected by this code path
+     */
     private static String percent(float value) {
         return String.format(Locale.US, "%.1f%%", value * 100.0f);
     }

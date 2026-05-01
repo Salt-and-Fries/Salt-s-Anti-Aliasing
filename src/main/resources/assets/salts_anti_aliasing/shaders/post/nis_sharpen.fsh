@@ -1,7 +1,16 @@
 #version 330
+/*
+ * Salt's Anti Aliasing post-processing shader.
+ *
+ * NIS-style sharpening pass used to restore local detail after scaled rendering.
+ * Runtime JSON effects bind the samplers and uniform blocks; these comments describe the pass data flow.
+ */
 
+
+// Scene, history, depth, or helper textures supplied by Minecraft's post-effect chain.
 uniform sampler2D InSampler;
 
+// Packed runtime parameters updated from Java when resolution, mode, or config changes.
 layout(std140) uniform SamplerInfo {
     vec2 OutSize;
     vec2 InSize;
@@ -13,6 +22,7 @@ layout(std140) uniform NisSharpenConfig {
     float ClampBoost;
 };
 
+// Full-screen pass coordinates and final color output for the current pixel.
 in vec2 texCoord;
 
 out vec4 fragColor;
@@ -21,7 +31,9 @@ float luma(vec3 color) {
     return dot(color, vec3(0.299, 0.587, 0.114));
 }
 
+// Executes the per-pixel resolve, upscale, sharpen, or debug operation for this pass.
 void main() {
+    // Work in texel-relative offsets so the same math scales across window sizes.
     vec2 texelSize = 1.0 / InSize;
 
     vec3 center = texture(InSampler, texCoord).rgb;

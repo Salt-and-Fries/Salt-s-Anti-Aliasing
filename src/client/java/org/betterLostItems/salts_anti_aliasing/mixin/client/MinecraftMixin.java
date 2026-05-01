@@ -9,6 +9,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+/**
+ * Documents minecraft mixin behavior for Salt's Anti Aliasing. Mixin bridge code for carefully scoped
+ * hooks into Minecraft rendering and options screens.
+ */
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
     /**

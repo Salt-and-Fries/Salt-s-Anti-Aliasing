@@ -15,6 +15,10 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
 
+/**
+ * Documents gl command encoder mixin behavior for Salt's Anti Aliasing. Mixin bridge code for
+ * carefully scoped hooks into Minecraft rendering and options screens.
+ */
 @Mixin(targets = "com.mojang.blaze3d.opengl.GlCommandEncoder")
 public abstract class GlCommandEncoderMixin {
     /**
