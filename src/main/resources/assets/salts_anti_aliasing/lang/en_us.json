@@ -1,6 +1,8 @@
 {
+  "screen.salts_anti_aliasing.config": "Salt's Anti Aliasing",
   "key.categories.salts_anti_aliasing.main": "Salt's Anti Aliasing",
   "key.salts_anti_aliasing.cycle_mode": "Cycle AA Mode",
+  "options.salts_anti_aliasing.group.image_quality": "Image Quality",
   "options.salts_anti_aliasing.mode": "Anti-Aliasing Mode: %s",
   "options.salts_anti_aliasing.mode.tooltip": "Current mode: %1$s. %2$s",
   "options.salts_anti_aliasing.mode.tooltip.disabled": "Anti-aliasing is unavailable while Improved Transparency is on. Turn that option off to switch modes. Current mode: %1$s. %2$s",
