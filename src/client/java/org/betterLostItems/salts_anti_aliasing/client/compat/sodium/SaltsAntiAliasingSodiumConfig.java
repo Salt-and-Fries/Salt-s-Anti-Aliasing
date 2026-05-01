@@ -1,0 +1,213 @@
+package org.betterLostItems.salts_anti_aliasing.client.compat.sodium;
+
+import net.caffeinemc.mods.sodium.api.config.ConfigEntryPoint;
+import net.caffeinemc.mods.sodium.api.config.ConfigState;
+import net.caffeinemc.mods.sodium.api.config.structure.ConfigBuilder;
+import net.caffeinemc.mods.sodium.api.config.structure.EnumOptionBuilder;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
+import org.betterLostItems.salts_anti_aliasing.client.compat.LoadedMods;
+import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
+import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.config.MsaaSampleLevel;
+import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPreset;
+import org.betterLostItems.salts_anti_aliasing.client.config.SsaaScaleLevel;
+import org.betterLostItems.salts_anti_aliasing.client.gui.ClientText;
+import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
+
+import java.util.Set;
+
+public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
+    private static final Identifier MODE_ID = id("mode");
+    private static final Identifier SHARPNESS_ID = id("sharpness");
+    private static final Identifier MSAA_SAMPLES_ID = id("msaa_samples");
+    private static final Identifier SSAA_SCALE_ID = id("ssaa_scale");
+    private static final Identifier UPSCALE_QUALITY_ID = id("upscale_quality");
+
+    private static final String PAGE_TITLE_KEY = "screen.salts_anti_aliasing.config";
+    private static final String GROUP_TITLE_KEY = "options.salts_anti_aliasing.group.image_quality";
+    private static final String SHARPNESS_TOOLTIP_KEY = "options.salts_anti_aliasing.sharpness.tooltip";
+    private static final String MSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.msaa_samples.tooltip";
+    private static final String MSAA_SODIUM_TOOLTIP_KEY = "options.salts_anti_aliasing.msaa_samples.tooltip.sodium";
+    private static final String SSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.ssaa_scale.tooltip";
+    private static final String UPSCALE_TOOLTIP_KEY = "options.salts_anti_aliasing.upscale_quality.tooltip";
+
+    @Override
+    public void registerConfigLate(ConfigBuilder builder) {
+        builder.registerOwnModOptions()
+                .addPage(builder.createOptionPage()
+                        .setName(Component.translatable(PAGE_TITLE_KEY))
+                        .addOptionGroup(builder.createOptionGroup()
+                                .setName(Component.translatable(GROUP_TITLE_KEY))
+                                .addOption(createModeOption(builder))
+                                .addOption(builder.createIntegerOption(SHARPNESS_ID)
+                                        .setName(Component.translatable("options.salts_anti_aliasing.sharpness", Component.empty()))
+                                        .setTooltip(Component.translatable(SHARPNESS_TOOLTIP_KEY))
+                                        .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
+                                        .setBinding(
+                                                SaltsAntiAliasingSodiumConfig::setSharpnessPercent,
+                                                SaltsAntiAliasingSodiumConfig::sharpnessPercent
+                                        )
+                                        .setDefaultValue(defaultSharpnessPercent())
+                                        .setRange(
+                                                sharpnessPercent(AntiAliasingConfig.MIN_SHARPEN_STRENGTH),
+                                                sharpnessPercent(AntiAliasingConfig.MAX_SHARPEN_STRENGTH),
+                                                1
+                                        )
+                                        .setValueFormatter(value -> Component.literal(value + "%"))
+                                        .setEnabledProvider(
+                                                state -> antiAliasingAvailable()
+                                                        && state.readEnumOption(MODE_ID, AntiAliasingMode.class).usesSharpenControl(),
+                                                MODE_ID,
+                                                ConfigState.UPDATE_ON_REBUILD
+                                        ))
+                                .addOption(createMsaaSamplesOption(builder))
+                                .addOption(createSsaaScaleOption(builder))
+                                .addOption(createUpscaleQualityOption(builder))
+                        ));
+    }
+
+    private static EnumOptionBuilder<AntiAliasingMode> createModeOption(ConfigBuilder builder) {
+        return builder.createEnumOption(MODE_ID, AntiAliasingMode.class)
+                .setName(Component.translatable("options.salts_anti_aliasing.mode", Component.empty()))
+                .setTooltip(mode -> Component.translatable(
+                        "options.salts_anti_aliasing.mode.tooltip",
+                        ClientText.label(mode),
+                        ClientText.summary(mode)
+                ))
+                .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
+                .setBinding(SaltsAntiAliasingSodiumConfig::setMode, SaltsAntiAliasingSodiumConfig::mode)
+                .setDefaultValue(AntiAliasingMode.OFF)
+                .setAllowedValues(sodiumSupportedModes())
+                .setElementNameProvider(ClientText::label)
+                .setEnabledProvider(state -> antiAliasingAvailable(), ConfigState.UPDATE_ON_REBUILD);
+    }
+
+    private static EnumOptionBuilder<MsaaSampleLevel> createMsaaSamplesOption(ConfigBuilder builder) {
+        return builder.createEnumOption(MSAA_SAMPLES_ID, MsaaSampleLevel.class)
+                .setName(Component.translatable("options.salts_anti_aliasing.msaa_samples", Component.empty()))
+                .setTooltip(Component.translatable(LoadedMods.sodiumLoaded() ? MSAA_SODIUM_TOOLTIP_KEY : MSAA_TOOLTIP_KEY))
+                .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
+                .setBinding(SaltsAntiAliasingSodiumConfig::setMsaaSampleLevel, SaltsAntiAliasingSodiumConfig::msaaSampleLevel)
+                .setDefaultValue(MsaaSampleLevel.defaultLevel())
+                .setElementNameProvider(level -> Component.literal(level.label()))
+                .setEnabledProvider(
+                        state -> antiAliasingAvailable()
+                                && state.readEnumOption(MODE_ID, AntiAliasingMode.class).usesMsaaSampleControl(),
+                        MODE_ID,
+                        ConfigState.UPDATE_ON_REBUILD
+                );
+    }
+
+    private static EnumOptionBuilder<SsaaScaleLevel> createSsaaScaleOption(ConfigBuilder builder) {
+        return builder.createEnumOption(SSAA_SCALE_ID, SsaaScaleLevel.class)
+                .setName(Component.translatable("options.salts_anti_aliasing.ssaa_scale", Component.empty()))
+                .setTooltip(Component.translatable(SSAA_TOOLTIP_KEY))
+                .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
+                .setBinding(SaltsAntiAliasingSodiumConfig::setSsaaScaleLevel, SaltsAntiAliasingSodiumConfig::ssaaScaleLevel)
+                .setDefaultValue(SsaaScaleLevel.defaultLevel())
+                .setElementNameProvider(level -> Component.literal(level.label()))
+                .setEnabledProvider(
+                        state -> antiAliasingAvailable()
+                                && state.readEnumOption(MODE_ID, AntiAliasingMode.class).usesSsaaScaleControl(),
+                        MODE_ID,
+                        ConfigState.UPDATE_ON_REBUILD
+                );
+    }
+
+    private static EnumOptionBuilder<NisUpscaleQualityPreset> createUpscaleQualityOption(ConfigBuilder builder) {
+        return builder.createEnumOption(UPSCALE_QUALITY_ID, NisUpscaleQualityPreset.class)
+                .setName(Component.translatable("options.salts_anti_aliasing.upscale_quality", Component.empty()))
+                .setTooltip(Component.translatable(UPSCALE_TOOLTIP_KEY))
+                .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
+                .setBinding(
+                        SaltsAntiAliasingSodiumConfig::setUpscaleQualityPreset,
+                        SaltsAntiAliasingSodiumConfig::upscaleQualityPreset
+                )
+                .setDefaultValue(NisUpscaleQualityPreset.defaultPreset())
+                .setElementNameProvider(ClientText::label)
+                .setEnabledProvider(
+                        state -> antiAliasingAvailable()
+                                && state.readEnumOption(MODE_ID, AntiAliasingMode.class).usesSpatialUpscaleQualityControl(),
+                        MODE_ID,
+                        ConfigState.UPDATE_ON_REBUILD
+                );
+    }
+
+    private static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(SaltsAntiAliasing.MOD_ID, path);
+    }
+
+    private static void afterSave() {
+    }
+
+    private static boolean antiAliasingAvailable() {
+        return !Minecraft.getInstance().useShaderTransparency();
+    }
+
+    private static Set<AntiAliasingMode> sodiumSupportedModes() {
+        if (!LoadedMods.sodiumLoaded()) {
+            return Set.copyOf(AntiAliasingMode.implementedModes());
+        }
+
+        Set<AntiAliasingMode> modes = java.util.EnumSet.copyOf(AntiAliasingMode.implementedModes());
+        modes.remove(AntiAliasingMode.MSAA);
+        return modes;
+    }
+
+    private static AntiAliasingMode mode() {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        return runtime == null ? AntiAliasingMode.OFF : runtime.activeMode();
+    }
+
+    private static void setMode(AntiAliasingMode mode) {
+        SaltsAntiAliasingClient.runtime().setMode(mode);
+    }
+
+    private static int sharpnessPercent() {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        return runtime == null ? defaultSharpnessPercent() : sharpnessPercent(runtime.sharpenStrength());
+    }
+
+    private static void setSharpnessPercent(int percent) {
+        SaltsAntiAliasingClient.runtime().setSharpenStrength(percent / 100.0f);
+    }
+
+    private static MsaaSampleLevel msaaSampleLevel() {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        return runtime == null ? MsaaSampleLevel.defaultLevel() : runtime.msaaSampleLevel();
+    }
+
+    private static void setMsaaSampleLevel(MsaaSampleLevel level) {
+        SaltsAntiAliasingClient.runtime().setMsaaSampleLevel(level);
+    }
+
+    private static SsaaScaleLevel ssaaScaleLevel() {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        return runtime == null ? SsaaScaleLevel.defaultLevel() : runtime.ssaaScaleLevel();
+    }
+
+    private static void setSsaaScaleLevel(SsaaScaleLevel level) {
+        SaltsAntiAliasingClient.runtime().setSsaaScaleLevel(level);
+    }
+
+    private static NisUpscaleQualityPreset upscaleQualityPreset() {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        return runtime == null ? NisUpscaleQualityPreset.defaultPreset() : runtime.upscaleQualityPreset();
+    }
+
+    private static void setUpscaleQualityPreset(NisUpscaleQualityPreset preset) {
+        SaltsAntiAliasingClient.runtime().setUpscaleQualityPreset(preset);
+    }
+
+    private static int defaultSharpnessPercent() {
+        return sharpnessPercent(AntiAliasingConfig.DEFAULT_SHARPEN_STRENGTH);
+    }
+
+    private static int sharpnessPercent(float sharpenStrength) {
+        return Math.round(sharpenStrength * 100.0f);
+    }
+}
