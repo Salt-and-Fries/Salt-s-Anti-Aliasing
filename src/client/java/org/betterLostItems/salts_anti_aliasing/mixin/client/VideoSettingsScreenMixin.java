@@ -4,11 +4,11 @@ import net.minecraft.client.Options;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.gui.screens.options.VideoSettingsScreen;
 import net.minecraft.network.chat.Component;
-import org.betterLostItems.salts_anti_aliasing.mixin.client.OptionsListEntryAccessor;
 import org.betterLostItems.salts_anti_aliasing.client.gui.AntiAliasingVideoButtonFactory;
 import org.betterLostItems.salts_anti_aliasing.client.gui.MsaaSampleSliderWidget;
 import org.betterLostItems.salts_anti_aliasing.client.gui.SpatialUpscaleQualitySliderWidget;
@@ -38,6 +38,9 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         super(lastScreen, options, title);
     }
 
+    /**
+     * Adds the Fabric 26.1.2 video controls after Minecraft has created its normal option rows.
+     */
     @Inject(method = "addOptions", at = @At("TAIL"))
     private void saltsAntiAliasing$addVideoModeButton(CallbackInfo callbackInfo) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
@@ -70,6 +73,9 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         }
     }
 
+    /**
+     * Keeps sliders enabled only when their active mode can actually consume the value.
+     */
     @Inject(method = "tick", at = @At("TAIL"))
     private void saltsAntiAliasing$refreshDisabledState(CallbackInfo callbackInfo) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
@@ -111,7 +117,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
             return;
         }
 
-        List<Object> entries = ((AbstractSelectionListAccessor) this.list).saltsAntiAliasing$children();
+        List<Object> entries = saltsAntiAliasing$entries();
         if (entries.size() <= initialEntryCount) {
             return;
         }
@@ -122,11 +128,15 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
     }
 
     private int saltsAntiAliasing$findEntryIndex(OptionInstance<?> optionInstance) {
+        AbstractWidget widget = this.list.findOption(optionInstance);
+        if (widget == null) {
+            return -1;
+        }
+
         List<?> entries = this.list.children();
         for (int index = 0; index < entries.size(); index++) {
             Object entry = entries.get(index);
-            if (entry instanceof OptionsListEntryAccessor accessor
-                    && accessor.saltsAntiAliasing$findOption(optionInstance) != null) {
+            if (entry instanceof ContainerEventHandler handler && handler.children().contains(widget)) {
                 return index;
             }
         }
@@ -164,8 +174,12 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
             return null;
         }
 
-        List<Object> entries = ((AbstractSelectionListAccessor) this.list).saltsAntiAliasing$children();
+        List<Object> entries = saltsAntiAliasing$entries();
         entries.remove(entryIndex);
         return widget;
+    }
+
+    private List<Object> saltsAntiAliasing$entries() {
+        return ((AbstractSelectionListAccessor) this.list).saltsAntiAliasing$children();
     }
 }

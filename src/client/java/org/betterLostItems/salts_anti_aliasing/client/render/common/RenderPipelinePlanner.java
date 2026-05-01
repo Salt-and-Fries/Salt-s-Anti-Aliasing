@@ -17,7 +17,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Converts the shared config model into a backend-neutral render plan.
+ *
+ * <p>This planner should remain free of Minecraft mixin descriptors and concrete
+ * OpenGL command details. It describes the passes and logical targets a mode
+ * needs; the active version/backend adapter decides how those concepts become
+ * real render targets and post-chain invocations.</p>
+ */
 public final class RenderPipelinePlanner {
+    /**
+     * Builds a pass/target plan for the active backend and sanitized config.
+     */
     public PipelinePlan plan(RenderBackend backend, AntiAliasingConfig config) {
         Map<String, RenderTargetDescriptor> targets = new LinkedHashMap<>();
         List<RenderPassSpec> passes = new ArrayList<>();
@@ -35,6 +46,7 @@ public final class RenderPipelinePlanner {
         String currentColor = "scene_color";
 
         if (config.mode.usesHistoryBuffers()) {
+            // Temporal modes need persistent history that survives between frames.
             targets.put("history_color", target("history_color", RenderTargetType.HISTORY_COLOR, TextureFormat.RGBA16F,
                     RenderTargetSizing.INTERNAL, sceneScale, true));
             currentColor = addPass(
@@ -53,6 +65,7 @@ public final class RenderPipelinePlanner {
         }
 
         if (config.mode == AntiAliasingMode.SSAA) {
+            // SSAA resolves a high-resolution scene back to the native output.
             currentColor = addPass(
                     passes,
                     targets,
@@ -82,6 +95,7 @@ public final class RenderPipelinePlanner {
             );
         }
 
+        // Each case below describes the logical effect chain. The backend decides how to execute it.
         switch (config.mode) {
             case OFF -> {
             }

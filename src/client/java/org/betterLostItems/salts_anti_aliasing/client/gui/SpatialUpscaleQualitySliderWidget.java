@@ -31,7 +31,7 @@ public final class SpatialUpscaleQualitySliderWidget extends AbstractSliderButto
     @Override
     protected void updateMessage() {
         NisUpscaleQualityPreset preset = runtime.upscaleQualityPreset();
-        this.setMessage(Component.translatable(LABEL_KEY, preset.label()));
+        this.setMessage(Component.translatable(LABEL_KEY, ClientText.label(preset)));
     }
 
     @Override

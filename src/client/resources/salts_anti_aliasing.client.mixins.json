@@ -9,7 +9,6 @@
     "GameRendererMixin",
     "KeyboardHandlerMixin",
     "MinecraftMixin",
-    "OptionsListEntryAccessor",
     "PostChainAccessor",
     "PostPassAccessor",
     "RenderTargetMixin",

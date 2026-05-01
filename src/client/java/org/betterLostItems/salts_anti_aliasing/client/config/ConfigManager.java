@@ -13,6 +13,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
+/**
+ * Fabric-backed persistence adapter for the shared anti-aliasing config.
+ *
+ * <p>The in-memory {@link AntiAliasingConfig} is plain data and can be reused by every
+ * version jar. This manager is the Fabric 26.1.2 implementation of loading, validating,
+ * editing, and saving that data.</p>
+ */
 public final class ConfigManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -29,6 +36,9 @@ public final class ConfigManager {
         return new ConfigManager(configDir.resolve(SaltsAntiAliasing.MOD_ID + ".json"));
     }
 
+    /**
+     * Loads config from disk, creating or repairing the file when needed.
+     */
     public synchronized void load() {
         if (Files.notExists(configPath)) {
             save();
@@ -47,6 +57,9 @@ public final class ConfigManager {
         }
     }
 
+    /**
+     * Returns a defensive copy so renderer code can use a stable frame-local view.
+     */
     public synchronized AntiAliasingConfig snapshot() {
         return config.copy();
     }
@@ -59,12 +72,18 @@ public final class ConfigManager {
         return config.recordMetrics;
     }
 
+    /**
+     * Applies a mutation, re-sanitizes the config, and persists the new value.
+     */
     public synchronized void edit(Consumer<AntiAliasingConfig> editor) {
         editor.accept(config);
         config.sanitize();
         save();
     }
 
+    /**
+     * Writes the current config to disk.
+     */
     public synchronized void save() {
         try {
             Files.createDirectories(configPath.getParent());

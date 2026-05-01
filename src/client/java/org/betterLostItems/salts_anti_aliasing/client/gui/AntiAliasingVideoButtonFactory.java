@@ -43,14 +43,14 @@ public final class AntiAliasingVideoButtonFactory {
     }
 
     private static Component labelFor(AntiAliasingMode mode) {
-        return Component.translatable(MODE_LABEL_KEY, mode.label());
+        return Component.translatable(MODE_LABEL_KEY, ClientText.label(mode));
     }
 
     private static Component tooltipFor(AntiAliasingMode mode, boolean available) {
         return Component.translatable(
                 available ? MODE_TOOLTIP_KEY : MODE_DISABLED_TOOLTIP_KEY,
-                mode.label(),
-                mode.tooltipSummary()
+                ClientText.label(mode),
+                ClientText.summary(mode)
         );
     }
 }

@@ -1,10 +1,15 @@
 package org.betterLostItems.salts_anti_aliasing.client.config;
 
-import net.minecraft.network.chat.Component;
-
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Version-independent list of anti-aliasing and scaling modes.
+ *
+ * <p>This enum is deliberately plain data: no Minecraft UI classes, no Fabric classes,
+ * and no renderer-specific handles. Every version jar should be able to share these
+ * mode semantics and then map them to its own render adapter.</p>
+ */
 public enum AntiAliasingMode {
     OFF("Off", false, false),
     FXAA("FXAA", false, false),
@@ -78,16 +83,11 @@ public enum AntiAliasingMode {
         return IMPLEMENTED_MODES.get((currentIndex + 1) % IMPLEMENTED_MODES.size());
     }
 
-    public Component label() {
-        return Component.translatable(translationKey());
-    }
-
+    /**
+     * Translation key used by the client UI layer.
+     */
     public String translationKey() {
         return "options.salts_anti_aliasing.mode." + name().toLowerCase(Locale.ROOT);
-    }
-
-    public Component tooltipSummary() {
-        return Component.translatable(translationKey() + ".summary");
     }
 
     public static List<AntiAliasingMode> implementedModes() {

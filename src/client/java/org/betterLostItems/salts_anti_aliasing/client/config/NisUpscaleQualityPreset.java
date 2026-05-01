@@ -1,9 +1,14 @@
 package org.betterLostItems.salts_anti_aliasing.client.config;
 
-import net.minecraft.network.chat.Component;
-
 import java.util.Locale;
 
+/**
+ * Version-independent spatial upscale quality presets.
+ *
+ * <p>The preset stores only render-scale and sharpening numbers. Minecraft text
+ * is created by the client UI adapter so this enum can be reused by other jar
+ * families without pulling Minecraft UI classes into the shared config model.</p>
+ */
 public enum NisUpscaleQualityPreset {
     QUALITY(0.77f, 0.16f),
     BALANCED(0.67f, 0.22f),
@@ -24,10 +29,6 @@ public enum NisUpscaleQualityPreset {
 
     public float sharpenStrength() {
         return sharpenStrength;
-    }
-
-    public Component label() {
-        return Component.translatable(translationKey());
     }
 
     public String translationKey() {

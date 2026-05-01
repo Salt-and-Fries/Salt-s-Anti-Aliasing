@@ -3,7 +3,7 @@ package org.betterLostItems.salts_anti_aliasing.mixin.client;
 import com.mojang.blaze3d.opengl.DirectStateAccess;
 import com.mojang.blaze3d.opengl.GlTextureView;
 import com.mojang.blaze3d.textures.GpuTexture;
-import org.betterLostItems.salts_anti_aliasing.client.render.opengl.OpenGlSceneMsaaController;
+import org.betterLostItems.salts_anti_aliasing.client.platform.modern.ModernMinecraftHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -16,6 +16,9 @@ import java.util.function.Supplier;
 
 @Mixin(targets = "com.mojang.blaze3d.opengl.GlCommandEncoder")
 public abstract class GlCommandEncoderMixin {
+    /**
+     * Sends Minecraft's main scene render pass into the multisampled FBO when MSAA mode is active.
+     */
     @Redirect(
             method = "createRenderPass(Ljava/util/function/Supplier;Lcom/mojang/blaze3d/textures/GpuTextureView;Ljava/util/OptionalInt;Lcom/mojang/blaze3d/textures/GpuTextureView;Ljava/util/OptionalDouble;)Lcom/mojang/blaze3d/systems/RenderPassBackend;",
             at = @At(
@@ -34,24 +37,29 @@ public abstract class GlCommandEncoderMixin {
             OptionalDouble clearDepth
     ) {
         int originalFramebufferId = colorView.getFbo(directStateAccess, depthTexture);
-        Integer overrideFramebufferId = OpenGlSceneMsaaController.instance().overrideFramebuffer(
-                colorView,
-                depthTexture,
-                originalFramebufferId
-        );
+        Integer overrideFramebufferId = ModernMinecraftHooks.overrideFramebuffer(colorView, depthTexture, originalFramebufferId);
         return overrideFramebufferId != null ? overrideFramebufferId : originalFramebufferId;
     }
 
+    /**
+     * Mirrors color clears into the multisampled scene FBO.
+     */
     @Inject(method = "clearColorTexture", at = @At("HEAD"))
     private void saltsAntiAliasing$mirrorColorClearToMsaa(GpuTexture colorTexture, int clearColor, CallbackInfo callbackInfo) {
-        OpenGlSceneMsaaController.instance().mirrorClearColorIfNeeded(colorTexture, clearColor);
+        ModernMinecraftHooks.mirrorColorClearToMsaa(colorTexture, clearColor);
     }
 
+    /**
+     * Mirrors depth clears into the multisampled scene FBO.
+     */
     @Inject(method = "clearDepthTexture", at = @At("HEAD"))
     private void saltsAntiAliasing$mirrorDepthClearToMsaa(GpuTexture depthTexture, double clearDepth, CallbackInfo callbackInfo) {
-        OpenGlSceneMsaaController.instance().mirrorClearDepthIfNeeded(depthTexture, clearDepth);
+        ModernMinecraftHooks.mirrorDepthClearToMsaa(depthTexture, clearDepth);
     }
 
+    /**
+     * Mirrors combined color/depth clears into the multisampled scene FBO.
+     */
     @Inject(method = "clearColorAndDepthTextures(Lcom/mojang/blaze3d/textures/GpuTexture;ILcom/mojang/blaze3d/textures/GpuTexture;D)V", at = @At("HEAD"))
     private void saltsAntiAliasing$mirrorColorDepthClearToMsaa(
             GpuTexture colorTexture,
@@ -60,11 +68,14 @@ public abstract class GlCommandEncoderMixin {
             double clearDepth,
             CallbackInfo callbackInfo
     ) {
-        OpenGlSceneMsaaController.instance().mirrorClearColorAndDepthIfNeeded(colorTexture, clearColor, depthTexture, clearDepth);
+        ModernMinecraftHooks.mirrorColorDepthClearToMsaa(colorTexture, clearColor, depthTexture, clearDepth);
     }
 
+    /**
+     * Marks the end of a render pass so the MSAA controller can resolve when needed.
+     */
     @Inject(method = "finishRenderPass", at = @At("TAIL"))
     private void saltsAntiAliasing$resolveAfterMainPass(CallbackInfo callbackInfo) {
-        OpenGlSceneMsaaController.instance().onRenderPassFinished();
+        ModernMinecraftHooks.resolveMsaaAfterRenderPass();
     }
 }
