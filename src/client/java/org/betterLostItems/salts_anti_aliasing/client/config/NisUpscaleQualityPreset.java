@@ -1,9 +1,13 @@
 package org.betterLostItems.salts_anti_aliasing.client.config;
 
-import net.minecraft.network.chat.Component;
-
 import java.util.Locale;
 
+/**
+ * Shared quality presets for spatial upscaling paths.
+ *
+ * <p>The scale and default sharpening values are core tuning data. Minecraft-facing
+ * presentation, such as translated labels, belongs in the UI layer.</p>
+ */
 public enum NisUpscaleQualityPreset {
     QUALITY(0.77f, 0.16f),
     BALANCED(0.67f, 0.22f),
@@ -26,10 +30,9 @@ public enum NisUpscaleQualityPreset {
         return sharpenStrength;
     }
 
-    public Component label() {
-        return Component.translatable(translationKey());
-    }
-
+    /**
+     * Translation key used by the client UI layer.
+     */
     public String translationKey() {
         return "options.salts_anti_aliasing.nis_upscale_quality." + name().toLowerCase(Locale.ROOT);
     }

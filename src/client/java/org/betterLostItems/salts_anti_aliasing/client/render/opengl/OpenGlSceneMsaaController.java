@@ -102,6 +102,18 @@ public final class OpenGlSceneMsaaController {
         return msaaFramebufferId;
     }
 
+    public Integer overrideFramebuffer(GpuTexture colorTexture, GpuTexture depthTexture, int originalFramebufferId) {
+        if (!active || colorTexture != mainColorTexture || depthTexture != mainDepthTexture) {
+            return null;
+        }
+
+        resolvedMainFramebufferId = originalFramebufferId;
+        mainColorDirty = true;
+        mainDepthDirty = true;
+        mainPassInProgress = true;
+        return msaaFramebufferId;
+    }
+
     public void endSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
         RenderSystem.assertOnRenderThread();
         if (!active) {

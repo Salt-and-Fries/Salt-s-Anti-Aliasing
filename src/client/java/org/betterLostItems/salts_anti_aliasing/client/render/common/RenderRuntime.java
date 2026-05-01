@@ -17,6 +17,21 @@ import org.betterLostItems.salts_anti_aliasing.client.render.opengl.OpenGlSceneP
 import org.betterLostItems.salts_anti_aliasing.client.render.opengl.OpenGlSceneScaleController;
 import net.minecraft.client.renderer.GameRenderer;
 
+/**
+ * Coordinates the shared anti-aliasing state machine for the modern Minecraft renderer.
+ *
+ * <p>The runtime intentionally sits between two worlds:</p>
+ *
+ * <ul>
+ *     <li>The version-stable mod model: config values, mode semantics, pass planning,
+ *     metrics, and debug state.</li>
+ *     <li>The modern 1.21.8-1.21.11 Minecraft renderer: {@link GameRenderer}, render
+ *     targets, post chains, and OpenGL/GPU controllers.</li>
+ * </ul>
+ *
+ * <p>Future legacy or mid-version jars should provide their own platform runtime/adapters
+ * while keeping the config and pass-planning contracts compatible with this class.</p>
+ */
 public final class RenderRuntime {
     private final ConfigManager configManager;
     private final RenderBackend backend;
@@ -46,6 +61,9 @@ public final class RenderRuntime {
         this.currentPlan = new PipelinePlan(backend.type(), backend.declaredTargets(), passManager.passes());
     }
 
+    /**
+     * Builds the modern runtime from disk config and renderer capabilities.
+     */
     public static RenderRuntime bootstrap() {
         ConfigManager configManager = ConfigManager.createDefault();
         configManager.load();
@@ -156,6 +174,9 @@ public final class RenderRuntime {
         return edgeDebugAnalyzer.latestStats();
     }
 
+    /**
+     * Applies post-processing that should affect only the 3D scene, not menus or HUD text.
+     */
     public void applyScenePostProcessing(GameRenderer gameRenderer) {
         scenePostProcessor.apply(gameRenderer, configManager.snapshot());
     }
@@ -168,6 +189,9 @@ public final class RenderRuntime {
         performanceMetricsRecorder.close();
     }
 
+    /**
+     * Gives the modern OpenGL controllers a chance to redirect scene rendering.
+     */
     public void beginSceneRendering(GameRenderer gameRenderer) {
         if (backend.type() == RenderBackendType.OPENGL) {
             OpenGlSceneScaleController.instance().beginSceneRendering(gameRenderer, configManager.snapshot());
@@ -175,6 +199,9 @@ public final class RenderRuntime {
         }
     }
 
+    /**
+     * Resolves any redirected scene rendering back into Minecraft's main target.
+     */
     public void endSceneRendering(GameRenderer gameRenderer) {
         if (backend.type() == RenderBackendType.OPENGL) {
             OpenGlSceneMsaaController.instance().endSceneRendering(gameRenderer, configManager.snapshot());
@@ -182,6 +209,9 @@ public final class RenderRuntime {
         }
     }
 
+    /**
+     * Recomputes the backend-neutral pass plan after a mode or quality setting changes.
+     */
     public void rebuildPipeline() {
         currentPlan = planner.plan(backend, configManager.snapshot());
         passManager.replaceAll(currentPlan.passes());
@@ -194,7 +224,10 @@ public final class RenderRuntime {
         );
     }
 
-    private static ScenePostProcessor createScenePostProcessor(RenderBackendType backendType, EdgeDebugAnalyzer edgeDebugAnalyzer) {
+    private static ScenePostProcessor createScenePostProcessor(
+            RenderBackendType backendType,
+            EdgeDebugAnalyzer edgeDebugAnalyzer
+    ) {
         return switch (backendType) {
             case OPENGL -> new OpenGlScenePostProcessor(edgeDebugAnalyzer);
             case VULKAN -> NoOpScenePostProcessor.INSTANCE;
