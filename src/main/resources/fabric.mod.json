@@ -4,6 +4,7 @@
   "version": "${version}",
   "name": "Salt's Anti Aliasing",
   "description": "Client-side anti-aliasing, sharpening, and upscale pipeline foundation for Minecraft.",
+  "icon": "assets/salts_anti_aliasing/icon.png",
   "authors": [],
   "contact": {},
   "license": "All-Rights-Reserved",
