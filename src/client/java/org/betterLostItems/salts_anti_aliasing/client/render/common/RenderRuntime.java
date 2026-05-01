@@ -1,6 +1,7 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.common;
 
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.compat.LoadedMods;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.ConfigManager;
@@ -41,6 +42,7 @@ public final class RenderRuntime {
     private final EdgeDebugAnalyzer edgeDebugAnalyzer;
     private final PerformanceMetricsRecorder performanceMetricsRecorder;
     private PipelinePlan currentPlan;
+    private boolean loggedSodiumMsaaFallback;
 
     private RenderRuntime(
             ConfigManager configManager,
@@ -83,6 +85,7 @@ public final class RenderRuntime {
                         configManager::snapshot
                 )
         );
+        runtime.ensureActiveModeSupported();
         runtime.rebuildPipeline();
         return runtime;
     }
@@ -96,11 +99,11 @@ public final class RenderRuntime {
     }
 
     public AntiAliasingMode cycleMode() {
-        return setMode(activeMode().nextImplemented());
+        return setMode(nextSupportedMode(activeMode()));
     }
 
     public AntiAliasingMode setMode(AntiAliasingMode mode) {
-        AntiAliasingMode clampedMode = AntiAliasingMode.clampImplemented(mode);
+        AntiAliasingMode clampedMode = resolveSupportedMode(AntiAliasingMode.clampImplemented(mode));
         configManager.edit(config -> config.mode = clampedMode);
         edgeDebugAnalyzer.reset(clampedMode);
         rebuildPipeline();
@@ -232,5 +235,48 @@ public final class RenderRuntime {
             case OPENGL -> new OpenGlScenePostProcessor(edgeDebugAnalyzer);
             case VULKAN -> NoOpScenePostProcessor.INSTANCE;
         };
+    }
+
+    private AntiAliasingMode nextSupportedMode(AntiAliasingMode mode) {
+        AntiAliasingMode nextMode = AntiAliasingMode.clampImplemented(mode);
+        do {
+            nextMode = nextMode.nextImplemented();
+        } while (!isModeSupported(nextMode));
+
+        return nextMode;
+    }
+
+    private AntiAliasingMode resolveSupportedMode(AntiAliasingMode mode) {
+        if (isModeSupported(mode)) {
+            return mode;
+        }
+
+        if (mode == AntiAliasingMode.MSAA && LoadedMods.sodiumLoaded()) {
+            logSodiumMsaaFallback();
+            return AntiAliasingMode.FXAA;
+        }
+
+        return AntiAliasingMode.OFF;
+    }
+
+    private static boolean isModeSupported(AntiAliasingMode mode) {
+        return mode != AntiAliasingMode.MSAA || !LoadedMods.sodiumLoaded();
+    }
+
+    private void logSodiumMsaaFallback() {
+        if (loggedSodiumMsaaFallback) {
+            return;
+        }
+
+        loggedSodiumMsaaFallback = true;
+        SaltsAntiAliasing.LOGGER.warn("Sodium is loaded, so MSAA is disabled to avoid Sodium chunk rendering disappearing");
+    }
+
+    private void ensureActiveModeSupported() {
+        AntiAliasingMode supportedMode = resolveSupportedMode(activeMode());
+        if (supportedMode != activeMode()) {
+            configManager.edit(config -> config.mode = supportedMode);
+            edgeDebugAnalyzer.reset(supportedMode);
+        }
     }
 }

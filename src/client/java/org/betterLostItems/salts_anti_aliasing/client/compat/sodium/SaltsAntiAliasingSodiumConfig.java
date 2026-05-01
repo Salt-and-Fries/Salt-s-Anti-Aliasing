@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
+import org.betterLostItems.salts_anti_aliasing.client.compat.LoadedMods;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.config.MsaaSampleLevel;
@@ -30,6 +31,7 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static final String GROUP_TITLE_KEY = "options.salts_anti_aliasing.group.image_quality";
     private static final String SHARPNESS_TOOLTIP_KEY = "options.salts_anti_aliasing.sharpness.tooltip";
     private static final String MSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.msaa_samples.tooltip";
+    private static final String MSAA_SODIUM_TOOLTIP_KEY = "options.salts_anti_aliasing.msaa_samples.tooltip.sodium";
     private static final String SSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.ssaa_scale.tooltip";
     private static final String UPSCALE_TOOLTIP_KEY = "options.salts_anti_aliasing.upscale_quality.tooltip";
 
@@ -79,7 +81,7 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                 .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
                 .setBinding(SaltsAntiAliasingSodiumConfig::setMode, SaltsAntiAliasingSodiumConfig::mode)
                 .setDefaultValue(AntiAliasingMode.OFF)
-                .setAllowedValues(Set.copyOf(AntiAliasingMode.implementedModes()))
+                .setAllowedValues(sodiumSupportedModes())
                 .setElementNameProvider(ClientText::label)
                 .setEnabledProvider(state -> antiAliasingAvailable(), ConfigState.UPDATE_ON_REBUILD);
     }
@@ -87,7 +89,7 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static EnumOptionBuilder<MsaaSampleLevel> createMsaaSamplesOption(ConfigBuilder builder) {
         return builder.createEnumOption(MSAA_SAMPLES_ID, MsaaSampleLevel.class)
                 .setName(Component.translatable("options.salts_anti_aliasing.msaa_samples", Component.empty()))
-                .setTooltip(Component.translatable(MSAA_TOOLTIP_KEY))
+                .setTooltip(Component.translatable(LoadedMods.sodiumLoaded() ? MSAA_SODIUM_TOOLTIP_KEY : MSAA_TOOLTIP_KEY))
                 .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
                 .setBinding(SaltsAntiAliasingSodiumConfig::setMsaaSampleLevel, SaltsAntiAliasingSodiumConfig::msaaSampleLevel)
                 .setDefaultValue(MsaaSampleLevel.defaultLevel())
@@ -144,6 +146,16 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
 
     private static boolean antiAliasingAvailable() {
         return !Minecraft.getInstance().useShaderTransparency();
+    }
+
+    private static Set<AntiAliasingMode> sodiumSupportedModes() {
+        if (!LoadedMods.sodiumLoaded()) {
+            return Set.copyOf(AntiAliasingMode.implementedModes());
+        }
+
+        Set<AntiAliasingMode> modes = java.util.EnumSet.copyOf(AntiAliasingMode.implementedModes());
+        modes.remove(AntiAliasingMode.MSAA);
+        return modes;
     }
 
     private static AntiAliasingMode mode() {
