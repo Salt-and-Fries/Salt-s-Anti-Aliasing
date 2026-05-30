@@ -5,13 +5,11 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "AbstractSelectionListAccessor",
-    "GlCommandEncoderMixin",
     "GameRendererMixin",
-    "KeyboardHandlerLegacyDebugKeysMixin",
     "KeyboardHandlerMixin",
+    "LevelRendererMixin",
     "MinecraftMixin",
     "PostChainAccessor",
-    "PostPassAccessor",
     "RenderTargetMixin",
     "VideoSettingsScreenMixin"
   ],

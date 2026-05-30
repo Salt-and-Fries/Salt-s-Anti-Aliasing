@@ -1,0 +1,122 @@
+{
+    "vertex":  "blit",
+    "fragment":  "salts_anti_aliasing_edge_debug",
+    "attributes":  [
+                       "Position"
+                   ],
+    "samplers":  [
+                     {
+                         "name":  "DiffuseSampler"
+                     },
+                     {
+                         "name":  "DepthSampler"
+                     }
+                 ],
+    "uniforms":  [
+                     {
+                         "name":  "ProjMat",
+                         "type":  "matrix4x4",
+                         "count":  16,
+                         "values":  [
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        1
+                                    ]
+                     },
+                     {
+                         "name":  "InSize",
+                         "type":  "float",
+                         "count":  2,
+                         "values":  [
+                                        1,
+                                        1
+                                    ]
+                     },
+                     {
+                         "name":  "OutSize",
+                         "type":  "float",
+                         "count":  2,
+                         "values":  [
+                                        1,
+                                        1
+                                    ]
+                     },
+                     {
+                         "name":  "SubpixelBlend",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        1.35
+                                    ]
+                     },
+                     {
+                         "name":  "EdgeThreshold",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        0.038
+                                    ]
+                     },
+                     {
+                         "name":  "EdgeThresholdMin",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        0.006
+                                    ]
+                     },
+                     {
+                         "name":  "SearchRadius",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        6
+                                    ]
+                     },
+                     {
+                         "name":  "ColorWeight",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        1.25
+                                    ]
+                     },
+                     {
+                         "name":  "DepthWeight",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        3.25
+                                    ]
+                     },
+                     {
+                         "name":  "VarianceGuard",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        0.26
+                                    ]
+                     },
+                     {
+                         "name":  "EdgeConfidenceScale",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        1.85
+                                    ]
+                     }
+                 ]
+}

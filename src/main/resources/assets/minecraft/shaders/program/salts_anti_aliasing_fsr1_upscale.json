@@ -1,0 +1,87 @@
+{
+    "vertex":  "blit",
+    "fragment":  "salts_anti_aliasing_fsr1_upscale",
+    "attributes":  [
+                       "Position"
+                   ],
+    "samplers":  [
+                     {
+                         "name":  "DiffuseSampler"
+                     }
+                 ],
+    "uniforms":  [
+                     {
+                         "name":  "ProjMat",
+                         "type":  "matrix4x4",
+                         "count":  16,
+                         "values":  [
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        1
+                                    ]
+                     },
+                     {
+                         "name":  "InSize",
+                         "type":  "float",
+                         "count":  2,
+                         "values":  [
+                                        1,
+                                        1
+                                    ]
+                     },
+                     {
+                         "name":  "OutSize",
+                         "type":  "float",
+                         "count":  2,
+                         "values":  [
+                                        1,
+                                        1
+                                    ]
+                     },
+                     {
+                         "name":  "SourceScale",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        0.67
+                                    ]
+                     },
+                     {
+                         "name":  "EdgeBlend",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        0.42
+                                    ]
+                     },
+                     {
+                         "name":  "DetailBoost",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        0.28
+                                    ]
+                     },
+                     {
+                         "name":  "ClampBoost",
+                         "type":  "float",
+                         "count":  1,
+                         "values":  [
+                                        0.18
+                                    ]
+                     }
+                 ]
+}

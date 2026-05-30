@@ -1,0 +1,44 @@
+{
+    "targets":  [
+                    "swap"
+                ],
+    "passes":  [
+                   {
+                       "name":  "salts_anti_aliasing_fsr1_upscale",
+                       "intarget":  "minecraft:main",
+                       "outtarget":  "swap",
+                       "use_linear_filter":  true,
+                       "uniforms":  [
+                                        {
+                                            "name":  "SourceScale",
+                                            "values":  [
+                                                           0.67
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "EdgeBlend",
+                                            "values":  [
+                                                           0.42
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "DetailBoost",
+                                            "values":  [
+                                                           0.28
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "ClampBoost",
+                                            "values":  [
+                                                           0.18
+                                                       ]
+                                        }
+                                    ]
+                   },
+                   {
+                       "name":  "blit",
+                       "intarget":  "swap",
+                       "outtarget":  "minecraft:main"
+                   }
+               ]
+}

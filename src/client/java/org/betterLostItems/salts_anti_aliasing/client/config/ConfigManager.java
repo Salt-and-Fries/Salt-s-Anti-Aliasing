@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  * Fabric-backed persistence adapter for the shared anti-aliasing config.
  *
  * <p>The in-memory {@link AntiAliasingConfig} is plain data and can be reused by every
- * version jar. This manager is the modern Fabric implementation of loading, validating,
+ * version jar. This manager is the Fabric implementation of loading, validating,
  * editing, and saving that data.</p>
  */
 public final class ConfigManager {

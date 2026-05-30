@@ -1,0 +1,38 @@
+{
+    "targets":  [
+                    "swap"
+                ],
+    "passes":  [
+                   {
+                       "name":  "salts_anti_aliasing_nis_sharpen",
+                       "intarget":  "minecraft:main",
+                       "outtarget":  "swap",
+                       "use_linear_filter":  true,
+                       "uniforms":  [
+                                        {
+                                            "name":  "Sharpness",
+                                            "values":  [
+                                                           0.25
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "EdgeBoost",
+                                            "values":  [
+                                                           1.1
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "ClampBoost",
+                                            "values":  [
+                                                           0.18
+                                                       ]
+                                        }
+                                    ]
+                   },
+                   {
+                       "name":  "blit",
+                       "intarget":  "swap",
+                       "outtarget":  "minecraft:main"
+                   }
+               ]
+}

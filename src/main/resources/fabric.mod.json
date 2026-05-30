@@ -16,9 +16,6 @@
     "modmenu": [
       "org.betterLostItems.salts_anti_aliasing.client.compat.modmenu.SaltsAntiAliasingModMenuApi"
     ],
-    "sodium:config_api_user": [
-      "org.betterLostItems.salts_anti_aliasing.client.compat.sodium.SaltsAntiAliasingSodiumConfig"
-    ],
     "main": [
       "org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing"
     ]
@@ -33,7 +30,7 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
-    "minecraft": ">=1.21.8 <1.21.12"
+    "minecraft": ">=1.21.1 <1.21.2"
   },
   "suggests": {
     "modmenu": "*",

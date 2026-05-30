@@ -3,7 +3,6 @@ package org.betterLostItems.salts_anti_aliasing.client.debug;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Screenshot;
-import net.minecraft.util.ARGB;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
@@ -61,7 +60,7 @@ public final class EdgeDebugAnalyzer {
             reset(config.mode);
         }
 
-        if (capturePending || mainTarget.getColorTexture() == null || mainTarget.width <= 2 || mainTarget.height <= 2) {
+        if (capturePending || mainTarget.getColorTextureId() == -1 || mainTarget.width <= 2 || mainTarget.height <= 2) {
             return;
         }
 
@@ -73,22 +72,19 @@ public final class EdgeDebugAnalyzer {
         framesUntilCapture = 0;
         capturePending = true;
         int generation = analysisGeneration;
-        int downscaleFactor = chooseDownscaleFactor(mainTarget.width, mainTarget.height);
         AntiAliasingMode mode = config.mode;
 
-        Screenshot.takeScreenshot(mainTarget, downscaleFactor, image -> {
-            try (image) {
-                if (generation == analysisGeneration) {
-                    latestStats = analyze(image, mode);
-                }
-            } catch (RuntimeException exception) {
-                SaltsAntiAliasing.LOGGER.warn("Failed to analyze Salt's Anti Aliasing edge debug frame", exception);
-            } finally {
-                if (generation == analysisGeneration) {
-                    capturePending = false;
-                }
+        try (NativeImage image = Screenshot.takeScreenshot(mainTarget)) {
+            if (generation == analysisGeneration) {
+                latestStats = analyze(image, mode);
             }
-        });
+        } catch (RuntimeException exception) {
+            SaltsAntiAliasing.LOGGER.warn("Failed to analyze Salt's Anti Aliasing edge debug frame", exception);
+        } finally {
+            if (generation == analysisGeneration) {
+                capturePending = false;
+            }
+        }
     }
 
     /**
@@ -111,18 +107,18 @@ public final class EdgeDebugAnalyzer {
 
         for (int y = 1; y < height - 1; y++) {
             for (int x = 1; x < width - 1; x++) {
-                float center = luma(image.getPixel(x, y));
-                float north = luma(image.getPixel(x, y - 1));
-                float south = luma(image.getPixel(x, y + 1));
-                float west = luma(image.getPixel(x - 1, y));
-                float east = luma(image.getPixel(x + 1, y));
-                float northWest = luma(image.getPixel(x - 1, y - 1));
-                float northEast = luma(image.getPixel(x + 1, y - 1));
-                float southWest = luma(image.getPixel(x - 1, y + 1));
-                float southEast = luma(image.getPixel(x + 1, y + 1));
+                float center = luma(image.getPixelRGBA(x, y));
+                float north = luma(image.getPixelRGBA(x, y - 1));
+                float south = luma(image.getPixelRGBA(x, y + 1));
+                float west = luma(image.getPixelRGBA(x - 1, y));
+                float east = luma(image.getPixelRGBA(x + 1, y));
+                float northWest = luma(image.getPixelRGBA(x - 1, y - 1));
+                float northEast = luma(image.getPixelRGBA(x + 1, y - 1));
+                float southWest = luma(image.getPixelRGBA(x - 1, y + 1));
+                float southEast = luma(image.getPixelRGBA(x + 1, y + 1));
 
-                float minLuma = min(center, north, south, west, east, northWest, northEast, southWest, southEast);
-                float maxLuma = max(center, north, south, west, east, northWest, northEast, southWest, southEast);
+                float minLuma = min9(center, north, south, west, east, northWest, northEast, southWest, southEast);
+                float maxLuma = max9(center, north, south, west, east, northWest, northEast, southWest, southEast);
                 float range = maxLuma - minLuma;
 
                 float gradientX = Math.abs((northEast + 2.0f * east + southEast) - (northWest + 2.0f * west + southWest)) * 0.25f;
@@ -172,23 +168,6 @@ public final class EdgeDebugAnalyzer {
     }
 
     /**
-     * Coordinates choose downscale factor within the anti-aliasing render, configuration, or
-     * compatibility flow.
-     * @param width width supplied by Minecraft or the caller
-     * @param height height supplied by Minecraft or the caller
-     * @return choose downscale factor value produced or selected by this code path
-     */
-    private static int chooseDownscaleFactor(int width, int height) {
-        int[] preferredFactors = {4, 3, 2, 1};
-        for (int factor : preferredFactors) {
-            if (width % factor == 0 && height % factor == 0) {
-                return factor;
-            }
-        }
-        return 1;
-    }
-
-    /**
      * Checks whether is intermediate without mutating configuration or render state.
      * @param sample sample supplied by Minecraft or the caller
      * @param lowerBand lower band supplied by Minecraft or the caller
@@ -201,13 +180,13 @@ public final class EdgeDebugAnalyzer {
 
     /**
      * Coordinates luma within the anti-aliasing render, configuration, or compatibility flow.
-     * @param argb argb supplied by Minecraft or the caller
+     * @param rgba rgba supplied by Minecraft or the caller
      * @return luma value produced or selected by this code path
      */
-    private static float luma(int argb) {
-        float red = ARGB.red(argb) / 255.0f;
-        float green = ARGB.green(argb) / 255.0f;
-        float blue = ARGB.blue(argb) / 255.0f;
+    private static float luma(int rgba) {
+        float red = (rgba & 0xFF) / 255.0f;
+        float green = ((rgba >>> 8) & 0xFF) / 255.0f;
+        float blue = ((rgba >>> 16) & 0xFF) / 255.0f;
         return red * 0.299f + green * 0.587f + blue * 0.114f;
     }
 
@@ -225,27 +204,17 @@ public final class EdgeDebugAnalyzer {
 
     /**
      * Coordinates min within the anti-aliasing render, configuration, or compatibility flow.
-     * @param values values supplied by Minecraft or the caller
      * @return min value produced or selected by this code path
      */
-    private static float min(float... values) {
-        float result = values[0];
-        for (int i = 1; i < values.length; i++) {
-            result = Math.min(result, values[i]);
-        }
-        return result;
+    private static float min9(float a, float b, float c, float d, float e, float f, float g, float h, float i) {
+        return Math.min(Math.min(Math.min(Math.min(a, b), Math.min(c, d)), Math.min(Math.min(e, f), Math.min(g, h))), i);
     }
 
     /**
      * Coordinates max within the anti-aliasing render, configuration, or compatibility flow.
-     * @param values values supplied by Minecraft or the caller
      * @return max value produced or selected by this code path
      */
-    private static float max(float... values) {
-        float result = values[0];
-        for (int i = 1; i < values.length; i++) {
-            result = Math.max(result, values[i]);
-        }
-        return result;
+    private static float max9(float a, float b, float c, float d, float e, float f, float g, float h, float i) {
+        return Math.max(Math.max(Math.max(Math.max(a, b), Math.max(c, d)), Math.max(Math.max(e, f), Math.max(g, h))), i);
     }
 }

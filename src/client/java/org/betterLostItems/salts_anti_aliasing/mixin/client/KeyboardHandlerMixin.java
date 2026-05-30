@@ -21,10 +21,10 @@ public abstract class KeyboardHandlerMixin {
     private Minecraft minecraft;
 
     /**
-     * 1.21.10-1.21.11 debug-key descriptor.
+     * 1.21.1 debug-key descriptor.
      */
-    @Inject(method = "handleDebugKeys(Lnet/minecraft/client/input/KeyEvent;)Z", at = @At("HEAD"), cancellable = true)
-    private void saltsAntiAliasing$toggleEdgeDebug(net.minecraft.client.input.KeyEvent keyEvent, CallbackInfoReturnable<Boolean> cir) {
-        ModernMinecraftHooks.toggleEdgeDebug(minecraft, keyEvent.key(), cir);
+    @Inject(method = "handleDebugKeys", at = @At("HEAD"), cancellable = true)
+    private void saltsAntiAliasing$toggleEdgeDebug(int key, CallbackInfoReturnable<Boolean> cir) {
+        ModernMinecraftHooks.toggleEdgeDebug(minecraft, key, cir);
     }
 }

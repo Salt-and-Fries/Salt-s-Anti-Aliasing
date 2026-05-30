@@ -2,7 +2,6 @@ package org.betterLostItems.salts_anti_aliasing.mixin.client;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.fog.FogRenderer;
 import org.joml.Matrix4f;
 import org.betterLostItems.salts_anti_aliasing.client.platform.modern.ModernMinecraftHooks;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,43 +25,17 @@ public abstract class GameRendererMixin {
     }
 
     /**
-     * 1.21.10-1.21.11 projection hook. The 1.21.8 descriptor is below; exactly one of
-     * these {@code @ModifyArg} hooks should apply in any supported modern jar.
+     * Applies jitter to the 1.21.1 projection matrix passed into LevelRenderer.
      */
     @ModifyArg(
             method = "renderLevel",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V"
+                    target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V"
             ),
-            index = 5,
-            require = 0
+            index = 6
     )
-    private Matrix4f saltsAntiAliasing$configureTemporalProjection_1_21_10(Matrix4f projectionMatrix) {
-        return ModernMinecraftHooks.jitterProjection(projectionMatrix);
-    }
-
-    /**
-     * 1.21.8-1.21.9 projection hook. This signature has one fewer matrix argument than
-     * 1.21.10+, but the projection matrix is still the second matrix argument.
-     *
-     * <p>The invoke target is deliberately written in intermediary names and marked
-     * {@code remap = false}. The current compile target is 1.21.11, so Loom cannot
-     * resolve this older invoke descriptor from the named compile classpath. The
-     * production jar runs in intermediary namespace, which makes this selector land
-     * correctly on the older modern runtimes without adding runtime version checks.</p>
-     */
-    @ModifyArg(
-            method = "renderLevel",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/class_761;method_22710(Lnet/minecraft/class_9922;Lnet/minecraft/class_9779;ZLnet/minecraft/class_4184;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V",
-                    remap = false
-            ),
-            index = 5,
-            require = 0
-    )
-    private Matrix4f saltsAntiAliasing$configureTemporalProjection_1_21_8(Matrix4f projectionMatrix) {
+    private Matrix4f saltsAntiAliasing$configureTemporalProjection(Matrix4f projectionMatrix) {
         return ModernMinecraftHooks.jitterProjection(projectionMatrix);
     }
 
@@ -75,6 +48,21 @@ public abstract class GameRendererMixin {
     }
 
     /**
+     * Restores Minecraft's native main target before the first-person hand pass.
+     */
+    @Inject(
+            method = "renderLevel",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)V",
+                    shift = At.Shift.AFTER
+            )
+    )
+    private void saltsAntiAliasing$finishScaledSceneBeforeHand(DeltaTracker deltaTracker, CallbackInfo callbackInfo) {
+        ModernMinecraftHooks.finishScaledSceneRendering((GameRenderer) (Object) this);
+    }
+
+    /**
      * Resolves redirected scene-target work after world rendering returns.
      */
     @Inject(method = "renderLevel", at = @At("RETURN"))
@@ -83,9 +71,16 @@ public abstract class GameRendererMixin {
     }
 
     /**
-     * Runs post effects after fog has ended the scene frame and before HUD rendering.
+     * Runs post effects after the world and vanilla world effects, before HUD rendering.
      */
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/fog/FogRenderer;endFrame()V"))
+    @Inject(
+            method = "render",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;bindWrite(Z)V",
+                    ordinal = 0
+            )
+    )
     private void saltsAntiAliasing$applySceneOnlyPostProcessing(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo callbackInfo) {
         ModernMinecraftHooks.applyScenePostProcessing((GameRenderer) (Object) this);
     }

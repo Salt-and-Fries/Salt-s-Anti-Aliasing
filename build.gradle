@@ -31,10 +31,6 @@ repositories {
         name = "TerraformersMC"
         url = "https://maven.terraformersmc.com/releases/"
     }
-    maven {
-        name = "CaffeineMC"
-        url = "https://maven.caffeinemc.net/releases"
-    }
 }
 
 dependencies {
@@ -44,7 +40,6 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modCompileOnly "net.caffeinemc:sodium-fabric-api:${project.sodium_api_version}"
 }
 
 processResources {

@@ -19,15 +19,15 @@ import org.betterLostItems.salts_anti_aliasing.client.render.opengl.OpenGlSceneS
 import net.minecraft.client.renderer.GameRenderer;
 
 /**
- * Coordinates the shared anti-aliasing state machine for the modern Minecraft renderer.
+ * Coordinates the shared anti-aliasing state machine for the Minecraft renderer.
  *
  * <p>The runtime intentionally sits between two worlds:</p>
  *
  * <ul>
  *     <li>The version-stable mod model: config values, mode semantics, pass planning,
  *     metrics, and debug state.</li>
- *     <li>The modern 1.21.8-1.21.11 Minecraft renderer: {@link GameRenderer}, render
- *     targets, post chains, and OpenGL/GPU controllers.</li>
+ *     <li>The 1.21.1 Minecraft renderer: {@link GameRenderer}, render targets, post chains,
+ *     and OpenGL framebuffer controllers.</li>
  * </ul>
  *
  * <p>Future legacy or mid-version jars should provide their own platform runtime/adapters
@@ -75,7 +75,7 @@ public final class RenderRuntime {
     }
 
     /**
-     * Builds the modern runtime from disk config and renderer capabilities.
+ * Builds the runtime from disk config and renderer capabilities.
      */
     public static RenderRuntime bootstrap() {
         ConfigManager configManager = ConfigManager.createDefault();
@@ -303,12 +303,13 @@ public final class RenderRuntime {
     }
 
     /**
-     * Gives the modern OpenGL controllers a chance to redirect scene rendering.
+     * Gives the OpenGL controllers a chance to redirect scene rendering.
      */
     public void beginSceneRendering(GameRenderer gameRenderer) {
         if (backend.type() == RenderBackendType.OPENGL) {
-            OpenGlSceneScaleController.instance().beginSceneRendering(gameRenderer, configManager.snapshot());
-            OpenGlSceneMsaaController.instance().beginSceneRendering(gameRenderer, configManager.snapshot());
+            AntiAliasingConfig config = configManager.snapshot();
+            OpenGlSceneScaleController.instance().beginSceneRendering(gameRenderer, config);
+            OpenGlSceneMsaaController.instance().beginSceneRendering(gameRenderer, config);
         }
     }
 
@@ -317,7 +318,17 @@ public final class RenderRuntime {
      */
     public void endSceneRendering(GameRenderer gameRenderer) {
         if (backend.type() == RenderBackendType.OPENGL) {
-            OpenGlSceneMsaaController.instance().endSceneRendering(gameRenderer, configManager.snapshot());
+            AntiAliasingConfig config = configManager.snapshot();
+            OpenGlSceneMsaaController.instance().endSceneRendering(gameRenderer, config);
+            OpenGlSceneScaleController.instance().endSceneRendering(gameRenderer, config);
+        }
+    }
+
+    /**
+     * Resolves scaled internal-resolution work without touching other active scene controllers.
+     */
+    public void finishScaledSceneRendering(GameRenderer gameRenderer) {
+        if (backend.type() == RenderBackendType.OPENGL) {
             OpenGlSceneScaleController.instance().endSceneRendering(gameRenderer, configManager.snapshot());
         }
     }

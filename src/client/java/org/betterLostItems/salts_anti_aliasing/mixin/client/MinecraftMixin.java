@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
     /**
-     * Lets the modern renderer temporarily substitute the world render target for
+     * Lets the renderer temporarily substitute the world render target for
      * internal-resolution modes while leaving HUD/menu rendering on Minecraft's target.
      */
     @Inject(method = "getMainRenderTarget", at = @At("HEAD"), cancellable = true)

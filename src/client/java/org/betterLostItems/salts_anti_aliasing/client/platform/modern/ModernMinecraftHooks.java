@@ -1,12 +1,10 @@
 package org.betterLostItems.salts_anti_aliasing.client.platform.modern;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.GpuTextureView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
 import org.betterLostItems.salts_anti_aliasing.client.render.opengl.OpenGlSceneMsaaController;
@@ -17,7 +15,7 @@ import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Central bridge between Minecraft 1.21.8-1.21.11 hook points and the shared mod runtime.
+ * Central bridge between Minecraft 1.21.1 hook points and the shared mod runtime.
  *
  * <p>Mixins should be as small and boring as possible. Their job is to land on a
  * Minecraft method that exists in this version family, collect the raw values exposed by
@@ -25,8 +23,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * future version jars one obvious translation layer to replace while the core config,
  * pipeline planning, metrics, and mode semantics stay stable.</p>
  *
- * <p>This class is intentionally allowed to depend on Minecraft classes and on the modern
- * OpenGL/GPU controllers. Code below this layer should avoid knowing which mixin fired or
+ * <p>This class is intentionally allowed to depend on Minecraft classes and on the OpenGL
+ * controllers. Code below this layer should avoid knowing which mixin fired or
  * which Minecraft descriptor was used to reach the hook.</p>
  */
 public final class ModernMinecraftHooks {
@@ -34,7 +32,7 @@ public final class ModernMinecraftHooks {
     private static long lastEdgeDebugToggleMs;
 
     /**
-     * Creates a modern minecraft hooks with the collaborators or initial state supplied by the caller.
+     * Creates a minecraft hooks facade with the collaborators or initial state supplied by the caller.
      */
     private ModernMinecraftHooks() {
     }
@@ -45,8 +43,13 @@ public final class ModernMinecraftHooks {
     public static void prepareTemporalJitter(GameRenderer gameRenderer) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         boolean taaActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
+        if (!taaActive) {
+            OpenGlSceneTemporalController.instance().prepareFrameJitter(false, 0, 0);
+            return;
+        }
+
         RenderTarget mainTarget = gameRenderer.getMinecraft().getMainRenderTarget();
-        OpenGlSceneTemporalController.instance().prepareFrameJitter(taaActive, mainTarget.width, mainTarget.height);
+        OpenGlSceneTemporalController.instance().prepareFrameJitter(true, mainTarget.width, mainTarget.height);
     }
 
     /**
@@ -56,7 +59,7 @@ public final class ModernMinecraftHooks {
     public static Matrix4f jitterProjection(Matrix4f projectionMatrix) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         boolean taaActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
-        return new Matrix4f(OpenGlSceneTemporalController.instance().jitterProjection(projectionMatrix, taaActive));
+        return OpenGlSceneTemporalController.instance().jitterProjection(projectionMatrix, taaActive);
     }
 
     /**
@@ -76,6 +79,17 @@ public final class ModernMinecraftHooks {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         if (runtime != null) {
             runtime.endSceneRendering(gameRenderer);
+        }
+    }
+
+    /**
+     * Resolves only the scaled internal-resolution scene when Minecraft reaches native-sized late
+     * world passes such as outlines, transparency composition, or hand rendering.
+     */
+    public static void finishScaledSceneRendering(GameRenderer gameRenderer) {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        if (runtime != null) {
+            runtime.finishScaledSceneRendering(gameRenderer);
         }
     }
 
@@ -108,64 +122,19 @@ public final class ModernMinecraftHooks {
     }
 
     /**
+     * Forces viewport updates for 1.21.1 target switches while a scaled scene target is active.
+     */
+    public static boolean forceScaledSceneViewport(RenderTarget target, boolean setViewport) {
+        return OpenGlSceneScaleController.instance().forceViewportOnBind(target, setViewport);
+    }
+
+    /**
      * Flushes metrics during the normal Minecraft shutdown hooks.
      */
     public static void shutdownMetrics() {
         if (SaltsAntiAliasingClient.runtimeOrNull() != null) {
             SaltsAntiAliasingClient.runtime().shutdownMetrics();
         }
-    }
-
-    /**
-     * Redirects color texture reads while SSAA/upscale or MSAA controllers own the scene.
-     */
-    public static GpuTexture redirectColorTexture(RenderTarget target) {
-        GpuTexture redirectedTexture = OpenGlSceneScaleController.instance().overrideColorTexture(target);
-        if (redirectedTexture != null) {
-            return redirectedTexture;
-        }
-
-        OpenGlSceneMsaaController.instance().syncColorIfNeeded(target);
-        return null;
-    }
-
-    /**
-     * Redirects color texture view reads while SSAA/upscale or MSAA controllers own the scene.
-     */
-    public static GpuTextureView redirectColorTextureView(RenderTarget target) {
-        GpuTextureView redirectedTextureView = OpenGlSceneScaleController.instance().overrideColorTextureView(target);
-        if (redirectedTextureView != null) {
-            return redirectedTextureView;
-        }
-
-        OpenGlSceneMsaaController.instance().syncColorIfNeeded(target);
-        return null;
-    }
-
-    /**
-     * Redirects depth texture reads while SSAA/upscale or MSAA controllers own the scene.
-     */
-    public static GpuTexture redirectDepthTexture(RenderTarget target) {
-        GpuTexture redirectedTexture = OpenGlSceneScaleController.instance().overrideDepthTexture(target);
-        if (redirectedTexture != null) {
-            return redirectedTexture;
-        }
-
-        OpenGlSceneMsaaController.instance().syncDepthIfNeeded(target);
-        return null;
-    }
-
-    /**
-     * Redirects depth texture view reads while SSAA/upscale or MSAA controllers own the scene.
-     */
-    public static GpuTextureView redirectDepthTextureView(RenderTarget target) {
-        GpuTextureView redirectedTextureView = OpenGlSceneScaleController.instance().overrideDepthTextureView(target);
-        if (redirectedTextureView != null) {
-            return redirectedTextureView;
-        }
-
-        OpenGlSceneMsaaController.instance().syncDepthIfNeeded(target);
-        return null;
     }
 
     /**
@@ -181,67 +150,15 @@ public final class ModernMinecraftHooks {
     }
 
     /**
-     * Lets the MSAA controller replace the main scene framebuffer for a render pass.
+     * Lets the 1.21.1 framebuffer renderer bind the multisampled scene FBO instead of the main
+     * target while MSAA mode is active.
      */
-    public static Integer overrideFramebuffer(GpuTextureView colorView, GpuTexture depthTexture, int originalFramebufferId) {
-        if (colorView instanceof com.mojang.blaze3d.opengl.GlTextureView glTextureView) {
-            return OpenGlSceneMsaaController.instance().overrideFramebuffer(glTextureView, depthTexture, originalFramebufferId);
-        }
-
-        return null;
+    public static boolean overrideMainFramebuffer(RenderTarget target, boolean setViewport) {
+        return OpenGlSceneMsaaController.instance().overrideMainFramebuffer(target, setViewport);
     }
 
     /**
-     * Lets the MSAA controller replace the main scene framebuffer when an older
-     * modern encoder builds the framebuffer from the color texture instead of
-     * from a texture view.
-     */
-    public static Integer overrideFramebuffer(GpuTexture colorTexture, GpuTexture depthTexture, int originalFramebufferId) {
-        return OpenGlSceneMsaaController.instance().overrideFramebuffer(colorTexture, depthTexture, originalFramebufferId);
-    }
-
-    /**
-     * Coordinates mirror color clear to msaa within the anti-aliasing render, configuration, or
-     * compatibility flow.
-     * @param colorTexture color texture supplied by Minecraft or the caller
-     * @param clearColor clear color supplied by Minecraft or the caller
-     */
-    public static void mirrorColorClearToMsaa(GpuTexture colorTexture, int clearColor) {
-        OpenGlSceneMsaaController.instance().mirrorClearColorIfNeeded(colorTexture, clearColor);
-    }
-
-    /**
-     * Coordinates mirror depth clear to msaa within the anti-aliasing render, configuration, or
-     * compatibility flow.
-     * @param depthTexture depth texture supplied by Minecraft or the caller
-     * @param clearDepth clear depth supplied by Minecraft or the caller
-     */
-    public static void mirrorDepthClearToMsaa(GpuTexture depthTexture, double clearDepth) {
-        OpenGlSceneMsaaController.instance().mirrorClearDepthIfNeeded(depthTexture, clearDepth);
-    }
-
-    /**
-     * Coordinates mirror color depth clear to msaa within the anti-aliasing render, configuration, or
-     * compatibility flow.
-     * @param colorTexture color texture supplied by Minecraft or the caller
-     * @param clearColor clear color supplied by Minecraft or the caller
-     * @param depthTexture depth texture supplied by Minecraft or the caller
-     * @param clearDepth clear depth supplied by Minecraft or the caller
-     */
-    public static void mirrorColorDepthClearToMsaa(GpuTexture colorTexture, int clearColor, GpuTexture depthTexture, double clearDepth) {
-        OpenGlSceneMsaaController.instance().mirrorClearColorAndDepthIfNeeded(colorTexture, clearColor, depthTexture, clearDepth);
-    }
-
-    /**
-     * Coordinates resolve msaa after render pass within the anti-aliasing render, configuration, or
-     * compatibility flow.
-     */
-    public static void resolveMsaaAfterRenderPass() {
-        OpenGlSceneMsaaController.instance().onRenderPassFinished();
-    }
-
-    /**
-     * Handles the debug-view toggle from both keyboard descriptors used inside the modern range.
+     * Handles the debug-view toggle from Minecraft's 1.21.1 debug-key path.
      */
     public static void toggleEdgeDebug(Minecraft minecraft, int key, CallbackInfoReturnable<Boolean> callbackInfo) {
         if (key != GLFW.GLFW_KEY_K) {

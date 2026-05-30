@@ -1,0 +1,74 @@
+{
+    "targets":  [
+                    "swap"
+                ],
+    "passes":  [
+                   {
+                       "name":  "salts_anti_aliasing_fxaa",
+                       "intarget":  "minecraft:main",
+                       "outtarget":  "swap",
+                       "use_linear_filter":  true,
+                       "auxtargets":  [
+                                          {
+                                              "name":  "DepthSampler",
+                                              "id":  "minecraft:main:depth"
+                                          }
+                                      ],
+                       "uniforms":  [
+                                        {
+                                            "name":  "SubpixelBlend",
+                                            "values":  [
+                                                           1.35
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "EdgeThreshold",
+                                            "values":  [
+                                                           0.038
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "EdgeThresholdMin",
+                                            "values":  [
+                                                           0.006
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "SearchRadius",
+                                            "values":  [
+                                                           6
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "ColorWeight",
+                                            "values":  [
+                                                           1.25
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "DepthWeight",
+                                            "values":  [
+                                                           3.25
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "VarianceGuard",
+                                            "values":  [
+                                                           0.26
+                                                       ]
+                                        },
+                                        {
+                                            "name":  "EdgeConfidenceScale",
+                                            "values":  [
+                                                           1.85
+                                                       ]
+                                        }
+                                    ]
+                   },
+                   {
+                       "name":  "blit",
+                       "intarget":  "swap",
+                       "outtarget":  "minecraft:main"
+                   }
+               ]
+}

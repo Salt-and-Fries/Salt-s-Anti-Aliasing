@@ -9,7 +9,7 @@ import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPr
  *
  * <p>Core enums expose translation keys as strings so they can remain loader- and
  * version-neutral. This small adapter is the only place that turns those keys into
- * Minecraft {@link Component} objects for the modern Fabric client UI.</p>
+ * Minecraft {@link Component} objects for the Fabric client UI.</p>
  */
 public final class ClientText {
     /**
