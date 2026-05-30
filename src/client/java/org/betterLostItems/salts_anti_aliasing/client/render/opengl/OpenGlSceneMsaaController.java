@@ -14,6 +14,7 @@ import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.config.MsaaSampleLevel;
 import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL14C;
 import org.lwjgl.opengl.GL30C;
 
 /**
@@ -313,7 +314,7 @@ public final class OpenGlSceneMsaaController {
         GL30C.glRenderbufferStorageMultisample(
                 GL30C.GL_RENDERBUFFER,
                 samples,
-                GL30C.GL_DEPTH_COMPONENT32F,
+                GL14C.GL_DEPTH_COMPONENT32,
                 width,
                 height
         );

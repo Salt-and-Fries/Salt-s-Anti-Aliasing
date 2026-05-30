@@ -7,8 +7,9 @@ import com.mojang.blaze3d.textures.GpuTexture;
 import org.betterLostItems.salts_anti_aliasing.client.platform.modern.ModernMinecraftHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Group;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.OptionalDouble;
@@ -22,14 +23,17 @@ import java.util.function.Supplier;
 @Mixin(targets = "com.mojang.blaze3d.opengl.GlCommandEncoder")
 public abstract class GlCommandEncoderMixin {
     /**
-     * Sends Minecraft's main scene render pass into the multisampled FBO when MSAA mode is active.
+     * Sends Minecraft's main scene render pass into the multisampled FBO on the
+     * 1.21.11 encoder path.
      */
+    @Group(name = "saltsAntiAliasing$sceneFramebufferRedirect", min = 1, max = 1)
     @Redirect(
             method = "createRenderPass(Ljava/util/function/Supplier;Lcom/mojang/blaze3d/textures/GpuTextureView;Ljava/util/OptionalInt;Lcom/mojang/blaze3d/textures/GpuTextureView;Ljava/util/OptionalDouble;)Lcom/mojang/blaze3d/systems/RenderPass;",
             at = @At(
                     value = "INVOKE",
                     target = "Lcom/mojang/blaze3d/opengl/GlTextureView;getFbo(Lcom/mojang/blaze3d/opengl/DirectStateAccess;Lcom/mojang/blaze3d/textures/GpuTexture;)I"
-            )
+            ),
+            require = 0
     )
     private int saltsAntiAliasing$redirectSceneFramebuffer(
             GlTextureView colorView,
@@ -48,7 +52,7 @@ public abstract class GlCommandEncoderMixin {
 
     /**
      * Sends Minecraft's main scene render pass into the multisampled FBO on the
-     * older modern encoder path used by 1.21.8-1.21.9.
+     * older modern encoder path used by 1.21.8-1.21.10.
      *
      * <p>Those versions created the framebuffer from the underlying
      * {@link GlTexture} instead of the {@link GlTextureView}. Keeping this as a
@@ -56,6 +60,7 @@ public abstract class GlCommandEncoderMixin {
      * range without making the renderer ask Minecraft which minor version is
      * active.</p>
      */
+    @Group(name = "saltsAntiAliasing$sceneFramebufferRedirect", min = 1, max = 1)
     @Redirect(
             method = "createRenderPass(Ljava/util/function/Supplier;Lcom/mojang/blaze3d/textures/GpuTextureView;Ljava/util/OptionalInt;Lcom/mojang/blaze3d/textures/GpuTextureView;Ljava/util/OptionalDouble;)Lcom/mojang/blaze3d/systems/RenderPass;",
             at = @At(

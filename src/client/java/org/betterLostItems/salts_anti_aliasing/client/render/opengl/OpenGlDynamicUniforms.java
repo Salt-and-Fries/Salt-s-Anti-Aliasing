@@ -10,6 +10,8 @@ import org.betterLostItems.salts_anti_aliasing.mixin.client.PostChainAccessor;
 import org.betterLostItems.salts_anti_aliasing.mixin.client.PostPassAccessor;
 import org.lwjgl.system.MemoryStack;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.IdentityHashMap;
@@ -134,7 +136,7 @@ final class OpenGlDynamicUniforms {
         }
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            ByteBuffer bufferData = stack.malloc((int) previousBuffer.size()).order(ByteOrder.nativeOrder());
+            ByteBuffer bufferData = stack.malloc(bufferSize(previousBuffer)).order(ByteOrder.nativeOrder());
             writer.write(bufferData);
             while (bufferData.hasRemaining()) {
                 bufferData.put((byte) 0);
@@ -188,6 +190,20 @@ final class OpenGlDynamicUniforms {
         }
         LAST_UPLOADED_HASHES.remove(old);
         return replacement;
+    }
+
+    private static int bufferSize(GpuBuffer buffer) {
+        try {
+            Method sizeMethod = buffer.getClass().getMethod("size");
+            Object size = sizeMethod.invoke(buffer);
+            if (size instanceof Number number) {
+                return Math.toIntExact(number.longValue());
+            }
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
+            throw new IllegalStateException("Unable to read GPU uniform buffer size.", exception);
+        }
+
+        throw new IllegalStateException("GPU uniform buffer size did not return a number.");
     }
 
     /**

@@ -6,7 +6,7 @@
   },
   "passes": [
     {
-      "vertex_shader": "minecraft:core/screenquad",
+      "vertex_shader": "salts_anti_aliasing:post/screenquad",
       "fragment_shader": "salts_anti_aliasing:post/smaa_edge_detect",
       "inputs": [
         {
@@ -36,7 +36,7 @@
       }
     },
     {
-      "vertex_shader": "minecraft:core/screenquad",
+      "vertex_shader": "salts_anti_aliasing:post/screenquad",
       "fragment_shader": "salts_anti_aliasing:post/smaa_weight_blend",
       "inputs": [
         {
@@ -70,7 +70,7 @@
       }
     },
     {
-      "vertex_shader": "minecraft:core/screenquad",
+      "vertex_shader": "salts_anti_aliasing:post/screenquad",
       "fragment_shader": "salts_anti_aliasing:post/smaa_neighborhood_blend",
       "inputs": [
         {
@@ -87,7 +87,7 @@
       "output": "resolved"
     },
     {
-      "vertex_shader": "minecraft:core/screenquad",
+      "vertex_shader": "salts_anti_aliasing:post/screenquad",
       "fragment_shader": "minecraft:post/blit",
       "inputs": [
         {

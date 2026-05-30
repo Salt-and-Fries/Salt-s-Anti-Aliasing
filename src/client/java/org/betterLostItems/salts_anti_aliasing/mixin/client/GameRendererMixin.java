@@ -7,6 +7,7 @@ import org.joml.Matrix4f;
 import org.betterLostItems.salts_anti_aliasing.client.platform.modern.ModernMinecraftHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Group;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -26,9 +27,10 @@ public abstract class GameRendererMixin {
     }
 
     /**
-     * 1.21.10-1.21.11 projection hook. The 1.21.8 descriptor is below; exactly one of
+     * 1.21.9-1.21.11 projection hook. The 1.21.8 descriptor is below; exactly one of
      * these {@code @ModifyArg} hooks should apply in any supported modern jar.
      */
+    @Group(name = "saltsAntiAliasing$projectionJitter", min = 1, max = 1)
     @ModifyArg(
             method = "renderLevel",
             at = @At(
@@ -43,8 +45,8 @@ public abstract class GameRendererMixin {
     }
 
     /**
-     * 1.21.8-1.21.9 projection hook. This signature has one fewer matrix argument than
-     * 1.21.10+, but the projection matrix is still the second matrix argument.
+     * 1.21.8 projection hook. This signature has one fewer matrix argument than
+     * 1.21.9+, but the projection matrix is still the second matrix argument.
      *
      * <p>The invoke target is deliberately written in intermediary names and marked
      * {@code remap = false}. The current compile target is 1.21.11, so Loom cannot
@@ -52,6 +54,7 @@ public abstract class GameRendererMixin {
      * production jar runs in intermediary namespace, which makes this selector land
      * correctly on the older modern runtimes without adding runtime version checks.</p>
      */
+    @Group(name = "saltsAntiAliasing$projectionJitter", min = 1, max = 1)
     @ModifyArg(
             method = "renderLevel",
             at = @At(

@@ -22,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +61,9 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
             return;
         }
 
-        AbstractWidget weatherWidget = saltsAntiAliasing$detachOptionWidget(this.options.weatherRadius());
+        AbstractWidget weatherWidget = saltsAntiAliasing$detachOptionWidget(
+                saltsAntiAliasing$optionalOption("weatherRadius", "method_75333")
+        );
         int initialEntryCount = this.list.children().size();
 
         saltsAntiAliasing$modeButton = AntiAliasingVideoButtonFactory.create(() -> {
@@ -87,7 +91,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
     /**
      * Keeps sliders enabled only when their active mode can actually consume the value.
      */
-    @Inject(method = "tick", at = @At("TAIL"))
+    @Inject(method = "tick", at = @At("TAIL"), require = 0)
     private void saltsAntiAliasing$refreshDisabledState(CallbackInfo callbackInfo) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         if (runtime == null) {
@@ -133,7 +137,8 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
      * @param initialEntryCount initial entry count supplied by Minecraft or the caller
      */
     private void saltsAntiAliasing$moveInsertedControlsBelowAnisotropy(int initialEntryCount) {
-        int anisotropyEntryIndex = saltsAntiAliasing$findEntryIndex(this.options.maxAnisotropyBit());
+        OptionInstance<?> anisotropyOption = saltsAntiAliasing$optionalOption("maxAnisotropyBit", "method_76247");
+        int anisotropyEntryIndex = saltsAntiAliasing$findEntryIndex(anisotropyOption);
         if (anisotropyEntryIndex < 0) {
             return;
         }
@@ -155,6 +160,10 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
      * @return find entry index value produced or selected by this code path
      */
     private int saltsAntiAliasing$findEntryIndex(OptionInstance<?> optionInstance) {
+        if (optionInstance == null) {
+            return -1;
+        }
+
         AbstractWidget widget = this.list.findOption(optionInstance);
         if (widget == null) {
             return -1;
@@ -207,6 +216,10 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
      * @return detach option widget value produced or selected by this code path
      */
     private AbstractWidget saltsAntiAliasing$detachOptionWidget(OptionInstance<?> optionInstance) {
+        if (optionInstance == null) {
+            return null;
+        }
+
         int entryIndex = saltsAntiAliasing$findEntryIndex(optionInstance);
         if (entryIndex < 0) {
             return null;
@@ -228,5 +241,34 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
      */
     private List<Object> saltsAntiAliasing$entries() {
         return ((AbstractSelectionListAccessor) this.list).saltsAntiAliasing$children();
+    }
+
+    private OptionInstance<?> saltsAntiAliasing$optionalOption(String namedMethodName, String intermediaryMethodName) {
+        Method method = saltsAntiAliasing$optionsMethod(namedMethodName);
+        if (method == null) {
+            method = saltsAntiAliasing$optionsMethod(intermediaryMethodName);
+        }
+
+        if (method == null) {
+            return null;
+        }
+
+        try {
+            Object result = method.invoke(this.options);
+            if (result instanceof OptionInstance<?> optionInstance) {
+                return optionInstance;
+            }
+        } catch (IllegalAccessException | InvocationTargetException ignored) {
+        }
+
+        return null;
+    }
+
+    private static Method saltsAntiAliasing$optionsMethod(String methodName) {
+        try {
+            return Options.class.getMethod(methodName);
+        } catch (NoSuchMethodException exception) {
+            return null;
+        }
     }
 }

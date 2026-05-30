@@ -7,7 +7,6 @@
     "AbstractSelectionListAccessor",
     "GlCommandEncoderMixin",
     "GameRendererMixin",
-    "KeyboardHandlerLegacyDebugKeysMixin",
     "KeyboardHandlerMixin",
     "MinecraftMixin",
     "PostChainAccessor",

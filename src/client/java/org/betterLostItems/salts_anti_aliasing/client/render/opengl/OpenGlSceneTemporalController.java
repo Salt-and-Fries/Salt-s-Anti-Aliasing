@@ -245,12 +245,13 @@ public final class OpenGlSceneTemporalController {
         )) {
             renderPass.setPipeline(RenderPipelines.TRACY_BLIT);
             RenderSystem.bindDefaultUniforms(renderPass);
-            renderPass.bindTexture(
+            OpenGlRenderPassCompat.bindClampToEdgeTexture(
+                    renderPass,
                     "InSampler",
                     mainTarget.getColorTextureView(),
-                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
+                    FilterMode.NEAREST
             );
-            renderPass.draw(0, 3);
+            OpenGlRenderPassCompat.drawFullscreenBlit(renderPass);
         }
 
         historyValid = true;

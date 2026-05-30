@@ -4,7 +4,7 @@
   },
   "passes": [
     {
-      "vertex_shader": "minecraft:core/screenquad",
+      "vertex_shader": "salts_anti_aliasing:post/screenquad",
       "fragment_shader": "salts_anti_aliasing:post/fsr1_upscale",
       "inputs": [
         {
@@ -40,7 +40,7 @@
       }
     },
     {
-      "vertex_shader": "minecraft:core/screenquad",
+      "vertex_shader": "salts_anti_aliasing:post/screenquad",
       "fragment_shader": "salts_anti_aliasing:post/rcas_sharpen",
       "inputs": [
         {

@@ -252,12 +252,13 @@ public final class OpenGlSceneScaleController {
         )) {
             renderPass.setPipeline(RenderPipelines.TRACY_BLIT);
             RenderSystem.bindDefaultUniforms(renderPass);
-            renderPass.bindTexture(
+            OpenGlRenderPassCompat.bindClampToEdgeTexture(
+                    renderPass,
                     "InSampler",
                     sceneTarget.getColorTextureView(),
-                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)
+                    FilterMode.LINEAR
             );
-            renderPass.draw(0, 3);
+            OpenGlRenderPassCompat.drawFullscreenBlit(renderPass);
         }
     }
 
