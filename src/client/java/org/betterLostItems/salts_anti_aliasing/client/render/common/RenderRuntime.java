@@ -1,7 +1,6 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.common;
 
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
-import org.betterLostItems.salts_anti_aliasing.client.compat.LoadedMods;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.ConfigManager;
@@ -42,7 +41,6 @@ public final class RenderRuntime {
     private final EdgeDebugAnalyzer edgeDebugAnalyzer;
     private final PerformanceMetricsRecorder performanceMetricsRecorder;
     private PipelinePlan currentPlan;
-    private boolean loggedSodiumMsaaFallback;
 
     /**
      * Creates a render runtime instance with the collaborators or initial state supplied by the
@@ -121,8 +119,7 @@ public final class RenderRuntime {
     }
 
     /**
-     * Advances to the next implemented and supported anti-aliasing mode, then rebuilds render state
-     * as needed.
+     * Advances to the next implemented anti-aliasing mode, then rebuilds render state as needed.
      * @return cycle mode produced by this helper
      */
     public AntiAliasingMode cycleMode() {
@@ -130,13 +127,12 @@ public final class RenderRuntime {
     }
 
     /**
-     * Applies a requested mode after clamping unsupported choices to a safe fallback for the
-     * current renderer.
+     * Applies a requested mode after clamping unknown choices to a safe fallback.
      * @param mode anti-aliasing mode requested by UI, hotkey, or loaded config
      * @return the normalized value after the update is applied
      */
     public AntiAliasingMode setMode(AntiAliasingMode mode) {
-        AntiAliasingMode clampedMode = resolveSupportedMode(AntiAliasingMode.clampImplemented(mode));
+        AntiAliasingMode clampedMode = AntiAliasingMode.clampImplemented(mode);
         configManager.edit(config -> config.mode = clampedMode);
         edgeDebugAnalyzer.reset(clampedMode);
         rebuildPipeline();
@@ -357,58 +353,14 @@ public final class RenderRuntime {
      * @return next supported mode produced by this helper
      */
     private AntiAliasingMode nextSupportedMode(AntiAliasingMode mode) {
-        AntiAliasingMode nextMode = AntiAliasingMode.clampImplemented(mode);
-        do {
-            nextMode = nextMode.nextImplemented();
-        } while (!isModeSupported(nextMode));
-
-        return nextMode;
-    }
-
-    /**
-     * Resolves supported mode into a safe fallback or final render value.
-     * @param mode anti-aliasing mode requested by UI, hotkey, or loaded config
-     * @return resolve supported mode produced by this helper
-     */
-    private AntiAliasingMode resolveSupportedMode(AntiAliasingMode mode) {
-        if (isModeSupported(mode)) {
-            return mode;
-        }
-
-        if (mode == AntiAliasingMode.MSAA && LoadedMods.sodiumLoaded()) {
-            logSodiumMsaaFallback();
-            return AntiAliasingMode.FXAA;
-        }
-
-        return AntiAliasingMode.OFF;
-    }
-
-    /**
-     * Checks is mode supported without mutating runtime or configuration state.
-     * @param mode anti-aliasing mode requested by UI, hotkey, or loaded config
-     * @return whether the requested condition is true
-     */
-    private static boolean isModeSupported(AntiAliasingMode mode) {
-        return mode != AntiAliasingMode.MSAA || !LoadedMods.sodiumLoaded();
-    }
-
-    /**
-     * Coordinates log sodium msaa fallback within the anti-aliasing render, configuration, or compatibility flow.
-     */
-    private void logSodiumMsaaFallback() {
-        if (loggedSodiumMsaaFallback) {
-            return;
-        }
-
-        loggedSodiumMsaaFallback = true;
-        SaltsAntiAliasing.LOGGER.warn("Sodium is loaded, so MSAA is disabled to avoid Sodium chunk rendering disappearing");
+        return AntiAliasingMode.clampImplemented(mode).nextImplemented();
     }
 
     /**
      * Coordinates ensure active mode supported within the anti-aliasing render, configuration, or compatibility flow.
      */
     private void ensureActiveModeSupported() {
-        AntiAliasingMode supportedMode = resolveSupportedMode(activeMode());
+        AntiAliasingMode supportedMode = AntiAliasingMode.clampImplemented(activeMode());
         if (supportedMode != activeMode()) {
             configManager.edit(config -> config.mode = supportedMode);
             edgeDebugAnalyzer.reset(supportedMode);

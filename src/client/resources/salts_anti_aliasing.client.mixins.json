@@ -6,6 +6,7 @@
   "client": [
     "AbstractSelectionListAccessor",
     "GlCommandEncoderMixin",
+    "GlTextureMixin",
     "GameRendererMixin",
     "KeyboardHandlerMixin",
     "MinecraftMixin",

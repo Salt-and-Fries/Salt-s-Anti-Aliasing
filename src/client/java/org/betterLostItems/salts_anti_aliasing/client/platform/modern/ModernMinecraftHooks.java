@@ -202,6 +202,13 @@ public final class ModernMinecraftHooks {
     }
 
     /**
+     * Lets the MSAA controller replace direct main-target texture framebuffer lookups.
+     */
+    public static Integer overrideFramebuffer(GpuTexture colorTexture, GpuTexture depthTexture, int originalFramebufferId) {
+        return OpenGlSceneMsaaController.instance().overrideFramebuffer(colorTexture, depthTexture, originalFramebufferId);
+    }
+
+    /**
      * Coordinates mirror color clear to msaa within the anti-aliasing render, configuration, or compatibility flow.
      * @param colorTexture color texture value supplied by the caller or Minecraft callback
      * @param clearColor clear color value supplied by the caller or Minecraft callback

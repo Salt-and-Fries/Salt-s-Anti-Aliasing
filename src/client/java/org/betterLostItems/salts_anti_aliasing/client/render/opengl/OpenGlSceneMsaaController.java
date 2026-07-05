@@ -122,10 +122,24 @@ public final class OpenGlSceneMsaaController {
             return null;
         }
 
-        resolvedMainFramebufferId = originalFramebufferId;
-        mainColorDirty = true;
-        mainDepthDirty = true;
-        mainPassInProgress = true;
+        beginMainFramebufferOverride(originalFramebufferId);
+        return msaaFramebufferId;
+    }
+
+    /**
+     * Coordinates override framebuffer within the anti-aliasing render, configuration, or compatibility flow.
+     * @param colorTexture color texture value supplied by the caller or Minecraft callback
+     * @param depthTexture depth texture value supplied by the caller or Minecraft callback
+     * @param originalFramebufferId original framebuffer id value supplied by the caller or
+     * Minecraft callback
+     * @return override framebuffer produced by this helper
+     */
+    public Integer overrideFramebuffer(GpuTexture colorTexture, GpuTexture depthTexture, int originalFramebufferId) {
+        if (!active || colorTexture != mainColorTexture || depthTexture != mainDepthTexture) {
+            return null;
+        }
+
+        beginMainFramebufferOverride(originalFramebufferId);
         return msaaFramebufferId;
     }
 
@@ -145,6 +159,7 @@ public final class OpenGlSceneMsaaController {
 
         try {
             syncMainTargetIfNeeded(true, false);
+            bindResolvedMainFramebufferIfKnown();
         } catch (RuntimeException exception) {
             disableAfterFailure("Disabling OpenGL MSAA scene rendering after a resolve failure", exception);
         } finally {
@@ -369,6 +384,27 @@ public final class OpenGlSceneMsaaController {
 
         GL30C.glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, previousReadFramebuffer);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousDrawFramebuffer);
+    }
+
+    /**
+     * Marks a main-scene framebuffer bind as redirected into the multisampled scene target.
+     * @param originalFramebufferId original framebuffer id value supplied by the caller or
+     * Minecraft callback
+     */
+    private void beginMainFramebufferOverride(int originalFramebufferId) {
+        resolvedMainFramebufferId = originalFramebufferId;
+        mainColorDirty = true;
+        mainDepthDirty = true;
+        mainPassInProgress = true;
+    }
+
+    /**
+     * Restores subsequent rendering to the resolved main target after the final MSAA blit.
+     */
+    private void bindResolvedMainFramebufferIfKnown() {
+        if (resolvedMainFramebufferId != -1) {
+            GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, resolvedMainFramebufferId);
+        }
     }
 
     /**

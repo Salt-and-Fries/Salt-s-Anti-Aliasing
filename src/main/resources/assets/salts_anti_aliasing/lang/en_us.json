@@ -30,7 +30,6 @@
   "options.salts_anti_aliasing.sharpness.tooltip": "Controls how strongly the sharpen pass boosts local contrast. Use lower values for a softer natural look and higher values for extra crispness. Too much can create halos or crunchy detail.",
   "options.salts_anti_aliasing.msaa_samples": "MSAA Samples: %s",
   "options.salts_anti_aliasing.msaa_samples.tooltip": "Sets how many samples MSAA uses on polygon edges. Higher values smooth hard edges better, but they also cost more GPU time. The renderer may fall back to your GPU's maximum supported sample count.",
-  "options.salts_anti_aliasing.msaa_samples.tooltip.sodium": "MSAA is disabled while Sodium is loaded because Sodium's chunk renderer does not render correctly into this mod's MSAA framebuffer path.",
   "options.salts_anti_aliasing.ssaa_scale": "SSAA Scale: %s",
   "options.salts_anti_aliasing.ssaa_scale.tooltip": "Sets how far above native resolution SSAA renders before downsampling. Higher values give the cleanest image, but they are also the most expensive. Use this when you want to trade performance for image quality.",
   "options.salts_anti_aliasing.upscale_quality": "Upscale Quality: %s",
