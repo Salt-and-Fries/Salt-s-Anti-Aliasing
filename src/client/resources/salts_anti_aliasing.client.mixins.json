@@ -5,14 +5,18 @@
   "compatibilityLevel": "JAVA_25",
   "client": [
     "AbstractSelectionListAccessor",
-    "GlCommandEncoderMixin",
-    "GlTextureMixin",
+    "CommandEncoderAccessor",
     "GameRendererMixin",
+    "GpuDeviceAccessor",
     "KeyboardHandlerMixin",
     "MinecraftMixin",
     "PostChainAccessor",
     "PostPassAccessor",
     "RenderTargetMixin",
+    "VulkanBackendMixin",
+    "VulkanDeviceMixin",
+    "VulkanGpuTextureMixin",
+    "VulkanRenderPipelineMixin",
     "VideoSettingsScreenMixin"
   ],
   "injectors": {

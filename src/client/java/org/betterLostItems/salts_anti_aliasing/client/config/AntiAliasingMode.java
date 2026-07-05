@@ -19,6 +19,7 @@ public enum AntiAliasingMode {
     TAA("TAA", false, true),
     NIS_SHARPEN("NIS Sharpen", false, false),
     NIS_UPSCALE("NIS Upscale", true, false),
+    DLSS_SUPER_RESOLUTION("DLSS Super Resolution", true, true),
     FSR1_UPSCALE("FSR1 Upscale", true, false),
     FSR1_RCAS("FSR1 + RCAS", true, false);
 
@@ -30,6 +31,7 @@ public enum AntiAliasingMode {
             SSAA,
             SMAA,
             NIS_UPSCALE,
+            DLSS_SUPER_RESOLUTION,
             FSR1_UPSCALE,
             FSR1_RCAS,
             TAA
@@ -100,6 +102,14 @@ public enum AntiAliasingMode {
      */
     public boolean usesSpatialUpscaleQualityControl() {
         return this == NIS_UPSCALE || this == FSR1_UPSCALE || this == FSR1_RCAS;
+    }
+
+    /**
+     * Checks uses dlss quality control without mutating runtime or configuration state.
+     * @return whether this object requires the described render path
+     */
+    public boolean usesDlssQualityControl() {
+        return this == DLSS_SUPER_RESOLUTION;
     }
 
     /**

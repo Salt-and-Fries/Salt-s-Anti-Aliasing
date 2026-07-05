@@ -1,9 +1,11 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.common;
 
+import net.minecraft.client.renderer.GameRenderer;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
-import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
+import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.config.ConfigManager;
+import org.betterLostItems.salts_anti_aliasing.client.config.DlssQualityPreset;
 import org.betterLostItems.salts_anti_aliasing.client.config.MsaaSampleLevel;
 import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPreset;
 import org.betterLostItems.salts_anti_aliasing.client.config.SsaaScaleLevel;
@@ -12,25 +14,20 @@ import org.betterLostItems.salts_anti_aliasing.client.debug.EdgeDebugStats;
 import org.betterLostItems.salts_anti_aliasing.client.metrics.PerformanceMetricsRecorder;
 import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderBackend;
 import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderBackendType;
-import org.betterLostItems.salts_anti_aliasing.client.render.opengl.OpenGlSceneMsaaController;
-import org.betterLostItems.salts_anti_aliasing.client.render.opengl.OpenGlScenePostProcessor;
-import org.betterLostItems.salts_anti_aliasing.client.render.opengl.OpenGlSceneScaleController;
-import net.minecraft.client.renderer.GameRenderer;
+import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderCapability;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanRenderBackend;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneDlssController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneMsaaController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanScenePostProcessor;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneScaleController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss.DlssRuntime;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss.DlssRuntimeStatus;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
- * Coordinates the shared anti-aliasing state machine for the Fabric 26.1.2 renderer.
- *
- * <p>The runtime intentionally sits between two worlds:</p>
- *
- * <ul>
- *     <li>The version-stable mod model: config values, mode semantics, pass planning,
- *     metrics, and debug state.</li>
- *     <li>The Fabric 26.1.2 Minecraft renderer: {@link GameRenderer}, render targets,
- *     post chains, and OpenGL/GPU controllers.</li>
- * </ul>
- *
- * <p>Other jar families should provide their own platform runtime/adapters while keeping
- * the config and pass-planning contracts compatible with this class.</p>
+ * Coordinates the shared anti-aliasing state machine for the Fabric 26.2 Vulkan renderer.
  */
 public final class RenderRuntime {
     private final ConfigManager configManager;
@@ -42,20 +39,6 @@ public final class RenderRuntime {
     private final PerformanceMetricsRecorder performanceMetricsRecorder;
     private PipelinePlan currentPlan;
 
-    /**
-     * Creates a render runtime instance with the collaborators or initial state supplied by the
-     * caller.
-     * @param configManager config manager value supplied by the caller or Minecraft callback
-     * @param backend backend value supplied by the caller or Minecraft callback
-     * @param passManager pass manager value supplied by the caller or Minecraft callback
-     * @param planner planner value supplied by the caller or Minecraft callback
-     * @param scenePostProcessor scene post processor value supplied by the caller or Minecraft
-     * callback
-     * @param edgeDebugAnalyzer edge debug analyzer value supplied by the caller or Minecraft
-     * callback
-     * @param performanceMetricsRecorder performance metrics recorder value supplied by the caller
-     * or Minecraft callback
-     */
     private RenderRuntime(
             ConfigManager configManager,
             RenderBackend backend,
@@ -76,20 +59,21 @@ public final class RenderRuntime {
     }
 
     /**
-     * Builds the Fabric 26.1.2 runtime from disk config and renderer capabilities.
+     * Builds the Fabric 26.2 runtime from disk config and the active Minecraft renderer.
      */
     public static RenderRuntime bootstrap() {
         ConfigManager configManager = ConfigManager.createDefault();
         configManager.load();
+        DlssRuntime.instance().configure(configManager.snapshot());
 
-        RenderBackend backend = new RenderBackendSelector().select(configManager.snapshot());
+        RenderBackend backend = new VulkanRenderBackend();
         EdgeDebugAnalyzer edgeDebugAnalyzer = new EdgeDebugAnalyzer();
         RenderRuntime runtime = new RenderRuntime(
                 configManager,
                 backend,
                 new PassManager(),
                 new RenderPipelinePlanner(),
-                createScenePostProcessor(backend.type(), edgeDebugAnalyzer),
+                new VulkanScenePostProcessor(edgeDebugAnalyzer),
                 edgeDebugAnalyzer,
                 new PerformanceMetricsRecorder(
                         configManager::recordMetricsEnabled,
@@ -103,157 +87,132 @@ public final class RenderRuntime {
     }
 
     /**
-     * Returns active mode for callers that need to coordinate UI, mixin, or render behavior.
-     * @return currently selected anti-aliasing mode
+     * Returns the saved mode, even when Vulkan is inactive and rendering is blocked.
      */
     public AntiAliasingMode activeMode() {
         return configManager.mode();
     }
 
     /**
-     * Returns config snapshot for callers that need to coordinate UI, mixin, or render behavior.
-     * @return defensive copy of the current configuration
+     * Returns a copy of the saved configuration.
      */
     public AntiAliasingConfig configSnapshot() {
         return configManager.snapshot();
     }
 
     /**
-     * Advances to the next implemented anti-aliasing mode, then rebuilds render state as needed.
-     * @return cycle mode produced by this helper
+     * Reports whether Minecraft is currently running on Vulkan.
+     */
+    public boolean isVulkanActive() {
+        return backend.isAvailable();
+    }
+
+    /**
+     * Reports whether a non-off AA mode can be applied in this session.
+     */
+    public boolean canUseAntiAliasing() {
+        return isVulkanActive();
+    }
+
+    /**
+     * Advances to the next implemented anti-aliasing mode when Vulkan is active.
      */
     public AntiAliasingMode cycleMode() {
+        if (!canUseAntiAliasing()) {
+            return activeMode();
+        }
+
         return setMode(nextSupportedMode(activeMode()));
     }
 
     /**
-     * Applies a requested mode after clamping unknown choices to a safe fallback.
-     * @param mode anti-aliasing mode requested by UI, hotkey, or loaded config
-     * @return the normalized value after the update is applied
+     * Applies a requested mode. Non-off modes are blocked when Minecraft is not running Vulkan.
      */
     public AntiAliasingMode setMode(AntiAliasingMode mode) {
-        AntiAliasingMode clampedMode = AntiAliasingMode.clampImplemented(mode);
+        AntiAliasingMode requestedMode = AntiAliasingMode.clampImplemented(mode);
+        if (requestedMode != AntiAliasingMode.OFF && !canUseAntiAliasing()) {
+            SaltsAntiAliasing.LOGGER.info(
+                    "Ignoring Salt's Anti Aliasing mode {} because Minecraft is not running Vulkan",
+                    requestedMode.displayName()
+            );
+            return activeMode();
+        }
+
+        AntiAliasingMode clampedMode = resolveSupportedMode(requestedMode);
         configManager.edit(config -> config.mode = clampedMode);
         edgeDebugAnalyzer.reset(clampedMode);
         rebuildPipeline();
         return activeMode();
     }
 
-    /**
-     * Handles sharpen strength as part of the anti-aliasing render, configuration, or compatibility
-     * flow.
-     * @return sharpening strength associated with the selected preset
-     */
     public float sharpenStrength() {
         return configManager.snapshot().sharpenStrength;
     }
 
-    /**
-     * Updates sharpen strength and keeps dependent render state in sync when necessary.
-     * @param sharpenStrength normalized sharpening amount requested by the user interface
-     * @return the normalized value after the update is applied
-     */
     public float setSharpenStrength(float sharpenStrength) {
         configManager.edit(config -> config.sharpenStrength = sharpenStrength);
         return this.sharpenStrength();
     }
 
-    /**
-     * Coordinates msaa sample level within the anti-aliasing render, configuration, or compatibility flow.
-     * @return msaa sample level produced by this helper
-     */
     public MsaaSampleLevel msaaSampleLevel() {
         return configManager.snapshot().msaaSampleLevel;
     }
 
-    /**
-     * Updates msaa sample level and keeps dependent render state in sync when necessary.
-     * @param sampleLevel MSAA sample count preset selected by the user or loaded from config
-     * @return the normalized value after the update is applied
-     */
     public MsaaSampleLevel setMsaaSampleLevel(MsaaSampleLevel sampleLevel) {
         configManager.edit(config -> config.msaaSampleLevel = sampleLevel);
         return msaaSampleLevel();
     }
 
-    /**
-     * Handles ssaa scale level as part of the anti-aliasing render, configuration, or compatibility
-     * flow.
-     * @return ssaa scale level produced by this helper
-     */
     public SsaaScaleLevel ssaaScaleLevel() {
         return configManager.snapshot().ssaaScaleLevel;
     }
 
-    /**
-     * Updates ssaa scale level and keeps dependent render state in sync when necessary.
-     * @param scaleLevel SSAA render-scale preset selected by the user or loaded from config
-     * @return the normalized value after the update is applied
-     */
     public SsaaScaleLevel setSsaaScaleLevel(SsaaScaleLevel scaleLevel) {
         configManager.edit(config -> config.ssaaScaleLevel = scaleLevel);
         rebuildPipeline();
         return ssaaScaleLevel();
     }
 
-    /**
-     * Coordinates upscale quality preset within the anti-aliasing render, configuration, or compatibility flow.
-     * @return upscale quality preset produced by this helper
-     */
     public NisUpscaleQualityPreset upscaleQualityPreset() {
         return configManager.snapshot().nisUpscaleQualityPreset;
     }
 
-    /**
-     * Updates upscale quality preset and keeps dependent render state in sync when necessary.
-     * @param preset quality preset selected by the user or loaded from config
-     * @return the normalized value after the update is applied
-     */
     public NisUpscaleQualityPreset setUpscaleQualityPreset(NisUpscaleQualityPreset preset) {
         configManager.edit(config -> config.nisUpscaleQualityPreset = preset);
         rebuildPipeline();
         return upscaleQualityPreset();
     }
 
-    /**
-     * Handles backend name as part of the anti-aliasing render, configuration, or compatibility
-     * flow.
-     * @return human-readable backend name
-     */
+    public DlssQualityPreset dlssQualityPreset() {
+        return configManager.snapshot().dlssQualityPreset;
+    }
+
+    public DlssQualityPreset setDlssQualityPreset(DlssQualityPreset preset) {
+        configManager.edit(config -> config.dlssQualityPreset = preset);
+        rebuildPipeline();
+        return dlssQualityPreset();
+    }
+
+    public DlssRuntimeStatus dlssRuntimeStatus() {
+        return DlssRuntime.instance().status();
+    }
+
     public String backendName() {
         return backend.type().displayName();
     }
 
-    /**
-     * Handles backend type as part of the anti-aliasing render, configuration, or compatibility
-     * flow.
-     * @return selected backend type
-     */
     public RenderBackendType backendType() {
         return backend.type();
     }
 
-    /**
-     * Handles describe plan as part of the anti-aliasing render, configuration, or compatibility
-     * flow.
-     * @return describe plan produced by this helper
-     */
     public String describePlan() {
         return backendName() + " -> " + passManager.orderedPassIds();
     }
 
-    /**
-     * Coordinates debug views enabled within the anti-aliasing render, configuration, or compatibility flow.
-     * @return whether the operation or state is enabled
-     */
     public boolean debugViewsEnabled() {
         return configManager.snapshot().debugViewsEnabled;
     }
 
-    /**
-     * Toggles debug views and performs any cleanup required when the feature is disabled.
-     * @return the updated enabled state after the toggle is applied
-     */
     public boolean toggleDebugViews() {
         configManager.edit(config -> config.debugViewsEnabled = !config.debugViewsEnabled);
         boolean enabled = configManager.snapshot().debugViewsEnabled;
@@ -263,63 +222,52 @@ public final class RenderRuntime {
         return enabled;
     }
 
-    /**
-     * Handles edge debug stats as part of the anti-aliasing render, configuration, or compatibility
-     * flow.
-     * @return edge debug stats produced by this helper
-     */
     public EdgeDebugStats edgeDebugStats() {
         return edgeDebugAnalyzer.latestStats();
     }
 
-    /**
-     * Applies post-processing that should affect only the 3D scene, not menus or HUD text.
-     */
     public void applyScenePostProcessing(GameRenderer gameRenderer) {
-        scenePostProcessor.apply(gameRenderer, configManager.snapshot());
+        if (!canUseAntiAliasing()) {
+            return;
+        }
+
+        scenePostProcessor.apply(gameRenderer, effectiveConfigSnapshot());
     }
 
-    /**
-     * Feeds frame timing into the metrics recorder after a rendered world frame completes.
-     * @param frameTimeNs duration of the rendered frame in nanoseconds
-     * @param displayedFps FPS value reported by Minecraft for the same frame sample
-     */
     public void recordRenderedFrame(long frameTimeNs, int displayedFps) {
         performanceMetricsRecorder.recordFrame(frameTimeNs, displayedFps);
     }
 
-    /**
-     * Flushes and closes metrics resources during client shutdown paths.
-     */
     public void shutdownMetrics() {
         performanceMetricsRecorder.close();
+        DlssRuntime.instance().shutdown();
     }
 
-    /**
-     * Gives the OpenGL controllers a chance to redirect scene rendering.
-     */
     public void beginSceneRendering(GameRenderer gameRenderer) {
-        if (backend.type() == RenderBackendType.OPENGL) {
-            OpenGlSceneScaleController.instance().beginSceneRendering(gameRenderer, configManager.snapshot());
-            OpenGlSceneMsaaController.instance().beginSceneRendering(gameRenderer, configManager.snapshot());
+        AntiAliasingConfig config = effectiveConfigSnapshot();
+        if (config.mode == AntiAliasingMode.OFF) {
+            return;
         }
+
+        VulkanSceneMsaaController.instance().beginSceneRendering(gameRenderer, config);
+        VulkanSceneDlssController.instance().beginSceneRendering(gameRenderer, config);
+        VulkanSceneScaleController.instance().beginSceneRendering(gameRenderer, config);
     }
 
-    /**
-     * Resolves any redirected scene rendering back into Minecraft's main target.
-     */
     public void endSceneRendering(GameRenderer gameRenderer) {
-        if (backend.type() == RenderBackendType.OPENGL) {
-            OpenGlSceneMsaaController.instance().endSceneRendering(gameRenderer, configManager.snapshot());
-            OpenGlSceneScaleController.instance().endSceneRendering(gameRenderer, configManager.snapshot());
-        }
+        AntiAliasingConfig config = effectiveConfigSnapshot();
+        VulkanSceneMsaaController.instance().endSceneRendering(gameRenderer, config);
+        VulkanSceneDlssController.instance().endSceneRendering(gameRenderer, config);
+        VulkanSceneScaleController.instance().endSceneRendering(gameRenderer, config);
     }
 
     /**
      * Recomputes the backend-neutral pass plan after a mode or quality setting changes.
      */
     public void rebuildPipeline() {
-        currentPlan = planner.plan(backend, configManager.snapshot());
+        AntiAliasingConfig effectiveConfig = effectiveConfigSnapshot();
+        DlssRuntime.instance().configure(effectiveConfig);
+        currentPlan = planner.plan(backend, effectiveConfig);
         passManager.replaceAll(currentPlan.passes());
         backend.declareTargets(currentPlan.targets());
         SaltsAntiAliasing.LOGGER.info(
@@ -330,37 +278,60 @@ public final class RenderRuntime {
         );
     }
 
-    /**
-     * Coordinates create scene post processor within the anti-aliasing render, configuration, or compatibility flow.
-     * @param backendType backend type value supplied by the caller or Minecraft callback
-     * @param edgeDebugAnalyzer edge debug analyzer value supplied by the caller or Minecraft
-     * callback
-     * @return a newly created instance configured for the current mod/runtime context
-     */
-    private static ScenePostProcessor createScenePostProcessor(
-            RenderBackendType backendType,
-            EdgeDebugAnalyzer edgeDebugAnalyzer
-    ) {
-        return switch (backendType) {
-            case OPENGL -> new OpenGlScenePostProcessor(edgeDebugAnalyzer);
-            case VULKAN -> NoOpScenePostProcessor.INSTANCE;
+    private AntiAliasingConfig effectiveConfigSnapshot() {
+        AntiAliasingConfig config = configManager.snapshot();
+        if (!canUseAntiAliasing()) {
+            config.mode = AntiAliasingMode.OFF;
+        }
+
+        return config;
+    }
+
+    private AntiAliasingMode nextSupportedMode(AntiAliasingMode mode) {
+        AntiAliasingMode nextMode = AntiAliasingMode.clampImplemented(mode);
+        do {
+            nextMode = nextMode.nextImplemented();
+        } while (!isModeSupported(nextMode));
+
+        return nextMode;
+    }
+
+    private AntiAliasingMode resolveSupportedMode(AntiAliasingMode mode) {
+        return isModeSupported(mode) ? mode : AntiAliasingMode.OFF;
+    }
+
+    private boolean isModeSupported(AntiAliasingMode mode) {
+        return backend.supportsAll(requiredCapabilities(mode));
+    }
+
+    private static Set<RenderCapability> requiredCapabilities(AntiAliasingMode mode) {
+        return switch (mode) {
+            case OFF -> Set.of();
+            case NIS_SHARPEN -> EnumSet.of(RenderCapability.POST_PROCESSING, RenderCapability.SHARPENING);
+            case FXAA, SMAA -> EnumSet.of(RenderCapability.POST_PROCESSING);
+            case MSAA -> EnumSet.of(RenderCapability.MULTISAMPLE_AA);
+            case SSAA -> EnumSet.of(RenderCapability.INTERNAL_RESOLUTION);
+            case NIS_UPSCALE, FSR1_UPSCALE -> EnumSet.of(
+                    RenderCapability.INTERNAL_RESOLUTION,
+                    RenderCapability.SPATIAL_UPSCALING
+            );
+            case DLSS_SUPER_RESOLUTION -> EnumSet.of(
+                    RenderCapability.INTERNAL_RESOLUTION,
+                    RenderCapability.SPATIAL_UPSCALING,
+                    RenderCapability.TEMPORAL_AA,
+                    RenderCapability.VENDOR_UPSCALING
+            );
+            case FSR1_RCAS -> EnumSet.of(
+                    RenderCapability.INTERNAL_RESOLUTION,
+                    RenderCapability.SPATIAL_UPSCALING,
+                    RenderCapability.SHARPENING
+            );
+            case TAA -> EnumSet.of(RenderCapability.POST_PROCESSING, RenderCapability.TEMPORAL_AA);
         };
     }
 
-    /**
-     * Coordinates next supported mode within the anti-aliasing render, configuration, or compatibility flow.
-     * @param mode anti-aliasing mode requested by UI, hotkey, or loaded config
-     * @return next supported mode produced by this helper
-     */
-    private AntiAliasingMode nextSupportedMode(AntiAliasingMode mode) {
-        return AntiAliasingMode.clampImplemented(mode).nextImplemented();
-    }
-
-    /**
-     * Coordinates ensure active mode supported within the anti-aliasing render, configuration, or compatibility flow.
-     */
     private void ensureActiveModeSupported() {
-        AntiAliasingMode supportedMode = AntiAliasingMode.clampImplemented(activeMode());
+        AntiAliasingMode supportedMode = resolveSupportedMode(AntiAliasingMode.clampImplemented(activeMode()));
         if (supportedMode != activeMode()) {
             configManager.edit(config -> config.mode = supportedMode);
             edgeDebugAnalyzer.reset(supportedMode);

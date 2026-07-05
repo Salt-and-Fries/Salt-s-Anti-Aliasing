@@ -1,5 +1,6 @@
-package org.betterLostItems.salts_anti_aliasing.client.render.opengl;
+package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -13,10 +14,10 @@ import org.betterLostItems.salts_anti_aliasing.client.debug.EdgeDebugAnalyzer;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.ScenePostProcessor;
 
 /**
- * Executes OpenGL post chains against the scene after world rendering and before HUD/menu rendering
+ * Executes Minecraft post chains against the scene after world rendering and before HUD/menu rendering
  * consumes the main target.
  */
-public final class OpenGlScenePostProcessor implements ScenePostProcessor {
+public final class VulkanScenePostProcessor implements ScenePostProcessor {
     private static final Identifier NIS_SHARPEN_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":nis_sharpen");
     private static final Identifier FXAA_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fxaa");
     private static final Identifier EDGE_DEBUG_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":edge_debug");
@@ -27,12 +28,12 @@ public final class OpenGlScenePostProcessor implements ScenePostProcessor {
     private boolean disabledAfterFailure;
 
     /**
-     * Creates a open gl scene post processor instance with the collaborators or initial state
+     * Creates a Vulkan scene post processor instance with the collaborators or initial state
      * supplied by the caller.
      * @param edgeDebugAnalyzer edge debug analyzer value supplied by the caller or Minecraft
      * callback
      */
-    public OpenGlScenePostProcessor(EdgeDebugAnalyzer edgeDebugAnalyzer) {
+    public VulkanScenePostProcessor(EdgeDebugAnalyzer edgeDebugAnalyzer) {
         this.edgeDebugAnalyzer = edgeDebugAnalyzer;
     }
 
@@ -49,30 +50,35 @@ public final class OpenGlScenePostProcessor implements ScenePostProcessor {
                 return;
             }
 
-            Minecraft minecraft = gameRenderer.getMinecraft();
+            Minecraft minecraft = Minecraft.getInstance();
             if (minecraft.level == null) {
-                OpenGlSceneTemporalController.instance().resetForInactiveMode();
+                VulkanSceneTemporalController.instance().resetForInactiveMode();
                 return;
             }
 
             if (config.mode == AntiAliasingMode.TAA) {
-                OpenGlSceneTemporalController.instance().apply(gameRenderer, resourcePool);
-            } else {
-                OpenGlSceneTemporalController.instance().resetForInactiveMode();
+                VulkanSceneTemporalController.instance().apply(gameRenderer, resourcePool);
+            } else if (config.mode.usesHistoryBuffers()) {
                 Identifier effectId = effectFor(config);
                 if (effectId != null) {
-                    processEffect(minecraft, effectId, config);
+                    processEffect(minecraft, gameRenderer.mainRenderTarget(), effectId, config);
+                }
+            } else {
+                VulkanSceneTemporalController.instance().resetForInactiveMode();
+                Identifier effectId = effectFor(config);
+                if (effectId != null) {
+                    processEffect(minecraft, gameRenderer.mainRenderTarget(), effectId, config);
                 }
             }
 
-            edgeDebugAnalyzer.captureIfNeeded(minecraft.getMainRenderTarget(), config);
+            edgeDebugAnalyzer.captureIfNeeded(gameRenderer.mainRenderTarget(), config);
             if (config.debugViewsEnabled) {
-                processEffect(minecraft, EDGE_DEBUG_EFFECT, config);
+                processEffect(minecraft, gameRenderer.mainRenderTarget(), EDGE_DEBUG_EFFECT, config);
             }
         } catch (RuntimeException exception) {
             disabledAfterFailure = true;
             resourcePool.clear();
-            SaltsAntiAliasing.LOGGER.error("Disabling OpenGL scene post-processing after a rendering failure", exception);
+            SaltsAntiAliasing.LOGGER.error("Disabling scene post-processing after a rendering failure", exception);
         } finally {
             resourcePool.endFrame();
         }
@@ -85,14 +91,14 @@ public final class OpenGlScenePostProcessor implements ScenePostProcessor {
      * @param effectId effect id value supplied by the caller or Minecraft callback
      * @param config configuration object being normalized, copied, or committed
      */
-    private void processEffect(Minecraft minecraft, Identifier effectId, AntiAliasingConfig config) {
+    private void processEffect(Minecraft minecraft, RenderTarget mainTarget, Identifier effectId, AntiAliasingConfig config) {
         PostChain postChain = minecraft.getShaderManager().getPostChain(effectId, LevelTargetBundle.MAIN_TARGETS);
         if (postChain == null) {
             return;
         }
 
-        OpenGlDynamicUniforms.updateForMode(postChain, config);
-        postChain.process(minecraft.getMainRenderTarget(), resourcePool);
+        VulkanDynamicUniforms.updateForMode(postChain, config);
+        postChain.process(mainTarget, resourcePool);
     }
 
     /**

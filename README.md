@@ -2,12 +2,12 @@
 
 Salt's Anti Aliasing is a client-side Fabric mod that adds anti-aliasing, sharpening, and spatial upscaling controls to Minecraft.
 
-This branch is the **Fabric 26.1.2 branch**. It targets:
+This branch is the **Fabric 26.2 branch**. It targets:
 
 ```text
-Minecraft/Fabric target: 26.1.2
+Minecraft/Fabric target: 26.2
 Fabric Loader >= project loader_version
-Fabric API matching 26.1.2
+Fabric API matching 26.2
 Java 25
 ```
 
@@ -21,7 +21,7 @@ The project is expected to ship separate jar families from related branches:
 legacy jar       -> early 1.21 renderer, old integer texture/FBO path
 mid jar          -> transitional GPU texture renderer
 modern jar       -> 1.21.8-1.21.11 modern GPU texture view/framegraph path
-fabric 26.1.2 jar -> 26.1.2 renderer descriptors and Fabric API surface
+fabric 26.2 jar -> 26.2 renderer descriptors and Fabric API surface
 ```
 
 The point of this split is to avoid one giant jar full of runtime version checks, reflection, and fragile optional mixins. Each jar owns the Minecraft hook layer for its renderer family while sharing the same mode concepts and pipeline planning model where practical.
@@ -34,7 +34,7 @@ The code is organized around two ideas:
    Config values, mode semantics, quality presets, pipeline planning, pass ids, target descriptions, metrics shape, and debug concepts should not care which Minecraft minor version is running.
 
 2. **Platform glue should be replaceable.**
-   Mixins, Fabric APIs, Minecraft render target classes, keyboard descriptors, post-chain APIs, and OpenGL/GPU details belong in adapter layers that can differ between jars.
+   Mixins, Fabric APIs, Minecraft render target classes, keyboard descriptors, post-chain APIs, and Vulkan/GPU details belong in adapter layers that can differ between jars.
 
 ## Current Package Boundaries
 
@@ -45,13 +45,12 @@ org.betterLostItems.salts_anti_aliasing
     gui/                 Fabric/Minecraft UI adapters.
     metrics/             Runtime metrics and report generation.
     debug/               Debug HUD and edge analysis helpers.
-    platform/modern/     Fabric 26.1.2 bridge facade.
+    platform/modern/     Fabric 26.2 bridge facade.
     render/
       api/               Backend-neutral render vocabulary.
       common/            Shared planning/runtime coordination.
-      opengl/            OpenGL/GPU implementation for this branch.
-      vulkan/            Placeholder backend family.
-  mixin/client/          Thin Fabric 26.1.2 Minecraft hook points.
+      vulkan/            Vulkan renderer controllers and capability policy.
+  mixin/client/          Thin Fabric 26.2 Minecraft hook points.
 ```
 
 ## Important Separation Rules
@@ -60,7 +59,7 @@ org.betterLostItems.salts_anti_aliasing
 - Core pipeline planning must not know about mixin descriptors.
 - Mixins should delegate immediately to `client.platform.modern`.
 - `client.platform.modern` may know about Minecraft classes and renderer hook descriptors.
-- `client.render.opengl` may know about OpenGL/GPU resources.
+- `client.render.vulkan` may know about Minecraft's Vulkan/GPU resources and renderer internals.
 - Version checks should not be added here to support unrelated jar families.
 - If another Minecraft/Fabric target needs a genuinely different render path, create or update the matching jar branch.
 
@@ -76,12 +75,46 @@ MSAA
 SSAA
 SMAA
 NIS Upscale
+DLSS Super Resolution
 FSR1 Upscale
 FSR1 + RCAS
 TAA
 ```
 
-The shared planner expresses each mode as conceptual passes and targets. The OpenGL implementation translates those concepts into Minecraft render targets, post chains, texture views, resource pools, and temporary FBOs for this branch.
+The shared planner expresses each mode as conceptual passes and targets. The runtime requires Minecraft's Vulkan backend for every anti-aliasing mode; non-Vulkan sessions keep saved settings but block rendering and mode cycling until Minecraft is restarted on Vulkan.
+
+## DLSS Super Resolution
+
+DLSS is optional and disabled by default. The repo does not include NVIDIA Streamline/DLSS binaries or a NVIDIA application ID.
+
+To test DLSS locally, provide:
+
+```text
+dlssBridgePath       absolute path to salts_dlss_bridge.dll
+dlssPluginPath       absolute path to the Streamline plugin/DLSS runtime folder
+dlssApplicationId    NVIDIA-provided application ID
+dlssLogPath          optional absolute log output folder
+```
+
+The same values can be overridden before startup with:
+
+```text
+SALTS_DLSS_BRIDGE_PATH
+SALTS_DLSS_PLUGIN_PATH
+SALTS_DLSS_APPLICATION_ID
+SALTS_DLSS_LOG_PATH
+```
+
+or Java properties:
+
+```text
+salts.dlss.bridgePath
+salts.dlss.pluginPath
+salts.dlss.applicationId
+salts.dlss.logPath
+```
+
+The native bridge project lives in `native/dlss_bridge`. The normal Gradle build does not compile it; build it separately against a local NVIDIA Streamline SDK.
 
 ## Platform Hook Layer
 
@@ -104,7 +137,7 @@ This keeps version-porting work contained. Other jar branches can provide a faca
 The primary development target is set in `gradle.properties`:
 
 ```properties
-minecraft_version=26.1.2
+minecraft_version=26.2
 ```
 
 ## Run Client
@@ -123,15 +156,17 @@ When syncing a sibling jar branch:
 2. Keep `client.render.api` target/pass vocabulary as close as possible.
 3. Replace the branch-specific platform facade.
 4. Replace mixin descriptors in `mixin/client`.
-5. Replace or adapt `client.render.opengl` where Minecraft resource ownership changed.
+5. Replace or adapt backend controller packages where Minecraft resource ownership changed.
 6. Avoid adding runtime checks for unrelated branches.
 
 ## Current Renderer Notes
 
 - Scene-only effects are applied after 3D world rendering and before HUD/menu rendering.
 - Internal-resolution modes temporarily redirect Minecraft's main render target.
-- MSAA uses a multisampled OpenGL FBO and resolves back to Minecraft's main target.
+- Anti-aliasing is blocked unless Minecraft reports an active Vulkan device.
+- MSAA uses native Vulkan multisampled scene textures and resolves into Minecraft's main target after world rendering.
 - TAA uses jitter, a persistent history target, and dynamic uniforms.
+- DLSS redirects world rendering to a Streamline-selected internal-resolution target and evaluates through the optional JNI bridge when all external requirements are met.
 - Dynamic uniforms are uploaded through writable GPU buffers when Minecraft's post-chain uniforms are immutable.
 
 ## Development Principles
@@ -145,7 +180,7 @@ When syncing a sibling jar branch:
 
 ## Verification Checklist
 
-Before calling a Fabric 26.1.2 branch change ready:
+Before calling a Fabric 26.2 branch change ready:
 
 ```text
 .\gradlew.bat build

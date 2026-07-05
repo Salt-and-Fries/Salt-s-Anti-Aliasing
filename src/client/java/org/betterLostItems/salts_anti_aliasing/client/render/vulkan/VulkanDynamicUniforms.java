@@ -1,4 +1,4 @@
-package org.betterLostItems.salts_anti_aliasing.client.render.opengl;
+package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -19,10 +19,11 @@ import java.util.Map;
  * Populates runtime uniform values for post-processing shaders so JSON-defined effects can respond
  * to config, resolution, and history state.
  */
-final class OpenGlDynamicUniforms {
+final class VulkanDynamicUniforms {
     private static final String NIS_SHARPEN_UNIFORM = "NisSharpenConfig";
     private static final String RCAS_UNIFORM = "RcasConfig";
     private static final String TAA_UNIFORM = "TaaConfig";
+    private static final String DLSS_MOTION_UNIFORM = "DlssMotionConfig";
     private static final float NIS_EDGE_BOOST = 1.1f;
     private static final float NIS_CLAMP_BOOST = 0.18f;
     private static final float RCAS_EDGE_LIMIT = 0.22f;
@@ -32,10 +33,10 @@ final class OpenGlDynamicUniforms {
     private static final Map<GpuBuffer, Integer> LAST_UPLOADED_HASHES = new IdentityHashMap<>();
 
     /**
-     * Creates a open gl dynamic uniforms instance with the collaborators or initial state supplied
+     * Creates a Vulkan dynamic uniforms instance with the collaborators or initial state supplied
      * by the caller.
      */
-    private OpenGlDynamicUniforms() {
+    private VulkanDynamicUniforms() {
     }
 
     /**
@@ -62,10 +63,17 @@ final class OpenGlDynamicUniforms {
      * @param postChain post chain value supplied by the caller or Minecraft callback
      * @param controller controller value supplied by the caller or Minecraft callback
      */
-    static void updateTaa(PostChain postChain, OpenGlSceneTemporalController controller) {
+    static void updateTaa(PostChain postChain, VulkanSceneTemporalController controller) {
         for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
             Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
             writeTaaUniform(customUniforms, controller);
+        }
+    }
+
+    static void updateDlssMotion(PostChain postChain, VulkanSceneTemporalController controller, int width, int height) {
+        for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
+            Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
+            writeDlssMotionUniform(customUniforms, controller, width, height);
         }
     }
 
@@ -100,7 +108,7 @@ final class OpenGlDynamicUniforms {
      * @param customUniforms custom uniforms value supplied by the caller or Minecraft callback
      * @param controller controller value supplied by the caller or Minecraft callback
      */
-    private static void writeTaaUniform(Map<String, GpuBuffer> customUniforms, OpenGlSceneTemporalController controller) {
+    private static void writeTaaUniform(Map<String, GpuBuffer> customUniforms, VulkanSceneTemporalController controller) {
         updateUniformBuffer(customUniforms, TAA_UNIFORM, bufferData -> {
             bufferData.putFloat(controller.baseHistoryWeight());
             bufferData.putFloat(controller.lumaRejection());
@@ -112,6 +120,28 @@ final class OpenGlDynamicUniforms {
             bufferData.putFloat(controller.previousJitterTexelY());
             bufferData.putFloat(controller.cameraMotionAmount());
         });
+    }
+
+    private static void writeDlssMotionUniform(
+            Map<String, GpuBuffer> customUniforms,
+            VulkanSceneTemporalController controller,
+            int width,
+            int height
+    ) {
+        updateUniformBuffer(customUniforms, DLSS_MOTION_UNIFORM, bufferData -> {
+            putMatrix(bufferData, controller.currentClipToWorldArray());
+            putMatrix(bufferData, controller.previousViewProjectionArray());
+            bufferData.putFloat(Math.max(1, width));
+            bufferData.putFloat(Math.max(1, height));
+            bufferData.putFloat(0.0f);
+            bufferData.putFloat(0.0f);
+        });
+    }
+
+    private static void putMatrix(ByteBuffer bufferData, float[] values) {
+        for (int i = 0; i < 16; i++) {
+            bufferData.putFloat(i < values.length ? values[i] : 0.0f);
+        }
     }
 
     /**
@@ -201,9 +231,8 @@ final class OpenGlDynamicUniforms {
     }
 
     /**
-     * Contract for uniform writer behavior so platform-specific code can depend on a small,
-     * testable surface. OpenGL implementation code that owns render-target redirection, post-
-     * processing, and Minecraft framebuffer coordination.
+     * Contract for uniform writer behavior so Vulkan-specific code can depend on a small,
+     * testable surface.
      */
     @FunctionalInterface
     private interface UniformWriter {

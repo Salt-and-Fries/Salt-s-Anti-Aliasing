@@ -1,5 +1,5 @@
 /**
- * Fabric 26.1.2 Minecraft-facing adapter layer.
+ * Fabric 26.2 Minecraft-facing adapter layer.
  *
  * <p>Mixins delegate here as quickly as possible. This package is allowed to know
  * about Minecraft classes and current render descriptors; shared config and

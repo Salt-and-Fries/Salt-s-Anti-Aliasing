@@ -32,8 +32,8 @@
 - Kept all AA, sharpening, supersampling, and upscaling effects limited to the 3D scene.
 - Kept HUD, menus, and other UI elements out of the AA and upscale passes so they stay crisp.
 - Added scene-only render-target control for post-process and internal-resolution paths.
-- Added OpenGL-side handling for multisample resolve, supersample resolve, spatial upscale resolve, and temporal history flow.
-- Added backend-neutral render structure so the mod is organized for a future Vulkan port later.
+- Added GPU-side handling for multisample resolve, supersample resolve, spatial upscale resolve, and temporal history flow.
+- Added backend-neutral render structure so the mod is organized for renderer-specific ports.
 
 ### Debug Tools
 

@@ -1,5 +1,7 @@
 package org.betterLostItems.salts_anti_aliasing.client.config;
 
+import java.util.List;
+
 /**
  * Enumerates msaa sample level values used by the anti-aliasing runtime and configuration UI.
  * Configuration model code that keeps persisted anti-aliasing options normalized before render code
@@ -49,6 +51,14 @@ public enum MsaaSampleLevel {
      */
     public static MsaaSampleLevel clamp(MsaaSampleLevel level) {
         return level == null ? defaultLevel() : level;
+    }
+
+    /**
+     * Returns levels from highest quality to lowest quality for allocation fallback.
+     * @return sample levels sorted from most to fewest samples
+     */
+    public static List<MsaaSampleLevel> valuesDescending() {
+        return List.of(X16, X8, X4, X2);
     }
 
     /**

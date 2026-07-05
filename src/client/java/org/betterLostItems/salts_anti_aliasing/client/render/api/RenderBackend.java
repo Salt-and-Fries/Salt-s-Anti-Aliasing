@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Backend-neutral contract for render implementations.
  *
- * <p>The shared planner talks to this interface instead of to OpenGL, Vulkan,
+ * <p>The shared planner talks to this interface instead of to Vulkan internals,
  * Minecraft render targets, or mixins. A version jar can replace the backend
  * implementation while keeping the same pass vocabulary and config semantics.</p>
  */

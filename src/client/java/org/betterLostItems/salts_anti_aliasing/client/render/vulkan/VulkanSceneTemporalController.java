@@ -1,5 +1,6 @@
-package org.betterLostItems.salts_anti_aliasing.client.render.opengl;
+package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -23,15 +24,15 @@ import org.joml.Matrix4fc;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.OptionalInt;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * Maintains temporal jitter and history textures used by temporal anti-aliasing across consecutive
  * rendered frames.
  */
-public final class OpenGlSceneTemporalController {
-    private static final OpenGlSceneTemporalController INSTANCE = new OpenGlSceneTemporalController();
+public final class VulkanSceneTemporalController {
+    private static final VulkanSceneTemporalController INSTANCE = new VulkanSceneTemporalController();
     private static final String HISTORY_TARGET_LABEL = "Salt's TAA History";
     private static final Identifier HISTORY_TARGET_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":taa_history");
     private static final Identifier TAA_EFFECT_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":taa");
@@ -55,23 +56,28 @@ public final class OpenGlSceneTemporalController {
     private float currentJitterClipX;
     private float currentJitterClipY;
     private final Matrix4f jitteredProjection = new Matrix4f();
+    private final Matrix4f currentViewProjection = new Matrix4f();
+    private final Matrix4f previousViewProjection = new Matrix4f();
+    private boolean hasViewProjection;
+    private boolean resetHistoryThisFrame = true;
+    private long frameIndex;
     private Vec3 lastCameraPosition;
     private float lastCameraXRot;
     private float lastCameraYRot;
     private float cameraMotionAmount;
 
     /**
-     * Creates a open gl scene temporal controller instance with the collaborators or initial state
+     * Creates a Vulkan scene temporal controller instance with the collaborators or initial state
      * supplied by the caller.
      */
-    private OpenGlSceneTemporalController() {
+    private VulkanSceneTemporalController() {
     }
 
     /**
      * Handles instance as part of the anti-aliasing render, configuration, or compatibility flow.
      * @return singleton controller instance
      */
-    public static OpenGlSceneTemporalController instance() {
+    public static VulkanSceneTemporalController instance() {
         return INSTANCE;
     }
 
@@ -99,6 +105,7 @@ public final class OpenGlSceneTemporalController {
         jitterFrameIndex = (jitterFrameIndex + 1) % 8;
         currentJitterClipX = (currentJitterUvX * 2.0f) / width;
         currentJitterClipY = (-currentJitterUvY * 2.0f) / height;
+        resetHistoryThisFrame = false;
     }
 
     /**
@@ -113,6 +120,7 @@ public final class OpenGlSceneTemporalController {
             return cameraRenderState;
         }
 
+        captureUnjitteredFrameState(cameraRenderState);
         cameraRenderState.projectionMatrix.m20(cameraRenderState.projectionMatrix.m20() + currentJitterClipX);
         cameraRenderState.projectionMatrix.m21(cameraRenderState.projectionMatrix.m21() + currentJitterClipY);
         return cameraRenderState;
@@ -144,14 +152,14 @@ public final class OpenGlSceneTemporalController {
     public void apply(GameRenderer gameRenderer, CrossFrameResourcePool resourcePool) {
         RenderSystem.assertOnRenderThread();
 
-        Minecraft minecraft = gameRenderer.getMinecraft();
+        Minecraft minecraft = Minecraft.getInstance();
         ClientLevel level = minecraft.level;
         if (level == null) {
             resetForInactiveMode();
             return;
         }
 
-        RenderTarget mainTarget = minecraft.getMainRenderTarget();
+        RenderTarget mainTarget = gameRenderer.mainRenderTarget();
         if (!mainTarget.useDepth || mainTarget.width <= 0 || mainTarget.height <= 0) {
             return;
         }
@@ -181,7 +189,7 @@ public final class OpenGlSceneTemporalController {
             return;
         }
 
-        OpenGlDynamicUniforms.updateTaa(postChain, this);
+        VulkanDynamicUniforms.updateTaa(postChain, this);
 
         FrameGraphBuilder frameGraphBuilder = new FrameGraphBuilder();
         ResourceHandle<RenderTarget> mainHandle = frameGraphBuilder.importExternal("salts_taa_main", mainTarget);
@@ -206,6 +214,7 @@ public final class OpenGlSceneTemporalController {
         bootstrapFramesRemaining = BOOTSTRAP_FRAME_COUNT;
         clearJitter();
         clearCameraMotion();
+        clearViewProjection();
     }
 
     /**
@@ -216,7 +225,7 @@ public final class OpenGlSceneTemporalController {
     private void ensureHistoryTarget(int width, int height) {
         if (historyTarget == null) {
             destroyResources();
-            historyTarget = new TextureTarget(HISTORY_TARGET_LABEL, width, height, false);
+            historyTarget = new TextureTarget(HISTORY_TARGET_LABEL, width, height, false, GpuFormat.RGBA8_UNORM);
             historyValid = false;
             bootstrapFramesRemaining = BOOTSTRAP_FRAME_COUNT;
             return;
@@ -244,7 +253,7 @@ public final class OpenGlSceneTemporalController {
         try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
                 () -> "Salt's TAA History Copy",
                 historyTarget.getColorTextureView(),
-                OptionalInt.empty()
+                Optional.empty()
         )) {
             renderPass.setPipeline(RenderPipelines.TRACY_BLIT);
             RenderSystem.bindDefaultUniforms(renderPass);
@@ -253,7 +262,7 @@ public final class OpenGlSceneTemporalController {
                     mainTarget.getColorTextureView(),
                     RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
             );
-            renderPass.draw(0, 3);
+            renderPass.draw(0, 0, 3, 1);
         }
 
         historyValid = true;
@@ -344,12 +353,72 @@ public final class OpenGlSceneTemporalController {
     }
 
     /**
+     * Reports whether temporal consumers should discard native history for this frame.
+     */
+    public boolean resetHistoryThisFrame() {
+        return resetHistoryThisFrame || !hasViewProjection;
+    }
+
+    public long frameIndex() {
+        return frameIndex;
+    }
+
+    public float[] currentViewProjectionArray() {
+        return matrixArray(currentViewProjection);
+    }
+
+    public float[] previousViewProjectionArray() {
+        return matrixArray(hasViewProjection ? previousViewProjection : currentViewProjection);
+    }
+
+    public float[] currentClipToWorldArray() {
+        Matrix4f inverted = new Matrix4f(currentViewProjection);
+        if (Math.abs(inverted.determinant()) <= 1.0e-6f) {
+            inverted.identity();
+        } else {
+            inverted.invert();
+        }
+        return matrixArray(inverted);
+    }
+
+    /**
+     * Captures unjittered camera matrices before this controller mutates Minecraft's projection.
+     */
+    private void captureUnjitteredFrameState(CameraRenderState cameraRenderState) {
+        if (cameraRenderState == null || cameraRenderState.projectionMatrix == null || cameraRenderState.viewRotationMatrix == null) {
+            resetHistoryThisFrame = true;
+            return;
+        }
+
+        if (hasViewProjection) {
+            previousViewProjection.set(currentViewProjection);
+        }
+
+        Matrix4f view = new Matrix4f(cameraRenderState.viewRotationMatrix);
+        if (cameraRenderState.pos != null) {
+            view.translate(
+                    (float) -cameraRenderState.pos.x,
+                    (float) -cameraRenderState.pos.y,
+                    (float) -cameraRenderState.pos.z
+            );
+        }
+
+        currentViewProjection.set(cameraRenderState.projectionMatrix).mul(view);
+        if (!hasViewProjection) {
+            previousViewProjection.set(currentViewProjection);
+            resetHistoryThisFrame = true;
+            hasViewProjection = true;
+        }
+        frameIndex++;
+    }
+
+    /**
      * Coordinates update camera motion within the anti-aliasing render, configuration, or compatibility flow.
      * @param gameRenderer Minecraft game renderer whose scene target or post-processing phase is
      * being coordinated
      */
     private void updateCameraMotion(GameRenderer gameRenderer) {
-        Camera camera = gameRenderer.getMainCamera();
+        Camera camera = gameRenderer.mainCamera();
         if (camera == null || !camera.isInitialized()) {
             clearCameraMotion();
             return;
@@ -386,6 +455,7 @@ public final class OpenGlSceneTemporalController {
         previousJitterUvY = 0.0f;
         currentJitterClipX = 0.0f;
         currentJitterClipY = 0.0f;
+        resetHistoryThisFrame = true;
     }
 
     /**
@@ -396,6 +466,20 @@ public final class OpenGlSceneTemporalController {
         lastCameraXRot = 0.0f;
         lastCameraYRot = 0.0f;
         cameraMotionAmount = 0.0f;
+    }
+
+    private void clearViewProjection() {
+        hasViewProjection = false;
+        resetHistoryThisFrame = true;
+        frameIndex = 0L;
+        currentViewProjection.identity();
+        previousViewProjection.identity();
+    }
+
+    private static float[] matrixArray(Matrix4f matrix) {
+        float[] values = new float[16];
+        matrix.get(values);
+        return values;
     }
 
     /**
@@ -426,9 +510,8 @@ public final class OpenGlSceneTemporalController {
     }
 
     /**
-     * Implements temporal target bundle behavior for Salt's Anti Aliasing. OpenGL implementation
-     * code that owns render-target redirection, post-processing, and Minecraft framebuffer
-     * coordination.
+     * Implements temporal target bundle behavior for Salt's Anti Aliasing. This code owns
+     * render-target redirection, post-processing, and Minecraft framebuffer coordination.
      */
     private static final class TemporalTargetBundle implements PostChain.TargetBundle {
         private final Map<Identifier, ResourceHandle<RenderTarget>> targets = new HashMap<>();

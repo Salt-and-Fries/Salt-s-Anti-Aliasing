@@ -62,6 +62,15 @@ public final class SaltsAntiAliasingClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (cycleModeKey.consumeClick()) {
+                if (!renderRuntime.canUseAntiAliasing()) {
+                    if (client.player != null) {
+                        client.player.sendOverlayMessage(
+                                Component.literal("Salt's Anti Aliasing requires Minecraft's Vulkan graphics API")
+                        );
+                    }
+                    continue;
+                }
+
                 AntiAliasingMode activeMode = renderRuntime.cycleMode();
                 if (client.player != null) {
                     client.player.sendOverlayMessage(

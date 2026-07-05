@@ -10,15 +10,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
-import org.betterLostItems.salts_anti_aliasing.client.render.opengl.OpenGlSceneMsaaController;
-import org.betterLostItems.salts_anti_aliasing.client.render.opengl.OpenGlSceneScaleController;
-import org.betterLostItems.salts_anti_aliasing.client.render.opengl.OpenGlSceneTemporalController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneDlssController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneMsaaController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneScaleController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneTemporalController;
 import org.joml.Matrix4fc;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Central bridge between Fabric 26.1.2 Minecraft hook points and the shared mod runtime.
+ * Central bridge between Fabric 26.2 Minecraft hook points and the shared mod runtime.
  *
  * <p>Mixins should be as small and boring as possible. Their job is to land on a
  * Minecraft method that exists in this version family, collect the raw values exposed by
@@ -27,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * pipeline planning, metrics, and mode semantics stay stable.</p>
  *
  * <p>This class is intentionally allowed to depend on Minecraft classes and on the modern
- * OpenGL/GPU controllers. Code below this layer should avoid knowing which mixin fired or
+ * Vulkan/GPU controllers. Code below this layer should avoid knowing which mixin fired or
  * which Minecraft descriptor was used to reach the hook.</p>
  */
 public final class ModernMinecraftHooks {
@@ -47,26 +48,26 @@ public final class ModernMinecraftHooks {
     public static void prepareTemporalJitter(GameRenderer gameRenderer) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         boolean taaActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
-        RenderTarget mainTarget = gameRenderer.getMinecraft().getMainRenderTarget();
-        OpenGlSceneTemporalController.instance().prepareFrameJitter(taaActive, mainTarget.width, mainTarget.height);
+        RenderTarget mainTarget = gameRenderer.mainRenderTarget();
+        VulkanSceneTemporalController.instance().prepareFrameJitter(taaActive, mainTarget.width, mainTarget.height);
     }
 
     /**
-     * Applies the current temporal jitter to the 26.1.2 camera render state.
+     * Applies the current temporal jitter to the 26.2 camera render state.
      */
     public static CameraRenderState configureCameraJitter(CameraRenderState cameraRenderState) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         boolean taaActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
-        return OpenGlSceneTemporalController.instance().configureCameraJitter(cameraRenderState, taaActive);
+        return VulkanSceneTemporalController.instance().configureCameraJitter(cameraRenderState, taaActive);
     }
 
     /**
-     * Applies the current temporal jitter to the 26.1.2 projection-matrix argument.
+     * Applies the current temporal jitter to the 26.2 projection-matrix argument.
      */
     public static Matrix4fc jitterProjection(Matrix4fc projectionMatrix) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         boolean taaActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
-        return OpenGlSceneTemporalController.instance().jitterProjection(projectionMatrix, taaActive);
+        return VulkanSceneTemporalController.instance().jitterProjection(projectionMatrix, taaActive);
     }
 
     /**
@@ -105,7 +106,7 @@ public final class ModernMinecraftHooks {
     public static void recordRenderedFrame(GameRenderer gameRenderer, boolean renderLevel) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         if (runtime != null && renderLevel) {
-            Minecraft minecraft = gameRenderer.getMinecraft();
+            Minecraft minecraft = Minecraft.getInstance();
             runtime.recordRenderedFrame(minecraft.getFrameTimeNs(), minecraft.getFps());
         }
     }
@@ -114,7 +115,17 @@ public final class ModernMinecraftHooks {
      * Lets the scaled-scene controller temporarily replace Minecraft's main render target.
      */
     public static RenderTarget overrideMainRenderTarget() {
-        return OpenGlSceneScaleController.instance().overrideMainTarget();
+        RenderTarget msaaTarget = VulkanSceneMsaaController.instance().overrideMainTarget();
+        if (msaaTarget != null) {
+            return msaaTarget;
+        }
+
+        RenderTarget dlssTarget = VulkanSceneDlssController.instance().overrideMainTarget();
+        if (dlssTarget != null) {
+            return dlssTarget;
+        }
+
+        return VulkanSceneScaleController.instance().overrideMainTarget();
     }
 
     /**
@@ -127,122 +138,80 @@ public final class ModernMinecraftHooks {
     }
 
     /**
-     * Redirects color texture reads while SSAA/upscale or MSAA controllers own the scene.
+     * Redirects color texture reads while a Vulkan scene controller owns the main target.
      */
     public static GpuTexture redirectColorTexture(RenderTarget target) {
-        GpuTexture redirectedTexture = OpenGlSceneScaleController.instance().overrideColorTexture(target);
-        if (redirectedTexture != null) {
-            return redirectedTexture;
+        GpuTexture msaaTexture = VulkanSceneMsaaController.instance().overrideColorTexture(target);
+        if (msaaTexture != null) {
+            return msaaTexture;
         }
 
-        OpenGlSceneMsaaController.instance().syncColorIfNeeded(target);
-        return null;
+        GpuTexture dlssTexture = VulkanSceneDlssController.instance().overrideColorTexture(target);
+        if (dlssTexture != null) {
+            return dlssTexture;
+        }
+
+        return VulkanSceneScaleController.instance().overrideColorTexture(target);
     }
 
     /**
-     * Redirects color texture view reads while SSAA/upscale or MSAA controllers own the scene.
+     * Redirects color texture view reads while a Vulkan scene controller owns the main target.
      */
     public static GpuTextureView redirectColorTextureView(RenderTarget target) {
-        GpuTextureView redirectedTextureView = OpenGlSceneScaleController.instance().overrideColorTextureView(target);
-        if (redirectedTextureView != null) {
-            return redirectedTextureView;
+        GpuTextureView msaaTextureView = VulkanSceneMsaaController.instance().overrideColorTextureView(target);
+        if (msaaTextureView != null) {
+            return msaaTextureView;
         }
 
-        OpenGlSceneMsaaController.instance().syncColorIfNeeded(target);
-        return null;
+        GpuTextureView dlssTextureView = VulkanSceneDlssController.instance().overrideColorTextureView(target);
+        if (dlssTextureView != null) {
+            return dlssTextureView;
+        }
+
+        return VulkanSceneScaleController.instance().overrideColorTextureView(target);
     }
 
     /**
-     * Redirects depth texture reads while SSAA/upscale or MSAA controllers own the scene.
+     * Redirects depth texture reads while a Vulkan scene controller owns the main target.
      */
     public static GpuTexture redirectDepthTexture(RenderTarget target) {
-        GpuTexture redirectedTexture = OpenGlSceneScaleController.instance().overrideDepthTexture(target);
-        if (redirectedTexture != null) {
-            return redirectedTexture;
+        GpuTexture msaaTexture = VulkanSceneMsaaController.instance().overrideDepthTexture(target);
+        if (msaaTexture != null) {
+            return msaaTexture;
         }
 
-        OpenGlSceneMsaaController.instance().syncDepthIfNeeded(target);
-        return null;
+        GpuTexture dlssTexture = VulkanSceneDlssController.instance().overrideDepthTexture(target);
+        if (dlssTexture != null) {
+            return dlssTexture;
+        }
+
+        return VulkanSceneScaleController.instance().overrideDepthTexture(target);
     }
 
     /**
-     * Redirects depth texture view reads while SSAA/upscale or MSAA controllers own the scene.
+     * Redirects depth texture view reads while a Vulkan scene controller owns the main target.
      */
     public static GpuTextureView redirectDepthTextureView(RenderTarget target) {
-        GpuTextureView redirectedTextureView = OpenGlSceneScaleController.instance().overrideDepthTextureView(target);
-        if (redirectedTextureView != null) {
-            return redirectedTextureView;
+        GpuTextureView msaaTextureView = VulkanSceneMsaaController.instance().overrideDepthTextureView(target);
+        if (msaaTextureView != null) {
+            return msaaTextureView;
         }
 
-        OpenGlSceneMsaaController.instance().syncDepthIfNeeded(target);
-        return null;
+        GpuTextureView dlssTextureView = VulkanSceneDlssController.instance().overrideDepthTextureView(target);
+        if (dlssTextureView != null) {
+            return dlssTextureView;
+        }
+
+        return VulkanSceneScaleController.instance().overrideDepthTextureView(target);
     }
 
     /**
      * Keeps depth-copy behavior coherent when Minecraft copies from or to a redirected scene target.
      */
     public static boolean redirectCopyDepth(RenderTarget target, RenderTarget sourceTarget) {
-        if (OpenGlSceneScaleController.instance().redirectCopyDepth(target, sourceTarget)) {
-            return true;
-        }
-
-        OpenGlSceneMsaaController.instance().syncSourceDepthBeforeCopy(sourceTarget);
-        return false;
-    }
-
-    /**
-     * Lets the MSAA controller replace the main scene framebuffer for a render pass.
-     */
-    public static Integer overrideFramebuffer(GpuTextureView colorView, GpuTexture depthTexture, int originalFramebufferId) {
-        if (colorView instanceof com.mojang.blaze3d.opengl.GlTextureView glTextureView) {
-            return OpenGlSceneMsaaController.instance().overrideFramebuffer(glTextureView, depthTexture, originalFramebufferId);
-        }
-
-        return null;
-    }
-
-    /**
-     * Lets the MSAA controller replace direct main-target texture framebuffer lookups.
-     */
-    public static Integer overrideFramebuffer(GpuTexture colorTexture, GpuTexture depthTexture, int originalFramebufferId) {
-        return OpenGlSceneMsaaController.instance().overrideFramebuffer(colorTexture, depthTexture, originalFramebufferId);
-    }
-
-    /**
-     * Coordinates mirror color clear to msaa within the anti-aliasing render, configuration, or compatibility flow.
-     * @param colorTexture color texture value supplied by the caller or Minecraft callback
-     * @param clearColor clear color value supplied by the caller or Minecraft callback
-     */
-    public static void mirrorColorClearToMsaa(GpuTexture colorTexture, int clearColor) {
-        OpenGlSceneMsaaController.instance().mirrorClearColorIfNeeded(colorTexture, clearColor);
-    }
-
-    /**
-     * Coordinates mirror depth clear to msaa within the anti-aliasing render, configuration, or compatibility flow.
-     * @param depthTexture depth texture value supplied by the caller or Minecraft callback
-     * @param clearDepth clear depth value supplied by the caller or Minecraft callback
-     */
-    public static void mirrorDepthClearToMsaa(GpuTexture depthTexture, double clearDepth) {
-        OpenGlSceneMsaaController.instance().mirrorClearDepthIfNeeded(depthTexture, clearDepth);
-    }
-
-    /**
-     * Handles mirror color depth clear to msaa as part of the anti-aliasing render, configuration,
-     * or compatibility flow.
-     * @param colorTexture color texture value supplied by the caller or Minecraft callback
-     * @param clearColor clear color value supplied by the caller or Minecraft callback
-     * @param depthTexture depth texture value supplied by the caller or Minecraft callback
-     * @param clearDepth clear depth value supplied by the caller or Minecraft callback
-     */
-    public static void mirrorColorDepthClearToMsaa(GpuTexture colorTexture, int clearColor, GpuTexture depthTexture, double clearDepth) {
-        OpenGlSceneMsaaController.instance().mirrorClearColorAndDepthIfNeeded(colorTexture, clearColor, depthTexture, clearDepth);
-    }
-
-    /**
-     * Resolves msaa after render pass into a safe fallback or final render value.
-     */
-    public static void resolveMsaaAfterRenderPass() {
-        OpenGlSceneMsaaController.instance().onRenderPassFinished();
+        return VulkanSceneMsaaController.instance().redirectCopyDepth(target, sourceTarget)
+                || VulkanSceneDlssController.instance().redirectCopyDepth(target, sourceTarget)
+                || VulkanSceneScaleController.instance().redirectCopyDepth(target, sourceTarget);
     }
 
     /**
@@ -266,7 +235,7 @@ public final class ModernMinecraftHooks {
 
         lastEdgeDebugToggleMs = now;
         boolean enabled = runtime.toggleDebugViews();
-        minecraft.gui.setOverlayMessage(
+        minecraft.gui.hud.setOverlayMessage(
                 Component.literal("Salt's Anti Aliasing Edge View: " + (enabled ? "ON" : "OFF")),
                 false
         );

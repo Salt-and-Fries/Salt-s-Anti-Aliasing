@@ -18,6 +18,8 @@ public final class AntiAliasingVideoButtonFactory {
     private static final String MODE_LABEL_KEY = "options.salts_anti_aliasing.mode";
     private static final String MODE_TOOLTIP_KEY = "options.salts_anti_aliasing.mode.tooltip";
     private static final String MODE_DISABLED_TOOLTIP_KEY = "options.salts_anti_aliasing.mode.tooltip.disabled";
+    private static final String MODE_VULKAN_REQUIRED_TOOLTIP_KEY =
+            "options.salts_anti_aliasing.mode.tooltip.vulkan_required";
 
     /**
      * Creates a anti aliasing video button factory instance with the collaborators or initial state
@@ -32,13 +34,14 @@ public final class AntiAliasingVideoButtonFactory {
      * @return a newly created instance configured for the current mod/runtime context
      */
     public static Button create(Runnable onModeChanged) {
+        boolean available = antiAliasingAvailable();
         return Button.builder(currentLabel(), button -> {
                     RenderRuntime runtime = SaltsAntiAliasingClient.runtime();
                     runtime.cycleMode();
                     onModeChanged.run();
                 })
                 .size(VIDEO_ROW_WIDTH, VIDEO_ROW_HEIGHT)
-                .tooltip(Tooltip.create(tooltipFor(currentMode(), true)))
+                .tooltip(Tooltip.create(tooltipFor(currentMode(), available)))
                 .build();
     }
 
@@ -89,10 +92,24 @@ public final class AntiAliasingVideoButtonFactory {
      * @return tooltip for produced by this helper
      */
     private static Component tooltipFor(AntiAliasingMode mode, boolean available) {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        if (!available && runtime != null && !runtime.canUseAntiAliasing()) {
+            return Component.translatable(
+                    MODE_VULKAN_REQUIRED_TOOLTIP_KEY,
+                    ClientText.label(mode),
+                    ClientText.summary(mode)
+            );
+        }
+
         return Component.translatable(
                 available ? MODE_TOOLTIP_KEY : MODE_DISABLED_TOOLTIP_KEY,
                 ClientText.label(mode),
                 ClientText.summary(mode)
         );
+    }
+
+    private static boolean antiAliasingAvailable() {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        return runtime != null && runtime.canUseAntiAliasing();
     }
 }

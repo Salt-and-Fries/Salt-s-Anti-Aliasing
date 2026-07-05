@@ -24,6 +24,7 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
     private MsaaSampleSliderWidget msaaSlider;
     private SsaaScaleSliderWidget ssaaSlider;
     private SpatialUpscaleQualitySliderWidget upscaleSlider;
+    private DlssQualitySliderWidget dlssQualitySlider;
 
     /**
      * Creates a anti aliasing config screen instance with the collaborators or initial state
@@ -50,13 +51,15 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
         msaaSlider = new MsaaSampleSliderWidget(runtime);
         ssaaSlider = new SsaaScaleSliderWidget(runtime);
         upscaleSlider = new SpatialUpscaleQualitySliderWidget(runtime);
+        dlssQualitySlider = new DlssQualitySliderWidget(runtime);
 
         list.addSmall(List.of(
                 modeButton,
                 sharpnessSlider,
                 msaaSlider,
                 ssaaSlider,
-                upscaleSlider
+                upscaleSlider,
+                dlssQualitySlider
         ));
         refreshControlAvailability(runtime.activeMode());
     }
@@ -79,7 +82,11 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
      * @param activeMode active mode value supplied by the caller or Minecraft callback
      */
     private void refreshControlAvailability(AntiAliasingMode activeMode) {
-        boolean antiAliasingAvailable = minecraft != null && !minecraft.useShaderTransparency();
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        boolean antiAliasingAvailable = runtime != null
+                && runtime.canUseAntiAliasing()
+                && minecraft != null
+                && !(Boolean) minecraft.options.improvedTransparency().get();
 
         if (modeButton != null) {
             modeButton.active = antiAliasingAvailable;
@@ -100,6 +107,10 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
 
         if (upscaleSlider != null) {
             upscaleSlider.active = antiAliasingAvailable && activeMode.usesSpatialUpscaleQualityControl();
+        }
+
+        if (dlssQualitySlider != null) {
+            dlssQualitySlider.active = antiAliasingAvailable && activeMode.usesDlssQualityControl();
         }
     }
 }

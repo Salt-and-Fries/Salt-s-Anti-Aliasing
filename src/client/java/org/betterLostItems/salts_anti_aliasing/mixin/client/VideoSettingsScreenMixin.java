@@ -51,7 +51,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
     }
 
     /**
-     * Adds the Fabric 26.1.2 video controls after Minecraft has created its normal option rows.
+     * Adds the Fabric 26.2 video controls after Minecraft has created its normal option rows.
      */
     @Inject(method = "addOptions", at = @At("TAIL"))
     private void saltsAntiAliasing$addVideoModeButton(CallbackInfo callbackInfo) {
@@ -66,7 +66,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         saltsAntiAliasing$modeButton = AntiAliasingVideoButtonFactory.create(() -> {
             if (this.minecraft != null) {
                 saltsAntiAliasing$pendingScrollAmount = this.list.scrollAmount();
-                this.minecraft.setScreen(new VideoSettingsScreen(this.lastScreen, this.minecraft, this.options));
+                this.minecraft.setScreenAndShow(new VideoSettingsScreen(this.lastScreen, this.minecraft, this.options));
             }
         });
         saltsAntiAliasing$sharpnessSlider = new SharpnessSliderWidget(runtime);
@@ -103,7 +103,10 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
      * @param activeMode active mode value supplied by the caller or Minecraft callback
      */
     private void saltsAntiAliasing$refreshControlAvailability(AntiAliasingMode activeMode) {
-        boolean antiAliasingAvailable = !saltsAntiAliasing$improvedTransparencyEnabled();
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        boolean antiAliasingAvailable = runtime != null
+                && runtime.canUseAntiAliasing()
+                && !saltsAntiAliasing$improvedTransparencyEnabled();
 
         if (saltsAntiAliasing$modeButton != null) {
             saltsAntiAliasing$modeButton.active = antiAliasingAvailable;
@@ -196,7 +199,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
      * @return whether the operation or state is enabled
      */
     private boolean saltsAntiAliasing$improvedTransparencyEnabled() {
-        return this.minecraft != null && this.minecraft.useShaderTransparency();
+        return this.minecraft != null && (Boolean) this.minecraft.options.improvedTransparency().get();
     }
 
     /**

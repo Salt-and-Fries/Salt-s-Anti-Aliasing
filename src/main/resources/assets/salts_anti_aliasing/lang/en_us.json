@@ -6,6 +6,7 @@
   "options.salts_anti_aliasing.mode": "Anti-Aliasing Mode: %s",
   "options.salts_anti_aliasing.mode.tooltip": "Current mode: %1$s. %2$s",
   "options.salts_anti_aliasing.mode.tooltip.disabled": "Anti-aliasing is unavailable while Improved Transparency is on. Turn that option off to switch modes. Current mode: %1$s. %2$s",
+  "options.salts_anti_aliasing.mode.tooltip.vulkan_required": "Anti-aliasing requires Minecraft's Vulkan graphics API. Set Graphics API to Vulkan and restart Minecraft. Current mode: %1$s. %2$s",
   "options.salts_anti_aliasing.mode.off": "Off",
   "options.salts_anti_aliasing.mode.off.summary": "Leaves the image untouched. Use it for vanilla rendering, comparisons, or when you want zero extra processing. Benefit: the cleanest baseline for testing and the least chance of blur or artifacts.",
   "options.salts_anti_aliasing.mode.fxaa": "FXAA",
@@ -22,6 +23,8 @@
   "options.salts_anti_aliasing.mode.nis_sharpen.summary": "Adds a sharpen pass after rendering. Use it when the scene feels a little soft and you want extra crispness without changing resolution. Benefit: punchier detail and stronger local contrast.",
   "options.salts_anti_aliasing.mode.nis_upscale": "NIS Upscale",
   "options.salts_anti_aliasing.mode.nis_upscale.summary": "Renders below native resolution, scales back up, and sharpens the result. Use it when you want more FPS while keeping the image crisp. Benefit: strong performance gains with clear-looking output.",
+  "options.salts_anti_aliasing.mode.dlss_super_resolution": "DLSS Super Resolution",
+  "options.salts_anti_aliasing.mode.dlss_super_resolution.summary": "Uses NVIDIA DLSS on Vulkan to reconstruct a native-resolution image from a lower internal render resolution. Requires external Streamline/DLSS files, a valid app ID, and supported RTX hardware.",
   "options.salts_anti_aliasing.mode.fsr1_upscale": "FSR1 Upscale",
   "options.salts_anti_aliasing.mode.fsr1_upscale.summary": "Renders below native resolution and reconstructs the image with edge-aware scaling. Use it when you want a balanced performance boost with cleaner edges than plain upscaling. Benefit: better detail reconstruction at lower internal resolutions.",
   "options.salts_anti_aliasing.mode.fsr1_rcas": "FSR1 + RCAS",
@@ -38,8 +41,15 @@
   "options.salts_anti_aliasing.nis_upscale_quality.tooltip": "Controls the render scale for NIS Upscale. Higher presets stay sharper, while lower presets push performance harder. Use it when you want to fine-tune the balance between FPS and clarity.",
   "options.salts_anti_aliasing.fsr1_upscale_quality": "FSR1 Upscale: %s",
   "options.salts_anti_aliasing.fsr1_upscale_quality.tooltip": "Controls the render scale for the FSR1-based modes. Higher presets stay closer to native quality, while lower presets favor speed. Use it to decide how aggressive the upscale should be.",
+  "options.salts_anti_aliasing.dlss_quality": "DLSS Quality: %s",
+  "options.salts_anti_aliasing.dlss_quality.tooltip": "Chooses the DLSS Super Resolution quality mode. Quality favors image detail, Performance favors FPS, and Auto lets the DLSS runtime pick from the output resolution.",
   "options.salts_anti_aliasing.nis_upscale_quality.quality": "Quality",
   "options.salts_anti_aliasing.nis_upscale_quality.balanced": "Balanced",
   "options.salts_anti_aliasing.nis_upscale_quality.performance": "Performance",
-  "options.salts_anti_aliasing.nis_upscale_quality.ultra_performance": "Ultra Performance"
+  "options.salts_anti_aliasing.nis_upscale_quality.ultra_performance": "Ultra Performance",
+  "options.salts_anti_aliasing.dlss_quality.quality": "Quality",
+  "options.salts_anti_aliasing.dlss_quality.balanced": "Balanced",
+  "options.salts_anti_aliasing.dlss_quality.performance": "Performance",
+  "options.salts_anti_aliasing.dlss_quality.ultra_performance": "Ultra Performance",
+  "options.salts_anti_aliasing.dlss_quality.auto": "Auto"
 }

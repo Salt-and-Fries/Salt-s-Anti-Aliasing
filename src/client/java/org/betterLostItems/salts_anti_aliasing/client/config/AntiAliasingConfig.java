@@ -11,16 +11,19 @@ public final class AntiAliasingConfig {
 
     public AntiAliasingMode mode = AntiAliasingMode.OFF;
     public QualityPreset qualityPreset = QualityPreset.MEDIUM;
-    public RenderBackendPreference preferredBackend = RenderBackendPreference.AUTO;
     public float sharpenStrength = DEFAULT_SHARPEN_STRENGTH;
     public MsaaSampleLevel msaaSampleLevel = MsaaSampleLevel.defaultLevel();
     public SsaaScaleLevel ssaaScaleLevel = SsaaScaleLevel.defaultLevel();
     public NisUpscaleQualityPreset nisUpscaleQualityPreset = NisUpscaleQualityPreset.defaultPreset();
+    public DlssQualityPreset dlssQualityPreset = DlssQualityPreset.defaultPreset();
     public float internalResolutionScale = 1.0f;
     public boolean keepHudAtNativeResolution = true;
     public boolean debugViewsEnabled = false;
     public boolean recordMetrics = false;
-    public boolean allowExperimentalVulkan = false;
+    public String dlssBridgePath = "";
+    public String dlssPluginPath = "";
+    public String dlssLogPath = "";
+    public int dlssApplicationId = 0;
 
     /**
      * Creates an independent mutable copy so callers can inspect or edit configuration without
@@ -31,16 +34,19 @@ public final class AntiAliasingConfig {
         AntiAliasingConfig copy = new AntiAliasingConfig();
         copy.mode = mode;
         copy.qualityPreset = qualityPreset;
-        copy.preferredBackend = preferredBackend;
         copy.sharpenStrength = sharpenStrength;
         copy.msaaSampleLevel = msaaSampleLevel;
         copy.ssaaScaleLevel = ssaaScaleLevel;
         copy.nisUpscaleQualityPreset = nisUpscaleQualityPreset;
+        copy.dlssQualityPreset = dlssQualityPreset;
         copy.internalResolutionScale = internalResolutionScale;
         copy.keepHudAtNativeResolution = keepHudAtNativeResolution;
         copy.debugViewsEnabled = debugViewsEnabled;
         copy.recordMetrics = recordMetrics;
-        copy.allowExperimentalVulkan = allowExperimentalVulkan;
+        copy.dlssBridgePath = dlssBridgePath;
+        copy.dlssPluginPath = dlssPluginPath;
+        copy.dlssLogPath = dlssLogPath;
+        copy.dlssApplicationId = dlssApplicationId;
         return copy;
     }
 
@@ -53,16 +59,17 @@ public final class AntiAliasingConfig {
         if (qualityPreset == null) {
             qualityPreset = QualityPreset.MEDIUM;
         }
-        if (preferredBackend == null) {
-            preferredBackend = RenderBackendPreference.AUTO;
-        }
-
         msaaSampleLevel = MsaaSampleLevel.clamp(msaaSampleLevel);
         ssaaScaleLevel = SsaaScaleLevel.clamp(ssaaScaleLevel);
         nisUpscaleQualityPreset = NisUpscaleQualityPreset.clamp(nisUpscaleQualityPreset);
+        dlssQualityPreset = DlssQualityPreset.clamp(dlssQualityPreset);
         keepHudAtNativeResolution = true;
         sharpenStrength = clamp(sharpenStrength, MIN_SHARPEN_STRENGTH, MAX_SHARPEN_STRENGTH);
         internalResolutionScale = clamp(internalResolutionScale, 0.5f, 1.0f);
+        dlssBridgePath = sanitizePath(dlssBridgePath);
+        dlssPluginPath = sanitizePath(dlssPluginPath);
+        dlssLogPath = sanitizePath(dlssLogPath);
+        dlssApplicationId = Math.max(0, dlssApplicationId);
     }
 
     /**
@@ -82,6 +89,7 @@ public final class AntiAliasingConfig {
     public float sceneRenderScale() {
         return switch (mode) {
             case SSAA -> ssaaScaleLevel.scaleFactor();
+            case DLSS_SUPER_RESOLUTION -> dlssQualityPreset == DlssQualityPreset.ULTRA_PERFORMANCE ? 0.33f : 0.5f;
             case NIS_UPSCALE, FSR1_UPSCALE, FSR1_RCAS -> nisUpscaleQualityPreset.scaleFactor();
             default -> internalResolutionScale;
         };
@@ -96,5 +104,9 @@ public final class AntiAliasingConfig {
      */
     private static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    private static String sanitizePath(String value) {
+        return value == null ? "" : value.trim();
     }
 }

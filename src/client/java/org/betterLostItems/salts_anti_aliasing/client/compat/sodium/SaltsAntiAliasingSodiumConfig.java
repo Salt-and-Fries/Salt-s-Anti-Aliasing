@@ -11,6 +11,7 @@ import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.config.DlssQualityPreset;
 import org.betterLostItems.salts_anti_aliasing.client.config.MsaaSampleLevel;
 import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPreset;
 import org.betterLostItems.salts_anti_aliasing.client.config.SsaaScaleLevel;
@@ -29,6 +30,7 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static final Identifier MSAA_SAMPLES_ID = id("msaa_samples");
     private static final Identifier SSAA_SCALE_ID = id("ssaa_scale");
     private static final Identifier UPSCALE_QUALITY_ID = id("upscale_quality");
+    private static final Identifier DLSS_QUALITY_ID = id("dlss_quality");
 
     private static final String PAGE_TITLE_KEY = "screen.salts_anti_aliasing.config";
     private static final String GROUP_TITLE_KEY = "options.salts_anti_aliasing.group.image_quality";
@@ -36,6 +38,7 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static final String MSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.msaa_samples.tooltip";
     private static final String SSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.ssaa_scale.tooltip";
     private static final String UPSCALE_TOOLTIP_KEY = "options.salts_anti_aliasing.upscale_quality.tooltip";
+    private static final String DLSS_QUALITY_TOOLTIP_KEY = "options.salts_anti_aliasing.dlss_quality.tooltip";
 
     /**
      * Coordinates register config late within the anti-aliasing render, configuration, or compatibility flow.
@@ -73,6 +76,7 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                                 .addOption(createMsaaSamplesOption(builder))
                                 .addOption(createSsaaScaleOption(builder))
                                 .addOption(createUpscaleQualityOption(builder))
+                                .addOption(createDlssQualityOption(builder))
                         ));
     }
 
@@ -163,6 +167,22 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                 );
     }
 
+    private static EnumOptionBuilder<DlssQualityPreset> createDlssQualityOption(ConfigBuilder builder) {
+        return builder.createEnumOption(DLSS_QUALITY_ID, DlssQualityPreset.class)
+                .setName(Component.translatable("options.salts_anti_aliasing.dlss_quality", Component.empty()))
+                .setTooltip(Component.translatable(DLSS_QUALITY_TOOLTIP_KEY))
+                .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
+                .setBinding(SaltsAntiAliasingSodiumConfig::setDlssQualityPreset, SaltsAntiAliasingSodiumConfig::dlssQualityPreset)
+                .setDefaultValue(DlssQualityPreset.defaultPreset())
+                .setElementNameProvider(ClientText::label)
+                .setEnabledProvider(
+                        state -> antiAliasingAvailable()
+                                && state.readEnumOption(MODE_ID, AntiAliasingMode.class).usesDlssQualityControl(),
+                        MODE_ID,
+                        ConfigState.UPDATE_ON_REBUILD
+                );
+    }
+
     /**
      * Handles id as part of the anti-aliasing render, configuration, or compatibility flow.
      * @param path path value supplied by the caller or Minecraft callback
@@ -183,7 +203,10 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
      * @return whether the operation or state is enabled
      */
     private static boolean antiAliasingAvailable() {
-        return !Minecraft.getInstance().useShaderTransparency();
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        return runtime != null
+                && runtime.canUseAntiAliasing()
+                && !(Boolean) Minecraft.getInstance().options.improvedTransparency().get();
     }
 
     /**
@@ -270,6 +293,15 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
      */
     private static void setUpscaleQualityPreset(NisUpscaleQualityPreset preset) {
         SaltsAntiAliasingClient.runtime().setUpscaleQualityPreset(preset);
+    }
+
+    private static DlssQualityPreset dlssQualityPreset() {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        return runtime == null ? DlssQualityPreset.defaultPreset() : runtime.dlssQualityPreset();
+    }
+
+    private static void setDlssQualityPreset(DlssQualityPreset preset) {
+        SaltsAntiAliasingClient.runtime().setDlssQualityPreset(preset);
     }
 
     /**

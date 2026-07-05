@@ -20,10 +20,9 @@ import java.util.Set;
 /**
  * Converts the shared config model into a backend-neutral render plan.
  *
- * <p>This planner should remain free of Minecraft mixin descriptors and concrete
- * OpenGL command details. It describes the passes and logical targets a mode
- * needs; the active version/backend adapter decides how those concepts become
- * real render targets and post-chain invocations.</p>
+ * <p>This planner should remain free of Minecraft mixin descriptors and concrete GPU command
+ * details. It describes the passes and logical targets a mode needs; the active version/backend
+ * adapter decides how those concepts become real render targets and post-chain invocations.</p>
  */
 public final class RenderPipelinePlanner {
     /**
@@ -49,19 +48,21 @@ public final class RenderPipelinePlanner {
             // Temporal modes need persistent history that survives between frames.
             targets.put("history_color", target("history_color", RenderTargetType.HISTORY_COLOR, TextureFormat.RGBA16F,
                     RenderTargetSizing.INTERNAL, sceneScale, true));
-            currentColor = addPass(
-                    passes,
-                    targets,
-                    "taa_resolve",
-                    EnumSet.of(RenderCapability.TEMPORAL_AA),
-                    List.of(currentColor, "history_color", "scene_depth"),
-                    "taa_resolved",
-                    RenderTargetType.INTERMEDIATE_COLOR,
-                    TextureFormat.RGBA16F,
-                    RenderTargetSizing.INTERNAL,
-                    sceneScale,
-                    false
-            );
+            if (config.mode == AntiAliasingMode.TAA) {
+                currentColor = addPass(
+                        passes,
+                        targets,
+                        "taa_resolve",
+                        EnumSet.of(RenderCapability.TEMPORAL_AA),
+                        List.of(currentColor, "history_color", "scene_depth"),
+                        "taa_resolved",
+                        RenderTargetType.INTERMEDIATE_COLOR,
+                        TextureFormat.RGBA16F,
+                        RenderTargetSizing.INTERNAL,
+                        sceneScale,
+                        false
+                );
+            }
         }
 
         if (config.mode == AntiAliasingMode.SSAA) {
@@ -177,6 +178,28 @@ public final class RenderPipelinePlanner {
                     1.0f,
                     false
             );
+            case DLSS_SUPER_RESOLUTION -> {
+                targets.put("motion_vectors", target("motion_vectors", RenderTargetType.MOTION_VECTOR, TextureFormat.RG16F,
+                        RenderTargetSizing.INTERNAL, sceneScale, true));
+                currentColor = addPass(
+                        passes,
+                        targets,
+                        "dlss_super_resolution",
+                        EnumSet.of(
+                                RenderCapability.INTERNAL_RESOLUTION,
+                                RenderCapability.SPATIAL_UPSCALING,
+                                RenderCapability.TEMPORAL_AA,
+                                RenderCapability.VENDOR_UPSCALING
+                        ),
+                        List.of("scene_color", "scene_depth", "motion_vectors", "history_color"),
+                        "dlss_upscaled_color",
+                        RenderTargetType.INTERMEDIATE_COLOR,
+                        TextureFormat.RGBA16F,
+                        RenderTargetSizing.OUTPUT,
+                        1.0f,
+                        false
+                );
+            }
             case FSR1_UPSCALE -> currentColor = addPass(
                     passes,
                     targets,

@@ -1,5 +1,6 @@
-package org.betterLostItems.salts_anti_aliasing.client.render.opengl;
+package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -21,15 +22,16 @@ import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPr
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.OptionalInt;
+import java.util.Optional;
 import java.util.Set;
 
 /**
- * Owns OpenGL scene rendering at non-native resolution for SSAA and spatial upscalers, then
- * resolves the scene back to the main target.
+ * Owns GPU-backed scene rendering at non-native resolution for SSAA and spatial upscalers, then
+ * resolves the scene back to the main target. This path uses Minecraft's render target and post
+ * chain abstractions, so it can run on either 26.2 backend.
  */
-public final class OpenGlSceneScaleController {
-    private static final OpenGlSceneScaleController INSTANCE = new OpenGlSceneScaleController();
+public final class VulkanSceneScaleController {
+    private static final VulkanSceneScaleController INSTANCE = new VulkanSceneScaleController();
     private static final String TARGET_LABEL = "Salt's Scaled Scene";
     private static final Identifier SCENE_TARGET_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":scene_color");
     private static final Identifier NIS_UPSCALE_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":nis_upscale");
@@ -54,17 +56,17 @@ public final class OpenGlSceneScaleController {
     private AntiAliasingMode activeMode = AntiAliasingMode.OFF;
 
     /**
-     * Creates a open gl scene scale controller instance with the collaborators or initial state
+     * Creates a scene scale controller instance with the collaborators or initial state
      * supplied by the caller.
      */
-    private OpenGlSceneScaleController() {
+    private VulkanSceneScaleController() {
     }
 
     /**
      * Handles instance as part of the anti-aliasing render, configuration, or compatibility flow.
      * @return singleton controller instance
      */
-    public static OpenGlSceneScaleController instance() {
+    public static VulkanSceneScaleController instance() {
         return INSTANCE;
     }
 
@@ -83,12 +85,12 @@ public final class OpenGlSceneScaleController {
             return;
         }
 
-        Minecraft minecraft = gameRenderer.getMinecraft();
+        Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null) {
             return;
         }
 
-        RenderTarget mainTarget = minecraft.getMainRenderTarget();
+        RenderTarget mainTarget = gameRenderer.mainRenderTarget();
         if (!mainTarget.useDepth || mainTarget.width <= 0 || mainTarget.height <= 0) {
             return;
         }
@@ -102,7 +104,7 @@ public final class OpenGlSceneScaleController {
             this.activeMode = config.mode;
             active = true;
         } catch (RuntimeException exception) {
-            disableAfterFailure("Disabling OpenGL scene scaling after a setup failure", exception);
+            disableAfterFailure("Disabling scene scaling after a setup failure", exception);
         }
     }
 
@@ -130,13 +132,13 @@ public final class OpenGlSceneScaleController {
                     && sceneTarget != null
                     && sceneTarget.getColorTextureView() != null) {
                 if (usesDedicatedUpscaleShader(config.mode)) {
-                    processDedicatedUpscale(gameRenderer.getMinecraft(), sceneTarget, mainTarget, config);
+                    processDedicatedUpscale(Minecraft.getInstance(), sceneTarget, mainTarget, config);
                 } else {
                     resolveSceneColor(sceneTarget, mainTarget);
                 }
             }
         } catch (RuntimeException exception) {
-            disableAfterFailure("Disabling OpenGL scene scaling after a resolve failure", exception);
+            disableAfterFailure("Disabling scene scaling after a resolve failure", exception);
         } finally {
             resourcePool.endFrame();
             clearFrameState();
@@ -227,7 +229,7 @@ public final class OpenGlSceneScaleController {
     private void ensureSceneTarget(int width, int height, boolean useDepth) {
         if (sceneTarget == null || sceneTarget.useDepth != useDepth) {
             destroyResources();
-            sceneTarget = new TextureTarget(TARGET_LABEL, width, height, useDepth);
+            sceneTarget = new TextureTarget(TARGET_LABEL, width, height, useDepth, GpuFormat.RGBA8_UNORM);
             return;
         }
 
@@ -245,7 +247,7 @@ public final class OpenGlSceneScaleController {
         try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
                 this::resolvePassLabel,
                 mainTarget.getColorTextureView(),
-                OptionalInt.empty()
+                Optional.empty()
         )) {
             renderPass.setPipeline(RenderPipelines.TRACY_BLIT);
             RenderSystem.bindDefaultUniforms(renderPass);
@@ -254,7 +256,7 @@ public final class OpenGlSceneScaleController {
                     sceneTarget.getColorTextureView(),
                     RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)
             );
-            renderPass.draw(0, 3);
+            renderPass.draw(0, 0, 3, 1);
         }
     }
 
@@ -283,7 +285,7 @@ public final class OpenGlSceneScaleController {
             return;
         }
 
-        OpenGlDynamicUniforms.updateForMode(postChain, config);
+        VulkanDynamicUniforms.updateForMode(postChain, config);
 
         FrameGraphBuilder frameGraphBuilder = new FrameGraphBuilder();
         ResourceHandle<RenderTarget> mainHandle = frameGraphBuilder.importExternal("salts_upscale_main", mainTarget);
@@ -439,9 +441,8 @@ public final class OpenGlSceneScaleController {
     }
 
     /**
-     * Implements scene scale target bundle behavior for Salt's Anti Aliasing. OpenGL implementation
-     * code that owns render-target redirection, post-processing, and Minecraft framebuffer
-     * coordination.
+     * Implements scene scale target bundle behavior for Salt's Anti Aliasing. This code owns
+     * render-target redirection, post-processing, and Minecraft framebuffer coordination.
      */
     private static final class SceneScaleTargetBundle implements PostChain.TargetBundle {
         private final Map<Identifier, ResourceHandle<RenderTarget>> targets = new HashMap<>();

@@ -22,7 +22,7 @@ public abstract class KeyboardHandlerMixin {
     private Minecraft minecraft;
 
     /**
-     * Delegates the debug-key path to the 26.1.2 platform bridge.
+     * Delegates the debug-key path to the 26.2 platform bridge.
      */
     @Inject(method = "handleDebugKeys", at = @At("HEAD"), cancellable = true)
     private void saltsAntiAliasing$toggleEdgeDebug(net.minecraft.client.input.KeyEvent keyEvent, CallbackInfoReturnable<Boolean> cir) {

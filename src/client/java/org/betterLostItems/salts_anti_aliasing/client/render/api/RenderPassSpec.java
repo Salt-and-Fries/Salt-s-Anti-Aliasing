@@ -6,7 +6,7 @@ import java.util.Set;
 
 /**
  * Immutable value object carrying render pass spec data between render-planning and runtime code.
- * Backend-neutral render API code shared by OpenGL, Vulkan placeholders, and pipeline planning.
+ * Backend-neutral render API code shared by Vulkan runtime code and pipeline planning.
  */
 public record RenderPassSpec(
         String id,
