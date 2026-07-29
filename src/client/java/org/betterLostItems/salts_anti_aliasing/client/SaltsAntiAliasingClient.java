@@ -12,7 +12,6 @@ import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.debug.EdgeDebugHud;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * Client entrypoint that bootstraps the render runtime, registers key bindings, and connects
@@ -56,7 +55,7 @@ public final class SaltsAntiAliasingClient implements ClientModInitializer {
         cycleModeKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 CYCLE_MODE_KEY,
                 InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_O,
+                InputConstants.UNKNOWN.getValue(),
                 KeyMapping.Category.register(KEY_CATEGORY)
         ));
 
