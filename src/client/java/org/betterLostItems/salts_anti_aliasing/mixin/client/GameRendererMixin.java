@@ -2,12 +2,21 @@ package org.betterLostItems.salts_anti_aliasing.mixin.client;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.TextureFilteringMethod;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.GlobalSettingsUniform;
 import net.minecraft.client.renderer.fog.FogRenderer;
+import net.minecraft.client.renderer.state.GameRenderState;
+import net.minecraft.client.renderer.state.OptionsRenderState;
+import net.minecraft.client.renderer.state.WindowRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.joml.Matrix4fc;
 import org.betterLostItems.salts_anti_aliasing.client.platform.modern.ModernMinecraftHooks;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -24,6 +33,21 @@ public abstract class GameRendererMixin {
     private static final String LEVEL_RENDER_TARGET =
             "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V";
 
+    @Shadow
+    @Final
+    private Minecraft minecraft;
+
+    @Shadow
+    @Final
+    private GameRenderState gameRenderState;
+
+    @Shadow
+    @Final
+    private GlobalSettingsUniform globalSettingsUniform;
+
+    @Unique
+    private boolean saltsAntiAliasing$globalScreenSizeOverridden;
+
     /**
      * Lets internal-resolution modes temporarily replace Minecraft's main render target.
      */
@@ -36,11 +60,29 @@ public abstract class GameRendererMixin {
     }
 
     /**
-     * Computes temporal jitter before the projection matrix and camera render state are consumed.
+     * Activates the internal scene target before any resolution-dependent world state is prepared.
      */
     @Inject(method = "renderLevel", at = @At("HEAD"))
-    private void saltsAntiAliasing$prepareTemporalJitter(DeltaTracker deltaTracker, CallbackInfo callbackInfo) {
-        ModernMinecraftHooks.prepareTemporalJitter((GameRenderer) (Object) this);
+    private void saltsAntiAliasing$beginResolutionScopedScene(
+            DeltaTracker deltaTracker,
+            CallbackInfo callbackInfo
+    ) {
+        GameRenderer gameRenderer = (GameRenderer) (Object) this;
+        saltsAntiAliasing$globalScreenSizeOverridden = false;
+        ModernMinecraftHooks.beginSceneRendering(gameRenderer);
+
+        RenderTarget sceneTarget = gameRenderer.mainRenderTarget();
+        WindowRenderState windowState = gameRenderState.windowRenderState;
+        if (sceneTarget.width != windowState.width || sceneTarget.height != windowState.height) {
+            saltsAntiAliasing$updateGlobalSettings(
+                    sceneTarget.width,
+                    sceneTarget.height,
+                    deltaTracker
+            );
+            saltsAntiAliasing$globalScreenSizeOverridden = true;
+        }
+
+        ModernMinecraftHooks.prepareTemporalJitter(gameRenderer);
     }
 
     /**
@@ -74,20 +116,6 @@ public abstract class GameRendererMixin {
     }
 
     /**
-     * Starts scene-target redirection before world rendering.
-     */
-    @Inject(
-            method = "renderLevel",
-            at = @At(
-                    value = "INVOKE",
-                    target = LEVEL_RENDER_TARGET
-            )
-    )
-    private void saltsAntiAliasing$beginSceneRendering(DeltaTracker deltaTracker, CallbackInfo callbackInfo) {
-        ModernMinecraftHooks.beginSceneRendering((GameRenderer) (Object) this);
-    }
-
-    /**
      * Resolves redirected scene-target work after world rendering returns.
      */
     @Inject(
@@ -99,7 +127,32 @@ public abstract class GameRendererMixin {
             )
     )
     private void saltsAntiAliasing$endSceneRendering(DeltaTracker deltaTracker, CallbackInfo callbackInfo) {
+        if (saltsAntiAliasing$globalScreenSizeOverridden) {
+            WindowRenderState windowState = gameRenderState.windowRenderState;
+            saltsAntiAliasing$updateGlobalSettings(windowState.width, windowState.height, deltaTracker);
+            saltsAntiAliasing$globalScreenSizeOverridden = false;
+        }
         ModernMinecraftHooks.endSceneRendering((GameRenderer) (Object) this);
+    }
+
+    @Unique
+    private void saltsAntiAliasing$updateGlobalSettings(
+            int width,
+            int height,
+            DeltaTracker deltaTracker
+    ) {
+        OptionsRenderState optionsState = gameRenderState.optionsRenderState;
+        long gameTime = minecraft.level == null ? 0L : minecraft.level.getGameTime();
+        globalSettingsUniform.update(
+                width,
+                height,
+                optionsState.glintStrength,
+                gameTime,
+                deltaTracker,
+                optionsState.menuBackgroundBlurriness,
+                gameRenderState.levelRenderState.cameraRenderState.pos,
+                optionsState.textureFiltering == TextureFilteringMethod.RGSS
+        );
     }
 
     /**
