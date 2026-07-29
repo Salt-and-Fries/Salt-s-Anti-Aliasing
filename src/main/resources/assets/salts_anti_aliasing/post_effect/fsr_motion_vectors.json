@@ -1,0 +1,66 @@
+{
+  "targets": {},
+  "passes": [
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "salts_anti_aliasing:post/fsr_motion_vectors",
+      "inputs": [
+        {
+          "sampler_name": "SceneDepth",
+          "target": "salts_anti_aliasing:fsr_scene",
+          "use_depth_buffer": true
+        }
+      ],
+      "output": "salts_anti_aliasing:fsr_motion_vectors",
+      "uniforms": {
+        "FsrMotionConfig": [
+          {
+            "name": "CurrentClipToWorld0",
+            "type": "vec4",
+            "value": [1.0, 0.0, 0.0, 0.0]
+          },
+          {
+            "name": "CurrentClipToWorld1",
+            "type": "vec4",
+            "value": [0.0, 1.0, 0.0, 0.0]
+          },
+          {
+            "name": "CurrentClipToWorld2",
+            "type": "vec4",
+            "value": [0.0, 0.0, 1.0, 0.0]
+          },
+          {
+            "name": "CurrentClipToWorld3",
+            "type": "vec4",
+            "value": [0.0, 0.0, 0.0, 1.0]
+          },
+          {
+            "name": "PreviousViewProjection0",
+            "type": "vec4",
+            "value": [1.0, 0.0, 0.0, 0.0]
+          },
+          {
+            "name": "PreviousViewProjection1",
+            "type": "vec4",
+            "value": [0.0, 1.0, 0.0, 0.0]
+          },
+          {
+            "name": "PreviousViewProjection2",
+            "type": "vec4",
+            "value": [0.0, 0.0, 1.0, 0.0]
+          },
+          {
+            "name": "PreviousViewProjection3",
+            "type": "vec4",
+            "value": [0.0, 0.0, 0.0, 1.0]
+          },
+          {
+            "name": "MotionConfig",
+            "type": "vec4",
+            "value": [1.0, 1.0, 0.0, 0.0]
+          }
+        ]
+      }
+    }
+  ]
+}

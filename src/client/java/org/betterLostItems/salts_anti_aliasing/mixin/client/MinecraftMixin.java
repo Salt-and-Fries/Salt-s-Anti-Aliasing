@@ -1,11 +1,11 @@
 package org.betterLostItems.salts_anti_aliasing.mixin.client;
 
 import net.minecraft.client.Minecraft;
+import org.betterLostItems.salts_anti_aliasing.client.platform.modern.ModernMinecraftHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.betterLostItems.salts_anti_aliasing.client.platform.modern.ModernMinecraftHooks;
 
 /**
  * Implements minecraft mixin behavior for Salt's Anti Aliasing. Mixin bridge code that hooks

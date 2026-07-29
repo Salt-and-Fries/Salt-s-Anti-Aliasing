@@ -19,8 +19,11 @@ import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.config.MsaaSampleLevel;
 import org.betterLostItems.salts_anti_aliasing.mixin.client.GpuDeviceAccessor;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.vulkan.KHRSynchronization2;
 import org.lwjgl.vulkan.VK12;
 import org.lwjgl.vulkan.VkCommandBuffer;
+import org.lwjgl.vulkan.VkDependencyInfo;
+import org.lwjgl.vulkan.VkImageMemoryBarrier2;
 import org.lwjgl.vulkan.VkImageResolve;
 
 /**
@@ -36,6 +39,8 @@ public final class VulkanSceneMsaaController {
     private TextureTarget msaaTarget;
     private RenderTarget mainTarget;
     private int msaaTargetSamples = 1;
+    private int lastReportedRequestedSamples;
+    private int lastReportedActualSamples;
 
     private VulkanSceneMsaaController() {
     }
@@ -63,7 +68,7 @@ public final class VulkanSceneMsaaController {
         }
 
         try {
-            int samples = ensureMsaaTargetWithFallback(
+            ensureMsaaTargetWithFallback(
                     mainTarget.width,
                     mainTarget.height,
                     mainTarget.useDepth,
@@ -71,9 +76,6 @@ public final class VulkanSceneMsaaController {
             );
             this.mainTarget = mainTarget;
             active = true;
-
-            VulkanMsaaState.setPipelineSampleCount(samples);
-            RenderSystem.getDevice().clearPipelineCache();
         } catch (RuntimeException exception) {
             disableAfterFailure("Disabling Vulkan MSAA scene rendering after a setup failure", exception);
         }
@@ -100,8 +102,6 @@ public final class VulkanSceneMsaaController {
         } catch (RuntimeException exception) {
             disableAfterFailure("Disabling Vulkan MSAA scene rendering after a resolve failure", exception);
         } finally {
-            VulkanMsaaState.clearPipelineSampleCount();
-            RenderSystem.getDevice().clearPipelineCache();
             clearFrameState();
         }
     }
@@ -159,22 +159,26 @@ public final class VulkanSceneMsaaController {
     ) {
         RuntimeException lastFailure = null;
         int requestedSamples = MsaaSampleLevel.clamp(requestedLevel).samples();
+        int supportedSamples = VulkanMsaaCapabilities.bestSupportedSceneSamples(
+                vulkanDevice(),
+                GpuFormat.RGBA8_UNORM,
+                useDepth,
+                requestedSamples
+        );
+
+        if (supportedSamples <= 1) {
+            throw new IllegalStateException("Vulkan device does not support multisampled scene color/depth targets");
+        }
 
         for (MsaaSampleLevel level : MsaaSampleLevel.valuesDescending()) {
             int samples = level.samples();
-            if (samples > requestedSamples) {
+            if (samples > requestedSamples || samples > supportedSamples) {
                 continue;
             }
 
             try {
                 ensureMsaaTarget(width, height, useDepth, samples);
-                if (samples != requestedSamples) {
-                    SaltsAntiAliasing.LOGGER.warn(
-                            "Vulkan MSAA requested {}x but using {}x after allocation fallback",
-                            requestedSamples,
-                            samples
-                    );
-                }
+                reportSampleFallback(requestedSamples, samples);
                 return samples;
             } catch (RuntimeException exception) {
                 lastFailure = exception;
@@ -183,6 +187,26 @@ public final class VulkanSceneMsaaController {
         }
 
         throw new IllegalStateException("Unable to create a Vulkan MSAA scene target", lastFailure);
+    }
+
+    private void reportSampleFallback(int requestedSamples, int actualSamples) {
+        if (actualSamples == requestedSamples) {
+            lastReportedRequestedSamples = 0;
+            lastReportedActualSamples = 0;
+            return;
+        }
+
+        if (lastReportedRequestedSamples == requestedSamples && lastReportedActualSamples == actualSamples) {
+            return;
+        }
+
+        lastReportedRequestedSamples = requestedSamples;
+        lastReportedActualSamples = actualSamples;
+        SaltsAntiAliasing.LOGGER.warn(
+                "Vulkan MSAA requested {}x but using {}x after capability/allocation fallback",
+                requestedSamples,
+                actualSamples
+        );
     }
 
     private void ensureMsaaTarget(int width, int height, boolean useDepth, int samples) {
@@ -215,6 +239,7 @@ public final class VulkanSceneMsaaController {
         VulkanCommandEncoder encoder = vulkanDevice().createCommandEncoder();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             VkCommandBuffer commandBuffer = encoder.allocateAndBeginTransientCommandBuffer();
+            resolveBarrier(commandBuffer, stack, sourceVulkanTexture, targetVulkanTexture);
             VkImageResolve.Buffer resolveRegion = VkImageResolve.calloc(1, stack);
             resolveRegion.srcSubresource()
                     .aspectMask(VK12.VK_IMAGE_ASPECT_COLOR_BIT)
@@ -238,9 +263,99 @@ public final class VulkanSceneMsaaController {
                     VK12.VK_IMAGE_LAYOUT_GENERAL,
                     resolveRegion
             );
-            VulkanCommandEncoder.memoryBarrier(commandBuffer, stack);
+            resolvedBarrier(commandBuffer, stack, sourceVulkanTexture, targetVulkanTexture);
             encoder.execute(commandBuffer);
         }
+    }
+
+    private static void resolveBarrier(
+            VkCommandBuffer commandBuffer,
+            MemoryStack stack,
+            VulkanGpuTexture sourceTexture,
+            VulkanGpuTexture targetTexture
+    ) {
+        VkImageMemoryBarrier2.Buffer barriers = VkImageMemoryBarrier2.calloc(2, stack);
+        configureImageBarrier(
+                barriers.get(0),
+                sourceTexture,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT_KHR,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_RESOLVE_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_TRANSFER_READ_BIT_KHR
+        );
+        configureImageBarrier(
+                barriers.get(1),
+                targetTexture,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT_KHR,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_RESOLVE_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_TRANSFER_WRITE_BIT_KHR
+        );
+        pipelineBarrier(commandBuffer, stack, barriers);
+    }
+
+    private static void resolvedBarrier(
+            VkCommandBuffer commandBuffer,
+            MemoryStack stack,
+            VulkanGpuTexture sourceTexture,
+            VulkanGpuTexture targetTexture
+    ) {
+        VkImageMemoryBarrier2.Buffer barriers = VkImageMemoryBarrier2.calloc(2, stack);
+        configureImageBarrier(
+                barriers.get(0),
+                sourceTexture,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_RESOLVE_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_TRANSFER_READ_BIT_KHR,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR
+        );
+        configureImageBarrier(
+                barriers.get(1),
+                targetTexture,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_RESOLVE_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_TRANSFER_WRITE_BIT_KHR,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT_KHR
+                        | KHRSynchronization2.VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT_KHR
+        );
+        pipelineBarrier(commandBuffer, stack, barriers);
+    }
+
+    private static void configureImageBarrier(
+            VkImageMemoryBarrier2 barrier,
+            VulkanGpuTexture texture,
+            long sourceStage,
+            long sourceAccess,
+            long destinationStage,
+            long destinationAccess
+    ) {
+        barrier.sType$Default()
+                .srcStageMask(sourceStage)
+                .srcAccessMask(sourceAccess)
+                .dstStageMask(destinationStage)
+                .dstAccessMask(destinationAccess)
+                .oldLayout(VK12.VK_IMAGE_LAYOUT_GENERAL)
+                .newLayout(VK12.VK_IMAGE_LAYOUT_GENERAL)
+                .srcQueueFamilyIndex(VK12.VK_QUEUE_FAMILY_IGNORED)
+                .dstQueueFamilyIndex(VK12.VK_QUEUE_FAMILY_IGNORED)
+                .image(texture.vkImage());
+        barrier.subresourceRange()
+                .aspectMask(VK12.VK_IMAGE_ASPECT_COLOR_BIT)
+                .baseMipLevel(0)
+                .levelCount(1)
+                .baseArrayLayer(0)
+                .layerCount(1);
+    }
+
+    private static void pipelineBarrier(
+            VkCommandBuffer commandBuffer,
+            MemoryStack stack,
+            VkImageMemoryBarrier2.Buffer barriers
+    ) {
+        VkDependencyInfo dependencyInfo = VkDependencyInfo.calloc(stack)
+                .sType$Default()
+                .pImageMemoryBarriers(barriers);
+        KHRSynchronization2.vkCmdPipelineBarrier2KHR(commandBuffer, dependencyInfo);
     }
 
     private static VulkanDevice vulkanDevice() {
@@ -264,7 +379,6 @@ public final class VulkanSceneMsaaController {
     private void disableAfterFailure(String message, RuntimeException exception) {
         disabledAfterFailure = true;
         destroyResources();
-        VulkanMsaaState.clearPipelineSampleCount();
         clearFrameState();
         SaltsAntiAliasing.LOGGER.error(message, exception);
     }

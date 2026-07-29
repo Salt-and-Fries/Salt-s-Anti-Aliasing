@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vulkan.VulkanInstance;
 import com.mojang.blaze3d.vulkan.VulkanPhysicalDevice;
 import com.mojang.blaze3d.vulkan.checkpoints.CheckpointExtension;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss.DlssVulkanDeviceRegistry;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanNativeDeviceRegistry;
 import org.lwjgl.vulkan.VkDevice;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,6 +31,8 @@ public abstract class VulkanDeviceMixin {
             CheckpointExtension checkpointExtension,
             CallbackInfo callbackInfo
     ) {
-        DlssVulkanDeviceRegistry.capture((VulkanDevice) (Object) this, physicalDevice);
+        VulkanDevice device = (VulkanDevice) (Object) this;
+        DlssVulkanDeviceRegistry.capture(device, physicalDevice);
+        VulkanNativeDeviceRegistry.capture(device, physicalDevice);
     }
 }

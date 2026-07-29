@@ -64,6 +64,10 @@ processResources {
                 "minecraft_version": project.minecraft_version,
                 "loader_version": project.loader_version
     }
+
+    from("native/redist") {
+        into "assets/${project.archives_base_name.replace('-', '_')}/native"
+    }
 }
 
 def targetJavaVersion = 25

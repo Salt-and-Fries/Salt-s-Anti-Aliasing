@@ -8,6 +8,9 @@ public final class AntiAliasingConfig {
     public static final float MIN_SHARPEN_STRENGTH = 0.0f;
     public static final float MAX_SHARPEN_STRENGTH = 0.65f;
     public static final float DEFAULT_SHARPEN_STRENGTH = 0.25f;
+    public static final float MIN_FSR_SHARPEN_STRENGTH = 0.0f;
+    public static final float MAX_FSR_SHARPEN_STRENGTH = 1.0f;
+    public static final float DEFAULT_FSR_SHARPEN_STRENGTH = 0.25f;
 
     public AntiAliasingMode mode = AntiAliasingMode.OFF;
     public QualityPreset qualityPreset = QualityPreset.MEDIUM;
@@ -16,7 +19,9 @@ public final class AntiAliasingConfig {
     public SsaaScaleLevel ssaaScaleLevel = SsaaScaleLevel.defaultLevel();
     public NisUpscaleQualityPreset nisUpscaleQualityPreset = NisUpscaleQualityPreset.defaultPreset();
     public DlssQualityPreset dlssQualityPreset = DlssQualityPreset.defaultPreset();
+    public FsrQualityPreset fsrQualityPreset = FsrQualityPreset.defaultPreset();
     public float internalResolutionScale = 1.0f;
+    public float fsrSharpness = DEFAULT_FSR_SHARPEN_STRENGTH;
     public boolean keepHudAtNativeResolution = true;
     public boolean debugViewsEnabled = false;
     public boolean recordMetrics = false;
@@ -24,6 +29,9 @@ public final class AntiAliasingConfig {
     public String dlssPluginPath = "";
     public String dlssLogPath = "";
     public int dlssApplicationId = 0;
+    public String fsrBridgePath = "";
+    public String fsrRuntimePath = "";
+    public String fsrLogPath = "";
 
     /**
      * Creates an independent mutable copy so callers can inspect or edit configuration without
@@ -39,7 +47,9 @@ public final class AntiAliasingConfig {
         copy.ssaaScaleLevel = ssaaScaleLevel;
         copy.nisUpscaleQualityPreset = nisUpscaleQualityPreset;
         copy.dlssQualityPreset = dlssQualityPreset;
+        copy.fsrQualityPreset = fsrQualityPreset;
         copy.internalResolutionScale = internalResolutionScale;
+        copy.fsrSharpness = fsrSharpness;
         copy.keepHudAtNativeResolution = keepHudAtNativeResolution;
         copy.debugViewsEnabled = debugViewsEnabled;
         copy.recordMetrics = recordMetrics;
@@ -47,6 +57,9 @@ public final class AntiAliasingConfig {
         copy.dlssPluginPath = dlssPluginPath;
         copy.dlssLogPath = dlssLogPath;
         copy.dlssApplicationId = dlssApplicationId;
+        copy.fsrBridgePath = fsrBridgePath;
+        copy.fsrRuntimePath = fsrRuntimePath;
+        copy.fsrLogPath = fsrLogPath;
         return copy;
     }
 
@@ -63,13 +76,18 @@ public final class AntiAliasingConfig {
         ssaaScaleLevel = SsaaScaleLevel.clamp(ssaaScaleLevel);
         nisUpscaleQualityPreset = NisUpscaleQualityPreset.clamp(nisUpscaleQualityPreset);
         dlssQualityPreset = DlssQualityPreset.clamp(dlssQualityPreset);
+        fsrQualityPreset = FsrQualityPreset.clamp(fsrQualityPreset);
         keepHudAtNativeResolution = true;
         sharpenStrength = clamp(sharpenStrength, MIN_SHARPEN_STRENGTH, MAX_SHARPEN_STRENGTH);
+        fsrSharpness = clamp(fsrSharpness, MIN_FSR_SHARPEN_STRENGTH, MAX_FSR_SHARPEN_STRENGTH);
         internalResolutionScale = clamp(internalResolutionScale, 0.5f, 1.0f);
         dlssBridgePath = sanitizePath(dlssBridgePath);
         dlssPluginPath = sanitizePath(dlssPluginPath);
         dlssLogPath = sanitizePath(dlssLogPath);
         dlssApplicationId = Math.max(0, dlssApplicationId);
+        fsrBridgePath = sanitizePath(fsrBridgePath);
+        fsrRuntimePath = sanitizePath(fsrRuntimePath);
+        fsrLogPath = sanitizePath(fsrLogPath);
     }
 
     /**
@@ -90,6 +108,8 @@ public final class AntiAliasingConfig {
         return switch (mode) {
             case SSAA -> ssaaScaleLevel.scaleFactor();
             case DLSS_SUPER_RESOLUTION -> dlssQualityPreset == DlssQualityPreset.ULTRA_PERFORMANCE ? 0.33f : 0.5f;
+            case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION ->
+                    fsrQualityPreset.scaleFactor();
             case NIS_UPSCALE, FSR1_UPSCALE, FSR1_RCAS -> nisUpscaleQualityPreset.scaleFactor();
             default -> internalResolutionScale;
         };

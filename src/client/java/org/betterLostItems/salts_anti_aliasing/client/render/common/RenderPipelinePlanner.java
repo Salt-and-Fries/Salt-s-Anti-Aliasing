@@ -200,6 +200,45 @@ public final class RenderPipelinePlanner {
                         false
                 );
             }
+            case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION -> {
+                targets.put("motion_vectors", target("motion_vectors", RenderTargetType.MOTION_VECTOR, TextureFormat.RG16F,
+                        RenderTargetSizing.INTERNAL, sceneScale, true));
+                targets.put("opaque_scene_color", target("opaque_scene_color", RenderTargetType.INTERMEDIATE_COLOR,
+                        TextureFormat.RGBA16F, RenderTargetSizing.INTERNAL, sceneScale, false));
+                targets.put("reactive_mask", target("reactive_mask", RenderTargetType.AUXILIARY, TextureFormat.R8,
+                        RenderTargetSizing.INTERNAL, sceneScale, false));
+                targets.put("transparency_composition_mask", target("transparency_composition_mask", RenderTargetType.AUXILIARY,
+                        TextureFormat.R8, RenderTargetSizing.INTERNAL, sceneScale, false));
+                EnumSet<RenderCapability> fsrCapabilities = EnumSet.of(
+                        RenderCapability.INTERNAL_RESOLUTION,
+                        RenderCapability.SPATIAL_UPSCALING,
+                        RenderCapability.TEMPORAL_AA,
+                        RenderCapability.FSR_UPSCALING
+                );
+                if (config.mode.usesFsrFrameGeneration()) {
+                    fsrCapabilities.add(RenderCapability.FSR_FRAME_GENERATION);
+                }
+                currentColor = addPass(
+                        passes,
+                        targets,
+                        config.mode.usesFsrFrameGeneration() ? "fsr3_super_resolution_frame_generation" : "fsr_super_resolution",
+                        fsrCapabilities,
+                        List.of(
+                                "scene_color",
+                                "scene_depth",
+                                "motion_vectors",
+                                "reactive_mask",
+                                "transparency_composition_mask",
+                                "history_color"
+                        ),
+                        config.mode.usesFsrFrameGeneration() ? "fsr3_frame_generation_color" : "fsr_upscaled_color",
+                        RenderTargetType.INTERMEDIATE_COLOR,
+                        TextureFormat.RGBA16F,
+                        RenderTargetSizing.OUTPUT,
+                        1.0f,
+                        false
+                );
+            }
             case FSR1_UPSCALE -> currentColor = addPass(
                     passes,
                     targets,

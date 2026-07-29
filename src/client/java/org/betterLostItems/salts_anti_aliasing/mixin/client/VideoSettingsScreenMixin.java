@@ -1,29 +1,22 @@
 package org.betterLostItems.salts_anti_aliasing.mixin.client;
 
 import net.minecraft.client.Options;
-import net.minecraft.client.OptionInstance;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.events.ContainerEventHandler;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.gui.screens.options.VideoSettingsScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import org.betterLostItems.salts_anti_aliasing.client.gui.AntiAliasingVideoButtonFactory;
-import org.betterLostItems.salts_anti_aliasing.client.gui.MsaaSampleSliderWidget;
-import org.betterLostItems.salts_anti_aliasing.client.gui.SpatialUpscaleQualitySliderWidget;
-import org.betterLostItems.salts_anti_aliasing.client.gui.SharpnessSliderWidget;
-import org.betterLostItems.salts_anti_aliasing.client.gui.SsaaScaleSliderWidget;
 import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.gui.AntiAliasingModeDropdownOverlay;
+import org.betterLostItems.salts_anti_aliasing.client.gui.AntiAliasingVideoSettingsSection;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Implements video settings screen mixin behavior for Salt's Anti Aliasing. Mixin bridge code that
@@ -33,11 +26,10 @@ import java.util.List;
 @Mixin(VideoSettingsScreen.class)
 public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
     private static double saltsAntiAliasing$pendingScrollAmount = -1.0d;
-    private Button saltsAntiAliasing$modeButton;
-    private SharpnessSliderWidget saltsAntiAliasing$sharpnessSlider;
-    private MsaaSampleSliderWidget saltsAntiAliasing$msaaSlider;
-    private SsaaScaleSliderWidget saltsAntiAliasing$ssaaSlider;
-    private SpatialUpscaleQualitySliderWidget saltsAntiAliasing$upscaleSlider;
+    private static boolean saltsAntiAliasing$dropdownExpanded;
+    private AntiAliasingVideoSettingsSection.Controls saltsAntiAliasing$sectionControls;
+    private AntiAliasingModeDropdownOverlay saltsAntiAliasing$dropdownOverlay;
+    private AntiAliasingMode saltsAntiAliasing$displayedMode = AntiAliasingMode.OFF;
 
     /**
      * Creates a video settings screen mixin instance with the collaborators or initial state
@@ -60,24 +52,23 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
             return;
         }
 
-        AbstractWidget weatherWidget = saltsAntiAliasing$detachOptionWidget(this.options.weatherRadius());
-        int initialEntryCount = this.list.children().size();
-
-        saltsAntiAliasing$modeButton = AntiAliasingVideoButtonFactory.create(() -> {
-            if (this.minecraft != null) {
-                saltsAntiAliasing$pendingScrollAmount = this.list.scrollAmount();
-                this.minecraft.setScreenAndShow(new VideoSettingsScreen(this.lastScreen, this.minecraft, this.options));
-            }
-        });
-        saltsAntiAliasing$sharpnessSlider = new SharpnessSliderWidget(runtime);
-        saltsAntiAliasing$msaaSlider = new MsaaSampleSliderWidget(runtime);
-        saltsAntiAliasing$ssaaSlider = new SsaaScaleSliderWidget(runtime);
-        saltsAntiAliasing$upscaleSlider = new SpatialUpscaleQualitySliderWidget(runtime);
-
-        saltsAntiAliasing$addPackedControlRows(weatherWidget);
-
-        saltsAntiAliasing$moveInsertedControlsBelowAnisotropy(initialEntryCount);
-        saltsAntiAliasing$refreshControlAvailability(runtime.activeMode());
+        saltsAntiAliasing$sectionControls = AntiAliasingVideoSettingsSection.addTo(
+                this.list,
+                runtime,
+                saltsAntiAliasing$dropdownExpanded,
+                saltsAntiAliasing$improvedTransparencyEnabled(),
+                this::saltsAntiAliasing$toggleDropdown
+        );
+        saltsAntiAliasing$dropdownOverlay = new AntiAliasingModeDropdownOverlay(
+                saltsAntiAliasing$sectionControls.dropdownButton(),
+                () -> saltsAntiAliasing$dropdownExpanded,
+                this::saltsAntiAliasing$improvedTransparencyEnabled,
+                SaltsAntiAliasingClient::runtimeOrNull,
+                this::saltsAntiAliasing$selectMode,
+                this::saltsAntiAliasing$dismissDropdown
+        );
+        this.addRenderableOnly(saltsAntiAliasing$dropdownOverlay);
+        saltsAntiAliasing$displayedMode = runtime.activeMode();
 
         if (saltsAntiAliasing$pendingScrollAmount >= 0.0d) {
             this.list.setScrollAmount(saltsAntiAliasing$pendingScrollAmount);
@@ -104,94 +95,54 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
      */
     private void saltsAntiAliasing$refreshControlAvailability(AntiAliasingMode activeMode) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
-        boolean antiAliasingAvailable = runtime != null
-                && runtime.canUseAntiAliasing()
-                && !saltsAntiAliasing$improvedTransparencyEnabled();
-
-        if (saltsAntiAliasing$modeButton != null) {
-            saltsAntiAliasing$modeButton.active = antiAliasingAvailable;
-            AntiAliasingVideoButtonFactory.refresh(saltsAntiAliasing$modeButton, activeMode, antiAliasingAvailable);
+        if (runtime == null) {
+            return;
         }
-
-        if (saltsAntiAliasing$sharpnessSlider != null) {
-            saltsAntiAliasing$sharpnessSlider.active = antiAliasingAvailable && activeMode.usesSharpenControl();
-        }
-
-        if (saltsAntiAliasing$msaaSlider != null) {
-            saltsAntiAliasing$msaaSlider.active = antiAliasingAvailable && activeMode.usesMsaaSampleControl();
-        }
-
-        if (saltsAntiAliasing$ssaaSlider != null) {
-            saltsAntiAliasing$ssaaSlider.active = antiAliasingAvailable && activeMode.usesSsaaScaleControl();
-        }
-
-        if (saltsAntiAliasing$upscaleSlider != null) {
-            saltsAntiAliasing$upscaleSlider.active = antiAliasingAvailable && activeMode.usesSpatialUpscaleQualityControl();
-        }
-    }
-
-    /**
-     * Handles move inserted controls below anisotropy as part of the anti-aliasing render,
-     * configuration, or compatibility flow.
-     * @param initialEntryCount initial entry count value supplied by the caller or Minecraft
-     * callback
-     */
-    private void saltsAntiAliasing$moveInsertedControlsBelowAnisotropy(int initialEntryCount) {
-        int anisotropyEntryIndex = saltsAntiAliasing$findEntryIndex(this.options.maxAnisotropyBit());
-        if (anisotropyEntryIndex < 0) {
+        if (runtime.activeMode() != saltsAntiAliasing$displayedMode) {
+            saltsAntiAliasing$rebuildPreservingScroll();
             return;
         }
 
-        List<Object> entries = saltsAntiAliasing$entries();
-        if (entries.size() <= initialEntryCount) {
-            return;
+        AntiAliasingVideoSettingsSection.refresh(
+                saltsAntiAliasing$sectionControls,
+                runtime,
+                saltsAntiAliasing$improvedTransparencyEnabled(),
+                saltsAntiAliasing$dropdownExpanded
+        );
+        if (saltsAntiAliasing$dropdownOverlay != null) {
+            saltsAntiAliasing$dropdownOverlay.refresh();
         }
-
-        List<Object> insertedEntries = new ArrayList<>(entries.subList(initialEntryCount, entries.size()));
-        entries.subList(initialEntryCount, entries.size()).clear();
-        entries.addAll(anisotropyEntryIndex + 1, insertedEntries);
     }
 
-    /**
-     * Handles find entry index as part of the anti-aliasing render, configuration, or compatibility
-     * flow.
-     * @param optionInstance option instance value supplied by the caller or Minecraft callback
-     * @return index of the matching video option entry, or -1 when absent
-     */
-    private int saltsAntiAliasing$findEntryIndex(OptionInstance<?> optionInstance) {
-        AbstractWidget widget = this.list.findOption(optionInstance);
-        if (widget == null) {
-            return -1;
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (saltsAntiAliasing$dropdownOverlay != null
+                && saltsAntiAliasing$dropdownOverlay.mouseClicked(event, doubleClick)) {
+            return true;
         }
 
-        List<?> entries = this.list.children();
-        for (int index = 0; index < entries.size(); index++) {
-            Object entry = entries.get(index);
-            if (entry instanceof ContainerEventHandler handler && handler.children().contains(widget)) {
-                return index;
-            }
-        }
-
-        return -1;
+        return saltsAntiAliasing$mouseClickedVanillaChildren(event, doubleClick);
     }
 
-    /**
-     * Coordinates add packed control rows within the anti-aliasing render, configuration, or compatibility flow.
-     * @param weatherWidget weather widget value supplied by the caller or Minecraft callback
-     */
-    private void saltsAntiAliasing$addPackedControlRows(AbstractWidget weatherWidget) {
-        List<AbstractWidget> widgets = new ArrayList<>();
-        widgets.add(saltsAntiAliasing$sharpnessSlider);
-        widgets.add(saltsAntiAliasing$modeButton);
-        widgets.add(saltsAntiAliasing$msaaSlider);
-        widgets.add(saltsAntiAliasing$ssaaSlider);
-
-        if (weatherWidget != null) {
-            widgets.add(weatherWidget);
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        if (saltsAntiAliasing$dropdownOverlay != null
+                && saltsAntiAliasing$dropdownOverlay.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)) {
+            return true;
         }
 
-        widgets.add(saltsAntiAliasing$upscaleSlider);
-        this.list.addSmall(widgets);
+        return this.getChildAt(mouseX, mouseY)
+                .filter(listener -> listener.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+                .isPresent();
+    }
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (saltsAntiAliasing$dropdownOverlay != null && saltsAntiAliasing$dropdownOverlay.keyPressed(event)) {
+            return true;
+        }
+
+        return super.keyPressed(event);
     }
 
     /**
@@ -202,32 +153,69 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         return this.minecraft != null && (Boolean) this.minecraft.options.improvedTransparency().get();
     }
 
-    /**
-     * Coordinates detach option widget within the anti-aliasing render, configuration, or compatibility flow.
-     * @param optionInstance option instance value supplied by the caller or Minecraft callback
-     * @return widget detached from the vanilla option list for custom placement
-     */
-    private AbstractWidget saltsAntiAliasing$detachOptionWidget(OptionInstance<?> optionInstance) {
-        int entryIndex = saltsAntiAliasing$findEntryIndex(optionInstance);
-        if (entryIndex < 0) {
-            return null;
+    private void saltsAntiAliasing$toggleDropdown() {
+        saltsAntiAliasing$dropdownExpanded = !saltsAntiAliasing$dropdownExpanded;
+        if (saltsAntiAliasing$dropdownOverlay != null) {
+            saltsAntiAliasing$dropdownOverlay.refresh();
         }
-
-        AbstractWidget widget = this.list.findOption(optionInstance);
-        if (widget == null) {
-            return null;
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        if (runtime != null) {
+            AntiAliasingVideoSettingsSection.refresh(
+                    saltsAntiAliasing$sectionControls,
+                    runtime,
+                    saltsAntiAliasing$improvedTransparencyEnabled(),
+                    saltsAntiAliasing$dropdownExpanded
+            );
         }
-
-        List<Object> entries = saltsAntiAliasing$entries();
-        entries.remove(entryIndex);
-        return widget;
     }
 
-    /**
-     * Handles entries as part of the anti-aliasing render, configuration, or compatibility flow.
-     * @return mutable video option entries exposed through the mixin accessor
-     */
-    private List<Object> saltsAntiAliasing$entries() {
-        return ((AbstractSelectionListAccessor) this.list).saltsAntiAliasing$children();
+    private void saltsAntiAliasing$dismissDropdown() {
+        saltsAntiAliasing$dropdownExpanded = false;
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        if (runtime != null) {
+            AntiAliasingVideoSettingsSection.refresh(
+                    saltsAntiAliasing$sectionControls,
+                    runtime,
+                    saltsAntiAliasing$improvedTransparencyEnabled(),
+                    false
+            );
+        }
+    }
+
+    private boolean saltsAntiAliasing$mouseClickedVanillaChildren(MouseButtonEvent event, boolean doubleClick) {
+        GuiEventListener listener = this.getChildAt(event.x(), event.y()).orElse(null);
+        if (listener == null || !listener.mouseClicked(event, doubleClick)) {
+            return false;
+        }
+
+        this.setFocused(listener);
+        if (event.button() == 0) {
+            this.setDragging(true);
+        }
+        return true;
+    }
+
+    private void saltsAntiAliasing$selectMode(AntiAliasingMode mode) {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        if (runtime == null) {
+            return;
+        }
+        if (mode != AntiAliasingMode.OFF
+                && (saltsAntiAliasing$improvedTransparencyEnabled() || !runtime.canSelectMode(mode))) {
+            return;
+        }
+
+        runtime.setMode(mode);
+        saltsAntiAliasing$dropdownExpanded = false;
+        saltsAntiAliasing$rebuildPreservingScroll();
+    }
+
+    private void saltsAntiAliasing$rebuildPreservingScroll() {
+        if (this.minecraft == null) {
+            return;
+        }
+
+        saltsAntiAliasing$pendingScrollAmount = this.list.scrollAmount();
+        this.minecraft.setScreenAndShow(new VideoSettingsScreen(this.lastScreen, this.minecraft, this.options));
     }
 }

@@ -9,7 +9,6 @@ import com.mojang.blaze3d.resource.ResourceHandle;
 import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.CommandEncoderBackend;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vulkan.VulkanCommandEncoder;
@@ -18,7 +17,6 @@ import com.mojang.blaze3d.vulkan.VulkanGpuTextureView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
@@ -31,7 +29,6 @@ import org.joml.Vector4f;
 import org.lwjgl.vulkan.VK12;
 import org.lwjgl.vulkan.VkCommandBuffer;
 
-import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +51,7 @@ public final class VulkanSceneDlssController {
 
     private final CrossFrameResourcePool resourcePool = new CrossFrameResourcePool(3);
     private boolean disabledAfterFailure;
+    private boolean destroyResourcesAfterFrame;
     private boolean active;
     private TextureTarget sceneTarget;
     private TextureTarget motionVectorTarget;
@@ -69,6 +67,7 @@ public final class VulkanSceneDlssController {
 
     public void beginSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
         RenderSystem.assertOnRenderThread();
+        destroyResourcesIfPending();
         clearFrameState();
 
         if (disabledAfterFailure || config.mode != AntiAliasingMode.DLSS_SUPER_RESOLUTION || !DlssRuntime.instance().isReady()) {
@@ -245,29 +244,11 @@ public final class VulkanSceneDlssController {
             return;
         }
 
-        PostChain postChain = Minecraft.getInstance().getShaderManager().getPostChain(DLSS_MOTION_EFFECT, DLSS_MOTION_TARGETS);
-        if (postChain == null) {
-            clearMotionVectors();
-            return;
-        }
-
-        VulkanDynamicUniforms.updateDlssMotion(
-                postChain,
-                VulkanSceneTemporalController.instance(),
-                sceneTarget.width,
-                sceneTarget.height
+        VulkanMotionVectorRenderer.dlss().render(
+                sceneTarget,
+                motionVectorTarget,
+                VulkanSceneTemporalController.instance()
         );
-
-        FrameGraphBuilder frameGraphBuilder = new FrameGraphBuilder();
-        ResourceHandle<RenderTarget> sceneHandle = frameGraphBuilder.importExternal("salts_dlss_scene", sceneTarget);
-        ResourceHandle<RenderTarget> motionHandle = frameGraphBuilder.importExternal("salts_dlss_motion_vectors", motionVectorTarget);
-        postChain.addToFrame(
-                frameGraphBuilder,
-                sceneTarget.width,
-                sceneTarget.height,
-                new DlssMotionTargetBundle(sceneHandle, motionHandle)
-        );
-        frameGraphBuilder.execute(resourcePool);
     }
 
     private void ensureTargets(int width, int height) {
@@ -289,20 +270,7 @@ public final class VulkanSceneDlssController {
             return;
         }
 
-        try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
-                () -> "Salt's DLSS Fallback Resolve",
-                mainTarget.getColorTextureView(),
-                Optional.empty()
-        )) {
-            renderPass.setPipeline(RenderPipelines.TRACY_BLIT);
-            RenderSystem.bindDefaultUniforms(renderPass);
-            renderPass.bindTexture(
-                    "InSampler",
-                    sceneTarget.getColorTextureView(),
-                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)
-            );
-            renderPass.draw(0, 0, 3, 1);
-        }
+        VulkanColorBlitter.blitColor(sceneTarget, mainTarget);
     }
 
     private RenderTarget mappedTarget(RenderTarget target) {
@@ -315,9 +283,21 @@ public final class VulkanSceneDlssController {
 
     private void disableAfterFailure(String message, RuntimeException exception) {
         disabledAfterFailure = true;
-        destroyResources();
+        destroyResourcesAfterFrame = mainTarget != null;
+        if (!destroyResourcesAfterFrame) {
+            destroyResources();
+        }
         clearFrameState();
         SaltsAntiAliasing.LOGGER.error(message, exception);
+    }
+
+    private void destroyResourcesIfPending() {
+        if (!destroyResourcesAfterFrame) {
+            return;
+        }
+
+        destroyResourcesAfterFrame = false;
+        destroyResources();
     }
 
     private void destroyResources() {

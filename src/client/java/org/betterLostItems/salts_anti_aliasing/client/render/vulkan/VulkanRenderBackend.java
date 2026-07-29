@@ -7,6 +7,7 @@ import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderBackendTy
 import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderCapability;
 import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderTargetDescriptor;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss.DlssRuntime;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRuntime;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -64,6 +65,12 @@ public final class VulkanRenderBackend implements RenderBackend {
         EnumSet<RenderCapability> capabilities = EnumSet.copyOf(BASE_CAPABILITIES);
         if (DlssRuntime.instance().isReady()) {
             capabilities.add(RenderCapability.VENDOR_UPSCALING);
+        }
+        if (FsrRuntime.instance().isUpscalingReady()) {
+            capabilities.add(RenderCapability.FSR_UPSCALING);
+        }
+        if (FsrRuntime.instance().isFrameGenerationReady()) {
+            capabilities.add(RenderCapability.FSR_FRAME_GENERATION);
         }
         return capabilities;
     }

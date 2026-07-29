@@ -20,6 +20,9 @@ public enum AntiAliasingMode {
     NIS_SHARPEN("NIS Sharpen", false, false),
     NIS_UPSCALE("NIS Upscale", true, false),
     DLSS_SUPER_RESOLUTION("DLSS Super Resolution", true, true),
+    FSR2_SUPER_RESOLUTION("FSR2 Super Resolution", true, true),
+    FSR3_SUPER_RESOLUTION("FSR3 Super Resolution", true, true),
+    FSR3_SUPER_RESOLUTION_FRAME_GENERATION("FSR3 Super Resolution + Frame Generation", true, true),
     FSR1_UPSCALE("FSR1 Upscale", true, false),
     FSR1_RCAS("FSR1 + RCAS", true, false);
 
@@ -32,6 +35,9 @@ public enum AntiAliasingMode {
             SMAA,
             NIS_UPSCALE,
             DLSS_SUPER_RESOLUTION,
+            FSR2_SUPER_RESOLUTION,
+            FSR3_SUPER_RESOLUTION,
+            FSR3_SUPER_RESOLUTION_FRAME_GENERATION,
             FSR1_UPSCALE,
             FSR1_RCAS,
             TAA
@@ -110,6 +116,20 @@ public enum AntiAliasingMode {
      */
     public boolean usesDlssQualityControl() {
         return this == DLSS_SUPER_RESOLUTION;
+    }
+
+    public boolean usesFsrQualityControl() {
+        return this == FSR2_SUPER_RESOLUTION
+                || this == FSR3_SUPER_RESOLUTION
+                || this == FSR3_SUPER_RESOLUTION_FRAME_GENERATION;
+    }
+
+    public boolean usesFsrSharpenControl() {
+        return usesFsrQualityControl();
+    }
+
+    public boolean usesFsrFrameGeneration() {
+        return this == FSR3_SUPER_RESOLUTION_FRAME_GENERATION;
     }
 
     /**

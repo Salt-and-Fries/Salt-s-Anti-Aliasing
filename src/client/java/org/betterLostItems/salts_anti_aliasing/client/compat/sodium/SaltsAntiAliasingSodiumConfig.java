@@ -12,6 +12,7 @@ import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.config.DlssQualityPreset;
+import org.betterLostItems.salts_anti_aliasing.client.config.FsrQualityPreset;
 import org.betterLostItems.salts_anti_aliasing.client.config.MsaaSampleLevel;
 import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPreset;
 import org.betterLostItems.salts_anti_aliasing.client.config.SsaaScaleLevel;
@@ -31,6 +32,8 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static final Identifier SSAA_SCALE_ID = id("ssaa_scale");
     private static final Identifier UPSCALE_QUALITY_ID = id("upscale_quality");
     private static final Identifier DLSS_QUALITY_ID = id("dlss_quality");
+    private static final Identifier FSR_QUALITY_ID = id("fsr_quality");
+    private static final Identifier FSR_SHARPNESS_ID = id("fsr_sharpness");
 
     private static final String PAGE_TITLE_KEY = "screen.salts_anti_aliasing.config";
     private static final String GROUP_TITLE_KEY = "options.salts_anti_aliasing.group.image_quality";
@@ -39,6 +42,8 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static final String SSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.ssaa_scale.tooltip";
     private static final String UPSCALE_TOOLTIP_KEY = "options.salts_anti_aliasing.upscale_quality.tooltip";
     private static final String DLSS_QUALITY_TOOLTIP_KEY = "options.salts_anti_aliasing.dlss_quality.tooltip";
+    private static final String FSR_QUALITY_TOOLTIP_KEY = "options.salts_anti_aliasing.fsr_quality.tooltip";
+    private static final String FSR_SHARPNESS_TOOLTIP_KEY = "options.salts_anti_aliasing.fsr_sharpness.tooltip";
 
     /**
      * Coordinates register config late within the anti-aliasing render, configuration, or compatibility flow.
@@ -77,6 +82,28 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                                 .addOption(createSsaaScaleOption(builder))
                                 .addOption(createUpscaleQualityOption(builder))
                                 .addOption(createDlssQualityOption(builder))
+                                .addOption(createFsrQualityOption(builder))
+                                .addOption(builder.createIntegerOption(FSR_SHARPNESS_ID)
+                                        .setName(Component.translatable("options.salts_anti_aliasing.fsr_sharpness", Component.empty()))
+                                        .setTooltip(Component.translatable(FSR_SHARPNESS_TOOLTIP_KEY))
+                                        .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
+                                        .setBinding(
+                                                SaltsAntiAliasingSodiumConfig::setFsrSharpnessPercent,
+                                                SaltsAntiAliasingSodiumConfig::fsrSharpnessPercent
+                                        )
+                                        .setDefaultValue(defaultFsrSharpnessPercent())
+                                        .setRange(
+                                                fsrSharpnessPercent(AntiAliasingConfig.MIN_FSR_SHARPEN_STRENGTH),
+                                                fsrSharpnessPercent(AntiAliasingConfig.MAX_FSR_SHARPEN_STRENGTH),
+                                                1
+                                        )
+                                        .setValueFormatter(value -> Component.literal(value + "%"))
+                                        .setEnabledProvider(
+                                                state -> antiAliasingAvailable()
+                                                        && state.readEnumOption(MODE_ID, AntiAliasingMode.class).usesFsrSharpenControl(),
+                                                MODE_ID,
+                                                ConfigState.UPDATE_ON_REBUILD
+                                        ))
                         ));
     }
 
@@ -178,6 +205,22 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                 .setEnabledProvider(
                         state -> antiAliasingAvailable()
                                 && state.readEnumOption(MODE_ID, AntiAliasingMode.class).usesDlssQualityControl(),
+                        MODE_ID,
+                        ConfigState.UPDATE_ON_REBUILD
+                );
+    }
+
+    private static EnumOptionBuilder<FsrQualityPreset> createFsrQualityOption(ConfigBuilder builder) {
+        return builder.createEnumOption(FSR_QUALITY_ID, FsrQualityPreset.class)
+                .setName(Component.translatable("options.salts_anti_aliasing.fsr_quality", Component.empty()))
+                .setTooltip(Component.translatable(FSR_QUALITY_TOOLTIP_KEY))
+                .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
+                .setBinding(SaltsAntiAliasingSodiumConfig::setFsrQualityPreset, SaltsAntiAliasingSodiumConfig::fsrQualityPreset)
+                .setDefaultValue(FsrQualityPreset.defaultPreset())
+                .setElementNameProvider(ClientText::label)
+                .setEnabledProvider(
+                        state -> antiAliasingAvailable()
+                                && state.readEnumOption(MODE_ID, AntiAliasingMode.class).usesFsrQualityControl(),
                         MODE_ID,
                         ConfigState.UPDATE_ON_REBUILD
                 );
@@ -304,6 +347,24 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
         SaltsAntiAliasingClient.runtime().setDlssQualityPreset(preset);
     }
 
+    private static FsrQualityPreset fsrQualityPreset() {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        return runtime == null ? FsrQualityPreset.defaultPreset() : runtime.fsrQualityPreset();
+    }
+
+    private static void setFsrQualityPreset(FsrQualityPreset preset) {
+        SaltsAntiAliasingClient.runtime().setFsrQualityPreset(preset);
+    }
+
+    private static int fsrSharpnessPercent() {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        return runtime == null ? defaultFsrSharpnessPercent() : fsrSharpnessPercent(runtime.fsrSharpness());
+    }
+
+    private static void setFsrSharpnessPercent(int percent) {
+        SaltsAntiAliasingClient.runtime().setFsrSharpness(percent / 100.0f);
+    }
+
     /**
      * Coordinates default sharpness percent within the anti-aliasing render, configuration, or compatibility flow.
      * @return default sharpness percent produced by this helper
@@ -312,12 +373,20 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
         return sharpnessPercent(AntiAliasingConfig.DEFAULT_SHARPEN_STRENGTH);
     }
 
+    private static int defaultFsrSharpnessPercent() {
+        return fsrSharpnessPercent(AntiAliasingConfig.DEFAULT_FSR_SHARPEN_STRENGTH);
+    }
+
     /**
      * Coordinates sharpness percent within the anti-aliasing render, configuration, or compatibility flow.
      * @param sharpenStrength normalized sharpening amount requested by the user interface
      * @return sharpness percent produced by this helper
      */
     private static int sharpnessPercent(float sharpenStrength) {
+        return Math.round(sharpenStrength * 100.0f);
+    }
+
+    private static int fsrSharpnessPercent(float sharpenStrength) {
         return Math.round(sharpenStrength * 100.0f);
     }
 }

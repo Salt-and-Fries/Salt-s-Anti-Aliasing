@@ -3,6 +3,7 @@ package org.betterLostItems.salts_anti_aliasing.client.gui;
 import net.minecraft.network.chat.Component;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.config.DlssQualityPreset;
+import org.betterLostItems.salts_anti_aliasing.client.config.FsrQualityPreset;
 import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPreset;
 
 /**
@@ -53,6 +54,10 @@ public final class ClientText {
      * @return text component shown to the player
      */
     public static Component label(DlssQualityPreset preset) {
+        return Component.translatable(preset.translationKey());
+    }
+
+    public static Component label(FsrQualityPreset preset) {
         return Component.translatable(preset.translationKey());
     }
 }

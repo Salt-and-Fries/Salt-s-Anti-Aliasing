@@ -1,0 +1,5 @@
+Bundled AMD FidelityFX SDK Vulkan runtime for Salt's Anti Aliasing.
+
+The AMD FidelityFX SDK runtime is redistributed with its upstream MIT license in
+LICENSE-AMD-FidelityFX.txt. The JNI bridge DLL is built from this repository's
+native/fsr_bridge source against the same FidelityFX SDK API version.

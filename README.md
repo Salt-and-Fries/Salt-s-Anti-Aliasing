@@ -76,6 +76,9 @@ SSAA
 SMAA
 NIS Upscale
 DLSS Super Resolution
+FSR2 Super Resolution
+FSR3 Super Resolution
+FSR3 Super Resolution + Frame Generation
 FSR1 Upscale
 FSR1 + RCAS
 TAA
@@ -115,6 +118,28 @@ salts.dlss.logPath
 ```
 
 The native bridge project lives in `native/dlss_bridge`. The normal Gradle build does not compile it; build it separately against a local NVIDIA Streamline SDK.
+
+## AMD FSR2/FSR3
+
+The Windows x64 release jar bundles the mod's FSR JNI bridge and AMD FidelityFX Vulkan runtime. Users should only need to install the jar, run Minecraft on Vulkan, and select an FSR mode.
+
+Advanced overrides are still available:
+
+```text
+SALTS_FSR_BRIDGE_PATH
+SALTS_FSR_RUNTIME_PATH
+SALTS_FSR_LOG_PATH
+```
+
+or Java properties:
+
+```text
+salts.fsr.bridgePath
+salts.fsr.runtimePath
+salts.fsr.logPath
+```
+
+If neither bridge nor runtime path is configured, the bundled native files are extracted to `.minecraft/salts_anti_aliasing/native/...` and loaded from there. FSR3 Frame Generation remains separate from FSR3 Super Resolution and only appears when the real FidelityFX Vulkan frame-generation swapchain path initializes successfully.
 
 ## Platform Hook Layer
 
@@ -167,6 +192,7 @@ When syncing a sibling jar branch:
 - MSAA uses native Vulkan multisampled scene textures and resolves into Minecraft's main target after world rendering.
 - TAA uses jitter, a persistent history target, and dynamic uniforms.
 - DLSS redirects world rendering to a Streamline-selected internal-resolution target and evaluates through the optional JNI bridge when all external requirements are met.
+- FSR2/FSR3 use the bundled FidelityFX Vulkan runtime on Windows x64 and can be overridden with explicit native paths.
 - Dynamic uniforms are uploaded through writable GPU buffers when Minecraft's post-chain uniforms are immutable.
 
 ## Development Principles

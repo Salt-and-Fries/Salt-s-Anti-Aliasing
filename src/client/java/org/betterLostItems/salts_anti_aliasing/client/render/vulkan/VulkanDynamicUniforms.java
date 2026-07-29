@@ -24,6 +24,7 @@ final class VulkanDynamicUniforms {
     private static final String RCAS_UNIFORM = "RcasConfig";
     private static final String TAA_UNIFORM = "TaaConfig";
     private static final String DLSS_MOTION_UNIFORM = "DlssMotionConfig";
+    private static final String FSR_MOTION_UNIFORM = "FsrMotionConfig";
     private static final float NIS_EDGE_BOOST = 1.1f;
     private static final float NIS_CLAMP_BOOST = 0.18f;
     private static final float RCAS_EDGE_LIMIT = 0.22f;
@@ -74,6 +75,13 @@ final class VulkanDynamicUniforms {
         for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
             Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
             writeDlssMotionUniform(customUniforms, controller, width, height);
+        }
+    }
+
+    static void updateFsrMotion(PostChain postChain, VulkanSceneTemporalController controller, int width, int height) {
+        for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
+            Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
+            writeFsrMotionUniform(customUniforms, controller, width, height);
         }
     }
 
@@ -129,6 +137,22 @@ final class VulkanDynamicUniforms {
             int height
     ) {
         updateUniformBuffer(customUniforms, DLSS_MOTION_UNIFORM, bufferData -> {
+            putMatrix(bufferData, controller.currentClipToWorldArray());
+            putMatrix(bufferData, controller.previousViewProjectionArray());
+            bufferData.putFloat(Math.max(1, width));
+            bufferData.putFloat(Math.max(1, height));
+            bufferData.putFloat(0.0f);
+            bufferData.putFloat(0.0f);
+        });
+    }
+
+    private static void writeFsrMotionUniform(
+            Map<String, GpuBuffer> customUniforms,
+            VulkanSceneTemporalController controller,
+            int width,
+            int height
+    ) {
+        updateUniformBuffer(customUniforms, FSR_MOTION_UNIFORM, bufferData -> {
             putMatrix(bufferData, controller.currentClipToWorldArray());
             putMatrix(bufferData, controller.previousViewProjectionArray());
             bufferData.putFloat(Math.max(1, width));

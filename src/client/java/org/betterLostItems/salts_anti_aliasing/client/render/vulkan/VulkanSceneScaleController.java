@@ -7,13 +7,11 @@ import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import com.mojang.blaze3d.resource.ResourceHandle;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
@@ -22,7 +20,6 @@ import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPr
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -244,20 +241,7 @@ public final class VulkanSceneScaleController {
      * @param mainTarget main target value supplied by the caller or Minecraft callback
      */
     private void resolveSceneColor(TextureTarget sceneTarget, RenderTarget mainTarget) {
-        try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
-                this::resolvePassLabel,
-                mainTarget.getColorTextureView(),
-                Optional.empty()
-        )) {
-            renderPass.setPipeline(RenderPipelines.TRACY_BLIT);
-            RenderSystem.bindDefaultUniforms(renderPass);
-            renderPass.bindTexture(
-                    "InSampler",
-                    sceneTarget.getColorTextureView(),
-                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)
-            );
-            renderPass.draw(0, 0, 3, 1);
-        }
+        VulkanColorBlitter.blitColor(sceneTarget, mainTarget);
     }
 
     /**
