@@ -41,6 +41,10 @@ public final class VulkanSceneMsaaController {
     private int msaaTargetSamples = 1;
     private int lastReportedRequestedSamples;
     private int lastReportedActualSamples;
+    private int failedWidth = -1;
+    private int failedHeight = -1;
+    private int failedRequestedSamples = -1;
+    private boolean failedUseDepth;
 
     private VulkanSceneMsaaController() {
     }
@@ -53,7 +57,8 @@ public final class VulkanSceneMsaaController {
         RenderSystem.assertOnRenderThread();
         clearFrameState();
 
-        if (disabledAfterFailure || config.mode != AntiAliasingMode.MSAA) {
+        if (config.mode != AntiAliasingMode.MSAA) {
+            leaveMsaaMode();
             return;
         }
 
@@ -67,6 +72,19 @@ public final class VulkanSceneMsaaController {
             return;
         }
 
+        int requestedSamples = MsaaSampleLevel.clamp(config.msaaSampleLevel).samples();
+        if (disabledAfterFailure) {
+            if (matchesFailedConfiguration(
+                    mainTarget.width,
+                    mainTarget.height,
+                    mainTarget.useDepth,
+                    requestedSamples
+            )) {
+                return;
+            }
+            clearFailureState();
+        }
+
         try {
             ensureMsaaTargetWithFallback(
                     mainTarget.width,
@@ -77,7 +95,14 @@ public final class VulkanSceneMsaaController {
             this.mainTarget = mainTarget;
             active = true;
         } catch (RuntimeException exception) {
-            disableAfterFailure("Disabling Vulkan MSAA scene rendering after a setup failure", exception);
+            disableAfterFailure(
+                    "Disabling Vulkan MSAA scene rendering for the current configuration after a setup failure",
+                    exception,
+                    mainTarget.width,
+                    mainTarget.height,
+                    mainTarget.useDepth,
+                    requestedSamples
+            );
         }
     }
 
@@ -100,7 +125,15 @@ public final class VulkanSceneMsaaController {
                 resolveColor(msaaTarget, mainTarget);
             }
         } catch (RuntimeException exception) {
-            disableAfterFailure("Disabling Vulkan MSAA scene rendering after a resolve failure", exception);
+            int requestedSamples = MsaaSampleLevel.clamp(config.msaaSampleLevel).samples();
+            disableAfterFailure(
+                    "Disabling Vulkan MSAA scene rendering for the current configuration after a resolve failure",
+                    exception,
+                    mainTarget == null ? -1 : mainTarget.width,
+                    mainTarget == null ? -1 : mainTarget.height,
+                    mainTarget != null && mainTarget.useDepth,
+                    requestedSamples
+            );
         } finally {
             clearFrameState();
         }
@@ -234,6 +267,24 @@ public final class VulkanSceneMsaaController {
         if (!(sourceTexture instanceof VulkanGpuTexture sourceVulkanTexture)
                 || !(targetTexture instanceof VulkanGpuTexture targetVulkanTexture)) {
             throw new IllegalStateException("Vulkan MSAA resolve requires Vulkan texture objects");
+        }
+
+        int sourceSamples = sampleCount(sourceTexture);
+        int destinationSamples = sampleCount(targetTexture);
+        VulkanMsaaCompatibility.validateColorResolve(
+                sourceSamples,
+                destinationSamples,
+                sourceTexture.getWidth(0),
+                sourceTexture.getHeight(0),
+                targetTexture.getWidth(0),
+                targetTexture.getHeight(0),
+                sourceTexture.getFormat() == targetTexture.getFormat()
+        );
+        if (sourceSamples != msaaTargetSamples) {
+            throw new IllegalStateException(
+                    "Vulkan MSAA resolve source has " + sourceSamples
+                            + "x samples, but the scene target expects " + msaaTargetSamples + "x"
+            );
         }
 
         VulkanCommandEncoder encoder = vulkanDevice().createCommandEncoder();
@@ -376,11 +427,55 @@ public final class VulkanSceneMsaaController {
         return msaaTarget;
     }
 
-    private void disableAfterFailure(String message, RuntimeException exception) {
+    private void disableAfterFailure(
+            String message,
+            RuntimeException exception,
+            int width,
+            int height,
+            boolean useDepth,
+            int requestedSamples
+    ) {
         disabledAfterFailure = true;
+        failedWidth = width;
+        failedHeight = height;
+        failedUseDepth = useDepth;
+        failedRequestedSamples = requestedSamples;
         destroyResources();
         clearFrameState();
         SaltsAntiAliasing.LOGGER.error(message, exception);
+    }
+
+    private boolean matchesFailedConfiguration(
+            int width,
+            int height,
+            boolean useDepth,
+            int requestedSamples
+    ) {
+        return failedWidth == width
+                && failedHeight == height
+                && failedUseDepth == useDepth
+                && failedRequestedSamples == requestedSamples;
+    }
+
+    private static int sampleCount(GpuTexture texture) {
+        return texture instanceof VulkanSampledTexture sampledTexture
+                ? sampledTexture.saltsAntiAliasing$sampleCount()
+                : 1;
+    }
+
+    private void leaveMsaaMode() {
+        if (msaaTarget != null) {
+            destroyResources();
+        }
+        clearFailureState();
+    }
+
+    private void clearFailureState() {
+        disabledAfterFailure = false;
+        failedWidth = -1;
+        failedHeight = -1;
+        failedUseDepth = false;
+        failedRequestedSamples = -1;
     }
 
     private void destroyResources() {

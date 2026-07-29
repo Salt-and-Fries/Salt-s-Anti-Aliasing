@@ -315,10 +315,10 @@ public final class RenderRuntime {
     public void beginSceneRendering(GameRenderer gameRenderer) {
         rebuildPipelineIfBackendReady();
         AntiAliasingConfig config = effectiveConfigSnapshot();
+        VulkanSceneMsaaController.instance().beginSceneRendering(gameRenderer, config);
         if (config.mode == AntiAliasingMode.OFF) {
             return;
         }
-        VulkanSceneMsaaController.instance().beginSceneRendering(gameRenderer, config);
         VulkanSceneDlssController.instance().beginSceneRendering(gameRenderer, config);
         VulkanSceneFsrController.instance().beginSceneRendering(gameRenderer, config);
         VulkanSceneScaleController.instance().beginSceneRendering(gameRenderer, config);

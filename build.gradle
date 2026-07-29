@@ -51,6 +51,13 @@ dependencies {
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     compileOnly "net.caffeinemc:sodium-fabric-api:${project.sodium_api_version}"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.11.4"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 processResources {

@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderPassDescriptor;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -76,16 +78,23 @@ public final class VulkanMsaaState {
     }
 
     private static int sampleCount(RenderPassDescriptor descriptor) {
-        int samples = 1;
+        List<Integer> sampleCounts = new ArrayList<>();
         for (RenderPassDescriptor.Attachment<?> attachment : descriptor.colorAttachments()) {
-            samples = Math.max(samples, sampleCount(attachment));
+            addSampleCount(sampleCounts, attachment);
         }
-        samples = Math.max(samples, sampleCount(descriptor.depthAttachment()));
-        return samples;
+        addSampleCount(sampleCounts, descriptor.depthAttachment());
+        return VulkanMsaaCompatibility.commonAttachmentSampleCount(
+                sampleCounts.stream().mapToInt(Integer::intValue).toArray()
+        );
     }
 
-    private static int sampleCount(RenderPassDescriptor.Attachment<?> attachment) {
-        return attachment == null ? 1 : sampleCount(attachment.textureView());
+    private static void addSampleCount(
+            List<Integer> sampleCounts,
+            RenderPassDescriptor.Attachment<?> attachment
+    ) {
+        if (attachment != null && attachment.textureView() != null) {
+            sampleCounts.add(sampleCount(attachment.textureView()));
+        }
     }
 
     private static int sampleCount(GpuTextureView textureView) {

@@ -3,7 +3,6 @@ package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.vulkan.VulkanConst;
 import com.mojang.blaze3d.vulkan.VulkanDevice;
-import org.betterLostItems.salts_anti_aliasing.client.config.MsaaSampleLevel;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VK12;
 import org.lwjgl.vulkan.VkImageFormatProperties;
@@ -29,15 +28,7 @@ public final class VulkanMsaaCapabilities {
             supportedSampleMask &= imageSampleMask(device, GpuFormat.D32_FLOAT);
         }
 
-        int requested = Math.max(1, requestedSamples);
-        for (MsaaSampleLevel level : MsaaSampleLevel.valuesDescending()) {
-            int samples = level.samples();
-            if (samples <= requested && (supportedSampleMask & samples) != 0) {
-                return samples;
-            }
-        }
-
-        return 1;
+        return VulkanMsaaCompatibility.bestSupportedSampleCount(supportedSampleMask, requestedSamples);
     }
 
     private static int imageSampleMask(VulkanDevice device, GpuFormat format) {
