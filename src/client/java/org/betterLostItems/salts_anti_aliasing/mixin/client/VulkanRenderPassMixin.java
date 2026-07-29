@@ -58,9 +58,11 @@ public abstract class VulkanRenderPassMixin {
             return ((VulkanDevicePipelineAccessor) device).saltsAntiAliasing$getOrCompilePipeline(pipeline);
         }
 
+        boolean alphaToCoverage = VulkanMsaaPipelineVariants.usesAlphaToCoverage(pipeline, samples);
         RenderPipeline msaaPipeline = VulkanMsaaPipelineVariants.variant(pipeline, samples);
-        return VulkanMsaaState.withPipelineSampleCount(
+        return VulkanMsaaState.withPipelineState(
                 samples,
+                alphaToCoverage,
                 () -> ((VulkanDevicePipelineAccessor) device).saltsAntiAliasing$getOrCompilePipeline(msaaPipeline)
         );
     }

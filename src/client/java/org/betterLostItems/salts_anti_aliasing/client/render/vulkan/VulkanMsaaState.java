@@ -14,6 +14,8 @@ import java.util.function.Supplier;
 public final class VulkanMsaaState {
     private static final ThreadLocal<Integer> TEXTURE_SAMPLE_COUNT = ThreadLocal.withInitial(() -> 1);
     private static final ThreadLocal<Integer> PIPELINE_SAMPLE_COUNT = ThreadLocal.withInitial(() -> 1);
+    private static final ThreadLocal<Boolean> PIPELINE_ALPHA_TO_COVERAGE =
+            ThreadLocal.withInitial(() -> false);
     private static final ThreadLocal<Integer> RENDER_PASS_SAMPLE_COUNT = ThreadLocal.withInitial(() -> 1);
 
     private VulkanMsaaState() {
@@ -51,12 +53,23 @@ public final class VulkanMsaaState {
     }
 
     public static <T> T withPipelineSampleCount(int samples, Supplier<T> action) {
+        return withPipelineState(samples, false, action);
+    }
+
+    public static <T> T withPipelineState(
+            int samples,
+            boolean alphaToCoverage,
+            Supplier<T> action
+    ) {
         int previousSamples = PIPELINE_SAMPLE_COUNT.get();
+        boolean previousAlphaToCoverage = PIPELINE_ALPHA_TO_COVERAGE.get();
         PIPELINE_SAMPLE_COUNT.set(sanitize(samples));
+        PIPELINE_ALPHA_TO_COVERAGE.set(alphaToCoverage);
         try {
             return action.get();
         } finally {
             PIPELINE_SAMPLE_COUNT.set(previousSamples);
+            PIPELINE_ALPHA_TO_COVERAGE.set(previousAlphaToCoverage);
         }
     }
 
@@ -66,11 +79,16 @@ public final class VulkanMsaaState {
 
     static void clearPipelineSampleCount() {
         PIPELINE_SAMPLE_COUNT.set(1);
+        PIPELINE_ALPHA_TO_COVERAGE.set(false);
     }
 
     public static int pipelineSampleCount(int originalSamples) {
         int samples = PIPELINE_SAMPLE_COUNT.get();
         return samples > 1 ? samples : originalSamples;
+    }
+
+    public static boolean pipelineAlphaToCoverageEnabled() {
+        return PIPELINE_SAMPLE_COUNT.get() > 1 && PIPELINE_ALPHA_TO_COVERAGE.get();
     }
 
     private static int sanitize(int samples) {
