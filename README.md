@@ -87,6 +87,8 @@ TAA
 
 The shared planner expresses each mode as conceptual passes and targets. The runtime requires Minecraft's Vulkan backend for every anti-aliasing mode; non-Vulkan sessions keep saved settings but block rendering and mode cycling until Minecraft is restarted on Vulkan.
 
+SSAA percentages are per axis. The existing 200% option renders at twice the output width and twice the output height, so it evaluates four source pixels for every output pixel: conventional 4x SSAA. A 400% per-axis target would instead be 16x SSAA.
+
 ## DLSS Super Resolution
 
 DLSS is optional and disabled by default. The repo does not include NVIDIA Streamline/DLSS binaries or a NVIDIA application ID.

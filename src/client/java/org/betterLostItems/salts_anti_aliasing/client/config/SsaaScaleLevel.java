@@ -31,7 +31,8 @@ public enum SsaaScaleLevel {
      * @return text component shown to the player
      */
     public String label() {
-        return Math.round(scaleFactor * 100.0f) + "%";
+        String scaleLabel = Math.round(scaleFactor * 100.0f) + "%";
+        return this == X200 ? scaleLabel + " (4x SSAA)" : scaleLabel;
     }
 
     /**

@@ -49,7 +49,7 @@
   "options.salts_anti_aliasing.msaa_samples": "MSAA Samples: %s",
   "options.salts_anti_aliasing.msaa_samples.tooltip": "Sets how many samples MSAA uses on polygon edges. Higher values smooth hard edges better, but they also cost more GPU time. The renderer may fall back to your GPU's maximum supported sample count.",
   "options.salts_anti_aliasing.ssaa_scale": "SSAA Scale: %s",
-  "options.salts_anti_aliasing.ssaa_scale.tooltip": "Sets how far above native resolution SSAA renders before downsampling. Higher values give the cleanest image, but they are also the most expensive. Use this when you want to trade performance for image quality.",
+  "options.salts_anti_aliasing.ssaa_scale.tooltip": "Sets the render scale on each axis before downsampling. The 200% setting renders at 2x width and 2x height, which is conventional 4x SSAA. Higher values give a cleaner image but cost more performance.",
   "options.salts_anti_aliasing.upscale_quality": "Upscale Quality: %s",
   "options.salts_anti_aliasing.upscale_quality.tooltip": "Chooses the internal render scale for NIS Upscale, FSR1 Upscale, and FSR1 + RCAS. Quality stays closer to native resolution, while lower presets trade image fidelity for more FPS. Use it to pick the balance you want between sharpness and speed.",
   "options.salts_anti_aliasing.nis_upscale_quality": "NIS Upscale: %s",
