@@ -75,7 +75,7 @@ public final class AntiAliasingVideoSettingsSection {
     private static List<AbstractWidget> secondaryControls(RenderRuntime runtime, AntiAliasingMode activeMode) {
         List<AbstractWidget> controls = new ArrayList<>();
         switch (activeMode) {
-            case NIS_SHARPEN -> controls.add(new SharpnessSliderWidget(runtime));
+            case NIS_SHARPEN, SMAA_NIS_SHARPEN -> controls.add(new SharpnessSliderWidget(runtime));
             case MSAA -> controls.add(new MsaaSampleSliderWidget(runtime));
             case SSAA -> controls.add(new SsaaScaleSliderWidget(runtime));
             case NIS_UPSCALE, FSR1_UPSCALE -> controls.add(new SpatialUpscaleQualitySliderWidget(runtime));

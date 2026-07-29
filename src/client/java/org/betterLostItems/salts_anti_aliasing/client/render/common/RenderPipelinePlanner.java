@@ -134,7 +134,7 @@ public final class RenderPipelinePlanner {
                     List.of(currentColor, "scene_depth"),
                     List.of()
             ));
-            case SMAA -> {
+            case SMAA, SMAA_NIS_SHARPEN -> {
                 targets.put("smaa_edges", target("smaa_edges", RenderTargetType.AUXILIARY, TextureFormat.RG8,
                         RenderTargetSizing.OUTPUT, 1.0f, false));
                 targets.put("smaa_weights", target("smaa_weights", RenderTargetType.AUXILIARY, TextureFormat.RGBA8,
@@ -199,6 +199,21 @@ public final class RenderPipelinePlanner {
                         1.0f,
                         false
                 );
+                if (config.mode == AntiAliasingMode.SMAA_NIS_SHARPEN) {
+                    currentColor = addPass(
+                            passes,
+                            targets,
+                            "nis_sharpen",
+                            EnumSet.of(RenderCapability.POST_PROCESSING, RenderCapability.SHARPENING),
+                            List.of(currentColor),
+                            "smaa_sharpened_color",
+                            RenderTargetType.INTERMEDIATE_COLOR,
+                            TextureFormat.RGBA16F,
+                            RenderTargetSizing.OUTPUT,
+                            1.0f,
+                            false
+                    );
+                }
             }
             case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION -> {
                 targets.put("motion_vectors", target("motion_vectors", RenderTargetType.MOTION_VECTOR, TextureFormat.RG16F,

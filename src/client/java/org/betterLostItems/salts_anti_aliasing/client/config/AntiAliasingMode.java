@@ -16,6 +16,7 @@ public enum AntiAliasingMode {
     MSAA("MSAA", false, false),
     SSAA("SSAA", false, false),
     SMAA("SMAA", false, false),
+    SMAA_NIS_SHARPEN("SMAA + NIS Sharpen", false, false),
     TAA("TAA", false, true),
     NIS_SHARPEN("NIS Sharpen", false, false),
     NIS_UPSCALE("NIS Upscale", true, false),
@@ -33,6 +34,7 @@ public enum AntiAliasingMode {
             MSAA,
             SSAA,
             SMAA,
+            SMAA_NIS_SHARPEN,
             NIS_UPSCALE,
             DLSS_SUPER_RESOLUTION,
             FSR2_SUPER_RESOLUTION,
@@ -83,7 +85,7 @@ public enum AntiAliasingMode {
      * @return whether this object requires the described render path
      */
     public boolean usesSharpenControl() {
-        return this == NIS_SHARPEN || this == FSR1_RCAS;
+        return this == NIS_SHARPEN || this == SMAA_NIS_SHARPEN || this == FSR1_RCAS;
     }
 
     /**

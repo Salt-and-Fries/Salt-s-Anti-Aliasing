@@ -74,6 +74,7 @@ FXAA
 MSAA
 SSAA
 SMAA
+SMAA + NIS Sharpen
 NIS Upscale
 DLSS Super Resolution
 FSR2 Super Resolution

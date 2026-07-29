@@ -24,6 +24,8 @@
   "options.salts_anti_aliasing.mode.ssaa.summary": "Renders the scene above native resolution and downsamples it. Use it when you want brute-force image quality and have plenty of performance headroom. Benefit: excellent edge cleanup and very stable detail.",
   "options.salts_anti_aliasing.mode.smaa": "SMAA",
   "options.salts_anti_aliasing.mode.smaa.summary": "Detects edge patterns and blends along them more carefully than FXAA. Use it when you want stronger smoothing without as much softness. Benefit: cleaner diagonals and better detail retention.",
+  "options.salts_anti_aliasing.mode.smaa_nis_sharpen": "SMAA + NIS Sharpen",
+  "options.salts_anti_aliasing.mode.smaa_nis_sharpen.summary": "Applies directional SMAA edge smoothing, then restores fine contrast with configurable NIS sharpening. Use it when plain SMAA looks too soft but you still want spatial anti-aliasing.",
   "options.salts_anti_aliasing.mode.taa": "TAA",
   "options.salts_anti_aliasing.mode.taa.summary": "Blends current and previous frames to calm shimmering over time. Use it when thin detail flickers or distant edges crawl during motion. Benefit: the steadiest image on moving scenes and fine geometry.",
   "options.salts_anti_aliasing.mode.nis_sharpen": "NIS Sharpen",

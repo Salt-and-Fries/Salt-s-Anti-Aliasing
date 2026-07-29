@@ -33,44 +33,85 @@ float luma(vec3 color) {
     return dot(color, vec3(0.299, 0.587, 0.114));
 }
 
+float edgeX(vec2 uv) {
+    return texture(EdgesSampler, uv).r;
+}
+
+float edgeY(vec2 uv) {
+    return texture(EdgesSampler, uv).g;
+}
+
+// A pixel-aligned boundary is already perfectly sampled and must not be softened.  A
+// morphological AA weight is only useful where the boundary ends, turns, or moves to the
+// neighbouring row/column (the staircase pattern of a diagonal edge).
+float verticalPattern(vec2 uv, vec2 texel) {
+    float boundary = edgeX(uv);
+    float above = edgeX(uv - vec2(0.0, texel.y));
+    float below = edgeX(uv + vec2(0.0, texel.y));
+
+    float turnAbove = max(
+            max(edgeY(uv), edgeY(uv - vec2(texel.x, 0.0))),
+            max(edgeX(uv - texel), edgeX(uv + vec2(texel.x, -texel.y)))
+    );
+    float turnBelow = max(
+            max(edgeY(uv + vec2(0.0, texel.y)), edgeY(uv + vec2(-texel.x, texel.y))),
+            max(edgeX(uv + vec2(-texel.x, texel.y)), edgeX(uv + texel))
+    );
+
+    float endpoint = max((1.0 - above) * turnAbove, (1.0 - below) * turnBelow);
+    return boundary * clamp(endpoint, 0.0, 1.0);
+}
+
+float horizontalPattern(vec2 uv, vec2 texel) {
+    float boundary = edgeY(uv);
+    float left = edgeY(uv - vec2(texel.x, 0.0));
+    float right = edgeY(uv + vec2(texel.x, 0.0));
+
+    float turnLeft = max(
+            max(edgeX(uv), edgeX(uv - vec2(0.0, texel.y))),
+            max(edgeY(uv - texel), edgeY(uv + vec2(-texel.x, texel.y)))
+    );
+    float turnRight = max(
+            max(edgeX(uv + vec2(texel.x, 0.0)), edgeX(uv + vec2(texel.x, -texel.y))),
+            max(edgeY(uv + vec2(texel.x, -texel.y)), edgeY(uv + texel))
+    );
+
+    float endpoint = max((1.0 - left) * turnLeft, (1.0 - right) * turnRight);
+    return boundary * clamp(endpoint, 0.0, 1.0);
+}
+
 // Executes the per-pixel resolve/upscale/debug operation for this pass.
 void main() {
-    // Work in texel-relative offsets so the same shader scales across window sizes.
     vec2 texel = 1.0 / InSize;
 
-    vec2 edge = texture(EdgesSampler, texCoord).rg;
-    vec2 leftEdge = texture(EdgesSampler, texCoord + vec2(-texel.x, 0.0)).rg;
-    vec2 rightEdge = texture(EdgesSampler, texCoord + vec2(texel.x, 0.0)).rg;
-    vec2 upEdge = texture(EdgesSampler, texCoord + vec2(0.0, -texel.y)).rg;
-    vec2 downEdge = texture(EdgesSampler, texCoord + vec2(0.0, texel.y)).rg;
-
+    vec3 center = texture(ColorSampler, texCoord).rgb;
     vec3 west = texture(ColorSampler, texCoord + vec2(-texel.x, 0.0)).rgb;
     vec3 east = texture(ColorSampler, texCoord + vec2(texel.x, 0.0)).rgb;
     vec3 north = texture(ColorSampler, texCoord + vec2(0.0, -texel.y)).rgb;
     vec3 south = texture(ColorSampler, texCoord + vec2(0.0, texel.y)).rgb;
 
-    float contrastX = abs(luma(east) - luma(west));
-    float contrastY = abs(luma(south) - luma(north));
+    float centerLuma = luma(center);
+    vec4 contrast = abs(centerLuma - vec4(luma(west), luma(east), luma(north), luma(south)));
 
-    float spanX = edge.x + leftEdge.x * 0.5 + rightEdge.x * 0.5;
-    float spanY = edge.y + upEdge.y * 0.5 + downEdge.y * 0.5;
+    // An edge stored at this pixel lies on its left/top boundary. The right/bottom boundary is
+    // stored by the adjacent pixel, so classify each boundary at the texel that owns it. Straight
+    // aligned edges produce zero weights; only turns and staircase endpoints are reconstructed.
+    vec4 pattern = vec4(
+            verticalPattern(texCoord, texel),
+            verticalPattern(texCoord + vec2(texel.x, 0.0), texel),
+            horizontalPattern(texCoord, texel),
+            horizontalPattern(texCoord + vec2(0.0, texel.y), texel)
+    );
+    vec4 weights = pattern * contrast * SearchStrength;
+    weights = clamp(weights, 0.0, MaxBlend);
 
-    float horizontalBlend = clamp(edge.x * (0.45 + spanX * 0.35 + contrastX * SearchStrength), 0.0, MaxBlend);
-    float verticalBlend = clamp(edge.y * (0.45 + spanY * 0.35 + contrastY * SearchStrength), 0.0, MaxBlend);
+    float horizontalStrength = max(weights.r, weights.g);
+    float verticalStrength = max(weights.b, weights.a);
+    if (horizontalStrength > verticalStrength) {
+        weights.ba *= 1.0 - horizontalStrength * CornerRounding;
+    } else {
+        weights.rg *= 1.0 - verticalStrength * CornerRounding;
+    }
 
-    float leftWeight = horizontalBlend * (0.5 + 0.5 * leftEdge.x);
-    float rightWeight = horizontalBlend * (0.5 + 0.5 * rightEdge.x);
-    float upWeight = verticalBlend * (0.5 + 0.5 * upEdge.y);
-    float downWeight = verticalBlend * (0.5 + 0.5 * downEdge.y);
-
-    float horizontalSum = max(leftWeight + rightWeight, 0.0001);
-    float verticalSum = max(upWeight + downWeight, 0.0001);
-
-    leftWeight = horizontalBlend * (leftWeight / horizontalSum);
-    rightWeight = horizontalBlend * (rightWeight / horizontalSum);
-    upWeight = verticalBlend * (upWeight / verticalSum);
-    downWeight = verticalBlend * (downWeight / verticalSum);
-
-    float cornerSuppression = 1.0 - min(edge.x, edge.y) * CornerRounding;
-    fragColor = vec4(leftWeight, rightWeight, upWeight, downWeight) * cornerSuppression;
+    fragColor = weights;
 }

@@ -13,6 +13,8 @@ import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.debug.EdgeDebugAnalyzer;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.ScenePostProcessor;
 
+import java.util.List;
+
 /**
  * Executes Minecraft post chains against the scene after world rendering and before HUD/menu rendering
  * consumes the main target.
@@ -59,14 +61,12 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
             if (config.mode == AntiAliasingMode.TAA) {
                 VulkanSceneTemporalController.instance().apply(gameRenderer, resourcePool);
             } else if (config.mode.usesHistoryBuffers()) {
-                Identifier effectId = effectFor(config);
-                if (effectId != null) {
+                for (Identifier effectId : effectsFor(config)) {
                     processEffect(minecraft, gameRenderer.mainRenderTarget(), effectId, config);
                 }
             } else {
                 VulkanSceneTemporalController.instance().resetForInactiveMode();
-                Identifier effectId = effectFor(config);
-                if (effectId != null) {
+                for (Identifier effectId : effectsFor(config)) {
                     processEffect(minecraft, gameRenderer.mainRenderTarget(), effectId, config);
                 }
             }
@@ -106,12 +106,13 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
      * @param config configuration object being normalized, copied, or committed
      * @return effect for produced by this helper
      */
-    private static Identifier effectFor(AntiAliasingConfig config) {
+    private static List<Identifier> effectsFor(AntiAliasingConfig config) {
         return switch (config.mode) {
-            case NIS_SHARPEN -> NIS_SHARPEN_EFFECT;
-            case FXAA -> FXAA_EFFECT;
-            case SMAA -> SMAA_EFFECT;
-            default -> null;
+            case NIS_SHARPEN -> List.of(NIS_SHARPEN_EFFECT);
+            case FXAA -> List.of(FXAA_EFFECT);
+            case SMAA -> List.of(SMAA_EFFECT);
+            case SMAA_NIS_SHARPEN -> List.of(SMAA_EFFECT, NIS_SHARPEN_EFFECT);
+            default -> List.of();
         };
     }
 }

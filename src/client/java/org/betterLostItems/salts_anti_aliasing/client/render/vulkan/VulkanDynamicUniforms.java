@@ -49,7 +49,8 @@ final class VulkanDynamicUniforms {
     static void updateForMode(PostChain postChain, AntiAliasingConfig config) {
         for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
             Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
-            if (config.mode == AntiAliasingMode.NIS_SHARPEN) {
+            if (config.mode == AntiAliasingMode.NIS_SHARPEN
+                    || config.mode == AntiAliasingMode.SMAA_NIS_SHARPEN) {
                 writeNisSharpenUniform(customUniforms, config.sharpenStrength);
             } else if (config.mode == AntiAliasingMode.NIS_UPSCALE) {
                 writeNisSharpenUniform(customUniforms, config.nisUpscaleQualityPreset.sharpenStrength());

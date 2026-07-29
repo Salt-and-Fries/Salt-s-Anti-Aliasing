@@ -25,7 +25,6 @@ out vec4 fragColor;
 
 // Executes the per-pixel resolve/upscale/debug operation for this pass.
 void main() {
-    // Work in texel-relative offsets so the same shader scales across window sizes.
     vec2 texel = 1.0 / InSize;
 
     vec3 center = texture(ColorSampler, texCoord).rgb;
@@ -35,18 +34,18 @@ void main() {
     vec3 south = texture(ColorSampler, texCoord + vec2(0.0, texel.y)).rgb;
 
     vec4 weights = texture(WeightsSampler, texCoord);
-    float totalWeight = weights.r + weights.g + weights.b + weights.a;
-
     vec3 resolved = center;
-    if (totalWeight > 0.0001) {
-        vec3 blended =
-                center +
-                west * weights.r +
-                east * weights.g +
-                north * weights.b +
-                south * weights.a;
+    float horizontalWeight = weights.r + weights.g;
+    float verticalWeight = weights.b + weights.a;
+    if (max(horizontalWeight, verticalWeight) > 0.0001) {
+        // Blend along only the dominant boundary axis. Averaging all four neighbors turns the
+        // neighborhood pass into a general blur, especially around corners and textured blocks.
+        if (horizontalWeight >= verticalWeight) {
+            resolved = (center + west * weights.r + east * weights.g) / (1.0 + horizontalWeight);
+        } else {
+            resolved = (center + north * weights.b + south * weights.a) / (1.0 + verticalWeight);
+        }
 
-        resolved = blended / (1.0 + totalWeight);
         vec3 minNeighborhood = min(center, min(min(west, east), min(north, south)));
         vec3 maxNeighborhood = max(center, max(max(west, east), max(north, south)));
         resolved = clamp(resolved, minNeighborhood, maxNeighborhood);

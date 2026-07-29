@@ -34,7 +34,6 @@ float luma(vec3 color) {
 
 // Executes the per-pixel resolve/upscale/debug operation for this pass.
 void main() {
-    // Work in texel-relative offsets so the same shader scales across window sizes.
     vec2 texel = 1.0 / InSize;
 
     float center = luma(texture(InSampler, texCoord).rgb);
@@ -42,23 +41,30 @@ void main() {
     float right = luma(texture(InSampler, texCoord + vec2(texel.x, 0.0)).rgb);
     float up = luma(texture(InSampler, texCoord + vec2(0.0, -texel.y)).rgb);
     float down = luma(texture(InSampler, texCoord + vec2(0.0, texel.y)).rgb);
-    float upLeft = luma(texture(InSampler, texCoord + vec2(-texel.x, -texel.y)).rgb);
-    float downRight = luma(texture(InSampler, texCoord + vec2(texel.x, texel.y)).rgb);
-    float upRight = luma(texture(InSampler, texCoord + vec2(texel.x, -texel.y)).rgb);
-    float downLeft = luma(texture(InSampler, texCoord + vec2(-texel.x, texel.y)).rgb);
+    float leftLeft = luma(texture(InSampler, texCoord + vec2(-2.0 * texel.x, 0.0)).rgb);
+    float upUp = luma(texture(InSampler, texCoord + vec2(0.0, -2.0 * texel.y)).rgb);
 
-    float horizontalDelta = max(abs(center - left), abs(center - right));
-    float verticalDelta = max(abs(center - up), abs(center - down));
+    // Only record the left and top boundaries. Symmetric edge detection marks both sides of an
+    // edge and produces a two-pixel-wide low-pass region.
+    vec2 delta = abs(vec2(center - left, center - up));
+    vec2 edges = smoothstep(vec2(EdgeThreshold), vec2(EdgeThreshold * 2.0), delta);
+    if (edges.x + edges.y <= 0.0) {
+        fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        return;
+    }
+
     float diagonalDelta = max(
-            max(abs(center - upLeft), abs(center - downRight)),
-            max(abs(center - upRight), abs(center - downLeft))
+            abs(center - luma(texture(InSampler, texCoord + vec2(-texel.x, -texel.y)).rgb)),
+            abs(center - luma(texture(InSampler, texCoord + vec2(texel.x, texel.y)).rgb))
+    );
+    float neighborhoodMax = max(
+            max(max(delta.x, delta.y), max(abs(center - right), abs(center - down))),
+            max(max(abs(left - leftLeft), abs(up - upUp)), diagonalDelta * DiagonalFactor)
     );
 
-    float localContrast = max(horizontalDelta, max(verticalDelta, diagonalDelta));
-    float adaptiveThreshold = mix(EdgeThreshold, EdgeThreshold * LocalContrastFactor, smoothstep(0.04, 0.16, localContrast));
-
-    float horizontalEdge = smoothstep(adaptiveThreshold, adaptiveThreshold * 2.25, horizontalDelta + diagonalDelta * DiagonalFactor);
-    float verticalEdge = smoothstep(adaptiveThreshold, adaptiveThreshold * 2.25, verticalDelta + diagonalDelta * DiagonalFactor);
-
-    fragColor = vec4(horizontalEdge, verticalEdge, 0.0, 1.0);
+    // Suppress weak texture contrast next to a stronger boundary. This keeps SMAA focused on
+    // geometric silhouettes instead of softening every high-frequency surface detail.
+    float localThreshold = neighborhoodMax / max(LocalContrastFactor, 1.0);
+    edges *= step(vec2(localThreshold), delta);
+    fragColor = vec4(edges, 0.0, 1.0);
 }

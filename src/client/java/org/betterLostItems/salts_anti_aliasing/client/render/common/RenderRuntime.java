@@ -420,6 +420,7 @@ public final class RenderRuntime {
             case OFF -> Set.of();
             case NIS_SHARPEN -> EnumSet.of(RenderCapability.POST_PROCESSING, RenderCapability.SHARPENING);
             case FXAA, SMAA -> EnumSet.of(RenderCapability.POST_PROCESSING);
+            case SMAA_NIS_SHARPEN -> EnumSet.of(RenderCapability.POST_PROCESSING, RenderCapability.SHARPENING);
             case MSAA -> EnumSet.of(RenderCapability.MULTISAMPLE_AA);
             case SSAA -> EnumSet.of(RenderCapability.INTERNAL_RESOLUTION);
             case NIS_UPSCALE, FSR1_UPSCALE -> EnumSet.of(

@@ -75,13 +75,11 @@
       "inputs": [
         {
           "sampler_name": "Color",
-          "target": "minecraft:main",
-          "bilinear": true
+          "target": "minecraft:main"
         },
         {
           "sampler_name": "Weights",
-          "target": "weights",
-          "bilinear": true
+          "target": "weights"
         }
       ],
       "output": "resolved"
