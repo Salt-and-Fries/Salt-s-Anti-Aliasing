@@ -48,9 +48,15 @@ public final class ModernMinecraftHooks {
      */
     public static void prepareTemporalJitter(GameRenderer gameRenderer) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
-        boolean taaActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
+        boolean temporalActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
         RenderTarget mainTarget = gameRenderer.mainRenderTarget();
-        VulkanSceneTemporalController.instance().prepareFrameJitter(taaActive, mainTarget.width, mainTarget.height);
+        int jitterPhaseCount = VulkanSceneFsrController.instance().activeJitterPhaseCount();
+        VulkanSceneTemporalController.instance().prepareFrameJitter(
+                temporalActive,
+                mainTarget.width,
+                mainTarget.height,
+                jitterPhaseCount
+        );
     }
 
     /**

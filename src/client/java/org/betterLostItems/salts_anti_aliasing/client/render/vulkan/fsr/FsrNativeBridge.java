@@ -78,7 +78,7 @@ final class FsrNativeBridge {
             return FsrOptimalSettings.fallback(preset, outputWidth, outputHeight);
         }
 
-        int[] values = new int[2];
+        int[] values = new int[3];
         int result = queryOptimalSettingsNative(preset.ordinal(), outputWidth, outputHeight, values);
         if (result != 0) {
             return FsrOptimalSettings.fallback(preset, outputWidth, outputHeight);
@@ -88,7 +88,8 @@ final class FsrNativeBridge {
                 Math.max(1, values[0]),
                 Math.max(1, values[1]),
                 Math.max(1, outputWidth),
-                Math.max(1, outputHeight)
+                Math.max(1, outputHeight),
+                values[2] > 0 ? values[2] : preset.jitterPhaseCount()
         );
     }
 

@@ -33,7 +33,22 @@ import java.util.Optional;
 final class VulkanMotionVectorRenderer {
     private static final int BUFFER_USAGE = GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST;
     private static final int SAMPLER_INFO_SIZE = new Std140SizeCalculator().putVec2().putVec2().get();
-    private static final int MOTION_CONFIG_SIZE = new Std140SizeCalculator()
+    private static final int LEGACY_MOTION_CONFIG_SIZE = new Std140SizeCalculator()
+            .putVec4()
+            .putVec4()
+            .putVec4()
+            .putVec4()
+            .putVec4()
+            .putVec4()
+            .putVec4()
+            .putVec4()
+            .putVec4()
+            .get();
+    private static final int JITTER_CORRECTED_MOTION_CONFIG_SIZE = new Std140SizeCalculator()
+            .putVec4()
+            .putVec4()
+            .putVec4()
+            .putVec4()
             .putVec4()
             .putVec4()
             .putVec4()
@@ -49,19 +64,22 @@ final class VulkanMotionVectorRenderer {
             "Salt's DLSS Motion Vectors",
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":pipeline/dlss_motion_vectors_rg16f"),
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":post/dlss_motion_vectors"),
-            "DlssMotionConfig"
+            "DlssMotionConfig",
+            false
     );
     private static final VulkanMotionVectorRenderer FSR = new VulkanMotionVectorRenderer(
             "Salt's FSR Motion Vectors",
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":pipeline/fsr_motion_vectors_rg16f"),
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":post/fsr_motion_vectors"),
-            "FsrMotionConfig"
+            "FsrMotionConfig",
+            true
     );
 
     private final String label;
     private final Identifier pipelineId;
     private final Identifier fragmentShaderId;
     private final String motionUniformName;
+    private final boolean cancelProjectionJitter;
     private RenderPipeline pipeline;
     private GpuBuffer samplerInfoBuffer;
     private GpuBuffer motionConfigBuffer;
@@ -70,12 +88,14 @@ final class VulkanMotionVectorRenderer {
             String label,
             Identifier pipelineId,
             Identifier fragmentShaderId,
-            String motionUniformName
+            String motionUniformName,
+            boolean cancelProjectionJitter
     ) {
         this.label = label;
         this.pipelineId = pipelineId;
         this.fragmentShaderId = fragmentShaderId;
         this.motionUniformName = motionUniformName;
+        this.cancelProjectionJitter = cancelProjectionJitter;
     }
 
     static VulkanMotionVectorRenderer dlss() {
@@ -158,9 +178,20 @@ final class VulkanMotionVectorRenderer {
 
     private void writeMotionConfig(VulkanSceneTemporalController controller, int width, int height) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            ByteBuffer data = stack.malloc(MOTION_CONFIG_SIZE);
+            int bufferSize = cancelProjectionJitter
+                    ? JITTER_CORRECTED_MOTION_CONFIG_SIZE
+                    : LEGACY_MOTION_CONFIG_SIZE;
+            ByteBuffer data = stack.malloc(bufferSize);
             Std140Builder builder = Std140Builder.intoBuffer(data);
-            putMatrix(builder, controller.currentClipToWorldArray());
+            putMatrix(
+                    builder,
+                    cancelProjectionJitter
+                            ? controller.currentJitteredClipToWorldArray()
+                            : controller.currentClipToWorldArray()
+            );
+            if (cancelProjectionJitter) {
+                putMatrix(builder, controller.currentViewProjectionArray());
+            }
             putMatrix(builder, controller.previousViewProjectionArray());
             builder.putVec4(Math.max(1, width), Math.max(1, height), 0.0f, 0.0f);
             data.flip();

@@ -12,6 +12,10 @@ layout(std140) uniform FsrMotionConfig {
     vec4 CurrentClipToWorld1;
     vec4 CurrentClipToWorld2;
     vec4 CurrentClipToWorld3;
+    vec4 CurrentViewProjection0;
+    vec4 CurrentViewProjection1;
+    vec4 CurrentViewProjection2;
+    vec4 CurrentViewProjection3;
     vec4 PreviousViewProjection0;
     vec4 PreviousViewProjection1;
     vec4 PreviousViewProjection2;
@@ -25,16 +29,18 @@ out vec4 fragColor;
 
 void main() {
     float depth = texture(SceneDepthSampler, texCoord).r;
-    if (depth >= 1.0) {
-        fragColor = vec4(0.0);
-        return;
-    }
 
     mat4 currentClipToWorld = mat4(
         CurrentClipToWorld0,
         CurrentClipToWorld1,
         CurrentClipToWorld2,
         CurrentClipToWorld3
+    );
+    mat4 currentViewProjection = mat4(
+        CurrentViewProjection0,
+        CurrentViewProjection1,
+        CurrentViewProjection2,
+        CurrentViewProjection3
     );
     mat4 previousViewProjection = mat4(
         PreviousViewProjection0,
@@ -44,14 +50,27 @@ void main() {
     );
 
     vec2 currentNdc = texCoord * 2.0 - 1.0;
-    vec4 currentClip = vec4(currentNdc, depth * 2.0 - 1.0, 1.0);
+    // Vulkan's zero-to-one clip convention consumes the sampled depth unchanged.
+    vec4 currentClip = vec4(currentNdc, depth, 1.0);
     vec4 world = currentClipToWorld * currentClip;
-    world /= max(abs(world.w), 0.00001);
+    if (abs(world.w) <= 0.00001) {
+        fragColor = vec4(0.0);
+        return;
+    }
+    world /= world.w;
 
+    vec4 currentUnjitteredClip = currentViewProjection * world;
     vec4 previousClip = previousViewProjection * world;
-    vec2 previousNdc = previousClip.xy / max(abs(previousClip.w), 0.00001);
+    if (currentUnjitteredClip.w <= 0.00001 || previousClip.w <= 0.00001) {
+        fragColor = vec4(0.0);
+        return;
+    }
+
+    vec2 currentUnjitteredNdc = currentUnjitteredClip.xy / currentUnjitteredClip.w;
+    vec2 previousNdc = previousClip.xy / previousClip.w;
+    vec2 currentUnjitteredUv = currentUnjitteredNdc * 0.5 + 0.5;
     vec2 previousUv = previousNdc * 0.5 + 0.5;
-    vec2 velocityPixels = (previousUv - texCoord) * MotionConfig.xy;
+    vec2 velocityPixels = (previousUv - currentUnjitteredUv) * MotionConfig.xy;
 
     fragColor = vec4(velocityPixels, 0.0, 1.0);
 }

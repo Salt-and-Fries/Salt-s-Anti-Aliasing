@@ -156,7 +156,8 @@ final class VulkanDynamicUniforms {
             int height
     ) {
         updateUniformBuffer(customUniforms, FSR_MOTION_UNIFORM, bufferData -> {
-            putMatrix(bufferData, controller.currentClipToWorldArray());
+            putMatrix(bufferData, controller.currentJitteredClipToWorldArray());
+            putMatrix(bufferData, controller.currentViewProjectionArray());
             putMatrix(bufferData, controller.previousViewProjectionArray());
             bufferData.putFloat(Math.max(1, width));
             bufferData.putFloat(Math.max(1, height));

@@ -35,6 +35,26 @@
             "value": [0.0, 0.0, 0.0, 1.0]
           },
           {
+            "name": "CurrentViewProjection0",
+            "type": "vec4",
+            "value": [1.0, 0.0, 0.0, 0.0]
+          },
+          {
+            "name": "CurrentViewProjection1",
+            "type": "vec4",
+            "value": [0.0, 1.0, 0.0, 0.0]
+          },
+          {
+            "name": "CurrentViewProjection2",
+            "type": "vec4",
+            "value": [0.0, 0.0, 1.0, 0.0]
+          },
+          {
+            "name": "CurrentViewProjection3",
+            "type": "vec4",
+            "value": [0.0, 0.0, 0.0, 1.0]
+          },
+          {
             "name": "PreviousViewProjection0",
             "type": "vec4",
             "value": [1.0, 0.0, 0.0, 0.0]

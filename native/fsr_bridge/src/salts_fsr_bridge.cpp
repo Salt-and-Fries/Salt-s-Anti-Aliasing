@@ -561,10 +561,10 @@ ffxReturnCode_t ensure_upscale_context(
         uint32_t output_height) {
     if (g_upscale_context != nullptr
             && g_context_fsr_version == fsr_version
-            && render_width <= g_context_max_render_width
-            && render_height <= g_context_max_render_height
-            && output_width <= g_context_max_output_width
-            && output_height <= g_context_max_output_height) {
+            && render_width == g_context_max_render_width
+            && render_height == g_context_max_render_height
+            && output_width == g_context_max_output_width
+            && output_height == g_context_max_output_height) {
         return FFX_API_RETURN_OK;
     }
 
@@ -589,7 +589,8 @@ ffxReturnCode_t ensure_upscale_context(
     ffxCreateContextDescUpscale create_desc{};
     create_desc.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE;
     create_desc.header.pNext = &backend.header;
-    create_desc.flags = FFX_UPSCALE_ENABLE_HIGH_DYNAMIC_RANGE | FFX_UPSCALE_ENABLE_AUTO_EXPOSURE;
+    // Minecraft 26.2 renders LDR RGBA8 color with a finite reverse-Z depth buffer.
+    create_desc.flags = FFX_UPSCALE_ENABLE_DEPTH_INVERTED | FFX_UPSCALE_ENABLE_AUTO_EXPOSURE;
     create_desc.maxRenderSize = {render_width, render_height};
     create_desc.maxUpscaleSize = {output_width, output_height};
 
@@ -790,8 +791,18 @@ FfxApiResource mask_input(jlong image, uint32_t width, uint32_t height) {
             FFX_API_SURFACE_FORMAT_R8_UNORM,
             width,
             height,
-            FFX_API_RESOURCE_USAGE_UAV,
+            FFX_API_RESOURCE_USAGE_READ_ONLY,
             FFX_API_RESOURCE_STATE_PIXEL_COMPUTE_READ);
+}
+
+FfxApiResource mask_output(jlong image, uint32_t width, uint32_t height) {
+    return resource(
+            image,
+            FFX_API_SURFACE_FORMAT_R8_UNORM,
+            width,
+            height,
+            FFX_API_RESOURCE_USAGE_UAV,
+            FFX_API_RESOURCE_STATE_UNORDERED_ACCESS);
 }
 
 ffxReturnCode_t generate_reactive_mask(
@@ -810,13 +821,12 @@ ffxReturnCode_t generate_reactive_mask(
     desc.commandList = command_list;
     desc.colorOpaqueOnly = color_input(opaque_color_image, render_width, render_height);
     desc.colorPreUpscale = color_input(input_color_image, render_width, render_height);
-    desc.outReactive = mask_input(reactive_mask_image, render_width, render_height);
+    desc.outReactive = mask_output(reactive_mask_image, render_width, render_height);
     desc.renderSize = {render_width, render_height};
     desc.scale = 1.0f;
     desc.cutoffThreshold = 0.2f;
     desc.binaryValue = 0.9f;
-    desc.flags = FFX_UPSCALE_AUTOREACTIVEFLAGS_APPLY_TONEMAP
-            | FFX_UPSCALE_AUTOREACTIVEFLAGS_APPLY_THRESHOLD
+    desc.flags = FFX_UPSCALE_AUTOREACTIVEFLAGS_APPLY_THRESHOLD
             | FFX_UPSCALE_AUTOREACTIVEFLAGS_USE_COMPONENTS_MAX;
     return g_ffx_dispatch(&g_upscale_context, &desc.header);
 }
@@ -1150,11 +1160,23 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         return static_cast<jint>(result);
     }
 
-    jint values[2] = {
+    int32_t jitter_phase_count = 0;
+    ffxQueryDescUpscaleGetJitterPhaseCount jitter_query{};
+    jitter_query.header.type = FFX_API_QUERY_DESC_TYPE_UPSCALE_GETJITTERPHASECOUNT;
+    jitter_query.renderWidth = render_width;
+    jitter_query.displayWidth = static_cast<uint32_t>(output_width);
+    jitter_query.pOutPhaseCount = &jitter_phase_count;
+    result = g_ffx_query(nullptr, &jitter_query.header);
+    if (result != FFX_API_RETURN_OK) {
+        return static_cast<jint>(result);
+    }
+
+    jint values[3] = {
             static_cast<jint>(std::max(1u, render_width)),
-            static_cast<jint>(std::max(1u, render_height))
+            static_cast<jint>(std::max(1u, render_height)),
+            static_cast<jint>(std::max(1, jitter_phase_count))
     };
-    env->SetIntArrayRegion(out_render_size, 0, 2, values);
+    env->SetIntArrayRegion(out_render_size, 0, 3, values);
     return 0;
 #endif
 }
@@ -1322,8 +1344,9 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     desc.frameTimeDelta = frame_time_delta_ms > 0.0f ? frame_time_delta_ms : 16.6667f;
     desc.preExposure = 1.0f;
     desc.reset = reset_history == JNI_TRUE;
-    desc.cameraNear = camera_near;
-    desc.cameraFar = camera_far;
+    // FidelityFX expects the projection-order plane values when reverse-Z is enabled.
+    desc.cameraNear = camera_far;
+    desc.cameraFar = camera_near;
     desc.cameraFovAngleVertical = camera_fov_y;
     desc.viewSpaceToMetersFactor = view_space_to_meters <= 0.0f ? 1.0f : view_space_to_meters;
     desc.flags = 0;
@@ -1393,8 +1416,8 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         prepare.motionVectorScale = {motion_vector_scale_x, motion_vector_scale_y};
         prepare.frameTimeDelta = desc.frameTimeDelta;
         prepare.unused_reset = reset_history == JNI_TRUE;
-        prepare.cameraNear = camera_near;
-        prepare.cameraFar = camera_far;
+        prepare.cameraNear = camera_far;
+        prepare.cameraFar = camera_near;
         prepare.cameraFovAngleVertical = camera_fov_y;
         prepare.viewSpaceToMetersFactor = view_space_to_meters <= 0.0f ? 1.0f : view_space_to_meters;
         prepare.depth = depth_input(depth_image, render_w, render_h);

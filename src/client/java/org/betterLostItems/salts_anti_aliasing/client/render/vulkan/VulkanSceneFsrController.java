@@ -63,6 +63,8 @@ public final class VulkanSceneFsrController {
     private static final float DEFAULT_CAMERA_NEAR = 0.05f;
     private static final float DEFAULT_CAMERA_FAR = 64.0f;
     private static final float DEFAULT_CAMERA_FOV_Y = (float) Math.toRadians(70.0);
+    private static final float DEFAULT_FRAME_TIME_MS = 16.6667f;
+    private static final long FRAME_TIME_DISCONTINUITY_NS = 250_000_000L;
     private static final float VIEW_SPACE_TO_METERS = 1.0f;
 
     private final CrossFrameResourcePool resourcePool = new CrossFrameResourcePool(3);
@@ -81,12 +83,25 @@ public final class VulkanSceneFsrController {
     private AntiAliasingMode activeMode = AntiAliasingMode.OFF;
     private AntiAliasingConfig activeConfig;
     private FsrOptimalSettings optimalSettings = FsrOptimalSettings.fallback(null, 1, 1);
+    private long lastDispatchTimeNs;
+    private long lastSuccessfulTemporalFrameIndex = -1L;
+    private FsrFrameSignature lastFrameSignature;
 
     private VulkanSceneFsrController() {
     }
 
     public static VulkanSceneFsrController instance() {
         return INSTANCE;
+    }
+
+    /**
+     * Returns the SDK-prescribed jitter sequence for the active FSR quality preset.
+     */
+    public int activeJitterPhaseCount() {
+        if (!active || activeConfig == null || !isFsrMode(activeMode)) {
+            return 0;
+        }
+        return optimalSettings.jitterPhaseCount();
     }
 
     public void beginSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
@@ -269,7 +284,22 @@ public final class VulkanSceneFsrController {
         }
 
         VulkanSceneTemporalController temporal = VulkanSceneTemporalController.instance();
-        CameraParameters cameraParameters = CameraParameters.current();
+        CameraParameters cameraParameters = CameraParameters.current(temporal);
+        FrameTiming frameTiming = sampleFrameTiming();
+        long temporalFrameIndex = temporal.frameIndex();
+        FsrFrameSignature frameSignature = new FsrFrameSignature(
+                fsrVersion(config.mode),
+                config.mode.usesFsrFrameGeneration(),
+                sceneTarget.width,
+                sceneTarget.height,
+                upscaledColorTarget.width,
+                upscaledColorTarget.height,
+                config.fsrQualityPreset.ordinal()
+        );
+        boolean resetHistory = temporal.resetHistoryThisFrame()
+                || frameTiming.discontinuity()
+                || temporalFrameIndex != lastSuccessfulTemporalFrameIndex + 1L
+                || !frameSignature.equals(lastFrameSignature);
         VkCommandBuffer commandBuffer = vulkanCommandEncoder.allocateAndBeginTransientCommandBuffer();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             prepareEvaluateResources(commandBuffer, stack);
@@ -300,12 +330,12 @@ public final class VulkanSceneFsrController {
                 upscaledColorTarget.height,
                 temporal.currentJitterTexelX(),
                 temporal.currentJitterTexelY(),
-                temporal.resetHistoryThisFrame(),
-                temporal.frameIndex(),
+                resetHistory,
+                temporalFrameIndex,
                 1.0f,
                 1.0f,
                 config.fsrSharpness,
-                frameTimeDeltaMs(),
+                frameTiming.deltaMs(),
                 cameraParameters.nearPlane(),
                 cameraParameters.farPlane(),
                 cameraParameters.fovY(),
@@ -330,10 +360,14 @@ public final class VulkanSceneFsrController {
         }
         int endResult = VK12.vkEndCommandBuffer(commandBuffer);
         if (endResult != VK12.VK_SUCCESS) {
+            lastSuccessfulTemporalFrameIndex = -1L;
+            lastFrameSignature = null;
             return endResult;
         }
         vulkanCommandEncoder.execute(commandBuffer);
         vulkanCommandEncoder.submit();
+        lastSuccessfulTemporalFrameIndex = result == 0 ? temporalFrameIndex : -1L;
+        lastFrameSignature = result == 0 ? frameSignature : null;
         return result;
     }
 
@@ -675,9 +709,15 @@ public final class VulkanSceneFsrController {
         return mode == AntiAliasingMode.FSR2_SUPER_RESOLUTION ? 2 : 3;
     }
 
-    private static float frameTimeDeltaMs() {
-        long frameTimeNs = Minecraft.getInstance().getFrameTimeNs();
-        return frameTimeNs <= 0L ? 16.6667f : frameTimeNs / 1_000_000.0f;
+    private FrameTiming sampleFrameTiming() {
+        long now = System.nanoTime();
+        long previous = lastDispatchTimeNs;
+        lastDispatchTimeNs = now;
+        long elapsed = now - previous;
+        if (previous == 0L || elapsed <= 0L || elapsed > FRAME_TIME_DISCONTINUITY_NS) {
+            return new FrameTiming(DEFAULT_FRAME_TIME_MS, true);
+        }
+        return new FrameTiming(elapsed / 1_000_000.0f, false);
     }
 
     private static long image(GpuTexture texture) {
@@ -713,7 +753,7 @@ public final class VulkanSceneFsrController {
             float forwardY,
             float forwardZ
     ) {
-        private static CameraParameters current() {
+        private static CameraParameters current(VulkanSceneTemporalController temporal) {
             Camera camera = Minecraft.getInstance().gameRenderer.mainCamera();
             if (camera == null || !camera.isInitialized()) {
                 return fallback();
@@ -723,11 +763,13 @@ public final class VulkanSceneFsrController {
             Vector3fc up = camera.upVector();
             Vector3fc left = camera.leftVector();
             Vector3fc forward = camera.forwardVector();
-            float farPlane = Math.max(DEFAULT_CAMERA_FAR, Minecraft.getInstance().options.getEffectiveRenderDistance() * 16.0f);
+            float nearPlane = Math.max(0.0001f, temporal.cameraNearPlane());
+            float farPlane = Math.max(nearPlane, temporal.cameraFarPlane());
+            float fovY = temporal.cameraFovY();
             return new CameraParameters(
-                    DEFAULT_CAMERA_NEAR,
+                    nearPlane,
                     farPlane,
-                    (float) Math.toRadians(camera.getFov()),
+                    fovY > 0.0f ? fovY : (float) Math.toRadians(camera.getFov()),
                     (float) position.x,
                     (float) position.y,
                     (float) position.z,
@@ -762,6 +804,20 @@ public final class VulkanSceneFsrController {
                     -1.0f
             );
         }
+    }
+
+    private record FrameTiming(float deltaMs, boolean discontinuity) {
+    }
+
+    private record FsrFrameSignature(
+            int fsrVersion,
+            boolean frameGeneration,
+            int renderWidth,
+            int renderHeight,
+            int outputWidth,
+            int outputHeight,
+            int qualityPreset
+    ) {
     }
 
     private static final class FsrMotionTargetBundle implements PostChain.TargetBundle {

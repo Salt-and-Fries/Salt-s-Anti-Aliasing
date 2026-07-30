@@ -57,6 +57,7 @@ public final class VulkanSceneTemporalController {
     private float currentJitterClipY;
     private int jitterWidth;
     private int jitterHeight;
+    private int jitterPhaseCount;
     private final Matrix4f jitteredProjection = new Matrix4f();
     private final Matrix4f currentViewProjection = new Matrix4f();
     private final Matrix4f previousViewProjection = new Matrix4f();
@@ -93,12 +94,18 @@ public final class VulkanSceneTemporalController {
 
     /**
      * Coordinates prepare frame jitter within the anti-aliasing render, configuration, or compatibility flow.
-     * @param taaActive taa active value supplied by the caller or Minecraft callback
+     * @param temporalActive whether a temporal renderer consumes the frame
      * @param width width value supplied by the caller or Minecraft callback
      * @param height height value supplied by the caller or Minecraft callback
+     * @param requestedPhaseCount temporal jitter sequence length, or zero for native TAA
      */
-    public void prepareFrameJitter(boolean taaActive, int width, int height) {
-        if (!taaActive) {
+    public void prepareFrameJitter(
+            boolean temporalActive,
+            int width,
+            int height,
+            int requestedPhaseCount
+    ) {
+        if (!temporalActive) {
             clearJitter();
             return;
         }
@@ -108,14 +115,18 @@ public final class VulkanSceneTemporalController {
             return;
         }
 
-        boolean resolutionChanged = jitterWidth != width || jitterHeight != height;
-        resetHistoryThisFrame = resolutionChanged;
-        if (resolutionChanged) {
+        int nextPhaseCount = requestedPhaseCount > 0 ? requestedPhaseCount : TAA_JITTER_PHASE_COUNT;
+        boolean sequenceChanged = jitterWidth != width
+                || jitterHeight != height
+                || jitterPhaseCount != nextPhaseCount;
+        resetHistoryThisFrame = sequenceChanged;
+        if (sequenceChanged) {
             jitterFrameIndex = 0;
             previousJitterUvX = 0.0f;
             previousJitterUvY = 0.0f;
             jitterWidth = width;
             jitterHeight = height;
+            jitterPhaseCount = nextPhaseCount;
         } else {
             previousJitterUvX = currentJitterUvX;
             previousJitterUvY = currentJitterUvY;
@@ -123,7 +134,7 @@ public final class VulkanSceneTemporalController {
 
         currentJitterUvX = halton(jitterFrameIndex + 1, 2) - 0.5f;
         currentJitterUvY = halton(jitterFrameIndex + 1, 3) - 0.5f;
-        jitterFrameIndex = (jitterFrameIndex + 1) % TAA_JITTER_PHASE_COUNT;
+        jitterFrameIndex = (jitterFrameIndex + 1) % jitterPhaseCount;
         currentJitterClipX = (currentJitterUvX * 2.0f) / width;
         currentJitterClipY = (-currentJitterUvY * 2.0f) / height;
     }
@@ -517,6 +528,7 @@ public final class VulkanSceneTemporalController {
         currentJitterClipY = 0.0f;
         jitterWidth = 0;
         jitterHeight = 0;
+        jitterPhaseCount = 0;
         resetHistoryThisFrame = true;
     }
 
