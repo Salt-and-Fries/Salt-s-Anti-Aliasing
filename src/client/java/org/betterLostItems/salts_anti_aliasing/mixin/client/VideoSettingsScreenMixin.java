@@ -1,7 +1,6 @@
 package org.betterLostItems.salts_anti_aliasing.mixin.client;
 
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.gui.screens.options.VideoSettingsScreen;
@@ -17,6 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Implements video settings screen mixin behavior for Salt's Anti Aliasing. Mixin bridge code that
@@ -114,26 +114,30 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         }
     }
 
-    @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    private void saltsAntiAliasing$handleDropdownClick(
+            MouseButtonEvent event,
+            boolean doubleClick,
+            CallbackInfoReturnable<Boolean> callbackInfo
+    ) {
         if (saltsAntiAliasing$dropdownOverlay != null
                 && saltsAntiAliasing$dropdownOverlay.mouseClicked(event, doubleClick)) {
-            return true;
+            callbackInfo.setReturnValue(true);
         }
-
-        return saltsAntiAliasing$mouseClickedVanillaChildren(event, doubleClick);
     }
 
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+    @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)
+    private void saltsAntiAliasing$handleDropdownScroll(
+            double mouseX,
+            double mouseY,
+            double horizontalAmount,
+            double verticalAmount,
+            CallbackInfoReturnable<Boolean> callbackInfo
+    ) {
         if (saltsAntiAliasing$dropdownOverlay != null
                 && saltsAntiAliasing$dropdownOverlay.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)) {
-            return true;
+            callbackInfo.setReturnValue(true);
         }
-
-        return this.getChildAt(mouseX, mouseY)
-                .filter(listener -> listener.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
-                .isPresent();
     }
 
     @Override
@@ -180,19 +184,6 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
                     false
             );
         }
-    }
-
-    private boolean saltsAntiAliasing$mouseClickedVanillaChildren(MouseButtonEvent event, boolean doubleClick) {
-        GuiEventListener listener = this.getChildAt(event.x(), event.y()).orElse(null);
-        if (listener == null || !listener.mouseClicked(event, doubleClick)) {
-            return false;
-        }
-
-        this.setFocused(listener);
-        if (event.button() == 0) {
-            this.setDragging(true);
-        }
-        return true;
     }
 
     private void saltsAntiAliasing$selectMode(AntiAliasingMode mode) {
