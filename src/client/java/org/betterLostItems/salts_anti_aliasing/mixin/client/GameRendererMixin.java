@@ -10,9 +10,8 @@ import net.minecraft.client.renderer.fog.FogRenderer;
 import net.minecraft.client.renderer.state.GameRenderState;
 import net.minecraft.client.renderer.state.OptionsRenderState;
 import net.minecraft.client.renderer.state.WindowRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import org.joml.Matrix4fc;
 import org.betterLostItems.salts_anti_aliasing.client.platform.modern.ModernMinecraftHooks;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,6 +31,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class GameRendererMixin {
     private static final String LEVEL_RENDER_TARGET =
             "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V";
+    private static final String LEVEL_PROJECTION_BUFFER_TARGET =
+            "Lnet/minecraft/client/renderer/ProjectionMatrixBuffer;getBuffer(Lorg/joml/Matrix4f;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;";
 
     @Shadow
     @Final
@@ -86,33 +87,19 @@ public abstract class GameRendererMixin {
     }
 
     /**
-     * Passes Minecraft's camera state through the platform bridge so TAA can add jitter.
+     * Jitters the final world projection after vanilla has applied hurt, view-bob, and nausea
+     * transforms, while leaving the shared camera state and culling projection untouched.
      */
     @ModifyArg(
             method = "renderLevel",
-            at = @At(
-                    value = "INVOKE",
-                    target = LEVEL_RENDER_TARGET
-            ),
-            index = 3
+            at = @At(value = "INVOKE", target = LEVEL_PROJECTION_BUFFER_TARGET),
+            index = 0
     )
-    private CameraRenderState saltsAntiAliasing$configureTemporalJitter(CameraRenderState cameraRenderState) {
-        return ModernMinecraftHooks.configureCameraJitter(cameraRenderState);
-    }
-
-    /**
-     * Passes Minecraft's projection matrix through the platform bridge so TAA can add jitter.
-     */
-    @ModifyArg(
-            method = "renderLevel",
-            at = @At(
-                    value = "INVOKE",
-                    target = LEVEL_RENDER_TARGET
-            ),
-            index = 4
-    )
-    private Matrix4fc saltsAntiAliasing$configureTemporalProjection(Matrix4fc projectionMatrix) {
-        return ModernMinecraftHooks.jitterProjection(projectionMatrix);
+    private Matrix4f saltsAntiAliasing$configureTemporalProjection(Matrix4f projectionMatrix) {
+        return ModernMinecraftHooks.configureTemporalProjection(
+                projectionMatrix,
+                gameRenderState.levelRenderState.cameraRenderState
+        );
     }
 
     /**

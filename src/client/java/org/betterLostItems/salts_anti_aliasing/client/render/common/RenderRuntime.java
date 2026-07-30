@@ -298,7 +298,10 @@ public final class RenderRuntime {
             return;
         }
 
-        scenePostProcessor.apply(gameRenderer, effectiveConfigSnapshot());
+        AntiAliasingConfig config = effectiveConfigSnapshot();
+        if (config.mode != AntiAliasingMode.TAA) {
+            scenePostProcessor.apply(gameRenderer, config);
+        }
     }
 
     public void recordRenderedFrame(long frameTimeNs, int displayedFps) {
@@ -331,6 +334,9 @@ public final class RenderRuntime {
         VulkanSceneDlssController.instance().endSceneRendering(gameRenderer, config);
         VulkanSceneFsrController.instance().endSceneRendering(gameRenderer, config);
         VulkanSceneScaleController.instance().endSceneRendering(gameRenderer, config);
+        if (config.mode == AntiAliasingMode.TAA && canUseAntiAliasing()) {
+            scenePostProcessor.apply(gameRenderer, config);
+        }
     }
 
     public void requestPipelineRebuildWhenBackendReady() {

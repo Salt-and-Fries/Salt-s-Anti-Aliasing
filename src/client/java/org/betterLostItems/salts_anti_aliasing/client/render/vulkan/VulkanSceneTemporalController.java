@@ -18,7 +18,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,11 +33,15 @@ public final class VulkanSceneTemporalController {
     private static final Identifier HISTORY_TARGET_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":taa_history");
     private static final Identifier TAA_EFFECT_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":taa");
     private static final Set<Identifier> EXTERNAL_TARGETS = Set.of(PostChain.MAIN_TARGET_ID, HISTORY_TARGET_ID);
-    private static final int BOOTSTRAP_FRAME_COUNT = 8;
-    private static final float TAA_BASE_HISTORY_WEIGHT = 0.92f;
-    private static final float TAA_LUMA_REJECTION = 1.35f;
-    private static final float TAA_DEPTH_REJECTION = 7.5f;
-    private static final float TAA_NEIGHBORHOOD_CLAMP = 0.22f;
+    private static final int BOOTSTRAP_FRAME_COUNT = 1;
+    private static final int TAA_JITTER_PHASE_COUNT = 16;
+    private static final float TAA_BASE_HISTORY_WEIGHT = 0.90f;
+    private static final float TAA_LUMA_REJECTION = 1.0f;
+    private static final float TAA_DEPTH_REJECTION = 1.0f;
+    private static final float TAA_VARIANCE_GAMMA = 1.25f;
+    private static final double CAMERA_CUT_DISTANCE_SQUARED = 16.0;
+    private static final float CAMERA_CUT_ROTATION_DEGREES = 45.0f;
+    private static final float CAMERA_FOV_RESET_RADIANS = (float) Math.toRadians(1.0);
 
     private TextureTarget historyTarget;
     private boolean historyValid;
@@ -52,12 +55,22 @@ public final class VulkanSceneTemporalController {
     private float previousJitterUvY;
     private float currentJitterClipX;
     private float currentJitterClipY;
+    private int jitterWidth;
+    private int jitterHeight;
     private final Matrix4f jitteredProjection = new Matrix4f();
     private final Matrix4f currentViewProjection = new Matrix4f();
     private final Matrix4f previousViewProjection = new Matrix4f();
+    private final Matrix4f currentJitteredViewProjection = new Matrix4f();
     private boolean hasViewProjection;
     private boolean resetHistoryThisFrame = true;
     private long frameIndex;
+    private ClientLevel capturedLevel;
+    private Vec3 capturedCameraPosition;
+    private float capturedCameraXRot;
+    private float capturedCameraYRot;
+    private float currentCameraNear = 0.05f;
+    private float currentCameraFar = 64.0f;
+    private float currentCameraFovY = (float) Math.toRadians(70.0);
     private Vec3 lastCameraPosition;
     private float lastCameraXRot;
     private float lastCameraYRot;
@@ -95,48 +108,41 @@ public final class VulkanSceneTemporalController {
             return;
         }
 
-        previousJitterUvX = currentJitterUvX;
-        previousJitterUvY = currentJitterUvY;
-        currentJitterUvX = halton(jitterFrameIndex + 1, 2) - 0.5f;
-        currentJitterUvY = halton(jitterFrameIndex + 1, 3) - 0.5f;
-        jitterFrameIndex = (jitterFrameIndex + 1) % 8;
-        currentJitterClipX = (currentJitterUvX * 2.0f) / width;
-        currentJitterClipY = (-currentJitterUvY * 2.0f) / height;
-        resetHistoryThisFrame = false;
-    }
-
-    /**
-     * Coordinates configure camera jitter within the anti-aliasing render, configuration, or compatibility flow.
-     * @param cameraRenderState camera render state value supplied by the caller or Minecraft
-     * callback
-     * @param taaActive taa active value supplied by the caller or Minecraft callback
-     * @return configure camera jitter produced by this helper
-     */
-    public CameraRenderState configureCameraJitter(CameraRenderState cameraRenderState, boolean taaActive) {
-        if (!taaActive) {
-            return cameraRenderState;
+        boolean resolutionChanged = jitterWidth != width || jitterHeight != height;
+        resetHistoryThisFrame = resolutionChanged;
+        if (resolutionChanged) {
+            jitterFrameIndex = 0;
+            previousJitterUvX = 0.0f;
+            previousJitterUvY = 0.0f;
+            jitterWidth = width;
+            jitterHeight = height;
+        } else {
+            previousJitterUvX = currentJitterUvX;
+            previousJitterUvY = currentJitterUvY;
         }
 
-        captureUnjitteredFrameState(cameraRenderState);
-        cameraRenderState.projectionMatrix.m20(cameraRenderState.projectionMatrix.m20() + currentJitterClipX);
-        cameraRenderState.projectionMatrix.m21(cameraRenderState.projectionMatrix.m21() + currentJitterClipY);
-        return cameraRenderState;
+        currentJitterUvX = halton(jitterFrameIndex + 1, 2) - 0.5f;
+        currentJitterUvY = halton(jitterFrameIndex + 1, 3) - 0.5f;
+        jitterFrameIndex = (jitterFrameIndex + 1) % TAA_JITTER_PHASE_COUNT;
+        currentJitterClipX = (currentJitterUvX * 2.0f) / width;
+        currentJitterClipY = (-currentJitterUvY * 2.0f) / height;
     }
 
     /**
-     * Coordinates jitter projection within the anti-aliasing render, configuration, or compatibility flow.
-     * @param projectionMatrix projection matrix value supplied by the caller or Minecraft callback
-     * @param taaActive taa active value supplied by the caller or Minecraft callback
-     * @return jitter projection produced by this helper
+     * Captures vanilla's final unjittered world projection and returns a clip-space translated copy
+     * for temporal rendering. The input matrix belongs to Minecraft and is never mutated.
      */
-    public Matrix4fc jitterProjection(Matrix4fc projectionMatrix, boolean taaActive) {
-        if (!taaActive) {
+    public Matrix4f configureProjection(
+            Matrix4f projectionMatrix,
+            CameraRenderState cameraRenderState,
+            boolean temporalActive
+    ) {
+        if (!temporalActive || projectionMatrix == null) {
             return projectionMatrix;
         }
 
-        jitteredProjection.set(projectionMatrix);
-        jitteredProjection.m20(jitteredProjection.m20() + currentJitterClipX);
-        jitteredProjection.m21(jitteredProjection.m21() + currentJitterClipY);
+        jitteredProjection.translation(currentJitterClipX, currentJitterClipY, 0.0f).mul(projectionMatrix);
+        captureFrameState(projectionMatrix, jitteredProjection, cameraRenderState);
         return jitteredProjection;
     }
 
@@ -170,7 +176,11 @@ public final class VulkanSceneTemporalController {
             clearCameraMotion();
         }
 
-        if (!activeSequence || !historyValid || lastLevel != level || bootstrapFramesRemaining > 0) {
+        if (!activeSequence
+                || !historyValid
+                || lastLevel != level
+                || bootstrapFramesRemaining > 0
+                || resetHistoryThisFrame) {
             lastLevel = level;
             copyCurrentFrameToHistory(mainTarget);
             historyValid = true;
@@ -220,9 +230,9 @@ public final class VulkanSceneTemporalController {
      * @param height height value supplied by the caller or Minecraft callback
      */
     private void ensureHistoryTarget(int width, int height) {
-        if (historyTarget == null) {
+        if (historyTarget == null || !historyTarget.useDepth) {
             destroyResources();
-            historyTarget = new TextureTarget(HISTORY_TARGET_LABEL, width, height, false, GpuFormat.RGBA8_UNORM);
+            historyTarget = new TextureTarget(HISTORY_TARGET_LABEL, width, height, true, GpuFormat.RGBA8_UNORM);
             historyValid = false;
             bootstrapFramesRemaining = BOOTSTRAP_FRAME_COUNT;
             return;
@@ -248,6 +258,9 @@ public final class VulkanSceneTemporalController {
         }
 
         VulkanColorBlitter.blitColor(mainTarget, historyTarget);
+        if (mainTarget.getDepthTexture() != null && historyTarget.getDepthTexture() != null) {
+            historyTarget.copyDepthFrom(mainTarget);
+        }
 
         historyValid = true;
     }
@@ -289,11 +302,10 @@ public final class VulkanSceneTemporalController {
     }
 
     /**
-     * Coordinates neighborhood clamp within the anti-aliasing render, configuration, or compatibility flow.
-     * @return neighborhood clamp produced by this helper
+     * Returns the standard-deviation multiplier used to clip reprojected history.
      */
-    public float neighborhoodClamp() {
-        return TAA_NEIGHBORHOOD_CLAMP;
+    public float varianceGamma() {
+        return TAA_VARIANCE_GAMMA;
     }
 
     /**
@@ -365,13 +377,57 @@ public final class VulkanSceneTemporalController {
         return matrixArray(inverted);
     }
 
+    public float[] currentJitteredClipToWorldArray() {
+        Matrix4f inverted = new Matrix4f(currentJitteredViewProjection);
+        if (Math.abs(inverted.determinant()) <= 1.0e-6f) {
+            inverted.identity();
+        } else {
+            inverted.invert();
+        }
+        return matrixArray(inverted);
+    }
+
+    public float cameraNearPlane() {
+        return currentCameraNear;
+    }
+
+    public float cameraFarPlane() {
+        return currentCameraFar;
+    }
+
+    public float cameraFovY() {
+        return currentCameraFovY;
+    }
+
     /**
-     * Captures unjittered camera matrices before this controller mutates Minecraft's projection.
+     * Captures the final unjittered and jittered camera transforms used by the world pass.
      */
-    private void captureUnjitteredFrameState(CameraRenderState cameraRenderState) {
-        if (cameraRenderState == null || cameraRenderState.projectionMatrix == null || cameraRenderState.viewRotationMatrix == null) {
+    private void captureFrameState(
+            Matrix4f projectionMatrix,
+            Matrix4f jitteredProjectionMatrix,
+            CameraRenderState cameraRenderState
+    ) {
+        if (cameraRenderState == null || cameraRenderState.viewRotationMatrix == null) {
             resetHistoryThisFrame = true;
             return;
+        }
+
+        ClientLevel level = Minecraft.getInstance().level;
+        Vec3 position = cameraRenderState.pos;
+        if (capturedLevel != null && capturedLevel != level) {
+            resetHistoryThisFrame = true;
+        }
+        if (capturedCameraPosition != null
+                && position != null
+                && position.distanceToSqr(capturedCameraPosition) > CAMERA_CUT_DISTANCE_SQUARED) {
+            resetHistoryThisFrame = true;
+        }
+        if (capturedCameraPosition != null) {
+            float rotationDelta = Math.abs(cameraRenderState.xRot - capturedCameraXRot)
+                    + Math.abs(Mth.wrapDegrees(cameraRenderState.yRot - capturedCameraYRot));
+            if (rotationDelta > CAMERA_CUT_ROTATION_DEGREES) {
+                resetHistoryThisFrame = true;
+            }
         }
 
         if (hasViewProjection) {
@@ -387,7 +443,27 @@ public final class VulkanSceneTemporalController {
             );
         }
 
-        currentViewProjection.set(cameraRenderState.projectionMatrix).mul(view);
+        currentViewProjection.set(projectionMatrix).mul(view);
+        currentJitteredViewProjection.set(jitteredProjectionMatrix).mul(view);
+
+        float nextCameraFar = Math.max(currentCameraNear, cameraRenderState.depthFar);
+        float nextCameraFovY = currentCameraFovY;
+        float projectionScaleY = cameraRenderState.projectionMatrix.m11();
+        if (Math.abs(projectionScaleY) > 1.0e-6f) {
+            nextCameraFovY = 2.0f * (float) Math.atan(1.0f / Math.abs(projectionScaleY));
+        }
+        if (hasViewProjection
+                && (Math.abs(nextCameraFovY - currentCameraFovY) > CAMERA_FOV_RESET_RADIANS
+                || Math.abs(nextCameraFar - currentCameraFar) > 1.0f)) {
+            resetHistoryThisFrame = true;
+        }
+
+        capturedLevel = level;
+        capturedCameraPosition = position;
+        capturedCameraXRot = cameraRenderState.xRot;
+        capturedCameraYRot = cameraRenderState.yRot;
+        currentCameraFar = nextCameraFar;
+        currentCameraFovY = nextCameraFovY;
         if (!hasViewProjection) {
             previousViewProjection.set(currentViewProjection);
             resetHistoryThisFrame = true;
@@ -439,6 +515,8 @@ public final class VulkanSceneTemporalController {
         previousJitterUvY = 0.0f;
         currentJitterClipX = 0.0f;
         currentJitterClipY = 0.0f;
+        jitterWidth = 0;
+        jitterHeight = 0;
         resetHistoryThisFrame = true;
     }
 
@@ -456,8 +534,13 @@ public final class VulkanSceneTemporalController {
         hasViewProjection = false;
         resetHistoryThisFrame = true;
         frameIndex = 0L;
+        capturedLevel = null;
+        capturedCameraPosition = null;
+        capturedCameraXRot = 0.0f;
+        capturedCameraYRot = 0.0f;
         currentViewProjection.identity();
         previousViewProjection.identity();
+        currentJitteredViewProjection.identity();
     }
 
     private static float[] matrixArray(Matrix4f matrix) {

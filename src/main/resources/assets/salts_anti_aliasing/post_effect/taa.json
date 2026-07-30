@@ -21,30 +21,75 @@
           "sampler_name": "History",
           "target": "salts_anti_aliasing:taa_history",
           "bilinear": true
+        },
+        {
+          "sampler_name": "HistoryDepth",
+          "target": "salts_anti_aliasing:taa_history",
+          "use_depth_buffer": true
         }
       ],
       "output": "swap",
       "uniforms": {
         "TaaConfig": [
           {
+            "name": "CurrentClipToWorld0",
+            "type": "vec4",
+            "value": [1.0, 0.0, 0.0, 0.0]
+          },
+          {
+            "name": "CurrentClipToWorld1",
+            "type": "vec4",
+            "value": [0.0, 1.0, 0.0, 0.0]
+          },
+          {
+            "name": "CurrentClipToWorld2",
+            "type": "vec4",
+            "value": [0.0, 0.0, 1.0, 0.0]
+          },
+          {
+            "name": "CurrentClipToWorld3",
+            "type": "vec4",
+            "value": [0.0, 0.0, 0.0, 1.0]
+          },
+          {
+            "name": "PreviousViewProjection0",
+            "type": "vec4",
+            "value": [1.0, 0.0, 0.0, 0.0]
+          },
+          {
+            "name": "PreviousViewProjection1",
+            "type": "vec4",
+            "value": [0.0, 1.0, 0.0, 0.0]
+          },
+          {
+            "name": "PreviousViewProjection2",
+            "type": "vec4",
+            "value": [0.0, 0.0, 1.0, 0.0]
+          },
+          {
+            "name": "PreviousViewProjection3",
+            "type": "vec4",
+            "value": [0.0, 0.0, 0.0, 1.0]
+          },
+          {
             "name": "BaseHistoryWeight",
             "type": "float",
-            "value": 0.92
+            "value": 0.90
           },
           {
             "name": "LumaRejection",
             "type": "float",
-            "value": 1.35
+            "value": 1.0
           },
           {
             "name": "DepthRejection",
             "type": "float",
-            "value": 7.5
+            "value": 1.0
           },
           {
-            "name": "NeighborhoodClamp",
+            "name": "VarianceGamma",
             "type": "float",
-            "value": 0.22
+            "value": 1.25
           },
           {
             "name": "CurrentJitterX",

@@ -15,7 +15,7 @@ import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneF
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneMsaaController;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneScaleController;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneTemporalController;
-import org.joml.Matrix4fc;
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -54,21 +54,19 @@ public final class ModernMinecraftHooks {
     }
 
     /**
-     * Applies the current temporal jitter to the 26.2 camera render state.
+     * Captures and jitters Minecraft's final world projection without mutating shared camera state.
      */
-    public static CameraRenderState configureCameraJitter(CameraRenderState cameraRenderState) {
+    public static Matrix4f configureTemporalProjection(
+            Matrix4f projectionMatrix,
+            CameraRenderState cameraRenderState
+    ) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
-        boolean taaActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
-        return VulkanSceneTemporalController.instance().configureCameraJitter(cameraRenderState, taaActive);
-    }
-
-    /**
-     * Applies the current temporal jitter to the 26.2 projection-matrix argument.
-     */
-    public static Matrix4fc jitterProjection(Matrix4fc projectionMatrix) {
-        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
-        boolean taaActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
-        return VulkanSceneTemporalController.instance().jitterProjection(projectionMatrix, taaActive);
+        boolean temporalActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
+        return VulkanSceneTemporalController.instance().configureProjection(
+                projectionMatrix,
+                cameraRenderState,
+                temporalActive
+        );
     }
 
     /**

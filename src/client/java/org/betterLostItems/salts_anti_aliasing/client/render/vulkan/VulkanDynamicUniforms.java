@@ -119,10 +119,12 @@ final class VulkanDynamicUniforms {
      */
     private static void writeTaaUniform(Map<String, GpuBuffer> customUniforms, VulkanSceneTemporalController controller) {
         updateUniformBuffer(customUniforms, TAA_UNIFORM, bufferData -> {
+            putMatrix(bufferData, controller.currentJitteredClipToWorldArray());
+            putMatrix(bufferData, controller.previousViewProjectionArray());
             bufferData.putFloat(controller.baseHistoryWeight());
             bufferData.putFloat(controller.lumaRejection());
             bufferData.putFloat(controller.depthRejection());
-            bufferData.putFloat(controller.neighborhoodClamp());
+            bufferData.putFloat(controller.varianceGamma());
             bufferData.putFloat(controller.currentJitterTexelX());
             bufferData.putFloat(controller.currentJitterTexelY());
             bufferData.putFloat(controller.previousJitterTexelX());
