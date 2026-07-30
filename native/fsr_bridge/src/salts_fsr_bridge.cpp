@@ -64,6 +64,8 @@ VkSwapchainKHR g_frame_generation_swapchain = VK_NULL_HANDLE;
 uint32_t g_frame_generation_display_width = 0;
 uint32_t g_frame_generation_display_height = 0;
 uint32_t g_frame_generation_backbuffer_format = FFX_API_SURFACE_FORMAT_UNKNOWN;
+uint64_t g_frame_generation_frame_id = 0;
+bool g_frame_generation_frame_id_initialized = false;
 uint64_t g_fsr2_version_id = 0;
 uint64_t g_fsr3_version_id = 0;
 bool g_frame_generation_provider_available = false;
@@ -402,6 +404,8 @@ void destroy_frame_generation_context() {
     g_frame_generation_display_width = 0;
     g_frame_generation_display_height = 0;
     g_frame_generation_backbuffer_format = FFX_API_SURFACE_FORMAT_UNKNOWN;
+    g_frame_generation_frame_id = 0;
+    g_frame_generation_frame_id_initialized = false;
     g_frame_generation_ready = false;
 }
 
@@ -456,7 +460,8 @@ ffxReturnCode_t ensure_frame_generation_context(
     ffxCreateContextDescFrameGeneration create_desc{};
     create_desc.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATION;
     create_desc.header.pNext = &backend.header;
-    create_desc.flags = 0;
+    // Frame generation consumes the same finite reverse-Z depth as the FSR3 upscaler.
+    create_desc.flags = FFX_FRAMEGENERATION_ENABLE_DEPTH_INVERTED;
     create_desc.displaySize = {display_width, display_height};
     create_desc.maxRenderSize = {display_width, display_height};
     create_desc.backBufferFormat = backbuffer_format;
@@ -1295,6 +1300,7 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     (void) reactive_mask_view;
     (void) transparency_mask_view;
     (void) hudless_color_view;
+    (void) frame_index;
     if (frame_generation == JNI_TRUE && !g_frame_generation_ready) {
         return -20;
     }
@@ -1364,6 +1370,11 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
             return -20;
         }
 
+        // A deliberate ID gap is the SDK 1.1.4 reset signal; unused_reset is not consumed.
+        uint64_t frame_generation_id = g_frame_generation_frame_id_initialized
+                ? g_frame_generation_frame_id + (reset_history == JNI_TRUE ? 2u : 1u)
+                : 0u;
+
         ffxConfigureDescFrameGeneration config{};
         config.header.type = FFX_API_CONFIGURE_DESC_TYPE_FRAMEGENERATION;
         config.swapChain = reinterpret_cast<void*>(g_frame_generation_swapchain);
@@ -1383,7 +1394,7 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
                 static_cast<int32_t>(output_w),
                 static_cast<int32_t>(output_h)
         };
-        config.frameID = static_cast<uint64_t>(frame_index);
+        config.frameID = frame_generation_id;
 
         result = g_ffx_configure(&g_frame_generation_context, &config.header);
         if (result != FFX_API_RETURN_OK) {
@@ -1408,7 +1419,7 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         ffxDispatchDescFrameGenerationPrepare prepare{};
         prepare.header.type = FFX_API_DISPATCH_DESC_TYPE_FRAMEGENERATION_PREPARE;
         prepare.header.pNext = &camera_info.header;
-        prepare.frameID = static_cast<uint64_t>(frame_index);
+        prepare.frameID = frame_generation_id;
         prepare.flags = 0;
         prepare.commandList = command_list;
         prepare.renderSize = {render_w, render_h};
@@ -1436,6 +1447,9 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         if (result != FFX_API_RETURN_OK) {
             return static_cast<jint>(result);
         }
+
+        g_frame_generation_frame_id = frame_generation_id;
+        g_frame_generation_frame_id_initialized = true;
     }
 
     return 0;
