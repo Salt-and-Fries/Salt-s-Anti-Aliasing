@@ -42,6 +42,14 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         super(lastScreen, options, title);
     }
 
+    @Override
+    protected void init() {
+        super.init();
+        if (saltsAntiAliasing$dropdownOverlay != null) {
+            this.addRenderableOnly(saltsAntiAliasing$dropdownOverlay);
+        }
+    }
+
     /**
      * Adds the Fabric 26.2 video controls after Minecraft has created its normal option rows.
      */
@@ -67,7 +75,6 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
                 this::saltsAntiAliasing$selectMode,
                 this::saltsAntiAliasing$dismissDropdown
         );
-        this.addRenderableOnly(saltsAntiAliasing$dropdownOverlay);
         saltsAntiAliasing$displayedMode = runtime.activeMode();
 
         if (saltsAntiAliasing$pendingScrollAmount >= 0.0d) {

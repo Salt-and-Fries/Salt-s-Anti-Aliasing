@@ -6,9 +6,11 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
 
@@ -29,6 +31,8 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
     private static final int SCROLLBAR_WIDTH = 6;
     private static final int MIN_SCROLLBAR_THUMB_HEIGHT = 10;
     private static final int FOOTER_MARGIN = 32;
+    private static final int TOOLTIP_MAX_WIDTH = 170;
+    private static final int TOOLTIP_HORIZONTAL_MARGIN = 8;
     private static final int BACKGROUND_COLOR = 0xF0101010;
     private static final int OUTLINE_COLOR = 0xFF7A7A7A;
     private static final int ROW_HOVER_COLOR = 0x803F6B9D;
@@ -136,7 +140,19 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
             );
 
             if (hovered) {
-                graphics.setTooltipForNextFrame(font, modeTooltip(runtime, mode), mouseX, mouseY);
+                int tooltipWidth = Math.max(
+                        1,
+                        Math.min(TOOLTIP_MAX_WIDTH, graphics.guiWidth() - TOOLTIP_HORIZONTAL_MARGIN)
+                );
+                List<FormattedCharSequence> tooltipLines = font.split(modeTooltip(runtime, mode), tooltipWidth);
+                graphics.setTooltipForNextFrame(
+                        font,
+                        tooltipLines,
+                        DefaultTooltipPositioner.INSTANCE,
+                        mouseX,
+                        mouseY,
+                        true
+                );
             }
         }
         graphics.disableScissor();
@@ -268,7 +284,7 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
         int lowerLimit = Math.max(0, guiHeight - FOOTER_MARGIN);
         int y = downwardY + height > lowerLimit ? anchorButton.getY() - height - GAP : downwardY;
         y = clamp(y, 0, Math.max(0, guiHeight - height));
-        setRectangle(x, y, width, height);
+        setRectangle(width, height, x, y);
     }
 
     private int visibleRows(int modeCount) {
