@@ -47,8 +47,10 @@ import java.util.Set;
 public final class VulkanSceneFsrController {
     private static final VulkanSceneFsrController INSTANCE = new VulkanSceneFsrController();
     private static final String SCENE_TARGET_LABEL = "Salt's FSR Scene";
+    private static final String LINEAR_SCENE_TARGET_LABEL = "Salt's FSR Linear Scene";
     private static final String MOTION_VECTOR_TARGET_LABEL = "Salt's FSR Motion Vectors";
     private static final String OPAQUE_SCENE_TARGET_LABEL = "Salt's FSR Opaque Scene";
+    private static final String LINEAR_OPAQUE_SCENE_TARGET_LABEL = "Salt's FSR Linear Opaque Scene";
     private static final String REACTIVE_MASK_TARGET_LABEL = "Salt's FSR Reactive Mask";
     private static final String TRANSPARENCY_MASK_TARGET_LABEL = "Salt's FSR Transparency Mask";
     private static final String UPSCALED_COLOR_TARGET_LABEL = "Salt's FSR Upscaled Color";
@@ -73,8 +75,10 @@ public final class VulkanSceneFsrController {
     private boolean active;
     private boolean opaqueSceneCaptured;
     private TextureTarget sceneTarget;
+    private TextureTarget linearSceneTarget;
     private TextureTarget motionVectorTarget;
     private TextureTarget opaqueSceneTarget;
+    private TextureTarget linearOpaqueSceneTarget;
     private RenderTarget reactiveMaskTarget;
     private TextureTarget transparencyMaskTarget;
     private RenderTarget upscaledColorTarget;
@@ -158,13 +162,14 @@ public final class VulkanSceneFsrController {
         try {
             active = false;
             ensureOpaqueSceneCaptured();
+            prepareLinearColorInputs();
             generateMotionVectors();
             int result = evaluateFsr(frameConfig);
             if (result != 0) {
-                SaltsAntiAliasing.LOGGER.warn("AMD FSR evaluate failed with result {}; falling back to linear scene resolve", result);
+                SaltsAntiAliasing.LOGGER.warn("AMD FSR evaluate failed with result {}; falling back to scene resolve", result);
                 resolveSceneColor(sceneTarget, mainTarget);
             } else {
-                copyColor(upscaledColorTarget, mainTarget, "Salt's FSR Upscaled Color Copy");
+                VulkanFsrColorTransferRenderer.instance().encode(upscaledColorTarget, mainTarget);
                 nativeSharpeningSucceededThisFrame = frameConfig.sharpenStrength > 0.0f;
             }
 
@@ -247,9 +252,11 @@ public final class VulkanSceneFsrController {
 
     private int evaluateFsr(AntiAliasingConfig config) {
         if (sceneTarget == null
+                || linearSceneTarget == null
                 || mainTarget == null
                 || motionVectorTarget == null
                 || opaqueSceneTarget == null
+                || linearOpaqueSceneTarget == null
                 || reactiveMaskTarget == null
                 || transparencyMaskTarget == null
                 || upscaledColorTarget == null
@@ -257,16 +264,16 @@ public final class VulkanSceneFsrController {
             return -1;
         }
 
-        long inputColorImage = image(sceneTarget.getColorTexture());
-        long inputColorView = view(sceneTarget.getColorTextureView());
+        long inputColorImage = image(linearSceneTarget.getColorTexture());
+        long inputColorView = view(linearSceneTarget.getColorTextureView());
         long outputColorImage = image(upscaledColorTarget.getColorTexture());
         long outputColorView = view(upscaledColorTarget.getColorTextureView());
         long depthImage = image(sceneTarget.getDepthTexture());
         long depthView = view(sceneTarget.getDepthTextureView());
         long motionVectorImage = image(motionVectorTarget.getColorTexture());
         long motionVectorView = view(motionVectorTarget.getColorTextureView());
-        long opaqueColorImage = image(opaqueSceneTarget.getColorTexture());
-        long opaqueColorView = view(opaqueSceneTarget.getColorTextureView());
+        long opaqueColorImage = image(linearOpaqueSceneTarget.getColorTexture());
+        long opaqueColorView = view(linearOpaqueSceneTarget.getColorTextureView());
         long reactiveMaskImage = image(reactiveMaskTarget.getColorTexture());
         long reactiveMaskView = view(reactiveMaskTarget.getColorTextureView());
         long transparencyMaskImage = image(transparencyMaskTarget.getColorTexture());
@@ -390,7 +397,7 @@ public final class VulkanSceneFsrController {
         VkImageMemoryBarrier2.Buffer barriers = VkImageMemoryBarrier2.calloc(7, stack);
         configureImageBarrier(
                 barriers.get(0),
-                vulkanTexture(sceneTarget.getColorTexture()),
+                vulkanTexture(linearSceneTarget.getColorTexture()),
                 VK12.VK_IMAGE_ASPECT_COLOR_BIT,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
                 KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
@@ -424,7 +431,7 @@ public final class VulkanSceneFsrController {
         );
         configureImageBarrier(
                 barriers.get(3),
-                vulkanTexture(opaqueSceneTarget.getColorTexture()),
+                vulkanTexture(linearOpaqueSceneTarget.getColorTexture()),
                 VK12.VK_IMAGE_ASPECT_COLOR_BIT,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
                 KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
@@ -475,7 +482,7 @@ public final class VulkanSceneFsrController {
         VkImageMemoryBarrier2.Buffer barriers = VkImageMemoryBarrier2.calloc(7, stack);
         configureImageBarrier(
                 barriers.get(0),
-                vulkanTexture(sceneTarget.getColorTexture()),
+                vulkanTexture(linearSceneTarget.getColorTexture()),
                 VK12.VK_IMAGE_ASPECT_COLOR_BIT,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
                 KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
@@ -511,7 +518,7 @@ public final class VulkanSceneFsrController {
         );
         configureImageBarrier(
                 barriers.get(3),
-                vulkanTexture(opaqueSceneTarget.getColorTexture()),
+                vulkanTexture(linearOpaqueSceneTarget.getColorTexture()),
                 VK12.VK_IMAGE_ASPECT_COLOR_BIT,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
                 KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
@@ -612,8 +619,29 @@ public final class VulkanSceneFsrController {
         );
     }
 
+    private void prepareLinearColorInputs() {
+        if (sceneTarget == null
+                || opaqueSceneTarget == null
+                || linearSceneTarget == null
+                || linearOpaqueSceneTarget == null) {
+            return;
+        }
+
+        VulkanFsrColorTransferRenderer renderer = VulkanFsrColorTransferRenderer.instance();
+        renderer.decode(sceneTarget, linearSceneTarget);
+        renderer.decode(opaqueSceneTarget, linearOpaqueSceneTarget);
+    }
+
     private void ensureTargets(int renderWidth, int renderHeight, int outputWidth, int outputHeight) {
         sceneTarget = ensureTarget(sceneTarget, SCENE_TARGET_LABEL, renderWidth, renderHeight, true, GpuFormat.RGBA8_UNORM);
+        linearSceneTarget = ensureTarget(
+                linearSceneTarget,
+                LINEAR_SCENE_TARGET_LABEL,
+                renderWidth,
+                renderHeight,
+                false,
+                GpuFormat.RGBA16_FLOAT
+        );
         motionVectorTarget = ensureTarget(
                 motionVectorTarget,
                 MOTION_VECTOR_TARGET_LABEL,
@@ -629,6 +657,14 @@ public final class VulkanSceneFsrController {
                 renderHeight,
                 false,
                 GpuFormat.RGBA8_UNORM
+        );
+        linearOpaqueSceneTarget = ensureTarget(
+                linearOpaqueSceneTarget,
+                LINEAR_OPAQUE_SCENE_TARGET_LABEL,
+                renderWidth,
+                renderHeight,
+                false,
+                GpuFormat.RGBA16_FLOAT
         );
         reactiveMaskTarget = ensureStorageTarget(
                 reactiveMaskTarget,
@@ -658,7 +694,7 @@ public final class VulkanSceneFsrController {
                 UPSCALED_COLOR_TARGET_LABEL,
                 outputWidth,
                 outputHeight,
-                GpuFormat.RGBA8_UNORM
+                GpuFormat.RGBA16_FLOAT
         );
     }
 
@@ -706,6 +742,8 @@ public final class VulkanSceneFsrController {
     private void clearAuxiliaryTargets() {
         clearColorTarget(motionVectorTarget);
         clearColorTarget(opaqueSceneTarget);
+        clearColorTarget(linearSceneTarget);
+        clearColorTarget(linearOpaqueSceneTarget);
         clearColorTarget(reactiveMaskTarget);
         clearColorTarget(transparencyMaskTarget);
         opaqueSceneCaptured = false;
@@ -775,15 +813,19 @@ public final class VulkanSceneFsrController {
 
     private void destroyResources() {
         destroyTarget(sceneTarget);
+        destroyTarget(linearSceneTarget);
         destroyTarget(motionVectorTarget);
         destroyTarget(opaqueSceneTarget);
+        destroyTarget(linearOpaqueSceneTarget);
         destroyTarget(reactiveMaskTarget);
         destroyTarget(transparencyMaskTarget);
         destroyTarget(upscaledColorTarget);
         destroyTarget(hudlessColorTarget);
         sceneTarget = null;
+        linearSceneTarget = null;
         motionVectorTarget = null;
         opaqueSceneTarget = null;
+        linearOpaqueSceneTarget = null;
         reactiveMaskTarget = null;
         transparencyMaskTarget = null;
         upscaledColorTarget = null;

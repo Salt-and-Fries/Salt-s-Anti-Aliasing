@@ -594,7 +594,7 @@ ffxReturnCode_t ensure_upscale_context(
     ffxCreateContextDescUpscale create_desc{};
     create_desc.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE;
     create_desc.header.pNext = &backend.header;
-    // Minecraft 26.2 renders LDR RGBA8 color with a finite reverse-Z depth buffer.
+    // Java converts Minecraft's display-encoded scene to linear LDR before dispatch.
     create_desc.flags = FFX_UPSCALE_ENABLE_DEPTH_INVERTED | FFX_UPSCALE_ENABLE_AUTO_EXPOSURE;
     create_desc.maxRenderSize = {render_width, render_height};
     create_desc.maxUpscaleSize = {output_width, output_height};
@@ -743,7 +743,7 @@ FfxApiResource resource(
 FfxApiResource color_input(jlong image, uint32_t width, uint32_t height) {
     return resource(
             image,
-            FFX_API_SURFACE_FORMAT_R8G8B8A8_UNORM,
+            FFX_API_SURFACE_FORMAT_R16G16B16A16_FLOAT,
             width,
             height,
             FFX_API_RESOURCE_USAGE_READ_ONLY,
@@ -753,7 +753,7 @@ FfxApiResource color_input(jlong image, uint32_t width, uint32_t height) {
 FfxApiResource output_color(jlong image, uint32_t width, uint32_t height) {
     return resource(
             image,
-            FFX_API_SURFACE_FORMAT_R8G8B8A8_UNORM,
+            FFX_API_SURFACE_FORMAT_R16G16B16A16_FLOAT,
             width,
             height,
             FFX_API_RESOURCE_USAGE_UAV | FFX_API_RESOURCE_USAGE_RENDERTARGET,
