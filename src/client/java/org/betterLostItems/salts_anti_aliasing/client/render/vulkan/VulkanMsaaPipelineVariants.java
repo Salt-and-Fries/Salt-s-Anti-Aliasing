@@ -19,7 +19,6 @@ import java.util.Set;
  */
 public final class VulkanMsaaPipelineVariants {
     private static final String ALPHA_CUTOUT_DEFINE = "ALPHA_CUTOUT";
-    private static final String ALPHA_TO_COVERAGE_CUTOFF = "0.0";
     private static final Map<RenderPipeline, Map<Integer, RenderPipeline>> VARIANTS = new IdentityHashMap<>();
 
     private VulkanMsaaPipelineVariants() {
@@ -37,12 +36,11 @@ public final class VulkanMsaaPipelineVariants {
     }
 
     private static RenderPipeline createVariant(RenderPipeline pipeline, int samples) {
-        boolean alphaToCoverage = usesAlphaToCoverage(pipeline, samples);
         return RenderPipelineAccessor.saltsAntiAliasing$create(
                 variantLocation(pipeline.getLocation(), samples),
                 pipeline.getVertexShader(),
                 pipeline.getFragmentShader(),
-                copyShaderDefines(pipeline.getShaderDefines(), alphaToCoverage),
+                copyShaderDefines(pipeline.getShaderDefines()),
                 List.copyOf(pipeline.getBindGroupLayouts()),
                 copyColorTargetStates(pipeline.getColorTargetStates()),
                 pipeline.getDepthStencilState(),
@@ -73,14 +71,14 @@ public final class VulkanMsaaPipelineVariants {
         );
     }
 
-    private static ShaderDefines copyShaderDefines(ShaderDefines defines, boolean alphaToCoverage) {
-        Map<String, String> values = new HashMap<>(defines.values());
-        if (alphaToCoverage) {
-            // Let fractional texture alpha reach Vulkan's coverage-mask conversion instead of
-            // discarding it at vanilla's binary cutoff first.
-            values.put(ALPHA_CUTOUT_DEFINE, ALPHA_TO_COVERAGE_CUTOFF);
-        }
-        return new ShaderDefines(Map.copyOf(values), Set.copyOf(defines.flags()));
+    private static ShaderDefines copyShaderDefines(ShaderDefines defines) {
+        // Preserve each material's original cutoff. Minecraft's mipmaps retain small non-zero
+        // alpha values to preserve coverage around that cutoff; lowering it to zero makes those
+        // nominally transparent texels become visible alpha-to-coverage samples at long range.
+        return new ShaderDefines(
+                VulkanAlphaToCoveragePolicy.preserveShaderDefines(defines.values()),
+                Set.copyOf(defines.flags())
+        );
     }
 
     private static ColorTargetState[] copyColorTargetStates(ColorTargetState[] states) {
