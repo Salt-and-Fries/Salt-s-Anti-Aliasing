@@ -27,7 +27,7 @@
           {
             "name": "DetailBoost",
             "type": "float",
-            "value": 0.18
+            "value": 0.0
           },
           {
             "name": "ClampBoost",

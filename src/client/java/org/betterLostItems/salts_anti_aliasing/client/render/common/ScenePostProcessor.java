@@ -9,11 +9,9 @@ import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
  * controllers are active for the selected mode.
  */
 public interface ScenePostProcessor {
-    /**
-     * Handles apply as part of the anti-aliasing render, configuration, or compatibility flow.
-     * @param gameRenderer Minecraft game renderer whose scene target or post-processing phase is
-     * being coordinated
-     * @param config configuration object being normalized, copied, or committed
-     */
-    void apply(GameRenderer gameRenderer, AntiAliasingConfig config);
+    /** Resolves temporal AA immediately after the world, before later scene-only effects. */
+    void applyTemporalResolve(GameRenderer gameRenderer, AntiAliasingConfig config);
+
+    /** Applies the final native-resolution AA and sharpening effects before the HUD. */
+    void applyFinalEffects(GameRenderer gameRenderer, AntiAliasingConfig config);
 }

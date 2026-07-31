@@ -98,21 +98,8 @@ public final class RenderPipelinePlanner {
 
         // Each case below describes the logical effect chain. The backend decides how to execute it.
         switch (config.mode) {
-            case OFF -> {
+            case OFF, NIS_SHARPEN -> {
             }
-            case NIS_SHARPEN -> currentColor = addPass(
-                    passes,
-                    targets,
-                    "nis_sharpen",
-                    EnumSet.of(RenderCapability.POST_PROCESSING, RenderCapability.SHARPENING),
-                    List.of(currentColor),
-                    "sharpened_color",
-                    RenderTargetType.INTERMEDIATE_COLOR,
-                    TextureFormat.RGBA16F,
-                    RenderTargetSizing.OUTPUT,
-                    1.0f,
-                    false
-            );
             case FXAA -> currentColor = addPass(
                     passes,
                     targets,
@@ -199,21 +186,6 @@ public final class RenderPipelinePlanner {
                         1.0f,
                         false
                 );
-                if (config.mode == AntiAliasingMode.SMAA_NIS_SHARPEN) {
-                    currentColor = addPass(
-                            passes,
-                            targets,
-                            "nis_sharpen",
-                            EnumSet.of(RenderCapability.POST_PROCESSING, RenderCapability.SHARPENING),
-                            List.of(currentColor),
-                            "smaa_sharpened_color",
-                            RenderTargetType.INTERMEDIATE_COLOR,
-                            TextureFormat.RGBA16F,
-                            RenderTargetSizing.OUTPUT,
-                            1.0f,
-                            false
-                    );
-                }
             }
             case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION -> {
                 targets.put("motion_vectors", target("motion_vectors", RenderTargetType.MOTION_VECTOR, TextureFormat.RG16F,
@@ -254,7 +226,7 @@ public final class RenderPipelinePlanner {
                         false
                 );
             }
-            case FSR1_UPSCALE -> currentColor = addPass(
+            case FSR1_UPSCALE, FSR1_RCAS -> currentColor = addPass(
                     passes,
                     targets,
                     "fsr1_easu",
@@ -267,36 +239,24 @@ public final class RenderPipelinePlanner {
                     1.0f,
                     false
             );
-            case FSR1_RCAS -> {
-                String fsrUpscaled = addPass(
-                        passes,
-                        targets,
-                        "fsr1_easu",
-                        EnumSet.of(RenderCapability.INTERNAL_RESOLUTION, RenderCapability.SPATIAL_UPSCALING),
-                        List.of("scene_color"),
-                        "fsr1_upscaled_color",
-                        RenderTargetType.INTERMEDIATE_COLOR,
-                        TextureFormat.RGBA16F,
-                        RenderTargetSizing.OUTPUT,
-                        1.0f,
-                        false
-                );
-                currentColor = addPass(
-                        passes,
-                        targets,
-                        "rcas_sharpen",
-                        EnumSet.of(RenderCapability.SHARPENING),
-                        List.of(fsrUpscaled),
-                        "fsr1_rcas_color",
-                        RenderTargetType.INTERMEDIATE_COLOR,
-                        TextureFormat.RGBA16F,
-                        RenderTargetSizing.OUTPUT,
-                        1.0f,
-                        false
-                );
-            }
             case TAA -> {
             }
+        }
+
+        if (config.sharpenStrength > 0.0f && !config.mode.usesNativeFsrSharpening()) {
+            currentColor = addPass(
+                    passes,
+                    targets,
+                    "nis_sharpen",
+                    EnumSet.of(RenderCapability.POST_PROCESSING, RenderCapability.SHARPENING),
+                    List.of(currentColor),
+                    "sharpened_color",
+                    RenderTargetType.INTERMEDIATE_COLOR,
+                    TextureFormat.RGBA16F,
+                    RenderTargetSizing.OUTPUT,
+                    1.0f,
+                    false
+            );
         }
 
         validateBackendSupport(backend, passes);

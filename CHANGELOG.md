@@ -10,16 +10,14 @@
 - Added `SSAA` with `125%`, `150%`, `175%`, and `200%` render-scale options.
 - Added `SMAA` as a higher-quality spatial anti-aliasing option.
 - Added `TAA` as a temporal anti-aliasing option with history-based smoothing.
-- Added `NIS Sharpen` with adjustable sharpness strength.
 - Added `NIS Upscale` with `Quality`, `Balanced`, `Performance`, and `Ultra Performance` presets.
 - Added `FSR1 Upscale` with `Quality`, `Balanced`, `Performance`, and `Ultra Performance` presets.
-- Added `FSR1 + RCAS` with the same preset options plus sharpening control.
+- Added one independent `Sharpness` control for every mode, including `Off`, defaulting to `0%`.
 
 ### Video Settings Integration
 
 - Added an in-game anti-aliasing mode selector to the Video Settings screen.
-- Added always-visible AA control bars that gray out when the selected mode does not use them.
-- Added a `Sharpness` slider for sharpen-capable modes.
+- Added an always-available `Sharpness` slider and mode-specific controls only when relevant.
 - Added an `MSAA Samples` slider for `MSAA`.
 - Added an `SSAA Scale` slider for `SSAA`.
 - Added an `Upscale Quality` slider for NIS and FSR1 upscale modes.

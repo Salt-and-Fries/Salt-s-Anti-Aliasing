@@ -66,7 +66,9 @@ public final class AntiAliasingVideoSettingsSection {
         controls.dropdownButton().setTooltip(dropdownTooltip(activeMode, dropdownExpanded));
         controls.dropdownButton().active = true;
 
-        boolean controlsActive = !improvedTransparencyEnabled && runtime.canSelectMode(activeMode);
+        boolean controlsActive = !improvedTransparencyEnabled
+                && runtime.canUseAntiAliasing()
+                && runtime.canSelectMode(activeMode);
         for (AbstractWidget secondaryControl : controls.secondaryControls()) {
             secondaryControl.active = controlsActive;
         }
@@ -74,20 +76,14 @@ public final class AntiAliasingVideoSettingsSection {
 
     private static List<AbstractWidget> secondaryControls(RenderRuntime runtime, AntiAliasingMode activeMode) {
         List<AbstractWidget> controls = new ArrayList<>();
+        controls.add(new SharpnessSliderWidget(runtime));
         switch (activeMode) {
-            case NIS_SHARPEN, SMAA_NIS_SHARPEN -> controls.add(new SharpnessSliderWidget(runtime));
             case MSAA -> controls.add(new MsaaSampleSliderWidget(runtime));
             case SSAA -> controls.add(new SsaaScaleSliderWidget(runtime));
             case NIS_UPSCALE, FSR1_UPSCALE -> controls.add(new SpatialUpscaleQualitySliderWidget(runtime));
-            case FSR1_RCAS -> {
-                controls.add(new SpatialUpscaleQualitySliderWidget(runtime));
-                controls.add(new SharpnessSliderWidget(runtime));
-            }
             case DLSS_SUPER_RESOLUTION -> controls.add(new DlssQualitySliderWidget(runtime));
-            case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION -> {
-                controls.add(new FsrQualitySliderWidget(runtime));
-                controls.add(new FsrSharpnessSliderWidget(runtime));
-            }
+            case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION ->
+                    controls.add(new FsrQualitySliderWidget(runtime));
             default -> {
             }
         }

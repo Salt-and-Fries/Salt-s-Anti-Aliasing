@@ -19,7 +19,7 @@
           {
             "name": "Sharpness",
             "type": "float",
-            "value": 0.25
+            "value": 0.0
           },
           {
             "name": "EdgeBoost",

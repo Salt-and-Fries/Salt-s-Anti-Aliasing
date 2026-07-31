@@ -16,8 +16,10 @@ public enum AntiAliasingMode {
     MSAA("MSAA", false, false),
     SSAA("SSAA", false, false),
     SMAA("SMAA", false, false),
+    // Serialized legacy alias; intentionally omitted from IMPLEMENTED_MODES.
     SMAA_NIS_SHARPEN("SMAA + NIS Sharpen", false, false),
     TAA("TAA", false, true),
+    // Serialized legacy alias; intentionally omitted from IMPLEMENTED_MODES.
     NIS_SHARPEN("NIS Sharpen", false, false),
     NIS_UPSCALE("NIS Upscale", true, false),
     DLSS_SUPER_RESOLUTION("DLSS Super Resolution", true, true),
@@ -25,23 +27,21 @@ public enum AntiAliasingMode {
     FSR3_SUPER_RESOLUTION("FSR3 Super Resolution", true, true),
     FSR3_SUPER_RESOLUTION_FRAME_GENERATION("FSR3 Super Resolution + Frame Generation", true, true),
     FSR1_UPSCALE("FSR1 Upscale", true, false),
+    // Serialized legacy alias; intentionally omitted from IMPLEMENTED_MODES.
     FSR1_RCAS("FSR1 + RCAS", true, false);
 
     private static final List<AntiAliasingMode> IMPLEMENTED_MODES = List.of(
             OFF,
-            NIS_SHARPEN,
             FXAA,
             MSAA,
             SSAA,
             SMAA,
-            SMAA_NIS_SHARPEN,
             NIS_UPSCALE,
             DLSS_SUPER_RESOLUTION,
             FSR2_SUPER_RESOLUTION,
             FSR3_SUPER_RESOLUTION,
             FSR3_SUPER_RESOLUTION_FRAME_GENERATION,
             FSR1_UPSCALE,
-            FSR1_RCAS,
             TAA
     );
 
@@ -81,14 +81,6 @@ public enum AntiAliasingMode {
     }
 
     /**
-     * Checks uses sharpen control without mutating runtime or configuration state.
-     * @return whether this object requires the described render path
-     */
-    public boolean usesSharpenControl() {
-        return this == NIS_SHARPEN || this == SMAA_NIS_SHARPEN || this == FSR1_RCAS;
-    }
-
-    /**
      * Checks uses msaa sample control without mutating runtime or configuration state.
      * @return whether this object requires the described render path
      */
@@ -109,7 +101,7 @@ public enum AntiAliasingMode {
      * @return whether this object requires the described render path
      */
     public boolean usesSpatialUpscaleQualityControl() {
-        return this == NIS_UPSCALE || this == FSR1_UPSCALE || this == FSR1_RCAS;
+        return this == NIS_UPSCALE || this == FSR1_UPSCALE;
     }
 
     /**
@@ -126,7 +118,7 @@ public enum AntiAliasingMode {
                 || this == FSR3_SUPER_RESOLUTION_FRAME_GENERATION;
     }
 
-    public boolean usesFsrSharpenControl() {
+    public boolean usesNativeFsrSharpening() {
         return usesFsrQualityControl();
     }
 
@@ -174,10 +166,27 @@ public enum AntiAliasingMode {
      * @return implemented mode closest to the requested value
      */
     public static AntiAliasingMode clampImplemented(AntiAliasingMode mode) {
-        if (mode == null || !IMPLEMENTED_MODES.contains(mode)) {
+        AntiAliasingMode migratedMode = migrateLegacy(mode);
+        if (!IMPLEMENTED_MODES.contains(migratedMode)) {
             return OFF;
         }
 
-        return mode;
+        return migratedMode;
+    }
+
+    /**
+     * Converts sharpening combinations saved by older releases into their independent base mode.
+     */
+    public static AntiAliasingMode migrateLegacy(AntiAliasingMode mode) {
+        if (mode == null) {
+            return OFF;
+        }
+
+        return switch (mode) {
+            case NIS_SHARPEN -> OFF;
+            case SMAA_NIS_SHARPEN -> SMAA;
+            case FSR1_RCAS -> FSR1_UPSCALE;
+            default -> mode;
+        };
     }
 }

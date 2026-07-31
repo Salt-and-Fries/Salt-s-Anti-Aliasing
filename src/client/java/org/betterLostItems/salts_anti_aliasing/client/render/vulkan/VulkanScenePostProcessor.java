@@ -25,9 +25,11 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
     private static final Identifier EDGE_DEBUG_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":edge_debug");
     private static final Identifier SMAA_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":smaa");
 
-    private final CrossFrameResourcePool resourcePool = new CrossFrameResourcePool(3);
+    private final CrossFrameResourcePool temporalResourcePool = new CrossFrameResourcePool(3);
+    private final CrossFrameResourcePool finalEffectsResourcePool = new CrossFrameResourcePool(3);
     private final EdgeDebugAnalyzer edgeDebugAnalyzer;
-    private boolean disabledAfterFailure;
+    private boolean temporalDisabledAfterFailure;
+    private boolean finalEffectsDisabledAfterFailure;
 
     /**
      * Creates a Vulkan scene post processor instance with the collaborators or initial state
@@ -46,9 +48,32 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
      * @param config configuration object being normalized, copied, or committed
      */
     @Override
-    public void apply(GameRenderer gameRenderer, AntiAliasingConfig config) {
+    public void applyTemporalResolve(GameRenderer gameRenderer, AntiAliasingConfig config) {
+        if (temporalDisabledAfterFailure || config.mode != AntiAliasingMode.TAA) {
+            return;
+        }
+
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null) {
+            VulkanSceneTemporalController.instance().resetForInactiveMode();
+            return;
+        }
+
         try {
-            if (disabledAfterFailure) {
+            VulkanSceneTemporalController.instance().apply(gameRenderer, temporalResourcePool);
+        } catch (RuntimeException exception) {
+            temporalDisabledAfterFailure = true;
+            temporalResourcePool.clear();
+            SaltsAntiAliasing.LOGGER.error("Disabling temporal resolve after a rendering failure", exception);
+        } finally {
+            temporalResourcePool.endFrame();
+        }
+    }
+
+    @Override
+    public void applyFinalEffects(GameRenderer gameRenderer, AntiAliasingConfig config) {
+        try {
+            if (finalEffectsDisabledAfterFailure) {
                 return;
             }
 
@@ -58,17 +83,21 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
                 return;
             }
 
-            if (config.mode == AntiAliasingMode.TAA) {
-                VulkanSceneTemporalController.instance().apply(gameRenderer, resourcePool);
-            } else if (config.mode.usesHistoryBuffers()) {
-                for (Identifier effectId : effectsFor(config)) {
-                    processEffect(minecraft, gameRenderer.mainRenderTarget(), effectId, config);
-                }
-            } else {
+            if (!config.mode.usesHistoryBuffers()) {
                 VulkanSceneTemporalController.instance().resetForInactiveMode();
-                for (Identifier effectId : effectsFor(config)) {
-                    processEffect(minecraft, gameRenderer.mainRenderTarget(), effectId, config);
-                }
+            }
+
+            for (Identifier effectId : antiAliasingEffectsFor(config.mode)) {
+                processEffect(minecraft, gameRenderer.mainRenderTarget(), effectId, config);
+            }
+            boolean nativeFsrSharpeningSucceeded = VulkanSceneFsrController.instance()
+                    .consumeNativeSharpeningSucceededThisFrame();
+            if (shouldApplyGenericSharpening(
+                    config.mode,
+                    config.sharpenStrength,
+                    nativeFsrSharpeningSucceeded
+            )) {
+                processEffect(minecraft, gameRenderer.mainRenderTarget(), NIS_SHARPEN_EFFECT, config);
             }
 
             edgeDebugAnalyzer.captureIfNeeded(gameRenderer.mainRenderTarget(), config);
@@ -76,11 +105,11 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
                 processEffect(minecraft, gameRenderer.mainRenderTarget(), EDGE_DEBUG_EFFECT, config);
             }
         } catch (RuntimeException exception) {
-            disabledAfterFailure = true;
-            resourcePool.clear();
-            SaltsAntiAliasing.LOGGER.error("Disabling scene post-processing after a rendering failure", exception);
+            finalEffectsDisabledAfterFailure = true;
+            finalEffectsResourcePool.clear();
+            SaltsAntiAliasing.LOGGER.error("Disabling final scene effects after a rendering failure", exception);
         } finally {
-            resourcePool.endFrame();
+            finalEffectsResourcePool.endFrame();
         }
     }
 
@@ -97,8 +126,8 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
             return;
         }
 
-        VulkanDynamicUniforms.updateForMode(postChain, config);
-        postChain.process(mainTarget, resourcePool);
+        VulkanDynamicUniforms.updateSharpening(postChain, config.sharpenStrength);
+        postChain.process(mainTarget, finalEffectsResourcePool);
     }
 
     /**
@@ -106,13 +135,25 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
      * @param config configuration object being normalized, copied, or committed
      * @return effect for produced by this helper
      */
-    private static List<Identifier> effectsFor(AntiAliasingConfig config) {
-        return switch (config.mode) {
-            case NIS_SHARPEN -> List.of(NIS_SHARPEN_EFFECT);
+    private static List<Identifier> antiAliasingEffectsFor(AntiAliasingMode mode) {
+        return switch (mode) {
             case FXAA -> List.of(FXAA_EFFECT);
-            case SMAA -> List.of(SMAA_EFFECT);
-            case SMAA_NIS_SHARPEN -> List.of(SMAA_EFFECT, NIS_SHARPEN_EFFECT);
+            case SMAA, SMAA_NIS_SHARPEN -> List.of(SMAA_EFFECT);
             default -> List.of();
         };
+    }
+
+    /**
+     * Chooses the independent fallback sharpen pass. FSR modes skip it only when their native
+     * evaluation actually sharpened this frame; failed evaluations resolve linearly and still
+     * receive the user's requested sharpening amount.
+     */
+    static boolean shouldApplyGenericSharpening(
+            AntiAliasingMode mode,
+            float sharpenStrength,
+            boolean nativeFsrSharpeningSucceeded
+    ) {
+        return sharpenStrength > 0.0f
+                && (!mode.usesNativeFsrSharpening() || !nativeFsrSharpeningSucceeded);
     }
 }

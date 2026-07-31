@@ -58,7 +58,11 @@ public final class ConfigManager {
         try (Reader reader = Files.newBufferedReader(configPath)) {
             AntiAliasingConfig loaded = GSON.fromJson(reader, AntiAliasingConfig.class);
             config = loaded == null ? new AntiAliasingConfig() : loaded;
+            boolean migrated = config.needsMigration();
             config.sanitize();
+            if (migrated) {
+                save();
+            }
         } catch (IOException | JsonSyntaxException exception) {
             SaltsAntiAliasing.LOGGER.warn("Falling back to default config after failing to read {}", configPath, exception);
             config = new AntiAliasingConfig();

@@ -37,12 +37,6 @@ public final class VulkanSceneScaleController {
     private static final Identifier FSR1_PERFORMANCE_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_performance");
     private static final Identifier FSR1_ULTRA_PERFORMANCE_EFFECT =
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_ultra_performance");
-    private static final Identifier FSR1_RCAS_QUALITY_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_quality");
-    private static final Identifier FSR1_RCAS_BALANCED_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_balanced");
-    private static final Identifier FSR1_RCAS_PERFORMANCE_EFFECT =
-            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_performance");
-    private static final Identifier FSR1_RCAS_ULTRA_PERFORMANCE_EFFECT =
-            Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_rcas_ultra_performance");
     private static final Set<Identifier> EXTERNAL_SCALE_TARGETS = Set.of(PostChain.MAIN_TARGET_ID, SCENE_TARGET_ID);
 
     private final CrossFrameResourcePool resourcePool = new CrossFrameResourcePool(3);
@@ -269,7 +263,8 @@ public final class VulkanSceneScaleController {
             return;
         }
 
-        VulkanDynamicUniforms.updateForMode(postChain, config);
+        // Upscaling itself never chooses a sharpening amount; the universal final pass owns it.
+        VulkanDynamicUniforms.updateSharpening(postChain, 0.0f);
 
         FrameGraphBuilder frameGraphBuilder = new FrameGraphBuilder();
         ResourceHandle<RenderTarget> mainHandle = frameGraphBuilder.importExternal("salts_upscale_main", mainTarget);
@@ -288,7 +283,6 @@ public final class VulkanSceneScaleController {
         return switch (config.mode) {
             case NIS_UPSCALE -> NIS_UPSCALE_EFFECT;
             case FSR1_UPSCALE -> fsr1EffectFor(config.nisUpscaleQualityPreset);
-            case FSR1_RCAS -> fsr1RcasEffectFor(config.nisUpscaleQualityPreset);
             default -> null;
         };
     }
@@ -309,20 +303,6 @@ public final class VulkanSceneScaleController {
     }
 
     /**
-     * Coordinates fsr1 rcas effect for within the anti-aliasing render, configuration, or compatibility flow.
-     * @param preset quality preset selected by the user or loaded from config
-     * @return fsr1 rcas effect for produced by this helper
-     */
-    private static Identifier fsr1RcasEffectFor(NisUpscaleQualityPreset preset) {
-        return switch (NisUpscaleQualityPreset.clamp(preset)) {
-            case QUALITY -> FSR1_RCAS_QUALITY_EFFECT;
-            case BALANCED -> FSR1_RCAS_BALANCED_EFFECT;
-            case PERFORMANCE -> FSR1_RCAS_PERFORMANCE_EFFECT;
-            case ULTRA_PERFORMANCE -> FSR1_RCAS_ULTRA_PERFORMANCE_EFFECT;
-        };
-    }
-
-    /**
      * Resolves pass label into a safe fallback or final render value.
      * @return resolve pass label produced by this helper
      */
@@ -330,7 +310,6 @@ public final class VulkanSceneScaleController {
         return switch (activeMode) {
             case SSAA -> "Salt's SSAA Resolve";
             case FSR1_UPSCALE -> "Salt's FSR1 Upscale Resolve";
-            case FSR1_RCAS -> "Salt's FSR1 + RCAS Resolve";
             case NIS_UPSCALE -> "Salt's NIS Upscale Resolve";
             default -> "Salt's Scene Resolve";
         };
@@ -381,8 +360,7 @@ public final class VulkanSceneScaleController {
     private static boolean usesScaledSceneTarget(AntiAliasingMode mode) {
         return mode == AntiAliasingMode.SSAA
                 || mode == AntiAliasingMode.NIS_UPSCALE
-                || mode == AntiAliasingMode.FSR1_UPSCALE
-                || mode == AntiAliasingMode.FSR1_RCAS;
+                || mode == AntiAliasingMode.FSR1_UPSCALE;
     }
 
     /**
@@ -392,8 +370,7 @@ public final class VulkanSceneScaleController {
      */
     private static boolean usesDedicatedUpscaleShader(AntiAliasingMode mode) {
         return mode == AntiAliasingMode.NIS_UPSCALE
-                || mode == AntiAliasingMode.FSR1_UPSCALE
-                || mode == AntiAliasingMode.FSR1_RCAS;
+                || mode == AntiAliasingMode.FSR1_UPSCALE;
     }
 
     /**

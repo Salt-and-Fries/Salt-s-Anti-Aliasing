@@ -3,7 +3,7 @@
   "passes": [
     {
       "vertex_shader": "minecraft:core/screenquad",
-      "fragment_shader": "salts_anti_aliasing:post/nis_sharpen",
+      "fragment_shader": "salts_anti_aliasing:post/nis_upscale",
       "inputs": [
         {
           "sampler_name": "In",
@@ -11,26 +11,7 @@
           "bilinear": true
         }
       ],
-      "output": "minecraft:main",
-      "uniforms": {
-        "NisSharpenConfig": [
-          {
-            "name": "Sharpness",
-            "type": "float",
-            "value": 0.25
-          },
-          {
-            "name": "EdgeBoost",
-            "type": "float",
-            "value": 1.1
-          },
-          {
-            "name": "ClampBoost",
-            "type": "float",
-            "value": 0.18
-          }
-        ]
-      }
+      "output": "minecraft:main"
     }
   ]
 }

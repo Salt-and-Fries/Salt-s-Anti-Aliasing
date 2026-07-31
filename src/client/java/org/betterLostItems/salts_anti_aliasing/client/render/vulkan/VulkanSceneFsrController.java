@@ -86,6 +86,7 @@ public final class VulkanSceneFsrController {
     private long lastDispatchTimeNs;
     private long lastSuccessfulTemporalFrameIndex = -1L;
     private FsrFrameSignature lastFrameSignature;
+    private boolean nativeSharpeningSucceededThisFrame;
 
     private VulkanSceneFsrController() {
     }
@@ -106,6 +107,7 @@ public final class VulkanSceneFsrController {
 
     public void beginSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
         RenderSystem.assertOnRenderThread();
+        nativeSharpeningSucceededThisFrame = false;
         destroyResourcesIfPending();
         clearFrameState();
 
@@ -146,6 +148,7 @@ public final class VulkanSceneFsrController {
 
     public void endSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
         RenderSystem.assertOnRenderThread();
+        nativeSharpeningSucceededThisFrame = false;
         if (!active) {
             clearFrameState();
             return;
@@ -162,6 +165,7 @@ public final class VulkanSceneFsrController {
                 resolveSceneColor(sceneTarget, mainTarget);
             } else {
                 copyColor(upscaledColorTarget, mainTarget, "Salt's FSR Upscaled Color Copy");
+                nativeSharpeningSucceededThisFrame = frameConfig.sharpenStrength > 0.0f;
             }
 
             if (result == 0 && frameConfig.mode.usesFsrFrameGeneration()) {
@@ -173,6 +177,17 @@ public final class VulkanSceneFsrController {
             resourcePool.endFrame();
             clearFrameState();
         }
+    }
+
+    /**
+     * Reports whether the current rendered frame received sharpening inside a successful native
+     * FidelityFX evaluation. The result is consumed by the final-effects stage so it cannot leak
+     * into a later frame that used the linear fallback path.
+     */
+    public boolean consumeNativeSharpeningSucceededThisFrame() {
+        boolean succeeded = nativeSharpeningSucceededThisFrame;
+        nativeSharpeningSucceededThisFrame = false;
+        return succeeded;
     }
 
     public void captureOpaqueScene() {
@@ -334,7 +349,7 @@ public final class VulkanSceneFsrController {
                 temporalFrameIndex,
                 1.0f,
                 1.0f,
-                config.fsrSharpness,
+                config.sharpenStrength,
                 frameTiming.deltaMs(),
                 cameraParameters.nearPlane(),
                 cameraParameters.farPlane(),

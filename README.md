@@ -69,23 +69,20 @@ The branch is structured around these modes:
 
 ```text
 Off
-NIS Sharpen
 FXAA
 MSAA
 SSAA
 SMAA
-SMAA + NIS Sharpen
 NIS Upscale
 DLSS Super Resolution
 FSR2 Super Resolution
 FSR3 Super Resolution
 FSR3 Super Resolution + Frame Generation
 FSR1 Upscale
-FSR1 + RCAS
 TAA
 ```
 
-The shared planner expresses each mode as conceptual passes and targets. The runtime requires Minecraft's Vulkan backend for every anti-aliasing mode; non-Vulkan sessions keep saved settings but block rendering and mode cycling until Minecraft is restarted on Vulkan.
+Sharpening is an independent 0–100% control available with every mode, including Off, and defaults to 0%. The shared planner expresses each mode as conceptual passes and targets. The runtime requires Minecraft's Vulkan backend for every anti-aliasing mode; non-Vulkan sessions keep saved settings but block rendering and mode cycling until Minecraft is restarted on Vulkan.
 
 SSAA percentages are per axis. The existing 200% option renders at twice the output width and twice the output height, so it evaluates four source pixels for every output pixel: conventional 4x SSAA. A 400% per-axis target would instead be 16x SSAA.
 

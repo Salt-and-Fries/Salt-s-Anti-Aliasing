@@ -26,7 +26,6 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
     private SpatialUpscaleQualitySliderWidget upscaleSlider;
     private DlssQualitySliderWidget dlssQualitySlider;
     private FsrQualitySliderWidget fsrQualitySlider;
-    private FsrSharpnessSliderWidget fsrSharpnessSlider;
 
     /**
      * Creates a anti aliasing config screen instance with the collaborators or initial state
@@ -55,7 +54,6 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
         upscaleSlider = new SpatialUpscaleQualitySliderWidget(runtime);
         dlssQualitySlider = new DlssQualitySliderWidget(runtime);
         fsrQualitySlider = new FsrQualitySliderWidget(runtime);
-        fsrSharpnessSlider = new FsrSharpnessSliderWidget(runtime);
 
         list.addSmall(List.of(
                 modeButton,
@@ -64,8 +62,7 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
                 ssaaSlider,
                 upscaleSlider,
                 dlssQualitySlider,
-                fsrQualitySlider,
-                fsrSharpnessSlider
+                fsrQualitySlider
         ));
         refreshControlAvailability(runtime.activeMode());
     }
@@ -100,7 +97,7 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
         }
 
         if (sharpnessSlider != null) {
-            sharpnessSlider.active = antiAliasingAvailable && activeMode.usesSharpenControl();
+            sharpnessSlider.active = antiAliasingAvailable;
         }
 
         if (msaaSlider != null) {
@@ -123,8 +120,5 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
             fsrQualitySlider.active = antiAliasingAvailable && activeMode.usesFsrQualityControl();
         }
 
-        if (fsrSharpnessSlider != null) {
-            fsrSharpnessSlider.active = antiAliasingAvailable && activeMode.usesFsrSharpenControl();
-        }
     }
 }

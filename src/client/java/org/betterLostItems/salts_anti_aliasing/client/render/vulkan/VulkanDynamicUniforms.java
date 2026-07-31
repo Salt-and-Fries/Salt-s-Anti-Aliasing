@@ -4,8 +4,6 @@ import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.PostPass;
-import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
-import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.mixin.client.PostChainAccessor;
 import org.betterLostItems.salts_anti_aliasing.mixin.client.PostPassAccessor;
 import org.lwjgl.system.MemoryStack;
@@ -21,14 +19,11 @@ import java.util.Map;
  */
 final class VulkanDynamicUniforms {
     private static final String NIS_SHARPEN_UNIFORM = "NisSharpenConfig";
-    private static final String RCAS_UNIFORM = "RcasConfig";
     private static final String TAA_UNIFORM = "TaaConfig";
     private static final String DLSS_MOTION_UNIFORM = "DlssMotionConfig";
     private static final String FSR_MOTION_UNIFORM = "FsrMotionConfig";
     private static final float NIS_EDGE_BOOST = 1.1f;
     private static final float NIS_CLAMP_BOOST = 0.18f;
-    private static final float RCAS_EDGE_LIMIT = 0.22f;
-    private static final float RCAS_CLAMP_BOOST = 0.12f;
     private static final int WRITABLE_UNIFORM_USAGE = GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST;
 
     private static final Map<GpuBuffer, Integer> LAST_UPLOADED_HASHES = new IdentityHashMap<>();
@@ -41,22 +36,14 @@ final class VulkanDynamicUniforms {
     }
 
     /**
-     * Handles update for mode as part of the anti-aliasing render, configuration, or compatibility
-     * flow.
+     * Updates an NIS sharpening chain with the independent user-selected amount.
      * @param postChain post chain value supplied by the caller or Minecraft callback
-     * @param config configuration object being normalized, copied, or committed
+     * @param sharpenStrength normalized sharpening amount requested by the user interface
      */
-    static void updateForMode(PostChain postChain, AntiAliasingConfig config) {
+    static void updateSharpening(PostChain postChain, float sharpenStrength) {
         for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
             Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
-            if (config.mode == AntiAliasingMode.NIS_SHARPEN
-                    || config.mode == AntiAliasingMode.SMAA_NIS_SHARPEN) {
-                writeNisSharpenUniform(customUniforms, config.sharpenStrength);
-            } else if (config.mode == AntiAliasingMode.NIS_UPSCALE) {
-                writeNisSharpenUniform(customUniforms, config.nisUpscaleQualityPreset.sharpenStrength());
-            } else if (config.mode == AntiAliasingMode.FSR1_RCAS) {
-                writeRcasUniform(customUniforms, config.sharpenStrength);
-            }
+            writeNisSharpenUniform(customUniforms, sharpenStrength);
         }
     }
 
@@ -96,19 +83,6 @@ final class VulkanDynamicUniforms {
             bufferData.putFloat(sharpenStrength);
             bufferData.putFloat(NIS_EDGE_BOOST);
             bufferData.putFloat(NIS_CLAMP_BOOST);
-        });
-    }
-
-    /**
-     * Coordinates write rcas uniform within the anti-aliasing render, configuration, or compatibility flow.
-     * @param customUniforms custom uniforms value supplied by the caller or Minecraft callback
-     * @param sharpenStrength normalized sharpening amount requested by the user interface
-     */
-    private static void writeRcasUniform(Map<String, GpuBuffer> customUniforms, float sharpenStrength) {
-        updateUniformBuffer(customUniforms, RCAS_UNIFORM, bufferData -> {
-            bufferData.putFloat(sharpenStrength);
-            bufferData.putFloat(RCAS_EDGE_LIMIT);
-            bufferData.putFloat(RCAS_CLAMP_BOOST);
         });
     }
 

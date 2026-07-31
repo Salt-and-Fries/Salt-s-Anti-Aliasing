@@ -1,17 +1,19 @@
 package org.betterLostItems.salts_anti_aliasing.client.config;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Mutable configuration object persisted to disk and copied before render code reads it, keeping
  * live edits isolated from stored defaults.
  */
 public final class AntiAliasingConfig {
+    public static final int CURRENT_CONFIG_VERSION = 2;
     public static final float MIN_SHARPEN_STRENGTH = 0.0f;
-    public static final float MAX_SHARPEN_STRENGTH = 0.65f;
-    public static final float DEFAULT_SHARPEN_STRENGTH = 0.25f;
-    public static final float MIN_FSR_SHARPEN_STRENGTH = 0.0f;
-    public static final float MAX_FSR_SHARPEN_STRENGTH = 1.0f;
-    public static final float DEFAULT_FSR_SHARPEN_STRENGTH = 0.25f;
+    public static final float MAX_SHARPEN_STRENGTH = 1.0f;
+    public static final float DEFAULT_SHARPEN_STRENGTH = 0.0f;
+    private static final float LEGACY_DEFAULT_SHARPEN_STRENGTH = 0.25f;
 
+    public Integer configVersion;
     public AntiAliasingMode mode = AntiAliasingMode.OFF;
     public QualityPreset qualityPreset = QualityPreset.MEDIUM;
     public float sharpenStrength = DEFAULT_SHARPEN_STRENGTH;
@@ -21,7 +23,8 @@ public final class AntiAliasingConfig {
     public DlssQualityPreset dlssQualityPreset = DlssQualityPreset.defaultPreset();
     public FsrQualityPreset fsrQualityPreset = FsrQualityPreset.defaultPreset();
     public float internalResolutionScale = 1.0f;
-    public float fsrSharpness = DEFAULT_FSR_SHARPEN_STRENGTH;
+    @SerializedName("fsrSharpness")
+    private Float legacyFsrSharpness;
     public boolean keepHudAtNativeResolution = true;
     public boolean debugViewsEnabled = false;
     public boolean recordMetrics = false;
@@ -40,6 +43,7 @@ public final class AntiAliasingConfig {
      */
     public AntiAliasingConfig copy() {
         AntiAliasingConfig copy = new AntiAliasingConfig();
+        copy.configVersion = configVersion;
         copy.mode = mode;
         copy.qualityPreset = qualityPreset;
         copy.sharpenStrength = sharpenStrength;
@@ -49,7 +53,6 @@ public final class AntiAliasingConfig {
         copy.dlssQualityPreset = dlssQualityPreset;
         copy.fsrQualityPreset = fsrQualityPreset;
         copy.internalResolutionScale = internalResolutionScale;
-        copy.fsrSharpness = fsrSharpness;
         copy.keepHudAtNativeResolution = keepHudAtNativeResolution;
         copy.debugViewsEnabled = debugViewsEnabled;
         copy.recordMetrics = recordMetrics;
@@ -68,6 +71,7 @@ public final class AntiAliasingConfig {
      * sizing or pass planning.
      */
     public void sanitize() {
+        migrateLegacyConfig();
         mode = AntiAliasingMode.clampImplemented(mode);
         if (qualityPreset == null) {
             qualityPreset = QualityPreset.MEDIUM;
@@ -79,7 +83,6 @@ public final class AntiAliasingConfig {
         fsrQualityPreset = FsrQualityPreset.clamp(fsrQualityPreset);
         keepHudAtNativeResolution = true;
         sharpenStrength = clamp(sharpenStrength, MIN_SHARPEN_STRENGTH, MAX_SHARPEN_STRENGTH);
-        fsrSharpness = clamp(fsrSharpness, MIN_FSR_SHARPEN_STRENGTH, MAX_FSR_SHARPEN_STRENGTH);
         internalResolutionScale = clamp(internalResolutionScale, 0.5f, 1.0f);
         dlssBridgePath = sanitizePath(dlssBridgePath);
         dlssPluginPath = sanitizePath(dlssPluginPath);
@@ -88,6 +91,8 @@ public final class AntiAliasingConfig {
         fsrBridgePath = sanitizePath(fsrBridgePath);
         fsrRuntimePath = sanitizePath(fsrRuntimePath);
         fsrLogPath = sanitizePath(fsrLogPath);
+        legacyFsrSharpness = null;
+        configVersion = CURRENT_CONFIG_VERSION;
     }
 
     /**
@@ -115,6 +120,32 @@ public final class AntiAliasingConfig {
         };
     }
 
+    boolean needsMigration() {
+        return configVersion == null || configVersion < CURRENT_CONFIG_VERSION;
+    }
+
+    private void migrateLegacyConfig() {
+        if (!needsMigration()) {
+            mode = AntiAliasingMode.migrateLegacy(mode);
+            return;
+        }
+
+        AntiAliasingMode legacyMode = mode;
+        if (legacyMode != null && legacyMode.usesFsrQualityControl()) {
+            sharpenStrength = legacyFsrSharpness == null
+                    ? DEFAULT_SHARPEN_STRENGTH
+                    : legacyFsrSharpness;
+        } else if (legacyMode != AntiAliasingMode.NIS_SHARPEN
+                && legacyMode != AntiAliasingMode.SMAA_NIS_SHARPEN
+                && legacyMode != AntiAliasingMode.FSR1_RCAS
+                && Float.compare(sharpenStrength, LEGACY_DEFAULT_SHARPEN_STRENGTH) == 0) {
+            // The old untouched 25% general default was inactive for these modes, not a universal choice.
+            sharpenStrength = DEFAULT_SHARPEN_STRENGTH;
+        }
+
+        mode = AntiAliasingMode.migrateLegacy(legacyMode);
+    }
+
     /**
      * Clamps the supplied value to an inclusive range before it can affect rendering or persisted configuration.
      * @param value value supplied by the caller or Minecraft callback
@@ -123,6 +154,9 @@ public final class AntiAliasingConfig {
      * @return value clamped to the supported range
      */
     private static float clamp(float value, float min, float max) {
+        if (Float.isNaN(value)) {
+            return min;
+        }
         return Math.max(min, Math.min(max, value));
     }
 

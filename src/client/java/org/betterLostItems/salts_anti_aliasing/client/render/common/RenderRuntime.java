@@ -193,8 +193,13 @@ public final class RenderRuntime {
     }
 
     public float setSharpenStrength(float sharpenStrength) {
+        boolean previouslyEnabled = this.sharpenStrength() > 0.0f;
         configManager.edit(config -> config.sharpenStrength = sharpenStrength);
-        return this.sharpenStrength();
+        float sanitizedStrength = this.sharpenStrength();
+        if (previouslyEnabled != (sanitizedStrength > 0.0f)) {
+            rebuildPipeline();
+        }
+        return sanitizedStrength;
     }
 
     public MsaaSampleLevel msaaSampleLevel() {
@@ -250,15 +255,6 @@ public final class RenderRuntime {
         return fsrQualityPreset();
     }
 
-    public float fsrSharpness() {
-        return configManager.snapshot().fsrSharpness;
-    }
-
-    public float setFsrSharpness(float sharpness) {
-        configManager.edit(config -> config.fsrSharpness = sharpness);
-        return fsrSharpness();
-    }
-
     public FsrRuntimeStatus fsrRuntimeStatus() {
         return FsrRuntime.instance().status();
     }
@@ -299,9 +295,7 @@ public final class RenderRuntime {
         }
 
         AntiAliasingConfig config = effectiveConfigSnapshot();
-        if (config.mode != AntiAliasingMode.TAA) {
-            scenePostProcessor.apply(gameRenderer, config);
-        }
+        scenePostProcessor.applyFinalEffects(gameRenderer, config);
     }
 
     public void recordRenderedFrame(long frameTimeNs, int displayedFps) {
@@ -335,7 +329,7 @@ public final class RenderRuntime {
         VulkanSceneFsrController.instance().endSceneRendering(gameRenderer, config);
         VulkanSceneScaleController.instance().endSceneRendering(gameRenderer, config);
         if (config.mode == AntiAliasingMode.TAA && canUseAntiAliasing()) {
-            scenePostProcessor.apply(gameRenderer, config);
+            scenePostProcessor.applyTemporalResolve(gameRenderer, config);
         }
     }
 
@@ -423,13 +417,11 @@ public final class RenderRuntime {
 
     private static Set<RenderCapability> requiredCapabilities(AntiAliasingMode mode) {
         return switch (mode) {
-            case OFF -> Set.of();
-            case NIS_SHARPEN -> EnumSet.of(RenderCapability.POST_PROCESSING, RenderCapability.SHARPENING);
-            case FXAA, SMAA -> EnumSet.of(RenderCapability.POST_PROCESSING);
-            case SMAA_NIS_SHARPEN -> EnumSet.of(RenderCapability.POST_PROCESSING, RenderCapability.SHARPENING);
+            case OFF, NIS_SHARPEN -> Set.of();
+            case FXAA, SMAA, SMAA_NIS_SHARPEN -> EnumSet.of(RenderCapability.POST_PROCESSING);
             case MSAA -> EnumSet.of(RenderCapability.MULTISAMPLE_AA);
             case SSAA -> EnumSet.of(RenderCapability.INTERNAL_RESOLUTION);
-            case NIS_UPSCALE, FSR1_UPSCALE -> EnumSet.of(
+            case NIS_UPSCALE, FSR1_UPSCALE, FSR1_RCAS -> EnumSet.of(
                     RenderCapability.INTERNAL_RESOLUTION,
                     RenderCapability.SPATIAL_UPSCALING
             );
@@ -451,11 +443,6 @@ public final class RenderRuntime {
                     RenderCapability.TEMPORAL_AA,
                     RenderCapability.FSR_UPSCALING,
                     RenderCapability.FSR_FRAME_GENERATION
-            );
-            case FSR1_RCAS -> EnumSet.of(
-                    RenderCapability.INTERNAL_RESOLUTION,
-                    RenderCapability.SPATIAL_UPSCALING,
-                    RenderCapability.SHARPENING
             );
             case TAA -> EnumSet.of(RenderCapability.POST_PROCESSING, RenderCapability.TEMPORAL_AA);
         };
