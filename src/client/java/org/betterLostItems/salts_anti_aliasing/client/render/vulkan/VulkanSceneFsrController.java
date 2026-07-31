@@ -395,7 +395,9 @@ public final class VulkanSceneFsrController {
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
                 KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
-                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_GENERAL,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         );
         configureImageBarrier(
                 barriers.get(1),
@@ -405,7 +407,9 @@ public final class VulkanSceneFsrController {
                 KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR
                         | KHRSynchronization2.VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT_KHR,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
-                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_GENERAL,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         );
         configureImageBarrier(
                 barriers.get(2),
@@ -414,7 +418,9 @@ public final class VulkanSceneFsrController {
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
                 KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
-                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_GENERAL,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         );
         configureImageBarrier(
                 barriers.get(3),
@@ -423,7 +429,9 @@ public final class VulkanSceneFsrController {
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
                 KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
-                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_GENERAL,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         );
         configureImageBarrier(
                 barriers.get(4),
@@ -433,7 +441,9 @@ public final class VulkanSceneFsrController {
                 KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR
                         | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
-                KHRSynchronization2.VK_ACCESS_2_SHADER_WRITE_BIT_KHR
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_GENERAL,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         );
         configureImageBarrier(
                 barriers.get(5),
@@ -442,7 +452,9 @@ public final class VulkanSceneFsrController {
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
                 KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
-                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_GENERAL,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         );
         configureImageBarrier(
                 barriers.get(6),
@@ -452,22 +464,98 @@ public final class VulkanSceneFsrController {
                 KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR
                         | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
-                KHRSynchronization2.VK_ACCESS_2_SHADER_WRITE_BIT_KHR
+                KHRSynchronization2.VK_ACCESS_2_SHADER_WRITE_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_GENERAL,
+                VK12.VK_IMAGE_LAYOUT_GENERAL
         );
         pipelineBarrier(commandBuffer, stack, barriers);
     }
 
     private void completeEvaluateResources(VkCommandBuffer commandBuffer, MemoryStack stack) {
-        VkImageMemoryBarrier2.Buffer barriers = VkImageMemoryBarrier2.calloc(1, stack);
+        VkImageMemoryBarrier2.Buffer barriers = VkImageMemoryBarrier2.calloc(7, stack);
         configureImageBarrier(
                 barriers.get(0),
+                vulkanTexture(sceneTarget.getColorTexture()),
+                VK12.VK_IMAGE_ASPECT_COLOR_BIT,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR
+                        | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK12.VK_IMAGE_LAYOUT_GENERAL
+        );
+        configureImageBarrier(
+                barriers.get(1),
+                vulkanTexture(sceneTarget.getDepthTexture()),
+                VK12.VK_IMAGE_ASPECT_DEPTH_BIT,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR
+                        | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK12.VK_IMAGE_LAYOUT_GENERAL
+        );
+        configureImageBarrier(
+                barriers.get(2),
+                vulkanTexture(motionVectorTarget.getColorTexture()),
+                VK12.VK_IMAGE_ASPECT_COLOR_BIT,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR
+                        | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK12.VK_IMAGE_LAYOUT_GENERAL
+        );
+        configureImageBarrier(
+                barriers.get(3),
+                vulkanTexture(opaqueSceneTarget.getColorTexture()),
+                VK12.VK_IMAGE_ASPECT_COLOR_BIT,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR
+                        | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK12.VK_IMAGE_LAYOUT_GENERAL
+        );
+        configureImageBarrier(
+                barriers.get(4),
+                vulkanTexture(reactiveMaskTarget.getColorTexture()),
+                VK12.VK_IMAGE_ASPECT_COLOR_BIT,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR
+                        | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK12.VK_IMAGE_LAYOUT_GENERAL
+        );
+        configureImageBarrier(
+                barriers.get(5),
+                vulkanTexture(transparencyMaskTarget.getColorTexture()),
+                VK12.VK_IMAGE_ASPECT_COLOR_BIT,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_SHADER_READ_BIT_KHR,
+                KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
+                KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR
+                        | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK12.VK_IMAGE_LAYOUT_GENERAL
+        );
+        configureImageBarrier(
+                barriers.get(6),
                 vulkanTexture(upscaledColorTarget.getColorTexture()),
                 VK12.VK_IMAGE_ASPECT_COLOR_BIT,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT_KHR,
                 KHRSynchronization2.VK_ACCESS_2_SHADER_WRITE_BIT_KHR,
                 KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR,
                 KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR
-                        | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR
+                        | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR,
+                VK12.VK_IMAGE_LAYOUT_GENERAL,
+                VK12.VK_IMAGE_LAYOUT_GENERAL
         );
         pipelineBarrier(commandBuffer, stack, barriers);
     }
@@ -479,15 +567,17 @@ public final class VulkanSceneFsrController {
             long sourceStage,
             long sourceAccess,
             long destinationStage,
-            long destinationAccess
+            long destinationAccess,
+            int oldLayout,
+            int newLayout
     ) {
         barrier.sType$Default()
                 .srcStageMask(sourceStage)
                 .srcAccessMask(sourceAccess)
                 .dstStageMask(destinationStage)
                 .dstAccessMask(destinationAccess)
-                .oldLayout(VK12.VK_IMAGE_LAYOUT_GENERAL)
-                .newLayout(VK12.VK_IMAGE_LAYOUT_GENERAL)
+                .oldLayout(oldLayout)
+                .newLayout(newLayout)
                 .srcQueueFamilyIndex(VK12.VK_QUEUE_FAMILY_IGNORED)
                 .dstQueueFamilyIndex(VK12.VK_QUEUE_FAMILY_IGNORED)
                 .image(texture.vkImage());

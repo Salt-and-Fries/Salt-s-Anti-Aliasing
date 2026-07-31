@@ -807,7 +807,10 @@ FfxApiResource mask_output(jlong image, uint32_t width, uint32_t height) {
             width,
             height,
             FFX_API_RESOURCE_USAGE_UAV,
-            FFX_API_RESOURCE_STATE_UNORDERED_ACCESS);
+            // FidelityFX restores imported resources to this state when reactive-mask
+            // generation finishes. Returning the mask to a readable state inserts the
+            // required UAV-write -> SRV-read barrier before the following upscale dispatch.
+            FFX_API_RESOURCE_STATE_PIXEL_COMPUTE_READ);
 }
 
 ffxReturnCode_t generate_reactive_mask(
