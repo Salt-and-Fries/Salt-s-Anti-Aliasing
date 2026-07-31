@@ -1,5 +1,6 @@
 package org.betterLostItems.salts_anti_aliasing.client.gui;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -57,6 +58,8 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
     private final Consumer<AntiAliasingMode> onModeSelected;
     private final Runnable onDismissed;
     private int firstVisibleIndex;
+    private boolean draggingScrollbar;
+    private double scrollbarGrabOffset;
 
     public AntiAliasingModeDropdownOverlay(
             Button anchorButton,
@@ -79,6 +82,9 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
 
     public void refresh() {
         firstVisibleIndex = clamp(firstVisibleIndex, 0, maxFirstVisibleIndex());
+        if (!isOpen()) {
+            stopScrollbarDrag();
+        }
     }
 
     @Override
@@ -160,6 +166,8 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
         if (scrollbarVisible) {
             drawScrollbar(graphics, modes.size(), visibleRows, contentX + contentWidth - SCROLLBAR_WIDTH, contentY);
         }
+
+        requestCursor(graphics, mouseX, mouseY, runtime, modes, visibleRows, contentX, contentY, rowWidth);
     }
 
     @Override
@@ -174,6 +182,7 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
             return false;
         }
         if (!isMouseOver(mouseX, mouseY)) {
+            stopScrollbarDrag();
             onDismissed.run();
             return true;
         }
@@ -186,7 +195,13 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
         List<AntiAliasingMode> modes = AntiAliasingMode.implementedModes();
         int visibleRows = visibleRows(modes.size());
         if (isScrollbarClick(mouseX, mouseY, modes.size(), visibleRows)) {
-            jumpToScrollbarPosition(mouseY, modes.size(), visibleRows);
+            if (event.button() == 0) {
+                startScrollbarDrag(mouseY, modes.size(), visibleRows);
+            }
+            return true;
+        }
+
+        if (event.button() != 0) {
             return true;
         }
 
@@ -201,15 +216,48 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-        if (!isOpen() || !isMouseOver(mouseX, mouseY)) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (!isOpen()) {
+            stopScrollbarDrag();
             return false;
         }
 
-        if (verticalAmount > 0.0d) {
-            scrollBy(-1);
-        } else if (verticalAmount < 0.0d) {
-            scrollBy(1);
+        if (draggingScrollbar && event.button() == 0) {
+            List<AntiAliasingMode> modes = AntiAliasingMode.implementedModes();
+            int visibleRows = visibleRows(modes.size());
+            DropdownScrollbar.Metrics metrics = scrollbarMetrics(modes.size(), visibleRows);
+            firstVisibleIndex = DropdownScrollbar.indexForDrag(
+                    event.y(),
+                    scrollbarGrabOffset,
+                    getY() + BORDER,
+                    metrics
+            );
+        }
+        return true;
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (!draggingScrollbar || event.button() != 0) {
+            return false;
+        }
+
+        stopScrollbarDrag();
+        return true;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        if (!isOpen()) {
+            return false;
+        }
+
+        if (isMouseOver(mouseX, mouseY)) {
+            if (verticalAmount > 0.0d) {
+                scrollBy(-1);
+            } else if (verticalAmount < 0.0d) {
+                scrollBy(1);
+            }
         }
         return true;
     }
@@ -221,6 +269,7 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
         }
 
         if (event.isEscape()) {
+            stopScrollbarDrag();
             onDismissed.run();
             return true;
         }
@@ -304,11 +353,15 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
         int trackHeight = visibleRows * OPTION_HEIGHT;
         graphics.fill(trackX, trackY, trackX + SCROLLBAR_WIDTH, trackY + trackHeight, SCROLLBAR_TRACK_COLOR);
 
-        int maxFirst = Math.max(1, modeCount - visibleRows);
-        int thumbHeight = Math.max(MIN_SCROLLBAR_THUMB_HEIGHT, trackHeight * visibleRows / modeCount);
-        int travel = Math.max(1, trackHeight - thumbHeight);
-        int thumbY = trackY + travel * firstVisibleIndex / maxFirst;
-        graphics.fill(trackX, thumbY, trackX + SCROLLBAR_WIDTH, thumbY + thumbHeight, SCROLLBAR_THUMB_COLOR);
+        DropdownScrollbar.Metrics metrics = scrollbarMetrics(modeCount, visibleRows);
+        int thumbY = DropdownScrollbar.thumbTop(trackY, firstVisibleIndex, metrics);
+        graphics.fill(
+                trackX,
+                thumbY,
+                trackX + SCROLLBAR_WIDTH,
+                thumbY + metrics.thumbHeight(),
+                SCROLLBAR_THUMB_COLOR
+        );
     }
 
     private boolean isScrollbarClick(double mouseX, double mouseY, int modeCount, int visibleRows) {
@@ -321,14 +374,64 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
         return isInRect(mouseX, mouseY, scrollbarX, contentY, SCROLLBAR_WIDTH, visibleRows * OPTION_HEIGHT);
     }
 
-    private void jumpToScrollbarPosition(double mouseY, int modeCount, int visibleRows) {
+    private void startScrollbarDrag(double mouseY, int modeCount, int visibleRows) {
         int trackY = getY() + BORDER;
-        int trackHeight = visibleRows * OPTION_HEIGHT;
-        int thumbHeight = Math.max(MIN_SCROLLBAR_THUMB_HEIGHT, trackHeight * visibleRows / modeCount);
-        int travel = Math.max(1, trackHeight - thumbHeight);
-        int maxFirst = Math.max(0, modeCount - visibleRows);
-        double ratio = (mouseY - trackY - thumbHeight / 2.0d) / travel;
-        firstVisibleIndex = clamp((int) Math.round(ratio * maxFirst), 0, maxFirst);
+        DropdownScrollbar.Metrics metrics = scrollbarMetrics(modeCount, visibleRows);
+        scrollbarGrabOffset = DropdownScrollbar.grabOffset(mouseY, trackY, firstVisibleIndex, metrics);
+        firstVisibleIndex = DropdownScrollbar.indexForDrag(mouseY, scrollbarGrabOffset, trackY, metrics);
+        draggingScrollbar = true;
+    }
+
+    private DropdownScrollbar.Metrics scrollbarMetrics(int modeCount, int visibleRows) {
+        return DropdownScrollbar.metrics(
+                modeCount,
+                visibleRows,
+                visibleRows * OPTION_HEIGHT,
+                MIN_SCROLLBAR_THUMB_HEIGHT
+        );
+    }
+
+    private void stopScrollbarDrag() {
+        draggingScrollbar = false;
+        scrollbarGrabOffset = 0.0d;
+    }
+
+    private void requestCursor(
+            GuiGraphicsExtractor graphics,
+            int mouseX,
+            int mouseY,
+            RenderRuntime runtime,
+            List<AntiAliasingMode> modes,
+            int visibleRows,
+            int contentX,
+            int contentY,
+            int rowWidth
+    ) {
+        if (draggingScrollbar) {
+            graphics.requestCursor(CursorTypes.RESIZE_NS);
+            return;
+        }
+        if (!isMouseOver(mouseX, mouseY)) {
+            return;
+        }
+
+        graphics.requestCursor(CursorTypes.ARROW);
+        if (isScrollbarClick(mouseX, mouseY, modes.size(), visibleRows)) {
+            graphics.requestCursor(CursorTypes.RESIZE_NS);
+            return;
+        }
+        if (!isInRect(mouseX, mouseY, contentX, contentY, rowWidth, visibleRows * OPTION_HEIGHT)) {
+            return;
+        }
+
+        int modeIndex = firstVisibleIndex + (mouseY - contentY) / OPTION_HEIGHT;
+        if (modeIndex >= 0 && modeIndex < modes.size()) {
+            graphics.requestCursor(
+                    canSelectMode(runtime, modes.get(modeIndex))
+                            ? CursorTypes.POINTING_HAND
+                            : CursorTypes.NOT_ALLOWED
+            );
+        }
     }
 
     private boolean isAnchorClick(double mouseX, double mouseY) {

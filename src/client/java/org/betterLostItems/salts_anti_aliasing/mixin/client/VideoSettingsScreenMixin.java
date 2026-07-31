@@ -1,6 +1,7 @@
 package org.betterLostItems.salts_anti_aliasing.mixin.client;
 
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.gui.screens.options.VideoSettingsScreen;
@@ -40,14 +41,6 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
      */
     protected VideoSettingsScreenMixin(Screen lastScreen, Options options, Component title) {
         super(lastScreen, options, title);
-    }
-
-    @Override
-    protected void init() {
-        super.init();
-        if (saltsAntiAliasing$dropdownOverlay != null) {
-            this.addRenderableOnly(saltsAntiAliasing$dropdownOverlay);
-        }
     }
 
     /**
@@ -121,6 +114,20 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
         }
     }
 
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        if (!saltsAntiAliasing$dropdownExpanded || saltsAntiAliasing$dropdownOverlay == null) {
+            super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+            return;
+        }
+
+        if (this.getFocused() != null) {
+            this.clearFocus();
+        }
+        super.extractRenderState(graphics, Integer.MIN_VALUE / 2, Integer.MIN_VALUE / 2, partialTick);
+        saltsAntiAliasing$dropdownOverlay.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    }
+
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void saltsAntiAliasing$handleDropdownClick(
             MouseButtonEvent event,
@@ -145,6 +152,24 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
                 && saltsAntiAliasing$dropdownOverlay.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)) {
             callbackInfo.setReturnValue(true);
         }
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (saltsAntiAliasing$dropdownOverlay != null
+                && saltsAntiAliasing$dropdownOverlay.mouseDragged(event, dragX, dragY)) {
+            return true;
+        }
+
+        return super.mouseDragged(event, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        boolean overlayHandled = saltsAntiAliasing$dropdownOverlay != null
+                && saltsAntiAliasing$dropdownOverlay.mouseReleased(event);
+        boolean screenHandled = super.mouseReleased(event);
+        return overlayHandled || screenHandled;
     }
 
     @Override
