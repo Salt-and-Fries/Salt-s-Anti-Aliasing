@@ -78,7 +78,10 @@ public final class AntiAliasingVideoSettingsSection {
         List<AbstractWidget> controls = new ArrayList<>();
         controls.add(new SharpnessSliderWidget(runtime));
         switch (activeMode) {
-            case MSAA -> controls.add(new MsaaSampleSliderWidget(runtime));
+            case MSAA -> {
+                controls.add(new MsaaSampleSliderWidget(runtime));
+                controls.add(MsaaAlphaToCoverageButton.create(runtime));
+            }
             case SSAA -> controls.add(new SsaaScaleSliderWidget(runtime));
             case NIS_UPSCALE, FSR1_UPSCALE -> controls.add(new SpatialUpscaleQualitySliderWidget(runtime));
             case DLSS_SUPER_RESOLUTION -> controls.add(new DlssQualitySliderWidget(runtime));

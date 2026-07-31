@@ -211,6 +211,15 @@ public final class RenderRuntime {
         return msaaSampleLevel();
     }
 
+    public boolean msaaAlphaToCoverage() {
+        return configManager.snapshot().msaaAlphaToCoverage;
+    }
+
+    public boolean setMsaaAlphaToCoverage(boolean enabled) {
+        configManager.edit(config -> config.msaaAlphaToCoverage = enabled);
+        return msaaAlphaToCoverage();
+    }
+
     public SsaaScaleLevel ssaaScaleLevel() {
         return configManager.snapshot().ssaaScaleLevel;
     }

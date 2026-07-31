@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final class AntiAliasingConfigTest {
     private static final Gson GSON = new Gson();
@@ -16,6 +17,31 @@ final class AntiAliasingConfigTest {
 
         assertEquals(0.0f, config.sharpenStrength);
         assertEquals(AntiAliasingConfig.CURRENT_CONFIG_VERSION, config.configVersion);
+    }
+
+    @Test
+    void defaultsMsaaAlphaToCoverageOffAndCopiesAnExplicitChoice() {
+        AntiAliasingConfig config = new AntiAliasingConfig();
+        config.sanitize();
+
+        assertFalse(config.msaaAlphaToCoverage);
+
+        config.msaaAlphaToCoverage = true;
+        assertTrue(config.copy().msaaAlphaToCoverage);
+    }
+
+    @Test
+    void oldConfigsWithoutTheMsaaOptionRemainOff() {
+        AntiAliasingConfig config = GSON.fromJson("""
+                {
+                  "configVersion": 2,
+                  "mode": "MSAA"
+                }
+                """, AntiAliasingConfig.class);
+
+        config.sanitize();
+
+        assertFalse(config.msaaAlphaToCoverage);
     }
 
     @Test

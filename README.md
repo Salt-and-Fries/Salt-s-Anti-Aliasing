@@ -84,6 +84,8 @@ TAA
 
 Sharpening is an independent 0–100% control available with every mode, including Off, and defaults to 0%. The shared planner expresses each mode as conceptual passes and targets. The runtime requires Minecraft's Vulkan backend for every anti-aliasing mode; non-Vulkan sessions keep saved settings but block rendering and mode cycling until Minecraft is restarted on Vulkan.
 
+MSAA also exposes an optional alpha-to-coverage control, disabled by default. Enabling it smooths cutout texture edges but may make distant foliage fade or stipple.
+
 SSAA percentages are per axis. The existing 200% option renders at twice the output width and twice the output height, so it evaluates four source pixels for every output pixel: conventional 4x SSAA. A 400% per-axis target would instead be 16x SSAA.
 
 The optional **Cycle AA Mode** key binding is unbound by default so it cannot collide with shader-pack shortcuts (including Iris's `O` binding). It can be assigned under Minecraft's Controls screen; existing custom bindings remain intact. Existing installations that already saved the old `O` default should clear or reassign it once in Controls.
@@ -191,7 +193,7 @@ When syncing a sibling jar branch:
 - Scene-only effects are applied after 3D world rendering and before HUD/menu rendering.
 - Internal-resolution modes temporarily redirect Minecraft's main render target.
 - Anti-aliasing is blocked unless Minecraft reports an active Vulkan device.
-- MSAA uses native Vulkan multisampled scene textures and resolves into Minecraft's main target after world rendering. Cutout textures keep Minecraft's binary alpha behavior instead of fading through partial sample coverage.
+- MSAA uses native Vulkan multisampled scene textures and resolves into Minecraft's main target after world rendering. Cutout textures keep Minecraft's binary alpha behavior by default, with optional alpha-to-coverage for players who prefer smoother cutout edges.
 - TAA uses jitter, a persistent history target, and dynamic uniforms.
 - DLSS redirects world rendering to a Streamline-selected internal-resolution target and evaluates through the optional JNI bridge when all external requirements are met.
 - FSR2/FSR3 use the bundled FidelityFX Vulkan runtime on Windows x64 and can be overridden with explicit native paths.

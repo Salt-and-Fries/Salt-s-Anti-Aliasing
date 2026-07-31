@@ -22,6 +22,7 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
     private Button modeButton;
     private SharpnessSliderWidget sharpnessSlider;
     private MsaaSampleSliderWidget msaaSlider;
+    private Button msaaAlphaToCoverageButton;
     private SsaaScaleSliderWidget ssaaSlider;
     private SpatialUpscaleQualitySliderWidget upscaleSlider;
     private DlssQualitySliderWidget dlssQualitySlider;
@@ -50,6 +51,7 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
         modeButton = AntiAliasingVideoButtonFactory.create(() -> refreshControlAvailability(runtime.activeMode()));
         sharpnessSlider = new SharpnessSliderWidget(runtime);
         msaaSlider = new MsaaSampleSliderWidget(runtime);
+        msaaAlphaToCoverageButton = MsaaAlphaToCoverageButton.create(runtime);
         ssaaSlider = new SsaaScaleSliderWidget(runtime);
         upscaleSlider = new SpatialUpscaleQualitySliderWidget(runtime);
         dlssQualitySlider = new DlssQualitySliderWidget(runtime);
@@ -59,6 +61,7 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
                 modeButton,
                 sharpnessSlider,
                 msaaSlider,
+                msaaAlphaToCoverageButton,
                 ssaaSlider,
                 upscaleSlider,
                 dlssQualitySlider,
@@ -102,6 +105,11 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
 
         if (msaaSlider != null) {
             msaaSlider.active = antiAliasingAvailable && activeMode.usesMsaaSampleControl();
+        }
+
+        if (msaaAlphaToCoverageButton != null) {
+            msaaAlphaToCoverageButton.active = antiAliasingAvailable && activeMode.usesMsaaSampleControl();
+            MsaaAlphaToCoverageButton.refresh(msaaAlphaToCoverageButton, runtime);
         }
 
         if (ssaaSlider != null) {

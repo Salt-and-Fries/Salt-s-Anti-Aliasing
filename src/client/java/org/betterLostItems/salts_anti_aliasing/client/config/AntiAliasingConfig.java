@@ -11,6 +11,7 @@ public final class AntiAliasingConfig {
     public static final float MIN_SHARPEN_STRENGTH = 0.0f;
     public static final float MAX_SHARPEN_STRENGTH = 1.0f;
     public static final float DEFAULT_SHARPEN_STRENGTH = 0.0f;
+    public static final boolean DEFAULT_MSAA_ALPHA_TO_COVERAGE = false;
     private static final float LEGACY_DEFAULT_SHARPEN_STRENGTH = 0.25f;
 
     public Integer configVersion;
@@ -18,6 +19,7 @@ public final class AntiAliasingConfig {
     public QualityPreset qualityPreset = QualityPreset.MEDIUM;
     public float sharpenStrength = DEFAULT_SHARPEN_STRENGTH;
     public MsaaSampleLevel msaaSampleLevel = MsaaSampleLevel.defaultLevel();
+    public boolean msaaAlphaToCoverage = DEFAULT_MSAA_ALPHA_TO_COVERAGE;
     public SsaaScaleLevel ssaaScaleLevel = SsaaScaleLevel.defaultLevel();
     public NisUpscaleQualityPreset nisUpscaleQualityPreset = NisUpscaleQualityPreset.defaultPreset();
     public DlssQualityPreset dlssQualityPreset = DlssQualityPreset.defaultPreset();
@@ -48,6 +50,7 @@ public final class AntiAliasingConfig {
         copy.qualityPreset = qualityPreset;
         copy.sharpenStrength = sharpenStrength;
         copy.msaaSampleLevel = msaaSampleLevel;
+        copy.msaaAlphaToCoverage = msaaAlphaToCoverage;
         copy.ssaaScaleLevel = ssaaScaleLevel;
         copy.nisUpscaleQualityPreset = nisUpscaleQualityPreset;
         copy.dlssQualityPreset = dlssQualityPreset;

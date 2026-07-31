@@ -2,6 +2,7 @@ package org.betterLostItems.salts_anti_aliasing.client.compat.sodium;
 
 import net.caffeinemc.mods.sodium.api.config.ConfigEntryPoint;
 import net.caffeinemc.mods.sodium.api.config.ConfigState;
+import net.caffeinemc.mods.sodium.api.config.structure.BooleanOptionBuilder;
 import net.caffeinemc.mods.sodium.api.config.structure.ConfigBuilder;
 import net.caffeinemc.mods.sodium.api.config.structure.EnumOptionBuilder;
 import net.minecraft.client.Minecraft;
@@ -29,6 +30,7 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static final Identifier MODE_ID = id("mode");
     private static final Identifier SHARPNESS_ID = id("sharpness");
     private static final Identifier MSAA_SAMPLES_ID = id("msaa_samples");
+    private static final Identifier MSAA_ALPHA_TO_COVERAGE_ID = id("msaa_alpha_to_coverage");
     private static final Identifier SSAA_SCALE_ID = id("ssaa_scale");
     private static final Identifier UPSCALE_QUALITY_ID = id("upscale_quality");
     private static final Identifier DLSS_QUALITY_ID = id("dlss_quality");
@@ -38,6 +40,8 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static final String GROUP_TITLE_KEY = "options.salts_anti_aliasing.group.image_quality";
     private static final String SHARPNESS_TOOLTIP_KEY = "options.salts_anti_aliasing.sharpness.tooltip";
     private static final String MSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.msaa_samples.tooltip";
+    private static final String MSAA_ALPHA_TO_COVERAGE_TOOLTIP_KEY =
+            "options.salts_anti_aliasing.msaa_alpha_to_coverage.tooltip";
     private static final String SSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.ssaa_scale.tooltip";
     private static final String UPSCALE_TOOLTIP_KEY = "options.salts_anti_aliasing.upscale_quality.tooltip";
     private static final String DLSS_QUALITY_TOOLTIP_KEY = "options.salts_anti_aliasing.dlss_quality.tooltip";
@@ -74,8 +78,9 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                                                 state -> antiAliasingAvailable(),
                                                 MODE_ID,
                                                 ConfigState.UPDATE_ON_REBUILD
-                                        ))
+                                ))
                                 .addOption(createMsaaSamplesOption(builder))
+                                .addOption(createMsaaAlphaToCoverageOption(builder))
                                 .addOption(createSsaaScaleOption(builder))
                                 .addOption(createUpscaleQualityOption(builder))
                                 .addOption(createDlssQualityOption(builder))
@@ -165,6 +170,28 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
                 .setEnabledProvider(
                         state -> antiAliasingAvailable()
                                 && state.readEnumOption(MODE_ID, AntiAliasingMode.class).usesSpatialUpscaleQualityControl(),
+                        MODE_ID,
+                        ConfigState.UPDATE_ON_REBUILD
+                );
+    }
+
+    private static BooleanOptionBuilder createMsaaAlphaToCoverageOption(ConfigBuilder builder) {
+        return builder.createBooleanOption(MSAA_ALPHA_TO_COVERAGE_ID)
+                .setName(Component.translatable(
+                        "options.salts_anti_aliasing.msaa_alpha_to_coverage",
+                        Component.empty()
+                ))
+                .setTooltip(Component.translatable(MSAA_ALPHA_TO_COVERAGE_TOOLTIP_KEY))
+                .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
+                .setBinding(
+                        SaltsAntiAliasingSodiumConfig::setMsaaAlphaToCoverage,
+                        SaltsAntiAliasingSodiumConfig::msaaAlphaToCoverage
+                )
+                .setDefaultValue(AntiAliasingConfig.DEFAULT_MSAA_ALPHA_TO_COVERAGE)
+                .setControlHiddenWhenDisabled(true)
+                .setEnabledProvider(
+                        state -> antiAliasingAvailable()
+                                && state.readEnumOption(MODE_ID, AntiAliasingMode.class).usesMsaaSampleControl(),
                         MODE_ID,
                         ConfigState.UPDATE_ON_REBUILD
                 );
@@ -277,6 +304,15 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
      */
     private static void setMsaaSampleLevel(MsaaSampleLevel level) {
         SaltsAntiAliasingClient.runtime().setMsaaSampleLevel(level);
+    }
+
+    private static boolean msaaAlphaToCoverage() {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        return runtime != null && runtime.msaaAlphaToCoverage();
+    }
+
+    private static void setMsaaAlphaToCoverage(boolean enabled) {
+        SaltsAntiAliasingClient.runtime().setMsaaAlphaToCoverage(enabled);
     }
 
     /**

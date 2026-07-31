@@ -1,60 +1,56 @@
 # Changelog
 
-## Current Features
+## X.1 — Minecraft 26.2
 
-### Anti-Aliasing And Image Modes
+These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.2`.
 
-- Added `Off` as a clean vanilla baseline mode.
-- Added `FXAA` as a lightweight post-process anti-aliasing option.
-- Added `MSAA` with `2x`, `4x`, `8x`, and `16x` sample options.
-- Added `SSAA` with `125%`, `150%`, `175%`, and `200%` render-scale options.
-- Added `SMAA` as a higher-quality spatial anti-aliasing option.
-- Added `TAA` as a temporal anti-aliasing option with history-based smoothing.
-- Added `NIS Upscale` with `Quality`, `Balanced`, `Performance`, and `Ultra Performance` presets.
-- Added `FSR1 Upscale` with `Quality`, `Balanced`, `Performance`, and `Ultra Performance` presets.
-- Added one independent `Sharpness` control for every mode, including `Off`, defaulting to `0%`.
+### Platform And Compatibility
 
-### Video Settings Integration
+- Updated the mod from Minecraft 26.1.2 to Minecraft 26.2, including the matching Fabric Loader, Fabric API, Mod Menu, and Sodium API versions.
+- Replaced the OpenGL rendering paths with native Vulkan implementations for anti-aliasing, supersampling, upscaling, temporal history, and multisample resolve.
+- Anti-aliasing modes now require Minecraft's Vulkan renderer. Saved settings remain intact when Vulkan is unavailable.
+- Restored MSAA availability when Sodium is installed.
+- Improved Vulkan capability checks, supported-sample clamping, failure recovery, image-layout synchronization, and color-blit completion.
 
-- Added an in-game anti-aliasing mode selector to the Video Settings screen.
-- Added an always-available `Sharpness` slider and mode-specific controls only when relevant.
-- Added an `MSAA Samples` slider for `MSAA`.
-- Added an `SSAA Scale` slider for `SSAA`.
-- Added an `Upscale Quality` slider for NIS and FSR1 upscale modes.
-- Added live tooltips that explain what each option does and what each AA mode is best used for.
-- Added automatic disabling of the AA selector while `Improved Transparency` is enabled.
-- Updated the AA settings layout to fit the native two-column Video Settings style.
+### New Upscaling Modes
 
-### Rendering Rules And Compatibility
+- Added optional NVIDIA DLSS Super Resolution support with dedicated quality presets and a native bridge.
+- Added AMD FSR2 Super Resolution.
+- Added AMD FSR3 Super Resolution.
+- Added a separate FSR3 Super Resolution + Frame Generation mode.
+- Bundled the AMD FidelityFX Vulkan runtime and bridge for Windows x64, while retaining advanced path overrides.
+- FSR3 Frame Generation can be selected only when its Vulkan swapchain path initializes successfully.
 
-- Kept all AA, sharpening, supersampling, and upscaling effects limited to the 3D scene.
-- Kept HUD, menus, and other UI elements out of the AA and upscale passes so they stay crisp.
-- Added scene-only render-target control for post-process and internal-resolution paths.
-- Added GPU-side handling for multisample resolve, supersample resolve, spatial upscale resolve, and temporal history flow.
-- Added backend-neutral render structure so the mod is organized for renderer-specific ports.
+### Image Quality
 
-### Debug Tools
+- Reworked TAA history reprojection to remove heavy blur and reduce ghosting while retaining temporal edge stability.
+- Corrected FSR2 and FSR3 render dimensions, jitter, depth data, motion vectors, exposure, and temporal inputs.
+- Added proper linear-color processing around FidelityFX evaluation.
+- Removed false sky and cloud parallax from FSR motion reconstruction.
+- Added temporal masks to stabilize translucent boundaries such as water, foliage, and block edges.
+- Corrected FSR3 Frame Generation reset behavior and HUDless-frame state handling.
+- Improved SMAA with directional edge weighting and sharpening support.
+- Propagated internal render resolution correctly to shaders used by scaled rendering modes.
+- Kept MSAA cutout textures binary by default, preventing distant transparent blocks and foliage from fading or stippling.
+- Added an optional MSAA-only `Alpha to Coverage` toggle for players who prefer smoother cutout edges. It defaults to `Off` and applies live without requiring a restart.
 
-- Added an edge-debug display that can be toggled with `F3 + K`.
-- Added a black-and-white edge preview for checking edge detection coverage.
-- Added on-screen edge-debug statistics for quick quality inspection.
+### Settings And User Interface
 
-### Config And Persistence
+- Rebuilt the Video Settings integration for Minecraft 26.2.
+- Fixed the crash that prevented the Video Settings screen from opening.
+- Added a scrollable anti-aliasing mode popup that always renders above the settings buttons.
+- Added wrapped, multi-line mode tooltips so descriptions remain readable near screen edges.
+- Made the popup modal so controls behind it no longer highlight, change the cursor, scroll, or receive clicks.
+- Added click-and-drag support for the popup scrollbar.
+- Added mode-specific DLSS and FSR quality controls.
+- Replaced combined sharpening modes with one independent `Sharpness` slider available for every mode, including `Off`.
+- Sharpness now defaults to `0%`; existing `NIS Sharpen` and `FSR1 + RCAS` configurations migrate to their corresponding base modes.
+- Added the MSAA `Alpha to Coverage` option to the integrated Video Settings section, Mod Menu screen, and Sodium settings API.
+- Removed the default `O` binding from `Cycle AA Mode` to avoid conflicts with shader-pack controls. Existing custom bindings remain unchanged.
 
-- Added a JSON config file for the mod's settings.
-- Added persistence for AA mode, sharpness, sample level, upscale quality, SSAA scale, and debug toggles.
-- Added `recordMetrics` to the config, disabled by default.
+### Documentation And Testing
 
-### Performance Metrics
-
-- Added optional performance recording to JSON reports when `recordMetrics` is enabled.
-- Added session-wide metrics such as average FPS, median FPS, 1% low FPS, 5% low FPS, frame-time stats, lag spikes, severe spikes, FPS drops, and low-FPS time.
-- Added per-mode metrics so each AA mode records its own totals and per-minute rates.
-- Added live metrics output to `logs/salts_anti_aliasing_metrics_latest.json`.
-- Added archived per-session metrics files in the game `logs` folder on shutdown.
-
-### General Polish
-
-- Added scroll-position preservation when changing AA modes in Video Settings.
-- Added mode-aware settings behavior so controls update live without restarting the game.
-- Added multiple rounds of visual and performance tuning for FXAA, TAA, MSAA, SSAA, NIS, and FSR1 paths.
+- Clarified that `200%` SSAA is twice the width and height, equivalent to conventional 4x SSAA.
+- Added setup and build documentation for the optional DLSS bridge and bundled FidelityFX bridge.
+- Updated renderer architecture and compatibility documentation for Minecraft 26.2.
+- Added regression tests for configuration migration, mode planning, dropdown scrolling, NIS resources, FSR temporal masks, Vulkan MSAA compatibility, and alpha-to-coverage policy.

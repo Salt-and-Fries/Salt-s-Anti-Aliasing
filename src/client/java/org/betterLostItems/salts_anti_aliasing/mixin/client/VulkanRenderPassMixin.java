@@ -25,6 +25,8 @@ import java.util.function.Supplier;
 public abstract class VulkanRenderPassMixin {
     @Unique
     private int saltsAntiAliasing$sampleCount = 1;
+    @Unique
+    private boolean saltsAntiAliasing$alphaToCoverageRequested;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void saltsAntiAliasing$rememberRenderPassSampleCount(
@@ -40,6 +42,7 @@ public abstract class VulkanRenderPassMixin {
             CallbackInfo callbackInfo
     ) {
         saltsAntiAliasing$sampleCount = VulkanMsaaState.currentRenderPassSampleCount();
+        saltsAntiAliasing$alphaToCoverageRequested = VulkanMsaaState.currentSceneAlphaToCoverage();
     }
 
     @Redirect(
@@ -58,9 +61,19 @@ public abstract class VulkanRenderPassMixin {
             return ((VulkanDevicePipelineAccessor) device).saltsAntiAliasing$getOrCompilePipeline(pipeline);
         }
 
-        RenderPipeline msaaPipeline = VulkanMsaaPipelineVariants.variant(pipeline, samples);
-        return VulkanMsaaState.withPipelineSampleCount(
+        boolean alphaToCoverage = VulkanMsaaPipelineVariants.usesAlphaToCoverage(
+                pipeline,
                 samples,
+                saltsAntiAliasing$alphaToCoverageRequested
+        );
+        RenderPipeline msaaPipeline = VulkanMsaaPipelineVariants.variant(
+                pipeline,
+                samples,
+                alphaToCoverage
+        );
+        return VulkanMsaaState.withPipelineState(
+                samples,
+                alphaToCoverage,
                 () -> ((VulkanDevicePipelineAccessor) device).saltsAntiAliasing$getOrCompilePipeline(msaaPipeline)
         );
     }

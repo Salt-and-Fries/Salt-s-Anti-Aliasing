@@ -94,6 +94,7 @@ public final class VulkanSceneMsaaController {
             );
             this.mainTarget = mainTarget;
             active = true;
+            VulkanMsaaState.beginScene(config.msaaAlphaToCoverage);
         } catch (RuntimeException exception) {
             disableAfterFailure(
                     "Disabling Vulkan MSAA scene rendering for the current configuration after a setup failure",
@@ -489,5 +490,6 @@ public final class VulkanSceneMsaaController {
     private void clearFrameState() {
         active = false;
         mainTarget = null;
+        VulkanMsaaState.endScene();
     }
 }
