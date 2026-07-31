@@ -137,7 +137,7 @@ final class VulkanMotionVectorRenderer {
                     sceneTarget.getDepthTextureView(),
                     RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
             );
-            renderPass.draw(0, 0, 3, 1);
+            renderPass.draw(3, 1, 0, 0);
         }
     }
 
