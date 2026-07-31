@@ -51,6 +51,9 @@ public final class VulkanSceneFsrController {
     private static final String MOTION_VECTOR_TARGET_LABEL = "Salt's FSR Motion Vectors";
     private static final String OPAQUE_SCENE_TARGET_LABEL = "Salt's FSR Opaque Scene";
     private static final String LINEAR_OPAQUE_SCENE_TARGET_LABEL = "Salt's FSR Linear Opaque Scene";
+    private static final String PREVIOUS_LINEAR_SCENE_TARGET_LABEL = "Salt's FSR Previous Linear Scene";
+    private static final String PREVIOUS_LINEAR_OPAQUE_SCENE_TARGET_LABEL =
+            "Salt's FSR Previous Linear Opaque Scene";
     private static final String REACTIVE_MASK_TARGET_LABEL = "Salt's FSR Reactive Mask";
     private static final String TRANSPARENCY_MASK_TARGET_LABEL = "Salt's FSR Transparency Mask";
     private static final String UPSCALED_COLOR_TARGET_LABEL = "Salt's FSR Upscaled Color";
@@ -79,6 +82,8 @@ public final class VulkanSceneFsrController {
     private TextureTarget motionVectorTarget;
     private TextureTarget opaqueSceneTarget;
     private TextureTarget linearOpaqueSceneTarget;
+    private TextureTarget previousLinearSceneTarget;
+    private TextureTarget previousLinearOpaqueSceneTarget;
     private RenderTarget reactiveMaskTarget;
     private TextureTarget transparencyMaskTarget;
     private RenderTarget upscaledColorTarget;
@@ -91,6 +96,7 @@ public final class VulkanSceneFsrController {
     private long lastSuccessfulTemporalFrameIndex = -1L;
     private FsrFrameSignature lastFrameSignature;
     private boolean nativeSharpeningSucceededThisFrame;
+    private boolean maskHistoryValid;
 
     private VulkanSceneFsrController() {
     }
@@ -164,7 +170,9 @@ public final class VulkanSceneFsrController {
             ensureOpaqueSceneCaptured();
             prepareLinearColorInputs();
             generateMotionVectors();
-            int result = evaluateFsr(frameConfig);
+            FsrFrameState frameState = prepareFrameState(frameConfig);
+            generateTemporalMasks(frameState.resetHistory());
+            int result = evaluateFsr(frameConfig, frameState);
             if (result != 0) {
                 SaltsAntiAliasing.LOGGER.warn("AMD FSR evaluate failed with result {}; falling back to scene resolve", result);
                 resolveSceneColor(sceneTarget, mainTarget);
@@ -250,7 +258,7 @@ public final class VulkanSceneFsrController {
         return true;
     }
 
-    private int evaluateFsr(AntiAliasingConfig config) {
+    private int evaluateFsr(AntiAliasingConfig config, FsrFrameState frameState) {
         if (sceneTarget == null
                 || linearSceneTarget == null
                 || mainTarget == null
@@ -307,21 +315,6 @@ public final class VulkanSceneFsrController {
 
         VulkanSceneTemporalController temporal = VulkanSceneTemporalController.instance();
         CameraParameters cameraParameters = CameraParameters.current(temporal);
-        FrameTiming frameTiming = sampleFrameTiming();
-        long temporalFrameIndex = temporal.frameIndex();
-        FsrFrameSignature frameSignature = new FsrFrameSignature(
-                fsrVersion(config.mode),
-                config.mode.usesFsrFrameGeneration(),
-                sceneTarget.width,
-                sceneTarget.height,
-                upscaledColorTarget.width,
-                upscaledColorTarget.height,
-                config.fsrQualityPreset.ordinal()
-        );
-        boolean resetHistory = temporal.resetHistoryThisFrame()
-                || frameTiming.discontinuity()
-                || temporalFrameIndex != lastSuccessfulTemporalFrameIndex + 1L
-                || !frameSignature.equals(lastFrameSignature);
         VkCommandBuffer commandBuffer = vulkanCommandEncoder.allocateAndBeginTransientCommandBuffer();
         try (MemoryStack stack = MemoryStack.stackPush()) {
             prepareEvaluateResources(commandBuffer, stack);
@@ -352,12 +345,12 @@ public final class VulkanSceneFsrController {
                 upscaledColorTarget.height,
                 temporal.currentJitterTexelX(),
                 temporal.currentJitterTexelY(),
-                resetHistory,
-                temporalFrameIndex,
+                frameState.resetHistory(),
+                frameState.temporalFrameIndex(),
                 1.0f,
                 1.0f,
                 config.sharpenStrength,
-                frameTiming.deltaMs(),
+                frameState.timing().deltaMs(),
                 cameraParameters.nearPlane(),
                 cameraParameters.farPlane(),
                 cameraParameters.fovY(),
@@ -388,9 +381,29 @@ public final class VulkanSceneFsrController {
         }
         vulkanCommandEncoder.execute(commandBuffer);
         vulkanCommandEncoder.submit();
-        lastSuccessfulTemporalFrameIndex = result == 0 ? temporalFrameIndex : -1L;
-        lastFrameSignature = result == 0 ? frameSignature : null;
+        lastSuccessfulTemporalFrameIndex = result == 0 ? frameState.temporalFrameIndex() : -1L;
+        lastFrameSignature = result == 0 ? frameState.signature() : null;
         return result;
+    }
+
+    private FsrFrameState prepareFrameState(AntiAliasingConfig config) {
+        VulkanSceneTemporalController temporal = VulkanSceneTemporalController.instance();
+        FrameTiming timing = sampleFrameTiming();
+        long temporalFrameIndex = temporal.frameIndex();
+        FsrFrameSignature signature = new FsrFrameSignature(
+                fsrVersion(config.mode),
+                config.mode.usesFsrFrameGeneration(),
+                sceneTarget.width,
+                sceneTarget.height,
+                upscaledColorTarget.width,
+                upscaledColorTarget.height,
+                config.fsrQualityPreset.ordinal()
+        );
+        boolean resetHistory = temporal.resetHistoryThisFrame()
+                || timing.discontinuity()
+                || temporalFrameIndex != lastSuccessfulTemporalFrameIndex + 1L
+                || !signature.equals(lastFrameSignature);
+        return new FsrFrameState(timing, temporalFrameIndex, signature, resetHistory);
     }
 
     private void prepareEvaluateResources(VkCommandBuffer commandBuffer, MemoryStack stack) {
@@ -632,7 +645,59 @@ public final class VulkanSceneFsrController {
         renderer.decode(opaqueSceneTarget, linearOpaqueSceneTarget);
     }
 
+    private void generateTemporalMasks(boolean fsrHistoryReset) {
+        if (linearSceneTarget == null
+                || linearOpaqueSceneTarget == null
+                || previousLinearSceneTarget == null
+                || previousLinearOpaqueSceneTarget == null
+                || motionVectorTarget == null
+                || reactiveMaskTarget == null
+                || transparencyMaskTarget == null) {
+            return;
+        }
+
+        VulkanSceneTemporalController temporal = VulkanSceneTemporalController.instance();
+        boolean historyReset = !maskHistoryValid || fsrHistoryReset;
+        if (historyReset) {
+            updateTemporalMaskHistory();
+            return;
+        }
+
+        VulkanFsrTemporalMaskRenderer.instance().render(
+                linearSceneTarget,
+                linearOpaqueSceneTarget,
+                previousLinearSceneTarget,
+                previousLinearOpaqueSceneTarget,
+                motionVectorTarget,
+                reactiveMaskTarget,
+                transparencyMaskTarget,
+                temporal
+        );
+
+        updateTemporalMaskHistory();
+    }
+
+    private void updateTemporalMaskHistory() {
+        copyColor(
+                linearSceneTarget,
+                previousLinearSceneTarget,
+                "Salt's FSR Previous Full-Color Update"
+        );
+        copyColor(
+                linearOpaqueSceneTarget,
+                previousLinearOpaqueSceneTarget,
+                "Salt's FSR Previous Opaque Update"
+        );
+        maskHistoryValid = true;
+    }
+
     private void ensureTargets(int renderWidth, int renderHeight, int outputWidth, int outputHeight) {
+        boolean maskHistorySizeChanged = previousLinearSceneTarget == null
+                || previousLinearOpaqueSceneTarget == null
+                || previousLinearSceneTarget.width != renderWidth
+                || previousLinearSceneTarget.height != renderHeight
+                || previousLinearOpaqueSceneTarget.width != renderWidth
+                || previousLinearOpaqueSceneTarget.height != renderHeight;
         sceneTarget = ensureTarget(sceneTarget, SCENE_TARGET_LABEL, renderWidth, renderHeight, true, GpuFormat.RGBA8_UNORM);
         linearSceneTarget = ensureTarget(
                 linearSceneTarget,
@@ -666,6 +731,25 @@ public final class VulkanSceneFsrController {
                 false,
                 GpuFormat.RGBA16_FLOAT
         );
+        previousLinearSceneTarget = ensureTarget(
+                previousLinearSceneTarget,
+                PREVIOUS_LINEAR_SCENE_TARGET_LABEL,
+                renderWidth,
+                renderHeight,
+                false,
+                GpuFormat.RGBA16_FLOAT
+        );
+        previousLinearOpaqueSceneTarget = ensureTarget(
+                previousLinearOpaqueSceneTarget,
+                PREVIOUS_LINEAR_OPAQUE_SCENE_TARGET_LABEL,
+                renderWidth,
+                renderHeight,
+                false,
+                GpuFormat.RGBA16_FLOAT
+        );
+        if (maskHistorySizeChanged) {
+            maskHistoryValid = false;
+        }
         reactiveMaskTarget = ensureStorageTarget(
                 reactiveMaskTarget,
                 REACTIVE_MASK_TARGET_LABEL,
@@ -817,6 +901,8 @@ public final class VulkanSceneFsrController {
         destroyTarget(motionVectorTarget);
         destroyTarget(opaqueSceneTarget);
         destroyTarget(linearOpaqueSceneTarget);
+        destroyTarget(previousLinearSceneTarget);
+        destroyTarget(previousLinearOpaqueSceneTarget);
         destroyTarget(reactiveMaskTarget);
         destroyTarget(transparencyMaskTarget);
         destroyTarget(upscaledColorTarget);
@@ -826,10 +912,13 @@ public final class VulkanSceneFsrController {
         motionVectorTarget = null;
         opaqueSceneTarget = null;
         linearOpaqueSceneTarget = null;
+        previousLinearSceneTarget = null;
+        previousLinearOpaqueSceneTarget = null;
         reactiveMaskTarget = null;
         transparencyMaskTarget = null;
         upscaledColorTarget = null;
         hudlessColorTarget = null;
+        maskHistoryValid = false;
     }
 
     private void destroyTarget(RenderTarget target) {
@@ -954,6 +1043,14 @@ public final class VulkanSceneFsrController {
     }
 
     private record FrameTiming(float deltaMs, boolean discontinuity) {
+    }
+
+    private record FsrFrameState(
+            FrameTiming timing,
+            long temporalFrameIndex,
+            FsrFrameSignature signature,
+            boolean resetHistory
+    ) {
     }
 
     private record FsrFrameSignature(

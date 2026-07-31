@@ -800,44 +800,6 @@ FfxApiResource mask_input(jlong image, uint32_t width, uint32_t height) {
             FFX_API_RESOURCE_STATE_PIXEL_COMPUTE_READ);
 }
 
-FfxApiResource mask_output(jlong image, uint32_t width, uint32_t height) {
-    return resource(
-            image,
-            FFX_API_SURFACE_FORMAT_R8_UNORM,
-            width,
-            height,
-            FFX_API_RESOURCE_USAGE_UAV,
-            // FidelityFX restores imported resources to this state when reactive-mask
-            // generation finishes. Returning the mask to a readable state inserts the
-            // required UAV-write -> SRV-read barrier before the following upscale dispatch.
-            FFX_API_RESOURCE_STATE_PIXEL_COMPUTE_READ);
-}
-
-ffxReturnCode_t generate_reactive_mask(
-        void* command_list,
-        jlong opaque_color_image,
-        jlong input_color_image,
-        jlong reactive_mask_image,
-        uint32_t render_width,
-        uint32_t render_height) {
-    if (opaque_color_image == 0 || input_color_image == 0 || reactive_mask_image == 0) {
-        return FFX_API_RETURN_OK;
-    }
-
-    ffxDispatchDescUpscaleGenerateReactiveMask desc{};
-    desc.header.type = FFX_API_DISPATCH_DESC_TYPE_UPSCALE_GENERATEREACTIVEMASK;
-    desc.commandList = command_list;
-    desc.colorOpaqueOnly = color_input(opaque_color_image, render_width, render_height);
-    desc.colorPreUpscale = color_input(input_color_image, render_width, render_height);
-    desc.outReactive = mask_output(reactive_mask_image, render_width, render_height);
-    desc.renderSize = {render_width, render_height};
-    desc.scale = 1.0f;
-    desc.cutoffThreshold = 0.2f;
-    desc.binaryValue = 0.9f;
-    desc.flags = FFX_UPSCALE_AUTOREACTIVEFLAGS_APPLY_THRESHOLD
-            | FFX_UPSCALE_AUTOREACTIVEFLAGS_USE_COMPONENTS_MAX;
-    return g_ffx_dispatch(&g_upscale_context, &desc.header);
-}
 #endif
 }
 
@@ -1299,6 +1261,7 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     (void) output_color_view;
     (void) depth_view;
     (void) motion_vector_view;
+    (void) opaque_color_image;
     (void) opaque_color_view;
     (void) reactive_mask_view;
     (void) transparency_mask_view;
@@ -1330,10 +1293,6 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     }
 
     void* command_list = reinterpret_cast<void*>(static_cast<uintptr_t>(command_buffer));
-    result = generate_reactive_mask(command_list, opaque_color_image, input_color_image, reactive_mask_image, render_w, render_h);
-    if (result != FFX_API_RETURN_OK) {
-        return static_cast<jint>(result);
-    }
 
     ffxDispatchDescUpscale desc{};
     desc.header.type = FFX_API_DISPATCH_DESC_TYPE_UPSCALE;
