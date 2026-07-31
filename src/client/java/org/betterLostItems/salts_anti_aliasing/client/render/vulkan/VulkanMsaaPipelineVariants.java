@@ -18,7 +18,6 @@ import java.util.Set;
  * Creates stable RenderPipeline identities for MSAA sample-count variants.
  */
 public final class VulkanMsaaPipelineVariants {
-    private static final String ALPHA_CUTOUT_DEFINE = "ALPHA_CUTOUT";
     private static final Map<RenderPipeline, Map<Integer, RenderPipeline>> VARIANTS = new IdentityHashMap<>();
 
     private VulkanMsaaPipelineVariants() {
@@ -52,18 +51,6 @@ public final class VulkanMsaaPipelineVariants {
         );
     }
 
-    public static boolean usesAlphaToCoverage(RenderPipeline pipeline, int samples) {
-        boolean hasAlphaCutout = pipeline.getShaderDefines().values().containsKey(ALPHA_CUTOUT_DEFINE);
-        boolean hasBlendedColorTarget = Arrays.stream(pipeline.getColorTargetStates())
-                .filter(state -> state != null)
-                .anyMatch(state -> state.blendFunction().isPresent());
-        return VulkanAlphaToCoveragePolicy.shouldEnable(
-                samples,
-                hasAlphaCutout,
-                hasBlendedColorTarget
-        );
-    }
-
     private static Identifier variantLocation(Identifier location, int samples) {
         return Identifier.fromNamespaceAndPath(
                 location.getNamespace(),
@@ -72,13 +59,7 @@ public final class VulkanMsaaPipelineVariants {
     }
 
     private static ShaderDefines copyShaderDefines(ShaderDefines defines) {
-        // Preserve each material's original cutoff. Minecraft's mipmaps retain small non-zero
-        // alpha values to preserve coverage around that cutoff; lowering it to zero makes those
-        // nominally transparent texels become visible alpha-to-coverage samples at long range.
-        return new ShaderDefines(
-                VulkanAlphaToCoveragePolicy.preserveShaderDefines(defines.values()),
-                Set.copyOf(defines.flags())
-        );
+        return new ShaderDefines(Map.copyOf(defines.values()), Set.copyOf(defines.flags()));
     }
 
     private static ColorTargetState[] copyColorTargetStates(ColorTargetState[] states) {

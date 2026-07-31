@@ -191,7 +191,7 @@ When syncing a sibling jar branch:
 - Scene-only effects are applied after 3D world rendering and before HUD/menu rendering.
 - Internal-resolution modes temporarily redirect Minecraft's main render target.
 - Anti-aliasing is blocked unless Minecraft reports an active Vulkan device.
-- MSAA uses native Vulkan multisampled scene textures, alpha-to-coverage for opaque cutout foliage, and resolves into Minecraft's main target after world rendering.
+- MSAA uses native Vulkan multisampled scene textures and resolves into Minecraft's main target after world rendering. Cutout textures keep Minecraft's binary alpha behavior instead of fading through partial sample coverage.
 - TAA uses jitter, a persistent history target, and dynamic uniforms.
 - DLSS redirects world rendering to a Streamline-selected internal-resolution target and evaluates through the optional JNI bridge when all external requirements are met.
 - FSR2/FSR3 use the bundled FidelityFX Vulkan runtime on Windows x64 and can be overridden with explicit native paths.
