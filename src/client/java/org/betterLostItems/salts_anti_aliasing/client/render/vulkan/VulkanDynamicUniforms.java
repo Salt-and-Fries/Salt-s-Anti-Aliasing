@@ -137,6 +137,11 @@ final class VulkanDynamicUniforms {
             bufferData.putFloat(Math.max(1, height));
             bufferData.putFloat(0.0f);
             bufferData.putFloat(0.0f);
+            float[] cameraTranslation = controller.cameraTranslationToPreviousArray();
+            bufferData.putFloat(cameraTranslation[0]);
+            bufferData.putFloat(cameraTranslation[1]);
+            bufferData.putFloat(cameraTranslation[2]);
+            bufferData.putFloat(0.0f);
         });
     }
 

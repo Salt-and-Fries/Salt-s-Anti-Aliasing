@@ -58,6 +58,7 @@ final class VulkanMotionVectorRenderer {
             .putVec4()
             .putVec4()
             .putVec4()
+            .putVec4()
             .get();
     private static final int MOTION_WRITE_MASK = ColorTargetState.WRITE_RED | ColorTargetState.WRITE_GREEN;
     private static final VulkanMotionVectorRenderer DLSS = new VulkanMotionVectorRenderer(
@@ -194,6 +195,15 @@ final class VulkanMotionVectorRenderer {
             }
             putMatrix(builder, controller.previousViewProjectionArray());
             builder.putVec4(Math.max(1, width), Math.max(1, height), 0.0f, 0.0f);
+            if (cancelProjectionJitter) {
+                float[] cameraTranslation = controller.cameraTranslationToPreviousArray();
+                builder.putVec4(
+                        cameraTranslation[0],
+                        cameraTranslation[1],
+                        cameraTranslation[2],
+                        0.0f
+                );
+            }
             data.flip();
             motionConfigBuffer = writeUniformBuffer(motionConfigBuffer, data, motionUniformName);
         }

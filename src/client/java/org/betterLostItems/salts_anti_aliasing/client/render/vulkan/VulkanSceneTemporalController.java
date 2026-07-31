@@ -67,6 +67,7 @@ public final class VulkanSceneTemporalController {
     private long frameIndex;
     private ClientLevel capturedLevel;
     private Vec3 capturedCameraPosition;
+    private Vec3 previousCameraPosition;
     private float capturedCameraXRot;
     private float capturedCameraYRot;
     private float currentCameraNear = 0.05f;
@@ -411,6 +412,23 @@ public final class VulkanSceneTemporalController {
     }
 
     /**
+     * Returns the world-space translation that moves a direction reconstructed around the current
+     * camera to the same direction around the previous camera. Clear-depth sky pixels use this to
+     * retain rotational motion without inventing parallax from camera translation.
+     */
+    public float[] cameraTranslationToPreviousArray() {
+        if (capturedCameraPosition == null || previousCameraPosition == null) {
+            return new float[] {0.0f, 0.0f, 0.0f};
+        }
+
+        return new float[] {
+                (float) (previousCameraPosition.x - capturedCameraPosition.x),
+                (float) (previousCameraPosition.y - capturedCameraPosition.y),
+                (float) (previousCameraPosition.z - capturedCameraPosition.z)
+        };
+    }
+
+    /**
      * Captures the final unjittered and jittered camera transforms used by the world pass.
      */
     private void captureFrameState(
@@ -443,6 +461,7 @@ public final class VulkanSceneTemporalController {
 
         if (hasViewProjection) {
             previousViewProjection.set(currentViewProjection);
+            previousCameraPosition = capturedCameraPosition;
         }
 
         Matrix4f view = new Matrix4f(cameraRenderState.viewRotationMatrix);
@@ -477,6 +496,7 @@ public final class VulkanSceneTemporalController {
         currentCameraFovY = nextCameraFovY;
         if (!hasViewProjection) {
             previousViewProjection.set(currentViewProjection);
+            previousCameraPosition = position;
             resetHistoryThisFrame = true;
             hasViewProjection = true;
         }
@@ -548,6 +568,7 @@ public final class VulkanSceneTemporalController {
         frameIndex = 0L;
         capturedLevel = null;
         capturedCameraPosition = null;
+        previousCameraPosition = null;
         capturedCameraXRot = 0.0f;
         capturedCameraYRot = 0.0f;
         currentViewProjection.identity();

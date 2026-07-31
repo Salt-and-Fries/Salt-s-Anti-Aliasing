@@ -21,6 +21,7 @@ layout(std140) uniform FsrMotionConfig {
     vec4 PreviousViewProjection2;
     vec4 PreviousViewProjection3;
     vec4 MotionConfig;
+    vec4 CameraTranslationToPrevious;
 };
 
 in vec2 texCoord;
@@ -59,8 +60,15 @@ void main() {
     }
     world /= world.w;
 
+    vec4 previousWorld = world;
+    if (depth <= 0.0000001) {
+        // Reverse-Z clears the background to zero. The reconstructed point is only an arbitrary
+        // far-plane stand-in, so translating it with the camera creates false sky parallax.
+        previousWorld.xyz += CameraTranslationToPrevious.xyz;
+    }
+
     vec4 currentUnjitteredClip = currentViewProjection * world;
-    vec4 previousClip = previousViewProjection * world;
+    vec4 previousClip = previousViewProjection * previousWorld;
     if (currentUnjitteredClip.w <= 0.00001 || previousClip.w <= 0.00001) {
         fragColor = vec4(0.0);
         return;

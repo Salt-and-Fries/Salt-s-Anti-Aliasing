@@ -78,6 +78,11 @@
             "name": "MotionConfig",
             "type": "vec4",
             "value": [1.0, 1.0, 0.0, 0.0]
+          },
+          {
+            "name": "CameraTranslationToPrevious",
+            "type": "vec4",
+            "value": [0.0, 0.0, 0.0, 0.0]
           }
         ]
       }
