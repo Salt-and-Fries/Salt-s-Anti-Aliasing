@@ -70,6 +70,10 @@ public final class VulkanColorBlitter {
                     VK12.VK_FILTER_LINEAR
             );
             completedBarrier(commandBuffer, stack, sourceVulkanTexture, destinationVulkanTexture);
+            int endResult = VK12.vkEndCommandBuffer(commandBuffer);
+            if (endResult != VK12.VK_SUCCESS) {
+                throw new IllegalStateException("Failed to end Vulkan color blit command buffer: " + endResult);
+            }
             encoder.execute(commandBuffer);
         }
     }
