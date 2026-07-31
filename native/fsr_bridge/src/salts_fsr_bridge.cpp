@@ -767,7 +767,7 @@ FfxApiResource hudless_color(jlong image, uint32_t width, uint32_t height) {
             width,
             height,
             FFX_API_RESOURCE_USAGE_READ_ONLY,
-            FFX_API_RESOURCE_STATE_COMPUTE_READ);
+            FFX_API_RESOURCE_STATE_GENERIC_READ);
 }
 
 FfxApiResource depth_input(jlong image, uint32_t width, uint32_t height) {
