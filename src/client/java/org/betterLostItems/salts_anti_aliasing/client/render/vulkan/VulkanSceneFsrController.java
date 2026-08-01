@@ -97,6 +97,9 @@ public final class VulkanSceneFsrController {
     private FsrFrameSignature lastFrameSignature;
     private boolean nativeSharpeningSucceededThisFrame;
     private boolean maskHistoryValid;
+    private boolean frameGenerationHudlessCapturePending;
+    private RenderTarget frameGenerationHudlessSource;
+    private FsrControllerRecoverySignature lastRecoverySignature;
 
     private VulkanSceneFsrController() {
     }
@@ -119,6 +122,9 @@ public final class VulkanSceneFsrController {
         RenderSystem.assertOnRenderThread();
         nativeSharpeningSucceededThisFrame = false;
         destroyResourcesIfPending();
+        resetDisabledStateWhenRetryIsSafe(config);
+        frameGenerationHudlessCapturePending = false;
+        frameGenerationHudlessSource = null;
         clearFrameState();
 
         if (disabledAfterFailure || !isFsrMode(config.mode) || !FsrRuntime.instance().isUpscalingReady()) {
@@ -152,7 +158,11 @@ public final class VulkanSceneFsrController {
             this.activeConfig = config.copy();
             active = true;
         } catch (RuntimeException exception) {
-            disableAfterFailure("Disabling AMD FSR after a setup failure", exception);
+            disableAfterFailure(
+                    "Disabling AMD FSR after a setup failure",
+                    exception,
+                    config.mode.usesFsrFrameGeneration()
+            );
         }
     }
 
@@ -182,10 +192,15 @@ public final class VulkanSceneFsrController {
             }
 
             if (result == 0 && frameConfig.mode.usesFsrFrameGeneration()) {
-                copyColor(mainTarget, hudlessColorTarget, "Salt's FSR HUDless Color Copy");
+                frameGenerationHudlessCapturePending = true;
+                frameGenerationHudlessSource = mainTarget;
             }
         } catch (RuntimeException exception) {
-            disableAfterFailure("Disabling AMD FSR after an evaluate failure", exception);
+            disableAfterFailure(
+                    "Disabling AMD FSR after an evaluate failure",
+                    exception,
+                    frameConfig.mode.usesFsrFrameGeneration()
+            );
         } finally {
             resourcePool.endFrame();
             clearFrameState();
@@ -201,6 +216,36 @@ public final class VulkanSceneFsrController {
         boolean succeeded = nativeSharpeningSucceededThisFrame;
         nativeSharpeningSucceededThisFrame = false;
         return succeeded;
+    }
+
+    /**
+     * Captures the scene-only output after final post effects and immediately before Minecraft
+     * starts drawing the GUI. FidelityFX uses this image to keep generated frames HUD-free.
+     */
+    public void captureFrameGenerationHudlessColor() {
+        RenderSystem.assertOnRenderThread();
+        if (!frameGenerationHudlessCapturePending) {
+            return;
+        }
+
+        RenderTarget source = frameGenerationHudlessSource;
+        frameGenerationHudlessCapturePending = false;
+        frameGenerationHudlessSource = null;
+        if (source != null
+                && hudlessColorTarget != null
+                && FsrRuntime.instance().isFrameGenerationSwapchainActive()) {
+            try {
+                copyColor(source, hudlessColorTarget, "Salt's FSR HUDless Color Copy");
+            } catch (RuntimeException exception) {
+                FsrRuntime.instance().onFrameGenerationEvaluationFailure(-2);
+                disabledAfterFailure = true;
+                destroyResourcesAfterFrame = true;
+                SaltsAntiAliasing.LOGGER.error(
+                        "Disabling AMD FSR3 frame generation after the HUDless scene capture failed",
+                        exception
+                );
+            }
+        }
     }
 
     public void captureOpaqueScene() {
@@ -375,12 +420,20 @@ public final class VulkanSceneFsrController {
         }
         int endResult = VK12.vkEndCommandBuffer(commandBuffer);
         if (endResult != VK12.VK_SUCCESS) {
+            if (parameters.frameGeneration()) {
+                // Native configuration has already accepted this frame, but its commands will
+                // never be submitted. Tear it down so present cannot interpolate stale inputs.
+                FsrRuntime.instance().onFrameGenerationEvaluationFailure(endResult);
+            }
             lastSuccessfulTemporalFrameIndex = -1L;
             lastFrameSignature = null;
             return endResult;
         }
         vulkanCommandEncoder.execute(commandBuffer);
         vulkanCommandEncoder.submit();
+        if (result != 0 && parameters.frameGeneration()) {
+            FsrRuntime.instance().onFrameGenerationEvaluationFailure(result);
+        }
         lastSuccessfulTemporalFrameIndex = result == 0 ? frameState.temporalFrameIndex() : -1L;
         lastFrameSignature = result == 0 ? frameState.signature() : null;
         return result;
@@ -874,7 +927,14 @@ public final class VulkanSceneFsrController {
         return sceneTarget;
     }
 
-    private void disableAfterFailure(String message, RuntimeException exception) {
+    private void disableAfterFailure(
+            String message,
+            RuntimeException exception,
+            boolean frameGenerationRequested
+    ) {
+        if (frameGenerationRequested) {
+            FsrRuntime.instance().onFrameGenerationEvaluationFailure(-1);
+        }
         disabledAfterFailure = true;
         destroyResourcesAfterFrame = mainTarget != null;
         if (!destroyResourcesAfterFrame) {
@@ -883,6 +943,24 @@ public final class VulkanSceneFsrController {
         }
         clearFrameState();
         SaltsAntiAliasing.LOGGER.error(message, exception);
+    }
+
+    private void resetDisabledStateWhenRetryIsSafe(AntiAliasingConfig config) {
+        FsrControllerRecoverySignature signature = new FsrControllerRecoverySignature(
+                config.mode,
+                config.fsrQualityPreset.ordinal(),
+                FsrRuntime.instance().recoveryGeneration()
+        );
+        if (signature.equals(lastRecoverySignature)) {
+            return;
+        }
+
+        lastRecoverySignature = signature;
+        disabledAfterFailure = false;
+        lastDispatchTimeNs = 0L;
+        lastSuccessfulTemporalFrameIndex = -1L;
+        lastFrameSignature = null;
+        maskHistoryValid = false;
     }
 
     private void destroyResourcesIfPending() {
@@ -919,6 +997,8 @@ public final class VulkanSceneFsrController {
         upscaledColorTarget = null;
         hudlessColorTarget = null;
         maskHistoryValid = false;
+        frameGenerationHudlessCapturePending = false;
+        frameGenerationHudlessSource = null;
     }
 
     private void destroyTarget(RenderTarget target) {
@@ -1061,6 +1141,13 @@ public final class VulkanSceneFsrController {
             int outputWidth,
             int outputHeight,
             int qualityPreset
+    ) {
+    }
+
+    private record FsrControllerRecoverySignature(
+            AntiAliasingMode mode,
+            int qualityPreset,
+            long runtimeGeneration
     ) {
     }
 

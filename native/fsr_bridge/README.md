@@ -12,9 +12,14 @@ Example Windows x64 build:
 ```powershell
 cmake -S native/fsr_bridge -B build/fsr_bridge `
   -DSALTS_FSR_WITH_FFX_SDK=ON `
-  -DSALTS_FFX_SDK=C:/SDKs/FidelityFX-SDK-1.1.4
+  -DSALTS_FFX_SDK=C:/SDKs/FidelityFX-SDK-1.1.4 `
+  -DSALTS_VULKAN_HEADERS=C:/SDKs/Vulkan-Headers
 cmake --build build/fsr_bridge --config Release
 ```
+
+Release builds use the FidelityFX SDK 1.1.4 headers (tag `v1.1.4`, commit
+`c6efa6bf7f2027b3ec94f28578bb5965eabb9e55`). SDK support defaults to `ON` so an
+accidental stub bridge cannot be mistaken for a working release binary.
 
 Runtime configuration can be supplied with either config JSON fields or these overrides. Explicit
 bridge/runtime overrides take precedence over the bundled DLLs:
@@ -35,9 +40,14 @@ swapchain and the frame-generation context is created. If the SDK runtime, GPU, 
 queue layout cannot support that, Minecraft falls back to its normal swapchain and the FSR3+FG option
 stays unavailable rather than silently behaving like plain FSR3 upscaling.
 
-The Vulkan frame-generation swapchain needs Minecraft's graphics queue plus two distinct auxiliary
-queues, with one auxiliary queue supporting presentation for the window surface. This follows the AMD
-FSR3 Vulkan swapchain model; devices/drivers where Minecraft only exposes one usable queue will not
-enable frame generation.
+The Vulkan frame-generation swapchain receives four distinct queue handles: Minecraft's graphics
+queue plus private async-compute, presentation, and image-acquire queues reserved before device
+creation. The presentation queue is revalidated against the real window surface. Devices or drivers
+that cannot expose those queues keep FSR2/FSR3 upscaling available but do not advertise frame
+generation.
+
+Frame interpolation currently uses FidelityFX's synchronous workload mode. This is the SDK's
+lower-memory path and avoids making HUD-less resource lifetimes depend on an overlapping async frame;
+the dedicated async-compute role is still reserved and validated for the replacement swapchain.
 
 Keep `native/redist/windows-x86_64/LICENSE-AMD-FidelityFX.txt` in sync with the bundled AMD runtime.

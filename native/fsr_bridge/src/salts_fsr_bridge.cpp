@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <iterator>
 #include <limits>
 #include <mutex>
 #include <string>
@@ -45,16 +46,21 @@ PfnFfxDispatch g_ffx_dispatch = nullptr;
 PFN_vkGetInstanceProcAddr g_vk_get_instance_proc_addr = nullptr;
 PFN_vkGetDeviceProcAddr g_vk_get_device_proc_addr = nullptr;
 PFN_vkGetPhysicalDeviceSurfaceSupportKHR g_vk_get_physical_device_surface_support_khr = nullptr;
+PFN_vkGetPhysicalDeviceQueueFamilyProperties g_vk_get_physical_device_queue_family_properties = nullptr;
+PFN_vkQueueWaitIdle g_vk_queue_wait_idle = nullptr;
 
 VkInstance g_vk_instance = VK_NULL_HANDLE;
 VkPhysicalDevice g_vk_physical_device = VK_NULL_HANDLE;
 VkDevice g_vk_device = VK_NULL_HANDLE;
 VkQueue g_vk_graphics_queue = VK_NULL_HANDLE;
 uint32_t g_vk_graphics_queue_family = 0;
-VkQueue g_vk_compute_queue = VK_NULL_HANDLE;
-uint32_t g_vk_compute_queue_family = 0;
-VkQueue g_vk_transfer_queue = VK_NULL_HANDLE;
-uint32_t g_vk_transfer_queue_family = 0;
+VkQueue g_vk_frame_generation_async_compute_queue = VK_NULL_HANDLE;
+uint32_t g_vk_frame_generation_async_compute_queue_family = 0;
+VkQueue g_vk_frame_generation_present_queue = VK_NULL_HANDLE;
+uint32_t g_vk_frame_generation_present_queue_family = 0;
+VkQueue g_vk_frame_generation_image_acquire_queue = VK_NULL_HANDLE;
+uint32_t g_vk_frame_generation_image_acquire_queue_family = 0;
+bool g_frame_generation_queues_available = false;
 
 ffxContext g_upscale_context = nullptr;
 ffxContext g_frame_generation_context = nullptr;
@@ -64,8 +70,14 @@ VkSwapchainKHR g_frame_generation_swapchain = VK_NULL_HANDLE;
 uint32_t g_frame_generation_display_width = 0;
 uint32_t g_frame_generation_display_height = 0;
 uint32_t g_frame_generation_backbuffer_format = FFX_API_SURFACE_FORMAT_UNKNOWN;
-uint64_t g_frame_generation_frame_id = 0;
-bool g_frame_generation_frame_id_initialized = false;
+uint32_t g_frame_generation_swapchain_width = 0;
+uint32_t g_frame_generation_swapchain_height = 0;
+uint32_t g_frame_generation_swapchain_backbuffer_format = FFX_API_SURFACE_FORMAT_UNKNOWN;
+uint64_t g_frame_generation_last_configured_frame_id = 0;
+uint64_t g_frame_generation_pending_frame_id = 0;
+bool g_frame_generation_last_configured_frame_id_initialized = false;
+bool g_frame_generation_prepared_for_present = false;
+bool g_frame_generation_reset_required = true;
 uint64_t g_fsr2_version_id = 0;
 uint64_t g_fsr3_version_id = 0;
 bool g_frame_generation_provider_available = false;
@@ -300,16 +312,30 @@ bool has_required_fidelityfx_vulkan_entrypoints() {
     return has_vulkan_device_proc("vkGetBufferMemoryRequirements2KHR");
 }
 
-bool load_vulkan_surface_symbols() {
-    if (g_vk_get_physical_device_surface_support_khr != nullptr) {
-        return true;
-    }
-    if (g_vk_get_instance_proc_addr == nullptr || g_vk_instance == VK_NULL_HANDLE) {
+bool load_vulkan_frame_generation_symbols() {
+    if (g_vk_get_instance_proc_addr == nullptr
+            || g_vk_get_device_proc_addr == nullptr
+            || g_vk_instance == VK_NULL_HANDLE
+            || g_vk_device == VK_NULL_HANDLE) {
         return false;
     }
-    g_vk_get_physical_device_surface_support_khr = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(
-            g_vk_get_instance_proc_addr(g_vk_instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
-    return g_vk_get_physical_device_surface_support_khr != nullptr;
+
+    if (g_vk_get_physical_device_surface_support_khr == nullptr) {
+        g_vk_get_physical_device_surface_support_khr = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(
+                g_vk_get_instance_proc_addr(g_vk_instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
+    }
+    if (g_vk_get_physical_device_queue_family_properties == nullptr) {
+        g_vk_get_physical_device_queue_family_properties =
+                reinterpret_cast<PFN_vkGetPhysicalDeviceQueueFamilyProperties>(
+                        g_vk_get_instance_proc_addr(g_vk_instance, "vkGetPhysicalDeviceQueueFamilyProperties"));
+    }
+    if (g_vk_queue_wait_idle == nullptr) {
+        g_vk_queue_wait_idle = reinterpret_cast<PFN_vkQueueWaitIdle>(
+                g_vk_get_device_proc_addr(g_vk_device, "vkQueueWaitIdle"));
+    }
+    return g_vk_get_physical_device_surface_support_khr != nullptr
+            && g_vk_get_physical_device_queue_family_properties != nullptr
+            && g_vk_queue_wait_idle != nullptr;
 }
 
 uint32_t quality_mode(jint quality_preset) {
@@ -391,39 +417,113 @@ void destroy_upscale_context() {
     g_context_max_output_height = 0;
 }
 
-void destroy_frame_generation_context() {
-    if (g_frame_generation_context != nullptr && g_ffx_destroy_context != nullptr) {
-        ffxConfigureDescFrameGeneration config{};
-        config.header.type = FFX_API_CONFIGURE_DESC_TYPE_FRAMEGENERATION;
-        config.swapChain = reinterpret_cast<void*>(g_frame_generation_swapchain);
-        config.frameGenerationEnabled = false;
-        g_ffx_configure(&g_frame_generation_context, &config.header);
-        g_ffx_destroy_context(&g_frame_generation_context, nullptr);
-    }
-    g_frame_generation_context = nullptr;
-    g_frame_generation_display_width = 0;
-    g_frame_generation_display_height = 0;
-    g_frame_generation_backbuffer_format = FFX_API_SURFACE_FORMAT_UNKNOWN;
-    g_frame_generation_frame_id = 0;
-    g_frame_generation_frame_id_initialized = false;
-    g_frame_generation_ready = false;
-}
-
-void destroy_frame_generation_swapchain_context() {
-    destroy_frame_generation_context();
-    if (g_frame_generation_swapchain_context != nullptr && g_ffx_destroy_context != nullptr) {
-        g_ffx_destroy_context(&g_frame_generation_swapchain_context, nullptr);
-    }
-    g_frame_generation_swapchain_context = nullptr;
-    g_swapchain_replacement_functions = {};
-    g_frame_generation_swapchain = VK_NULL_HANDLE;
-}
-
 ffxReturnCode_t frame_generation_dispatch_callback(ffxDispatchDescFrameGeneration* params, void* user_context) {
     if (params == nullptr || user_context == nullptr || g_ffx_dispatch == nullptr) {
         return FFX_API_RETURN_ERROR_PARAMETER;
     }
     return g_ffx_dispatch(reinterpret_cast<ffxContext*>(user_context), &params->header);
+}
+
+void reset_frame_generation_present_timeline() {
+    g_frame_generation_last_configured_frame_id = 0;
+    g_frame_generation_pending_frame_id = 0;
+    g_frame_generation_last_configured_frame_id_initialized = false;
+    g_frame_generation_prepared_for_present = false;
+    g_frame_generation_reset_required = true;
+}
+
+void unregister_frame_generation_ui_resource() {
+    if (g_frame_generation_swapchain_context == nullptr
+            || g_frame_generation_swapchain == VK_NULL_HANDLE
+            || g_ffx_configure == nullptr) {
+        return;
+    }
+
+    ffxConfigureDescFrameGenerationSwapChainRegisterUiResourceVK ui_config{};
+    ui_config.header.type = FFX_API_CONFIGURE_DESC_TYPE_FGSWAPCHAIN_REGISTERUIRESOURCE_VK;
+    ui_config.uiResource = {};
+    ui_config.flags = 0;
+    g_ffx_configure(&g_frame_generation_swapchain_context, &ui_config.header);
+}
+
+void configure_frame_generation_disabled() {
+    if (g_frame_generation_context != nullptr && g_ffx_configure != nullptr) {
+        ffxConfigureDescFrameGeneration config{};
+        config.header.type = FFX_API_CONFIGURE_DESC_TYPE_FRAMEGENERATION;
+        config.swapChain = reinterpret_cast<void*>(g_frame_generation_swapchain);
+        config.presentCallback = nullptr;
+        config.presentCallbackUserContext = nullptr;
+        config.frameGenerationCallback = nullptr;
+        config.frameGenerationCallbackUserContext = nullptr;
+        config.frameGenerationEnabled = false;
+        config.allowAsyncWorkloads = false;
+        config.HUDLessColor = {};
+        config.onlyPresentGenerated = false;
+        config.frameID = g_frame_generation_pending_frame_id;
+        g_ffx_configure(&g_frame_generation_context, &config.header);
+    }
+
+    unregister_frame_generation_ui_resource();
+    g_frame_generation_prepared_for_present = false;
+    g_frame_generation_reset_required = true;
+}
+
+void wait_for_frame_generation_presents() {
+    if (g_frame_generation_swapchain_context == nullptr
+            || g_frame_generation_swapchain == VK_NULL_HANDLE
+            || g_ffx_dispatch == nullptr) {
+        return;
+    }
+
+    ffxDispatchDescFrameGenerationSwapChainWaitForPresentsVK wait_desc{};
+    wait_desc.header.type = FFX_API_DISPATCH_DESC_TYPE_FGSWAPCHAIN_WAIT_FOR_PRESENTS_VK;
+    g_ffx_dispatch(&g_frame_generation_swapchain_context, &wait_desc.header);
+}
+
+void drain_frame_generation_work() {
+    if (g_vk_queue_wait_idle != nullptr && g_vk_graphics_queue != VK_NULL_HANDLE) {
+        g_vk_queue_wait_idle(g_vk_graphics_queue);
+    }
+    wait_for_frame_generation_presents();
+}
+
+void disable_frame_generation_context() {
+    drain_frame_generation_work();
+    configure_frame_generation_disabled();
+}
+
+void destroy_frame_generation_context() {
+    if (g_frame_generation_context != nullptr) {
+        disable_frame_generation_context();
+        if (g_ffx_destroy_context != nullptr) {
+            g_ffx_destroy_context(&g_frame_generation_context, nullptr);
+        }
+    } else {
+        unregister_frame_generation_ui_resource();
+        g_frame_generation_prepared_for_present = false;
+        g_frame_generation_reset_required = true;
+    }
+
+    g_frame_generation_context = nullptr;
+    g_frame_generation_display_width = 0;
+    g_frame_generation_display_height = 0;
+    g_frame_generation_backbuffer_format = FFX_API_SURFACE_FORMAT_UNKNOWN;
+    g_frame_generation_ready = false;
+    reset_frame_generation_present_timeline();
+}
+
+void destroy_frame_generation_swapchain_context() {
+    destroy_frame_generation_context();
+    if (g_frame_generation_swapchain_context != nullptr && g_ffx_destroy_context != nullptr) {
+        wait_for_frame_generation_presents();
+        g_ffx_destroy_context(&g_frame_generation_swapchain_context, nullptr);
+    }
+    g_frame_generation_swapchain_context = nullptr;
+    g_swapchain_replacement_functions = {};
+    g_frame_generation_swapchain = VK_NULL_HANDLE;
+    g_frame_generation_swapchain_width = 0;
+    g_frame_generation_swapchain_height = 0;
+    g_frame_generation_swapchain_backbuffer_format = FFX_API_SURFACE_FORMAT_UNKNOWN;
 }
 
 ffxReturnCode_t ensure_frame_generation_context(
@@ -472,6 +572,20 @@ ffxReturnCode_t ensure_frame_generation_context(
         return result;
     }
 
+    ffxConfigureDescFrameGeneration config{};
+    config.header.type = FFX_API_CONFIGURE_DESC_TYPE_FRAMEGENERATION;
+    config.swapChain = reinterpret_cast<void*>(g_frame_generation_swapchain);
+    config.frameGenerationCallback = frame_generation_dispatch_callback;
+    config.frameGenerationCallbackUserContext = &g_frame_generation_context;
+    config.frameGenerationEnabled = false;
+    config.allowAsyncWorkloads = false;
+    config.frameID = 0;
+    result = g_ffx_configure(&g_frame_generation_context, &config.header);
+    if (result != FFX_API_RETURN_OK) {
+        destroy_frame_generation_context();
+        return result;
+    }
+
     g_frame_generation_display_width = display_width;
     g_frame_generation_display_height = display_height;
     g_frame_generation_backbuffer_format = backbuffer_format;
@@ -479,15 +593,10 @@ ffxReturnCode_t ensure_frame_generation_context(
     return FFX_API_RETURN_OK;
 }
 
-struct QueueCandidate {
-    VkQueue queue = VK_NULL_HANDLE;
-    uint32_t family = 0;
-};
-
-VkQueueInfoFFXAPI queue_info(QueueCandidate candidate) {
+VkQueueInfoFFXAPI queue_info(VkQueue queue, uint32_t family) {
     VkQueueInfoFFXAPI result{};
-    result.queue = candidate.queue;
-    result.familyIndex = candidate.family;
+    result.queue = queue;
+    result.familyIndex = family;
     result.submitFunc = nullptr;
     return result;
 }
@@ -502,56 +611,61 @@ bool queue_supports_present(uint32_t family, VkSurfaceKHR surface) {
     return result == VK_SUCCESS && supported == VK_TRUE;
 }
 
-bool distinct_queue(VkQueue queue, VkQueue a, VkQueue b = VK_NULL_HANDLE) {
-    return queue != VK_NULL_HANDLE && queue != a && queue != b;
-}
-
-bool select_frame_generation_queues(
-        VkSurfaceKHR surface,
-        VkQueueInfoFFXAPI& async_compute_queue,
-        VkQueueInfoFFXAPI& present_queue,
-        VkQueueInfoFFXAPI& image_acquire_queue) {
-    std::vector<QueueCandidate> candidates = {
-            {g_vk_graphics_queue, g_vk_graphics_queue_family},
-            {g_vk_compute_queue, g_vk_compute_queue_family},
-            {g_vk_transfer_queue, g_vk_transfer_queue_family}
-    };
-
-    QueueCandidate async_compute = candidates[0];
-    for (QueueCandidate candidate : candidates) {
-        if (distinct_queue(candidate.queue, g_vk_graphics_queue)) {
-            async_compute = candidate;
-            break;
-        }
-    }
-
-    QueueCandidate present{};
-    for (QueueCandidate candidate : candidates) {
-        if (candidate.queue != VK_NULL_HANDLE && queue_supports_present(candidate.family, surface)) {
-            present = candidate;
-            break;
-        }
-    }
-
-    QueueCandidate image_acquire{};
-    for (QueueCandidate candidate : candidates) {
-        if (distinct_queue(candidate.queue, present.queue)) {
-            image_acquire = candidate;
-            break;
-        }
-    }
-    if (image_acquire.queue == VK_NULL_HANDLE) {
-        image_acquire = async_compute.queue != VK_NULL_HANDLE ? async_compute : present;
-    }
-
-    if (present.queue == VK_NULL_HANDLE || image_acquire.queue == VK_NULL_HANDLE || async_compute.queue == VK_NULL_HANDLE) {
+bool queue_family_supports(uint32_t family, VkQueueFlags required_flags) {
+    if (g_vk_get_physical_device_queue_family_properties == nullptr
+            || g_vk_physical_device == VK_NULL_HANDLE) {
         return false;
     }
 
-    async_compute_queue = queue_info(async_compute);
-    present_queue = queue_info(present);
-    image_acquire_queue = queue_info(image_acquire);
-    return true;
+    uint32_t family_count = 0;
+    g_vk_get_physical_device_queue_family_properties(g_vk_physical_device, &family_count, nullptr);
+    if (family >= family_count || family_count == 0) {
+        return false;
+    }
+
+    std::vector<VkQueueFamilyProperties> properties(family_count);
+    g_vk_get_physical_device_queue_family_properties(g_vk_physical_device, &family_count, properties.data());
+    if (family >= family_count || properties[family].queueCount == 0) {
+        return false;
+    }
+
+    VkQueueFlags available_flags = properties[family].queueFlags;
+    if ((required_flags & VK_QUEUE_TRANSFER_BIT) != 0
+            && (available_flags & (VK_QUEUE_TRANSFER_BIT | VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT)) != 0) {
+        required_flags &= ~VK_QUEUE_TRANSFER_BIT;
+    }
+    return (available_flags & required_flags) == required_flags;
+}
+
+bool validate_frame_generation_queues() {
+    if (!load_vulkan_frame_generation_symbols()
+            || g_vk_graphics_queue == VK_NULL_HANDLE
+            || g_vk_frame_generation_async_compute_queue == VK_NULL_HANDLE
+            || g_vk_frame_generation_present_queue == VK_NULL_HANDLE
+            || g_vk_frame_generation_image_acquire_queue == VK_NULL_HANDLE) {
+        return false;
+    }
+
+    const VkQueue queues[] = {
+            g_vk_graphics_queue,
+            g_vk_frame_generation_async_compute_queue,
+            g_vk_frame_generation_present_queue,
+            g_vk_frame_generation_image_acquire_queue
+    };
+    for (size_t left = 0; left < std::size(queues); left++) {
+        for (size_t right = left + 1; right < std::size(queues); right++) {
+            if (queues[left] == queues[right]) {
+                return false;
+            }
+        }
+    }
+
+    return queue_family_supports(
+                   g_vk_graphics_queue_family,
+                   VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT)
+            && queue_family_supports(g_vk_frame_generation_async_compute_queue_family, VK_QUEUE_COMPUTE_BIT)
+            && queue_family_supports(g_vk_frame_generation_present_queue_family, VK_QUEUE_TRANSFER_BIT)
+            && queue_family_supports(g_vk_frame_generation_image_acquire_queue_family, 0);
 }
 
 uint64_t version_id_for(int fsr_version) {
@@ -621,6 +735,7 @@ VkResult create_frame_generation_swapchain(
     if (!g_initialized
             || !g_frame_generation_provider_available
             || !g_frame_generation_swapchain_provider_available
+            || !g_frame_generation_queues_available
             || create_info == nullptr
             || out_swapchain == nullptr
             || device != g_vk_device) {
@@ -631,19 +746,14 @@ VkResult create_frame_generation_swapchain(
     if (backbuffer_format == FFX_API_SURFACE_FORMAT_UNKNOWN) {
         return VK_ERROR_FORMAT_NOT_SUPPORTED;
     }
+    if (!queue_supports_present(g_vk_frame_generation_present_queue_family, create_info->surface)) {
+        return VK_ERROR_FEATURE_NOT_PRESENT;
+    }
+    if (g_frame_generation_swapchain != VK_NULL_HANDLE) {
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }
 
     if (g_frame_generation_swapchain_context == nullptr) {
-        VkQueueInfoFFXAPI async_compute_queue{};
-        VkQueueInfoFFXAPI present_queue{};
-        VkQueueInfoFFXAPI image_acquire_queue{};
-        if (!select_frame_generation_queues(
-                    create_info->surface,
-                    async_compute_queue,
-                    present_queue,
-                    image_acquire_queue)) {
-            return VK_ERROR_FEATURE_NOT_PRESENT;
-        }
-
         VkSwapchainKHR swapchain = create_info->oldSwapchain;
         ffxCreateContextDescFrameGenerationSwapChainVK create_desc{};
         create_desc.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_FGSWAPCHAIN_VK;
@@ -652,12 +762,16 @@ VkResult create_frame_generation_swapchain(
         create_desc.swapchain = &swapchain;
         create_desc.allocator = const_cast<VkAllocationCallbacks*>(allocator);
         create_desc.createInfo = *create_info;
-        create_desc.gameQueue.queue = g_vk_graphics_queue;
-        create_desc.gameQueue.familyIndex = g_vk_graphics_queue_family;
-        create_desc.gameQueue.submitFunc = nullptr;
-        create_desc.asyncComputeQueue = async_compute_queue;
-        create_desc.presentQueue = present_queue;
-        create_desc.imageAcquireQueue = image_acquire_queue;
+        create_desc.gameQueue = queue_info(g_vk_graphics_queue, g_vk_graphics_queue_family);
+        create_desc.asyncComputeQueue = queue_info(
+                g_vk_frame_generation_async_compute_queue,
+                g_vk_frame_generation_async_compute_queue_family);
+        create_desc.presentQueue = queue_info(
+                g_vk_frame_generation_present_queue,
+                g_vk_frame_generation_present_queue_family);
+        create_desc.imageAcquireQueue = queue_info(
+                g_vk_frame_generation_image_acquire_queue,
+                g_vk_frame_generation_image_acquire_queue_family);
 
         ffxReturnCode_t result = g_ffx_create_context(&g_frame_generation_swapchain_context, &create_desc.header, nullptr);
         if (result != FFX_API_RETURN_OK) {
@@ -676,7 +790,8 @@ VkResult create_frame_generation_swapchain(
                 || replacement_query.pOutDestroySwapchainFFXAPI == nullptr
                 || replacement_query.pOutGetSwapchainImagesKHR == nullptr
                 || replacement_query.pOutAcquireNextImageKHR == nullptr
-                || replacement_query.pOutQueuePresentKHR == nullptr) {
+                || replacement_query.pOutQueuePresentKHR == nullptr
+                || replacement_query.pOutGetLastPresentCountFFXAPI == nullptr) {
             destroy_frame_generation_swapchain_context();
             return VK_ERROR_FEATURE_NOT_PRESENT;
         }
@@ -697,9 +812,14 @@ VkResult create_frame_generation_swapchain(
         g_frame_generation_swapchain = *out_swapchain;
     }
 
+    g_frame_generation_swapchain_width = std::max(1u, create_info->imageExtent.width);
+    g_frame_generation_swapchain_height = std::max(1u, create_info->imageExtent.height);
+    g_frame_generation_swapchain_backbuffer_format = backbuffer_format;
+    reset_frame_generation_present_timeline();
+
     ffxReturnCode_t framegen_result = ensure_frame_generation_context(
-            std::max(1u, create_info->imageExtent.width),
-            std::max(1u, create_info->imageExtent.height),
+            g_frame_generation_swapchain_width,
+            g_frame_generation_swapchain_height,
             backbuffer_format);
     if (framegen_result != FFX_API_RETURN_OK) {
         destroy_frame_generation_swapchain_context();
@@ -814,10 +934,12 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         jlong vk_device,
         jlong vk_graphics_queue,
         jint graphics_queue_family,
-        jlong vk_compute_queue,
-        jint compute_queue_family,
-        jlong vk_transfer_queue,
-        jint transfer_queue_family) {
+        jlong vk_async_compute_queue,
+        jint async_compute_queue_family,
+        jlong vk_present_queue,
+        jint present_queue_family,
+        jlong vk_image_acquire_queue,
+        jint image_acquire_queue_family) {
     std::lock_guard<std::mutex> lock(g_mutex);
 
 #if !defined(SALTS_FSR_WITH_FFX_SDK)
@@ -829,10 +951,12 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     (void) vk_device;
     (void) vk_graphics_queue;
     (void) graphics_queue_family;
-    (void) vk_compute_queue;
-    (void) compute_queue_family;
-    (void) vk_transfer_queue;
-    (void) transfer_queue_family;
+    (void) vk_async_compute_queue;
+    (void) async_compute_queue_family;
+    (void) vk_present_queue;
+    (void) present_queue_family;
+    (void) vk_image_acquire_queue;
+    (void) image_acquire_queue_family;
     g_initialized = false;
     g_upscaling_supported = false;
     g_frame_generation_ready = false;
@@ -843,11 +967,7 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
             || vk_physical_device == 0
             || vk_device == 0
             || vk_graphics_queue == 0
-            || graphics_queue_family < 0
-            || vk_compute_queue == 0
-            || compute_queue_family < 0
-            || vk_transfer_queue == 0
-            || transfer_queue_family < 0) {
+            || graphics_queue_family < 0) {
         return -1;
     }
 
@@ -872,17 +992,21 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     g_vk_device = handle_from_jlong<VkDevice>(vk_device);
     g_vk_graphics_queue = handle_from_jlong<VkQueue>(vk_graphics_queue);
     g_vk_graphics_queue_family = static_cast<uint32_t>(graphics_queue_family);
-    g_vk_compute_queue = handle_from_jlong<VkQueue>(vk_compute_queue);
-    g_vk_compute_queue_family = static_cast<uint32_t>(compute_queue_family);
-    g_vk_transfer_queue = handle_from_jlong<VkQueue>(vk_transfer_queue);
-    g_vk_transfer_queue_family = static_cast<uint32_t>(transfer_queue_family);
+    g_vk_frame_generation_async_compute_queue = handle_from_jlong<VkQueue>(vk_async_compute_queue);
+    g_vk_frame_generation_async_compute_queue_family = async_compute_queue_family < 0
+            ? 0u
+            : static_cast<uint32_t>(async_compute_queue_family);
+    g_vk_frame_generation_present_queue = handle_from_jlong<VkQueue>(vk_present_queue);
+    g_vk_frame_generation_present_queue_family = present_queue_family < 0
+            ? 0u
+            : static_cast<uint32_t>(present_queue_family);
+    g_vk_frame_generation_image_acquire_queue = handle_from_jlong<VkQueue>(vk_image_acquire_queue);
+    g_vk_frame_generation_image_acquire_queue_family = image_acquire_queue_family < 0
+            ? 0u
+            : static_cast<uint32_t>(image_acquire_queue_family);
 
     if (!has_required_fidelityfx_vulkan_entrypoints()) {
         return -7;
-    }
-
-    if (!load_vulkan_surface_symbols()) {
-        return -6;
     }
 
     if (!query_upscale_versions()) {
@@ -898,6 +1022,10 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
             query_provider_available(FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATION);
     g_frame_generation_swapchain_provider_available =
             query_provider_available(FFX_API_CREATE_CONTEXT_DESC_TYPE_FGSWAPCHAIN_VK);
+    g_frame_generation_queues_available = async_compute_queue_family >= 0
+            && present_queue_family >= 0
+            && image_acquire_queue_family >= 0
+            && validate_frame_generation_queues();
     g_frame_generation_ready = false;
     return 0;
 #endif
@@ -916,11 +1044,16 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         JNIEnv*,
         jclass) {
     std::lock_guard<std::mutex> lock(g_mutex);
+#if !defined(SALTS_FSR_WITH_FFX_SDK)
+    return JNI_FALSE;
+#else
     return g_initialized
             && g_frame_generation_provider_available
             && g_frame_generation_swapchain_provider_available
+            && g_frame_generation_queues_available
             ? JNI_TRUE
             : JNI_FALSE;
+#endif
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
@@ -929,6 +1062,52 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         jclass) {
     std::lock_guard<std::mutex> lock(g_mutex);
     return g_initialized && g_frame_generation_ready ? JNI_TRUE : JNI_FALSE;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativeBridge_isFrameGenerationSwapchainOwnedNative(
+        JNIEnv*,
+        jclass) {
+    std::lock_guard<std::mutex> lock(g_mutex);
+#if !defined(SALTS_FSR_WITH_FFX_SDK)
+    return JNI_FALSE;
+#else
+    return g_initialized
+            && g_frame_generation_swapchain_context != nullptr
+            && g_frame_generation_swapchain != VK_NULL_HANDLE
+            ? JNI_TRUE
+            : JNI_FALSE;
+#endif
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativeBridge_disableFrameGenerationNative(
+        JNIEnv*,
+        jclass) {
+    std::lock_guard<std::mutex> lock(g_mutex);
+#if defined(SALTS_FSR_WITH_FFX_SDK)
+    destroy_frame_generation_context();
+#endif
+    g_frame_generation_ready = false;
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativeBridge_getFrameGenerationPresentCountNative(
+        JNIEnv*,
+        jclass) {
+    std::lock_guard<std::mutex> lock(g_mutex);
+#if !defined(SALTS_FSR_WITH_FFX_SDK)
+    return -1;
+#else
+    if (!g_initialized
+            || g_frame_generation_swapchain_context == nullptr
+            || g_frame_generation_swapchain == VK_NULL_HANDLE
+            || g_swapchain_replacement_functions.pOutGetLastPresentCountFFXAPI == nullptr) {
+        return -1;
+    }
+    return static_cast<jlong>(
+            g_swapchain_replacement_functions.pOutGetLastPresentCountFFXAPI(g_frame_generation_swapchain));
+#endif
 }
 
 extern "C" JNIEXPORT jint JNICALL
@@ -980,7 +1159,8 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     return JNI_FALSE;
 #else
     VkSwapchainKHR vk_swapchain = handle_from_jlong<VkSwapchainKHR>(swapchain);
-    if (!owns_frame_generation_swapchain(vk_swapchain)
+    if (handle_from_jlong<VkDevice>(vk_device) != g_vk_device
+            || !owns_frame_generation_swapchain(vk_swapchain)
             || g_swapchain_replacement_functions.pOutDestroySwapchainFFXAPI == nullptr) {
         return JNI_FALSE;
     }
@@ -992,6 +1172,10 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
             reinterpret_cast<const VkAllocationCallbacks*>(static_cast<uintptr_t>(allocator_address)),
             g_frame_generation_swapchain_context);
     g_frame_generation_swapchain = VK_NULL_HANDLE;
+    g_frame_generation_swapchain_width = 0;
+    g_frame_generation_swapchain_height = 0;
+    g_frame_generation_swapchain_backbuffer_format = FFX_API_SURFACE_FORMAT_UNKNOWN;
+    reset_frame_generation_present_timeline();
     return JNI_TRUE;
 #endif
 }
@@ -1091,9 +1275,29 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         return std::numeric_limits<jint>::min();
     }
 
-    return static_cast<jint>(g_swapchain_replacement_functions.pOutQueuePresentKHR(
-            handle_from_jlong<VkQueue>(vk_queue),
-            present_info));
+    VkQueue queue = handle_from_jlong<VkQueue>(vk_queue);
+    if (queue == VK_NULL_HANDLE || queue != g_vk_graphics_queue) {
+        return static_cast<jint>(VK_ERROR_INITIALIZATION_FAILED);
+    }
+
+    const bool prepared_for_present = g_frame_generation_ready
+            && g_frame_generation_context != nullptr
+            && g_frame_generation_prepared_for_present;
+    if (!prepared_for_present && g_frame_generation_context != nullptr) {
+        // A present may still happen when rendering was skipped (menus, resize, or an
+        // evaluation failure). Disable interpolation so the proxy never reuses stale data.
+        configure_frame_generation_disabled();
+    }
+
+    VkResult result = g_swapchain_replacement_functions.pOutQueuePresentKHR(queue, present_info);
+    const bool presented = result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR;
+    if (presented && prepared_for_present) {
+        g_frame_generation_reset_required = false;
+    } else {
+        g_frame_generation_reset_required = true;
+    }
+    g_frame_generation_prepared_for_present = false;
+    return static_cast<jint>(result);
 #endif
 }
 
@@ -1267,9 +1471,6 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     (void) transparency_mask_view;
     (void) hudless_color_view;
     (void) frame_index;
-    if (frame_generation == JNI_TRUE && !g_frame_generation_ready) {
-        return -20;
-    }
     if (command_buffer == 0
             || input_color_image == 0
             || output_color_image == 0
@@ -1287,6 +1488,29 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     uint32_t output_w = static_cast<uint32_t>(output_width);
     uint32_t output_h = static_cast<uint32_t>(output_height);
     int requested_fsr_version = fsr_version == 2 ? 2 : 3;
+    if (frame_generation == JNI_TRUE && requested_fsr_version != 3) {
+        configure_frame_generation_disabled();
+        return -20;
+    }
+
+    if (frame_generation == JNI_TRUE && !g_frame_generation_ready) {
+        if (g_frame_generation_swapchain_context == nullptr
+                || g_frame_generation_swapchain == VK_NULL_HANDLE
+                || g_frame_generation_swapchain_backbuffer_format == FFX_API_SURFACE_FORMAT_UNKNOWN
+                || output_w != g_frame_generation_swapchain_width
+                || output_h != g_frame_generation_swapchain_height) {
+            return -20;
+        }
+
+        ffxReturnCode_t framegen_result = ensure_frame_generation_context(
+                g_frame_generation_swapchain_width,
+                g_frame_generation_swapchain_height,
+                g_frame_generation_swapchain_backbuffer_format);
+        if (framegen_result != FFX_API_RETURN_OK) {
+            return static_cast<jint>(framegen_result);
+        }
+    }
+
     ffxReturnCode_t result = ensure_upscale_context(requested_fsr_version, render_w, render_h, output_w, output_h);
     if (result != FFX_API_RETURN_OK) {
         return static_cast<jint>(result);
@@ -1332,10 +1556,16 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
             return -20;
         }
 
-        // A deliberate ID gap is the SDK 1.1.4 reset signal; unused_reset is not consumed.
-        uint64_t frame_generation_id = g_frame_generation_frame_id_initialized
-                ? g_frame_generation_frame_id + (reset_history == JNI_TRUE ? 2u : 1u)
+        // IDs advance whenever FidelityFX accepts a configured game frame. A gap explicitly
+        // resets SDK history after a skipped/failed present, superseded evaluation, or camera cut.
+        const bool force_frame_generation_reset = reset_history == JNI_TRUE
+                || g_frame_generation_reset_required
+                || g_frame_generation_prepared_for_present;
+        uint64_t frame_generation_id = g_frame_generation_last_configured_frame_id_initialized
+                ? g_frame_generation_last_configured_frame_id + (force_frame_generation_reset ? 2u : 1u)
                 : 0u;
+        g_frame_generation_prepared_for_present = false;
+        g_frame_generation_reset_required = true;
 
         ffxConfigureDescFrameGeneration config{};
         config.header.type = FFX_API_CONFIGURE_DESC_TYPE_FRAMEGENERATION;
@@ -1360,8 +1590,15 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
 
         result = g_ffx_configure(&g_frame_generation_context, &config.header);
         if (result != FFX_API_RETURN_OK) {
+            configure_frame_generation_disabled();
             return static_cast<jint>(result);
         }
+        // FidelityFX observes the ID at configure time, even if preparation or presentation later
+        // fails. Future reset gaps must therefore advance from the last configured ID rather than
+        // the last successfully presented frame.
+        g_frame_generation_last_configured_frame_id = frame_generation_id;
+        g_frame_generation_last_configured_frame_id_initialized = true;
+        g_frame_generation_pending_frame_id = frame_generation_id;
 
         ffxDispatchDescFrameGenerationPrepareCameraInfo camera_info{};
         camera_info.header.type = FFX_API_DISPATCH_DESC_TYPE_FRAMEGENERATION_PREPARE_CAMERAINFO;
@@ -1388,7 +1625,7 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         prepare.jitterOffset = {jitter_x, jitter_y};
         prepare.motionVectorScale = {motion_vector_scale_x, motion_vector_scale_y};
         prepare.frameTimeDelta = desc.frameTimeDelta;
-        prepare.unused_reset = reset_history == JNI_TRUE;
+        prepare.unused_reset = force_frame_generation_reset;
         prepare.cameraNear = camera_far;
         prepare.cameraFar = camera_near;
         prepare.cameraFovAngleVertical = camera_fov_y;
@@ -1398,6 +1635,7 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
 
         result = g_ffx_dispatch(&g_frame_generation_context, &prepare.header);
         if (result != FFX_API_RETURN_OK) {
+            configure_frame_generation_disabled();
             return static_cast<jint>(result);
         }
 
@@ -1407,11 +1645,13 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         ui_config.flags = 0;
         result = g_ffx_configure(&g_frame_generation_swapchain_context, &ui_config.header);
         if (result != FFX_API_RETURN_OK) {
+            configure_frame_generation_disabled();
             return static_cast<jint>(result);
         }
 
-        g_frame_generation_frame_id = frame_generation_id;
-        g_frame_generation_frame_id_initialized = true;
+        g_frame_generation_prepared_for_present = true;
+    } else if (g_frame_generation_context != nullptr) {
+        configure_frame_generation_disabled();
     }
 
     return 0;
@@ -1439,15 +1679,20 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     g_vk_get_instance_proc_addr = nullptr;
     g_vk_get_device_proc_addr = nullptr;
     g_vk_get_physical_device_surface_support_khr = nullptr;
+    g_vk_get_physical_device_queue_family_properties = nullptr;
+    g_vk_queue_wait_idle = nullptr;
     g_vk_instance = VK_NULL_HANDLE;
     g_vk_physical_device = VK_NULL_HANDLE;
     g_vk_device = VK_NULL_HANDLE;
     g_vk_graphics_queue = VK_NULL_HANDLE;
     g_vk_graphics_queue_family = 0;
-    g_vk_compute_queue = VK_NULL_HANDLE;
-    g_vk_compute_queue_family = 0;
-    g_vk_transfer_queue = VK_NULL_HANDLE;
-    g_vk_transfer_queue_family = 0;
+    g_vk_frame_generation_async_compute_queue = VK_NULL_HANDLE;
+    g_vk_frame_generation_async_compute_queue_family = 0;
+    g_vk_frame_generation_present_queue = VK_NULL_HANDLE;
+    g_vk_frame_generation_present_queue_family = 0;
+    g_vk_frame_generation_image_acquire_queue = VK_NULL_HANDLE;
+    g_vk_frame_generation_image_acquire_queue_family = 0;
+    g_frame_generation_queues_available = false;
     g_fsr2_version_id = 0;
     g_fsr3_version_id = 0;
     g_frame_generation_provider_available = false;

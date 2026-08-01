@@ -14,6 +14,7 @@ import org.lwjgl.vulkan.VkSwapchainCreateInfoKHR;
 
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
+import java.util.Objects;
 
 /**
  * Process-wide AMD FSR state machine.
@@ -28,6 +29,11 @@ public final class FsrRuntime {
     private boolean frameGenerationSwapchainStatusLogged;
     private boolean frameGenerationSwapchainRejected;
     private boolean frameGenerationSwapchainAvailabilityChanged;
+    private boolean frameGenerationSurfaceReconfigurationRequested;
+    private VulkanNativeDeviceInfo currentDeviceInfo;
+    private long recoveryGeneration;
+    private final FrameGenerationPresentTracker frameGenerationPresentTracker =
+            new FrameGenerationPresentTracker();
 
     private FsrRuntime() {
     }
@@ -37,11 +43,21 @@ public final class FsrRuntime {
     }
 
     public synchronized void configure(AntiAliasingConfig config) {
+        FsrNativeConfiguration previousConfiguration = configuration;
         configuration = FsrNativeConfiguration.fromConfig(config);
         boolean previousRequest = frameGenerationSwapchainRequested;
         frameGenerationSwapchainRequested = config.mode.usesFsrFrameGeneration();
-        if (previousRequest != frameGenerationSwapchainRequested) {
+        boolean requestChanged = previousRequest != frameGenerationSwapchainRequested;
+        boolean nativeConfigurationChanged = !configuration.equals(previousConfiguration);
+        if (previousRequest && !frameGenerationSwapchainRequested) {
+            bridge.disableFrameGeneration();
+        }
+        if (requestChanged || nativeConfigurationChanged) {
             frameGenerationSwapchainStatusLogged = false;
+            frameGenerationSwapchainRejected = false;
+            frameGenerationSwapchainAvailabilityChanged = false;
+            resetFrameGenerationPresentTracking();
+            recoveryGeneration++;
         }
         refresh();
     }
@@ -53,6 +69,14 @@ public final class FsrRuntime {
     }
 
     public synchronized void onVulkanDeviceReady(VulkanNativeDeviceInfo deviceInfo) {
+        if (!Objects.equals(deviceInfo, currentDeviceInfo)) {
+            currentDeviceInfo = deviceInfo;
+            frameGenerationSwapchainRejected = false;
+            frameGenerationSwapchainStatusLogged = false;
+            frameGenerationSwapchainAvailabilityChanged = false;
+            resetFrameGenerationPresentTracking();
+            recoveryGeneration++;
+        }
         refresh(deviceInfo);
     }
 
@@ -75,6 +99,15 @@ public final class FsrRuntime {
         return bridge.isFrameGenerationSwapchainActive();
     }
 
+    /**
+     * Reports whether the current Vulkan swapchain is the FidelityFX proxy. This remains true
+     * while frame-generation evaluation is temporarily disabled, because the proxy images still
+     * require the SDK's shader-read presentation layout.
+     */
+    public synchronized boolean isFrameGenerationSwapchainOwned() {
+        return bridge.isFrameGenerationSwapchainOwned();
+    }
+
     public synchronized boolean isFrameGenerationSwapchainRequested() {
         return frameGenerationSwapchainRequested;
     }
@@ -83,6 +116,12 @@ public final class FsrRuntime {
         boolean changed = frameGenerationSwapchainAvailabilityChanged;
         frameGenerationSwapchainAvailabilityChanged = false;
         return changed;
+    }
+
+    public synchronized boolean consumeFrameGenerationSurfaceReconfigurationRequested() {
+        boolean requested = frameGenerationSurfaceReconfigurationRequested;
+        frameGenerationSurfaceReconfigurationRequested = false;
+        return requested;
     }
 
     public synchronized FsrOptimalSettings queryOptimalSettings(
@@ -95,6 +134,32 @@ public final class FsrRuntime {
 
     public synchronized int evaluate(FsrEvaluateParameters parameters) {
         return bridge.evaluate(parameters);
+    }
+
+    /**
+     * Disables and drains native frame generation after a failed evaluation. Callers must submit
+     * the command buffer containing that evaluation before invoking this method.
+     */
+    public synchronized void onFrameGenerationEvaluationFailure(int result) {
+        bridge.disableFrameGeneration();
+        boolean newlyRejected = !frameGenerationSwapchainRejected;
+        frameGenerationSwapchainRejected = true;
+        frameGenerationSwapchainStatusLogged = true;
+        if (newlyRejected) {
+            frameGenerationSwapchainAvailabilityChanged = true;
+            SaltsAntiAliasing.LOGGER.warn(
+                    "AMD FSR3 frame generation failed during evaluation with result {}; disabling it until the mode or Vulkan device changes",
+                    result
+            );
+        }
+    }
+
+    /**
+     * Changes whenever a new configuration, device, or successfully recreated proxy swapchain
+     * makes retrying a previously failed FSR scene controller safe.
+     */
+    public synchronized long recoveryGeneration() {
+        return recoveryGeneration;
     }
 
     public synchronized int createFrameGenerationSwapchain(
@@ -121,6 +186,9 @@ public final class FsrRuntime {
         }
         if (result == 0) {
             frameGenerationSwapchainRejected = false;
+            frameGenerationSwapchainAvailabilityChanged = false;
+            resetFrameGenerationPresentTracking();
+            recoveryGeneration++;
             if (!frameGenerationSwapchainStatusLogged) {
                 SaltsAntiAliasing.LOGGER.info("AMD FSR3 frame-generation swapchain is active");
                 frameGenerationSwapchainStatusLogged = true;
@@ -138,6 +206,7 @@ public final class FsrRuntime {
         if (!bridge.destroyFrameGenerationSwapchain(device, swapchain, allocator)) {
             KHRSwapchain.vkDestroySwapchainKHR(device, swapchain, allocator);
         } else {
+            resetFrameGenerationPresentTracking();
             refresh();
         }
     }
@@ -170,13 +239,41 @@ public final class FsrRuntime {
 
     public synchronized int presentFrameGenerationSwapchain(VkQueue queue, VkPresentInfoKHR presentInfo) {
         int result = bridge.presentFrameGenerationSwapchain(queue, presentInfo);
-        return result == FsrNativeBridge.SWAPCHAIN_UNHANDLED
-                ? KHRSwapchain.vkQueuePresentKHR(queue, presentInfo)
-                : result;
+        if (result == FsrNativeBridge.SWAPCHAIN_UNHANDLED) {
+            return KHRSwapchain.vkQueuePresentKHR(queue, presentInfo);
+        }
+
+        if (result == 0 || result == KHRSwapchain.VK_SUBOPTIMAL_KHR) {
+            long sdkPresentCount = bridge.frameGenerationPresentCount();
+            if (frameGenerationPresentTracker.recordSuccessfulGamePresent(sdkPresentCount)) {
+                SaltsAntiAliasing.LOGGER.info(
+                        "AMD FSR3 frame generation confirmed: {} display presents from {} rendered game frames",
+                        frameGenerationPresentTracker.sdkPresentCount(),
+                        frameGenerationPresentTracker.gamePresentCount()
+                );
+            }
+        }
+        return result;
+    }
+
+    public synchronized long frameGenerationPresentCount() {
+        return frameGenerationPresentTracker.sdkPresentCount();
+    }
+
+    public synchronized boolean isFrameGenerationOutputConfirmed() {
+        return frameGenerationPresentTracker.outputConfirmed();
     }
 
     public synchronized void shutdown() {
         bridge.shutdown();
+        currentDeviceInfo = null;
+        frameGenerationSwapchainRejected = false;
+        frameGenerationSwapchainStatusLogged = false;
+        frameGenerationSwapchainAvailabilityChanged = false;
+        frameGenerationSurfaceReconfigurationRequested = false;
+        resetFrameGenerationPresentTracking();
+        recoveryGeneration++;
+        status = configuration.validate();
     }
 
     private void refresh() {
@@ -186,8 +283,15 @@ public final class FsrRuntime {
     private void refresh(VulkanNativeDeviceInfo deviceInfo) {
         FsrRuntimeStatus previousStatus = status;
         status = bridge.configure(configuration, deviceInfo);
+        if (bridge.consumeSurfaceReconfigurationRequested()) {
+            frameGenerationSurfaceReconfigurationRequested = true;
+        }
         if (status != previousStatus) {
             SaltsAntiAliasing.LOGGER.info("AMD FSR runtime status: {}", status.message());
         }
+    }
+
+    private void resetFrameGenerationPresentTracking() {
+        frameGenerationPresentTracker.reset();
     }
 }

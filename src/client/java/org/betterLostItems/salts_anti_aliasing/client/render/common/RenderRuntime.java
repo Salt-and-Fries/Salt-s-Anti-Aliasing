@@ -305,6 +305,7 @@ public final class RenderRuntime {
 
         AntiAliasingConfig config = effectiveConfigSnapshot();
         scenePostProcessor.applyFinalEffects(gameRenderer, config);
+        VulkanSceneFsrController.instance().captureFrameGenerationHudlessColor();
     }
 
     public void recordRenderedFrame(long frameTimeNs, int displayedFps) {
@@ -314,6 +315,12 @@ public final class RenderRuntime {
 
     public void shutdownMetrics() {
         performanceMetricsRecorder.close();
+    }
+
+    /**
+     * Releases native renderer integrations after Minecraft has destroyed its GPU surface.
+     */
+    public void shutdownNativeIntegrations() {
         DlssRuntime.instance().shutdown();
         FsrRuntime.instance().shutdown();
     }
@@ -355,7 +362,10 @@ public final class RenderRuntime {
         boolean previousFrameGenerationRequest = FsrRuntime.instance().isFrameGenerationSwapchainRequested();
         DlssRuntime.instance().configure(effectiveConfig);
         FsrRuntime.instance().configure(effectiveConfig);
-        if (previousFrameGenerationRequest != effectiveConfig.mode.usesFsrFrameGeneration() && canUseAntiAliasing()) {
+        boolean frameGenerationSurfaceReconfigurationRequested = FsrRuntime.instance()
+                .consumeFrameGenerationSurfaceReconfigurationRequested();
+        if ((previousFrameGenerationRequest != effectiveConfig.mode.usesFsrFrameGeneration()
+                || frameGenerationSurfaceReconfigurationRequested) && canUseAntiAliasing()) {
             Minecraft.getInstance().invalidateSurfaceConfiguration();
         }
         currentPlan = planner.plan(backend, effectiveConfig);

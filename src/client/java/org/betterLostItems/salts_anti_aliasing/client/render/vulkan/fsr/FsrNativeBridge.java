@@ -11,6 +11,7 @@ import org.lwjgl.vulkan.VkSwapchainCreateInfoKHR;
 
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
+import java.util.Objects;
 
 import static org.lwjgl.system.MemoryUtil.memAddress;
 import static org.lwjgl.system.MemoryUtil.memAddressSafe;
@@ -24,6 +25,9 @@ final class FsrNativeBridge {
     private boolean bridgeLoaded;
     private boolean initialized;
     private String lastBridgePath = "";
+    private VulkanNativeDeviceInfo initializedDeviceInfo;
+    private FsrNativeConfiguration initializedConfiguration;
+    private boolean surfaceReconfigurationRequested;
 
     FsrRuntimeStatus configure(FsrNativeConfiguration configuration, VulkanNativeDeviceInfo deviceInfo) {
         FsrRuntimeStatus validationStatus = configuration.validate();
@@ -31,12 +35,32 @@ final class FsrNativeBridge {
             return validationStatus;
         }
 
-        if (!loadBridge(configuration.bridgePath())) {
-            return FsrRuntimeStatus.BRIDGE_LOAD_FAILED;
+        boolean requiresReinitialization = initialized
+                && (!Objects.equals(deviceInfo, initializedDeviceInfo)
+                || !configuration.equals(initializedConfiguration));
+        if (requiresReinitialization) {
+            if (isFrameGenerationSwapchainOwnedNative()) {
+                // VulkanGpuSurface still stores the proxy handle. Keep the old native device
+                // routing alive until that surface has destroyed the proxy through FidelityFX.
+                disableFrameGenerationNative();
+                surfaceReconfigurationRequested = true;
+                return initializedStatus();
+            }
         }
 
         if (deviceInfo == null || !deviceInfo.complete()) {
             return FsrRuntimeStatus.VULKAN_DEVICE_MISSING;
+        }
+
+        if (requiresReinitialization) {
+            shutdownNative();
+            initialized = false;
+            initializedDeviceInfo = null;
+            initializedConfiguration = null;
+        }
+
+        if (!loadBridge(configuration.bridgePath())) {
+            return FsrRuntimeStatus.BRIDGE_LOAD_FAILED;
         }
 
         if (!initialized) {
@@ -48,29 +72,47 @@ final class FsrNativeBridge {
                     deviceInfo.device(),
                     deviceInfo.graphicsQueue(),
                     deviceInfo.graphicsQueueFamily(),
-                    deviceInfo.computeQueue(),
-                    deviceInfo.computeQueueFamily(),
-                    deviceInfo.transferQueue(),
-                    deviceInfo.transferQueueFamily()
+                    deviceInfo.frameGenerationAsyncComputeQueue(),
+                    deviceInfo.frameGenerationAsyncComputeQueueFamily(),
+                    deviceInfo.frameGenerationPresentQueue(),
+                    deviceInfo.frameGenerationPresentQueueFamily(),
+                    deviceInfo.frameGenerationImageAcquireQueue(),
+                    deviceInfo.frameGenerationImageAcquireQueueFamily()
             );
             if (result != 0) {
                 SaltsAntiAliasing.LOGGER.warn("AMD FSR native initialization failed with result {}", result);
                 return FsrRuntimeStatus.INITIALIZATION_FAILED;
             }
             initialized = true;
+            initializedDeviceInfo = deviceInfo;
+            initializedConfiguration = configuration;
         }
 
-        if (!isUpscalingSupportedNative()) {
-            return FsrRuntimeStatus.UNSUPPORTED;
-        }
-
-        return isFrameGenerationSupportedNative()
-                ? FsrRuntimeStatus.FRAME_GENERATION_READY
-                : FsrRuntimeStatus.UPSCALING_READY;
+        return initializedStatus();
     }
 
     boolean isFrameGenerationSwapchainActive() {
         return initialized && isFrameGenerationSwapchainActiveNative();
+    }
+
+    boolean isFrameGenerationSwapchainOwned() {
+        return initialized && isFrameGenerationSwapchainOwnedNative();
+    }
+
+    void disableFrameGeneration() {
+        if (initialized) {
+            disableFrameGenerationNative();
+        }
+    }
+
+    long frameGenerationPresentCount() {
+        return initialized ? getFrameGenerationPresentCountNative() : -1L;
+    }
+
+    boolean consumeSurfaceReconfigurationRequested() {
+        boolean requested = surfaceReconfigurationRequested;
+        surfaceReconfigurationRequested = false;
+        return requested;
     }
 
     FsrOptimalSettings queryOptimalSettings(FsrQualityPreset preset, int outputWidth, int outputHeight) {
@@ -221,7 +263,22 @@ final class FsrNativeBridge {
         if (bridgeLoaded && initialized) {
             shutdownNative();
             initialized = false;
+            initializedDeviceInfo = null;
+            initializedConfiguration = null;
+            surfaceReconfigurationRequested = false;
         }
+    }
+
+    private FsrRuntimeStatus initializedStatus() {
+        if (!isUpscalingSupportedNative()) {
+            return FsrRuntimeStatus.UNSUPPORTED;
+        }
+
+        return initializedDeviceInfo != null
+                && initializedDeviceInfo.frameGenerationQueuesComplete()
+                && isFrameGenerationSupportedNative()
+                ? FsrRuntimeStatus.FRAME_GENERATION_READY
+                : FsrRuntimeStatus.UPSCALING_READY;
     }
 
     private boolean loadBridge(String bridgePath) {
@@ -238,6 +295,9 @@ final class FsrNativeBridge {
             SaltsAntiAliasing.LOGGER.warn("Unable to load AMD FSR JNI bridge from {}", bridgePath, exception);
             bridgeLoaded = false;
             initialized = false;
+            initializedDeviceInfo = null;
+            initializedConfiguration = null;
+            surfaceReconfigurationRequested = false;
             return false;
         }
     }
@@ -250,10 +310,12 @@ final class FsrNativeBridge {
             long vkDevice,
             long vkGraphicsQueue,
             int graphicsQueueFamily,
-            long vkComputeQueue,
-            int computeQueueFamily,
-            long vkTransferQueue,
-            int transferQueueFamily
+            long vkAsyncComputeQueue,
+            int asyncComputeQueueFamily,
+            long vkPresentQueue,
+            int presentQueueFamily,
+            long vkImageAcquireQueue,
+            int imageAcquireQueueFamily
     );
 
     private static native boolean isUpscalingSupportedNative();
@@ -261,6 +323,12 @@ final class FsrNativeBridge {
     private static native boolean isFrameGenerationSupportedNative();
 
     private static native boolean isFrameGenerationSwapchainActiveNative();
+
+    private static native boolean isFrameGenerationSwapchainOwnedNative();
+
+    private static native void disableFrameGenerationNative();
+
+    private static native long getFrameGenerationPresentCountNative();
 
     private static native int queryOptimalSettingsNative(
             int qualityPreset,

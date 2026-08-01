@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 project(salts_fsr_bridge LANGUAGES CXX)
 
-option(SALTS_FSR_WITH_FFX_SDK "Build against AMD FidelityFX SDK v1.x" OFF)
+option(SALTS_FSR_WITH_FFX_SDK "Build against AMD FidelityFX SDK v1.x" ON)
 set(SALTS_FFX_SDK "" CACHE PATH "Path to AMD FidelityFX SDK v1.x root")
 set(SALTS_VULKAN_HEADERS "" CACHE PATH "Path to Vulkan-Headers root")
 

@@ -143,7 +143,7 @@ salts.fsr.runtimePath
 salts.fsr.logPath
 ```
 
-If neither bridge nor runtime path is configured, the bundled native files are extracted to `.minecraft/salts_anti_aliasing/native/...` and loaded from there. FSR3 Frame Generation remains separate from FSR3 Super Resolution and only appears when the real FidelityFX Vulkan frame-generation swapchain path initializes successfully.
+If neither bridge nor runtime path is configured, the bundled native files are extracted to `.minecraft/salts_anti_aliasing/native/...` and loaded from there. FSR3 Frame Generation remains separate from FSR3 Super Resolution and only appears when the real FidelityFX Vulkan frame-generation swapchain path initializes successfully. The integration reserves distinct SDK queues during Vulkan device creation, keeps HUD-less scene capture immediately before GUI rendering, and verifies actual generated display presents through FidelityFX rather than estimating them from Minecraft's frame rate.
 
 ## Platform Hook Layer
 
@@ -196,7 +196,7 @@ When syncing a sibling jar branch:
 - MSAA uses native Vulkan multisampled scene textures and resolves into Minecraft's main target after world rendering. Cutout textures keep Minecraft's binary alpha behavior by default, with optional alpha-to-coverage for players who prefer smoother cutout edges.
 - TAA uses jitter, a persistent history target, and dynamic uniforms.
 - DLSS redirects world rendering to a Streamline-selected internal-resolution target and evaluates through the optional JNI bridge when all external requirements are met.
-- FSR2/FSR3 use the bundled FidelityFX Vulkan runtime on Windows x64 and can be overridden with explicit native paths.
+- FSR2/FSR3 use the bundled FidelityFX Vulkan runtime on Windows x64 and can be overridden with explicit native paths. FSR3 Frame Generation uses the SDK replacement swapchain, dedicated queue roles, per-present interpolation state, and a HUD-less scene image.
 - Dynamic uniforms are uploaded through writable GPU buffers when Minecraft's post-chain uniforms are immutable.
 
 ## Development Principles

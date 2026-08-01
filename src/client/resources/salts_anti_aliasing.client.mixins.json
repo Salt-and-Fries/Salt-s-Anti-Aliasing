@@ -19,6 +19,7 @@
     "VulkanCommandEncoderMixin",
     "VulkanDevicePipelineAccessor",
     "VulkanDeviceMixin",
+    "VulkanPhysicalDeviceMixin",
     "VulkanGpuSurfaceMixin",
     "VulkanGpuTextureMixin",
     "VulkanRenderPassMixin",

@@ -29,4 +29,19 @@ public abstract class MinecraftMixin {
     private void saltsAntiAliasing$flushMetricsOnClose(CallbackInfo callbackInfo) {
         ModernMinecraftHooks.shutdownMetrics();
     }
+
+    /**
+     * Keeps native swapchain routing alive until Minecraft has destroyed the surface-owned proxy.
+     */
+    @Inject(
+            method = "close",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/systems/GpuSurface;close()V",
+                    shift = At.Shift.AFTER
+            )
+    )
+    private void saltsAntiAliasing$shutdownNativeIntegrations(CallbackInfo callbackInfo) {
+        ModernMinecraftHooks.shutdownNativeIntegrations();
+    }
 }

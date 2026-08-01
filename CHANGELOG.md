@@ -20,6 +20,7 @@ These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.
 - Added a separate FSR3 Super Resolution + Frame Generation mode.
 - Bundled the AMD FidelityFX Vulkan runtime and bridge for Windows x64, while retaining advanced path overrides.
 - FSR3 Frame Generation can be selected only when its Vulkan swapchain path initializes successfully.
+- Made FSR3 Frame Generation produce real interpolated display frames through the FidelityFX replacement swapchain instead of failing queue validation and silently falling back.
 
 ### Image Quality
 
@@ -29,6 +30,7 @@ These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.
 - Removed false sky and cloud parallax from FSR motion reconstruction.
 - Added temporal masks to stabilize translucent boundaries such as water, foliage, and block edges.
 - Corrected FSR3 Frame Generation reset behavior and HUDless-frame state handling.
+- Moved the HUD-less frame capture after scene post effects so generated frames retain the complete world image without duplicating the GUI.
 - Improved SMAA with directional edge weighting and sharpening support.
 - Propagated internal render resolution correctly to shaders used by scaled rendering modes.
 - Kept MSAA cutout textures binary by default, preventing distant transparent blocks and foliage from fading or stippling.
@@ -54,3 +56,5 @@ These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.
 - Added setup and build documentation for the optional DLSS bridge and bundled FidelityFX bridge.
 - Updated renderer architecture and compatibility documentation for Minecraft 26.2.
 - Added regression tests for configuration migration, mode planning, dropdown scrolling, NIS resources, FSR temporal masks, Vulkan MSAA compatibility, and alpha-to-coverage policy.
+- Added regression coverage for FidelityFX queue allocation and proxy-swapchain image state.
+- Added dedicated FidelityFX queue reservation, per-present stale-frame protection, generated-present telemetry, resize/mode-switch recovery, and ordered proxy shutdown for FSR3 Frame Generation.

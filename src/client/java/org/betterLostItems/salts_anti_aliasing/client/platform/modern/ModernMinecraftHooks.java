@@ -148,6 +148,15 @@ public final class ModernMinecraftHooks {
     }
 
     /**
+     * Releases native renderer integrations after the window surface no longer owns a swapchain.
+     */
+    public static void shutdownNativeIntegrations() {
+        if (SaltsAntiAliasingClient.runtimeOrNull() != null) {
+            SaltsAntiAliasingClient.runtime().shutdownNativeIntegrations();
+        }
+    }
+
+    /**
      * Redirects color texture reads while a Vulkan scene controller owns the main target.
      */
     public static GpuTexture redirectColorTexture(RenderTarget target) {

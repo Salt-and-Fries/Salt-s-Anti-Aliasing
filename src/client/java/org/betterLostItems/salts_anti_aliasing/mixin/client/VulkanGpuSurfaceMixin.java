@@ -1,6 +1,7 @@
 package org.betterLostItems.salts_anti_aliasing.mixin.client;
 
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRuntime;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FrameGenerationSwapchainImagePolicy;
 import org.lwjgl.vulkan.VkAllocationCallbacks;
 import org.lwjgl.vulkan.VkDevice;
 import org.lwjgl.vulkan.VkPresentInfoKHR;
@@ -8,6 +9,7 @@ import org.lwjgl.vulkan.VkQueue;
 import org.lwjgl.vulkan.VkSwapchainCreateInfoKHR;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.nio.IntBuffer;
@@ -19,6 +21,36 @@ import java.nio.LongBuffer;
  */
 @Mixin(targets = "com.mojang.blaze3d.vulkan.VulkanGpuSurface")
 public abstract class VulkanGpuSurfaceMixin {
+    @ModifyArg(
+            method = "blitFromTexture",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lorg/lwjgl/vulkan/VkImageMemoryBarrier2$Buffer;newLayout(I)Lorg/lwjgl/vulkan/VkImageMemoryBarrier2$Buffer;",
+                    ordinal = 1
+            )
+    )
+    private int saltsAntiAliasing$useFrameGenerationPresentLayout(int regularLayout) {
+        return FrameGenerationSwapchainImagePolicy.finalLayout(
+                FsrRuntime.instance().isFrameGenerationSwapchainOwned(),
+                regularLayout
+        );
+    }
+
+    @ModifyArg(
+            method = "blitFromTexture",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lorg/lwjgl/vulkan/VkImageMemoryBarrier2$Buffer;dstAccessMask(J)Lorg/lwjgl/vulkan/VkImageMemoryBarrier2$Buffer;",
+                    ordinal = 1
+            )
+    )
+    private long saltsAntiAliasing$useFrameGenerationPresentAccess(long regularAccessMask) {
+        return FrameGenerationSwapchainImagePolicy.finalAccessMask(
+                FsrRuntime.instance().isFrameGenerationSwapchainOwned(),
+                regularAccessMask
+        );
+    }
+
     @Redirect(
             method = "configure",
             at = @At(
