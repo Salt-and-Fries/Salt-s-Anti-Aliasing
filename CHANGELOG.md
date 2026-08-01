@@ -20,7 +20,7 @@ These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.
 - Added a separate FSR3 Super Resolution + Frame Generation mode.
 - Bundled the AMD FidelityFX Vulkan runtime and bridge for Windows x64, while retaining advanced path overrides.
 - FSR3 Frame Generation can be selected only when its Vulkan swapchain path initializes successfully.
-- Made FSR3 Frame Generation produce real interpolated display frames through the FidelityFX replacement swapchain instead of failing queue validation and silently falling back.
+- Completed the end-to-end FSR3 Frame Generation implementation: FidelityFX now creates and presents real interpolated frames through its replacement swapchain, preserves a HUD-less world image for UI composition, survives resizing and mode switches, and shuts down cleanly instead of silently falling back to regular FSR3.
 
 ### Image Quality
 
