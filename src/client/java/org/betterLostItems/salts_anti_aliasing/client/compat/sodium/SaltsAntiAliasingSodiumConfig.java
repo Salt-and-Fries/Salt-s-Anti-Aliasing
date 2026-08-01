@@ -42,7 +42,6 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static final String MSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.msaa_samples.tooltip";
     private static final String MSAA_ALPHA_TO_COVERAGE_TOOLTIP_KEY =
             "options.salts_anti_aliasing.msaa_alpha_to_coverage.tooltip";
-    private static final String SSAA_TOOLTIP_KEY = "options.salts_anti_aliasing.ssaa_scale.tooltip";
     private static final String UPSCALE_TOOLTIP_KEY = "options.salts_anti_aliasing.upscale_quality.tooltip";
     private static final String DLSS_QUALITY_TOOLTIP_KEY = "options.salts_anti_aliasing.dlss_quality.tooltip";
     private static final String FSR_QUALITY_TOOLTIP_KEY = "options.salts_anti_aliasing.fsr_quality.tooltip";
@@ -138,11 +137,11 @@ public final class SaltsAntiAliasingSodiumConfig implements ConfigEntryPoint {
     private static EnumOptionBuilder<SsaaScaleLevel> createSsaaScaleOption(ConfigBuilder builder) {
         return builder.createEnumOption(SSAA_SCALE_ID, SsaaScaleLevel.class)
                 .setName(Component.translatable("options.salts_anti_aliasing.ssaa_scale", Component.empty()))
-                .setTooltip(Component.translatable(SSAA_TOOLTIP_KEY))
+                .setTooltip(ClientText::ssaaScaleTooltip)
                 .setStorageHandler(SaltsAntiAliasingSodiumConfig::afterSave)
                 .setBinding(SaltsAntiAliasingSodiumConfig::setSsaaScaleLevel, SaltsAntiAliasingSodiumConfig::ssaaScaleLevel)
                 .setDefaultValue(SsaaScaleLevel.defaultLevel())
-                .setElementNameProvider(level -> Component.literal(level.label()))
+                .setElementNameProvider(ClientText::label)
                 .setEnabledProvider(
                         state -> antiAliasingAvailable()
                                 && state.readEnumOption(MODE_ID, AntiAliasingMode.class).usesSsaaScaleControl(),

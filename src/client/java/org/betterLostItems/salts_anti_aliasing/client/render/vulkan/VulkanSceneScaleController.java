@@ -45,6 +45,8 @@ public final class VulkanSceneScaleController {
     private TextureTarget sceneTarget;
     private RenderTarget mainTarget;
     private AntiAliasingMode activeMode = AntiAliasingMode.OFF;
+    private String lastRejectedSceneSize;
+    private String failedSceneSetupSignature;
 
     /**
      * Creates a scene scale controller instance with the collaborators or initial state
@@ -72,7 +74,11 @@ public final class VulkanSceneScaleController {
         RenderSystem.assertOnRenderThread();
         clearFrameState();
 
-        if (disabledAfterFailure || !usesScaledSceneTarget(config.mode)) {
+        if (disabledAfterFailure) {
+            return;
+        }
+        if (!usesScaledSceneTarget(config.mode)) {
+            failedSceneSetupSignature = null;
             return;
         }
 
@@ -89,8 +95,28 @@ public final class VulkanSceneScaleController {
         try {
             int sceneWidth = Math.max(1, Math.round(mainTarget.width * config.sceneRenderScale()));
             int sceneHeight = Math.max(1, Math.round(mainTarget.height * config.sceneRenderScale()));
-            ensureSceneTarget(sceneWidth, sceneHeight, mainTarget.useDepth);
+            int maxTextureSize = RenderSystem.getDevice().getDeviceInfo().limits().maxTextureSize();
+            if (sceneWidth > maxTextureSize || sceneHeight > maxTextureSize) {
+                warnUnsupportedSceneSize(sceneWidth, sceneHeight, maxTextureSize);
+                return;
+            }
 
+            String setupSignature = config.mode
+                    + ":" + sceneWidth + "x" + sceneHeight
+                    + ":" + mainTarget.useDepth;
+            if (setupSignature.equals(failedSceneSetupSignature)) {
+                return;
+            }
+
+            lastRejectedSceneSize = null;
+            try {
+                ensureSceneTarget(sceneWidth, sceneHeight, mainTarget.useDepth);
+            } catch (RuntimeException exception) {
+                rejectSceneSetupUntilConfigurationChanges(setupSignature, sceneWidth, sceneHeight, exception);
+                return;
+            }
+
+            failedSceneSetupSignature = null;
             this.mainTarget = mainTarget;
             this.activeMode = config.mode;
             active = true;
@@ -227,6 +253,58 @@ public final class VulkanSceneScaleController {
         if (sceneTarget.width != width || sceneTarget.height != height) {
             sceneTarget.resize(width, height);
         }
+    }
+
+    /**
+     * Warns once for a rejected size while leaving scene scaling able to recover when the player
+     * lowers the SSAA setting or resizes the window.
+     * @param width requested scaled scene width
+     * @param height requested scaled scene height
+     * @param maxTextureSize maximum two-dimensional texture size supported by the active GPU
+     */
+    private void warnUnsupportedSceneSize(int width, int height, int maxTextureSize) {
+        String rejectedSceneSize = width + "x" + height + ":" + maxTextureSize;
+        if (rejectedSceneSize.equals(lastRejectedSceneSize)) {
+            return;
+        }
+
+        lastRejectedSceneSize = rejectedSceneSize;
+        SaltsAntiAliasing.LOGGER.warn(
+                "Skipping scaled scene target {}x{} because the active GPU supports at most {}x{}; "
+                        + "lower the SSAA scale or output resolution",
+                width,
+                height,
+                maxTextureSize,
+                maxTextureSize
+        );
+    }
+
+    /**
+     * Treats an extreme scaled-target allocation failure as configuration-specific. The same
+     * impossible target is not retried every frame, while lowering SSAA or resizing the window
+     * immediately produces a new signature and can recover without restarting Minecraft.
+     * @param setupSignature mode, dimensions, and depth shape of the failed target request
+     * @param width requested scaled scene width
+     * @param height requested scaled scene height
+     * @param exception allocation or resize failure raised by the graphics backend
+     */
+    private void rejectSceneSetupUntilConfigurationChanges(
+            String setupSignature,
+            int width,
+            int height,
+            RuntimeException exception
+    ) {
+        failedSceneSetupSignature = setupSignature;
+        destroyResources();
+        resourcePool.clear();
+        clearFrameState();
+        SaltsAntiAliasing.LOGGER.error(
+                "Could not allocate scaled scene target {}x{}; rendering at native resolution until the "
+                        + "SSAA scale or window size changes",
+                width,
+                height,
+                exception
+        );
     }
 
     /**

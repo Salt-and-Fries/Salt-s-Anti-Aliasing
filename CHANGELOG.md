@@ -31,7 +31,8 @@ These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.
 - Added temporal masks to stabilize translucent boundaries such as water, foliage, and block edges.
 - Corrected FSR3 Frame Generation reset behavior and HUDless-frame state handling.
 - Moved the HUD-less frame capture after scene post effects so generated frames retain the complete world image without duplicating the GUI.
-- Improved SMAA with directional edge weighting and sharpening support.
+- Replaced the old wide, depth-weighted FXAA blur with the NVIDIA FXAA 3.11 Quality endpoint-search algorithm and high-quality preset-28 schedule, reducing softness and halos while preserving subpixel cleanup.
+- Replaced the custom SMAA-like heuristic with the official SMAA 1x Ultra pipeline, including color-edge detection, horizontal/vertical/diagonal searches, crossing-edge classification, Area/Search lookup textures, corner handling, and the reference coverage resolve.
 - Propagated internal render resolution correctly to shaders used by scaled rendering modes.
 - Kept MSAA cutout textures binary by default, preventing distant transparent blocks and foliage from fading or stippling.
 - Added an optional MSAA-only `Alpha to Coverage` toggle for players who prefer smoother cutout edges. It defaults to `Off` and applies live without requiring a restart.
@@ -45,6 +46,8 @@ These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.
 - Made the popup modal so controls behind it no longer highlight, change the cursor, scroll, or receive clicks.
 - Added click-and-drag support for the popup scrollbar.
 - Added mode-specific DLSS and FSR quality controls.
+- Expanded the SSAA scale choices from 200% up to 800% per axis, with a localized performance and GPU-memory warning for values above 400% in the built-in, Mod Menu, and Sodium settings interfaces.
+- SSAA targets beyond the GPU's texture or allocation limits now fall back to native resolution and can recover after lowering the scale or resizing the window instead of disabling scaled rendering for the rest of the session.
 - Replaced combined sharpening modes with one independent `Sharpness` slider available for every mode, including `Off`.
 - Sharpness now defaults to `0%`; existing `NIS Sharpen` and `FSR1 + RCAS` configurations migrate to their corresponding base modes.
 - Added the MSAA `Alpha to Coverage` option to the integrated Video Settings section, Mod Menu screen, and Sodium settings API.
@@ -52,7 +55,7 @@ These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.
 
 ### Documentation And Testing
 
-- Clarified that `200%` SSAA is twice the width and height, equivalent to conventional 4x SSAA.
+- Clarified that SSAA percentages apply per axis: `200%` is conventional 4x SSAA, while the new `800%` maximum renders 64x as many scene pixels as native resolution.
 - Added setup and build documentation for the optional DLSS bridge and bundled FidelityFX bridge.
 - Updated renderer architecture and compatibility documentation for Minecraft 26.2.
 - Added regression tests for configuration migration, mode planning, dropdown scrolling, NIS resources, FSR temporal masks, Vulkan MSAA compatibility, and alpha-to-coverage policy.

@@ -2,6 +2,7 @@ package org.betterLostItems.salts_anti_aliasing.client.render.common;
 
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.config.SsaaScaleLevel;
 import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderBackend;
 import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderBackendType;
 import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderCapability;
@@ -44,6 +45,22 @@ final class RenderPipelinePlannerTest {
 
         assertTrue(passIds.contains("fsr_super_resolution"));
         assertFalse(passIds.contains("nis_sharpen"));
+    }
+
+    @Test
+    void plansTheEightHundredPercentSsaaSceneTarget() {
+        AntiAliasingConfig config = config(AntiAliasingMode.SSAA, 0.0f);
+        config.ssaaScaleLevel = SsaaScaleLevel.X800;
+        config.sanitize();
+
+        PipelinePlan plan = planner.plan(BACKEND, config);
+        RenderTargetDescriptor sceneColor = plan.targets().stream()
+                .filter(target -> target.id().equals("scene_color"))
+                .findFirst()
+                .orElseThrow();
+
+        assertEquals(8.0f, sceneColor.scale());
+        assertTrue(passIds(plan).contains("ssaa_resolve"));
     }
 
     private static AntiAliasingConfig config(AntiAliasingMode mode, float sharpenStrength) {

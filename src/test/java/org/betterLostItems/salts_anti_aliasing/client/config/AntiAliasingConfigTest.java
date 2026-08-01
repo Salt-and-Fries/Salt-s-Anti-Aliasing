@@ -59,6 +59,21 @@ final class AntiAliasingConfigTest {
     }
 
     @Test
+    void preservesTheEightHundredPercentSsaaScale() {
+        AntiAliasingConfig config = GSON.fromJson("""
+                {
+                  "mode": "SSAA",
+                  "ssaaScaleLevel": "X800"
+                }
+                """, AntiAliasingConfig.class);
+
+        config.sanitize();
+
+        assertEquals(SsaaScaleLevel.X800, config.ssaaScaleLevel);
+        assertEquals(8.0f, config.sceneRenderScale());
+    }
+
+    @Test
     void migratesFsrSharpnessIntoTheUniversalSetting() {
         AntiAliasingConfig config = GSON.fromJson("""
                 {

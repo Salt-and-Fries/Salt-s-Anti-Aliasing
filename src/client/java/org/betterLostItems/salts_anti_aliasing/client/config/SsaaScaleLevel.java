@@ -9,7 +9,16 @@ public enum SsaaScaleLevel {
     X125(1.25f),
     X150(1.50f),
     X175(1.75f),
-    X200(2.00f);
+    X200(2.00f),
+    X250(2.50f),
+    X300(3.00f),
+    X400(4.00f),
+    X500(5.00f),
+    X600(6.00f),
+    X700(7.00f),
+    X800(8.00f);
+
+    private static final float PERFORMANCE_WARNING_THRESHOLD = 4.00f;
 
     private final float scaleFactor;
 
@@ -27,11 +36,35 @@ public enum SsaaScaleLevel {
     }
 
     /**
+     * Returns the percentage shown in configuration controls.
+     * @return per-axis render scale as a whole-number percentage
+     */
+    public int percentage() {
+        return Math.round(scaleFactor * 100.0f);
+    }
+
+    /**
+     * Returns the scene-pixel cost relative to native resolution.
+     * @return number of rendered scene pixels per native-resolution pixel
+     */
+    public float pixelMultiplier() {
+        return scaleFactor * scaleFactor;
+    }
+
+    /**
+     * Reports whether this preset is above the recommended high-quality ceiling.
+     * @return true when the UI should show the extreme performance warning
+     */
+    public boolean requiresPerformanceWarning() {
+        return scaleFactor > PERFORMANCE_WARNING_THRESHOLD;
+    }
+
+    /**
      * Handles label as part of the anti-aliasing render, configuration, or compatibility flow.
      * @return text component shown to the player
      */
     public String label() {
-        String scaleLabel = Math.round(scaleFactor * 100.0f) + "%";
+        String scaleLabel = percentage() + "%";
         return this == X200 ? scaleLabel + " (4x SSAA)" : scaleLabel;
     }
 

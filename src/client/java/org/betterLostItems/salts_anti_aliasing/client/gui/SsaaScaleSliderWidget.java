@@ -14,7 +14,6 @@ public final class SsaaScaleSliderWidget extends AbstractSliderButton {
     private static final int VIDEO_ROW_WIDTH = 150;
     private static final int VIDEO_ROW_HEIGHT = 20;
     private static final String LABEL_KEY = "options.salts_anti_aliasing.ssaa_scale";
-    private static final String TOOLTIP_KEY = "options.salts_anti_aliasing.ssaa_scale.tooltip";
 
     private final RenderRuntime runtime;
 
@@ -33,7 +32,6 @@ public final class SsaaScaleSliderWidget extends AbstractSliderButton {
                 normalize(runtime.ssaaScaleLevel())
         );
         this.runtime = runtime;
-        this.setTooltip(Tooltip.create(Component.translatable(TOOLTIP_KEY)));
         updateMessage();
     }
 
@@ -44,7 +42,8 @@ public final class SsaaScaleSliderWidget extends AbstractSliderButton {
     @Override
     protected void updateMessage() {
         SsaaScaleLevel level = runtime.ssaaScaleLevel();
-        this.setMessage(Component.translatable(LABEL_KEY, Component.literal(level.label())));
+        this.setMessage(Component.translatable(LABEL_KEY, ClientText.label(level)));
+        this.setTooltip(Tooltip.create(ClientText.ssaaScaleTooltip(level)));
     }
 
     /**

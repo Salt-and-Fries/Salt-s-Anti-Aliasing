@@ -12,12 +12,14 @@ public record RenderTargetDescriptor(
         float scale,
         boolean persistentAcrossFrames
 ) {
+    public static final float MAX_SCALE = 8.0f;
+
     public RenderTargetDescriptor {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("Render target id cannot be blank");
         }
-        if (scale <= 0.0f || scale > 2.0f) {
-            throw new IllegalArgumentException("Render target scale must be between 0 and 2");
+        if (scale <= 0.0f || scale > MAX_SCALE) {
+            throw new IllegalArgumentException("Render target scale must be between 0 and " + MAX_SCALE);
         }
     }
 }
