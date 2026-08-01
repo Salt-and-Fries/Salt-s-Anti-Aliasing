@@ -40,6 +40,7 @@ These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.
 ### Settings And User Interface
 
 - Rebuilt the Video Settings integration for Minecraft 26.2.
+- Updated the Mod Menu configuration screen to use the same modal mode picker and dynamic mode-specific controls as Video Settings, including universal sharpness, MSAA alpha-to-coverage, SSAA through 800% with warnings, and DLSS/FSR quality controls.
 - Fixed the crash that prevented the Video Settings screen from opening.
 - Added a scrollable anti-aliasing mode popup that always renders above the settings buttons.
 - Added wrapped, multi-line mode tooltips so descriptions remain readable near screen edges.

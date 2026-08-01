@@ -33,6 +33,26 @@ public final class AntiAliasingVideoSettingsSection {
     ) {
         list.addHeader(Component.translatable(SECTION_HEADER_KEY));
 
+        return addControlsTo(
+                list,
+                runtime,
+                dropdownExpanded,
+                improvedTransparencyEnabled,
+                onDropdownToggled
+        );
+    }
+
+    /**
+     * Adds the shared mode picker and its current mode-specific controls without a section header.
+     * Mod Menu uses this form because the containing screen already carries the mod title.
+     */
+    public static Controls addControlsTo(
+            OptionsList list,
+            RenderRuntime runtime,
+            boolean dropdownExpanded,
+            boolean improvedTransparencyEnabled,
+            Runnable onDropdownToggled
+    ) {
         int wideRowWidth = Math.max(MIN_WIDE_ROW_WIDTH, list.getRowWidth());
         Button dropdownButton = Button.builder(dropdownLabel(runtime.activeMode()), button -> onDropdownToggled.run())
                 .size(wideRowWidth, ROW_HEIGHT)
@@ -76,21 +96,39 @@ public final class AntiAliasingVideoSettingsSection {
 
     private static List<AbstractWidget> secondaryControls(RenderRuntime runtime, AntiAliasingMode activeMode) {
         List<AbstractWidget> controls = new ArrayList<>();
-        controls.add(new SharpnessSliderWidget(runtime));
-        switch (activeMode) {
-            case MSAA -> {
-                controls.add(new MsaaSampleSliderWidget(runtime));
-                controls.add(MsaaAlphaToCoverageButton.create(runtime));
-            }
-            case SSAA -> controls.add(new SsaaScaleSliderWidget(runtime));
-            case NIS_UPSCALE, FSR1_UPSCALE -> controls.add(new SpatialUpscaleQualitySliderWidget(runtime));
-            case DLSS_SUPER_RESOLUTION -> controls.add(new DlssQualitySliderWidget(runtime));
-            case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION ->
-                    controls.add(new FsrQualitySliderWidget(runtime));
-            default -> {
-            }
+        for (ControlKind controlKind : controlLayout(activeMode)) {
+            controls.add(createControl(runtime, controlKind));
         }
         return controls;
+    }
+
+    static List<ControlKind> controlLayout(AntiAliasingMode activeMode) {
+        return switch (activeMode) {
+            case MSAA -> List.of(
+                    ControlKind.SHARPNESS,
+                    ControlKind.MSAA_SAMPLES,
+                    ControlKind.MSAA_ALPHA_TO_COVERAGE
+            );
+            case SSAA -> List.of(ControlKind.SHARPNESS, ControlKind.SSAA_SCALE);
+            case NIS_UPSCALE, FSR1_UPSCALE ->
+                    List.of(ControlKind.SHARPNESS, ControlKind.SPATIAL_UPSCALE_QUALITY);
+            case DLSS_SUPER_RESOLUTION -> List.of(ControlKind.SHARPNESS, ControlKind.DLSS_QUALITY);
+            case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION ->
+                    List.of(ControlKind.SHARPNESS, ControlKind.FSR_QUALITY);
+            default -> List.of(ControlKind.SHARPNESS);
+        };
+    }
+
+    private static AbstractWidget createControl(RenderRuntime runtime, ControlKind controlKind) {
+        return switch (controlKind) {
+            case SHARPNESS -> new SharpnessSliderWidget(runtime);
+            case MSAA_SAMPLES -> new MsaaSampleSliderWidget(runtime);
+            case MSAA_ALPHA_TO_COVERAGE -> MsaaAlphaToCoverageButton.create(runtime);
+            case SSAA_SCALE -> new SsaaScaleSliderWidget(runtime);
+            case SPATIAL_UPSCALE_QUALITY -> new SpatialUpscaleQualitySliderWidget(runtime);
+            case DLSS_QUALITY -> new DlssQualitySliderWidget(runtime);
+            case FSR_QUALITY -> new FsrQualitySliderWidget(runtime);
+        };
     }
 
     private static Component dropdownLabel(AntiAliasingMode activeMode) {
@@ -109,5 +147,15 @@ public final class AntiAliasingVideoSettingsSection {
             Button dropdownButton,
             List<AbstractWidget> secondaryControls
     ) {
+    }
+
+    enum ControlKind {
+        SHARPNESS,
+        MSAA_SAMPLES,
+        MSAA_ALPHA_TO_COVERAGE,
+        SSAA_SCALE,
+        SPATIAL_UPSCALE_QUALITY,
+        DLSS_QUALITY,
+        FSR_QUALITY
     }
 }
