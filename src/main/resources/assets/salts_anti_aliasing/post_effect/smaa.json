@@ -11,63 +11,37 @@
       "inputs": [
         {
           "sampler_name": "In",
-          "target": "minecraft:main"
+          "target": "minecraft:main",
+          "bilinear": false
         }
       ],
-      "output": "edges",
-      "uniforms": {
-        "SmaaEdgeConfig": [
-          {
-            "name": "EdgeThreshold",
-            "type": "float",
-            "value": 0.065
-          },
-          {
-            "name": "LocalContrastFactor",
-            "type": "float",
-            "value": 1.35
-          },
-          {
-            "name": "DiagonalFactor",
-            "type": "float",
-            "value": 0.35
-          }
-        ]
-      }
+      "output": "edges"
     },
     {
       "vertex_shader": "minecraft:core/screenquad",
       "fragment_shader": "salts_anti_aliasing:post/smaa_weight_blend",
       "inputs": [
         {
-          "sampler_name": "Color",
-          "target": "minecraft:main"
+          "sampler_name": "Edges",
+          "target": "edges",
+          "bilinear": true
         },
         {
-          "sampler_name": "Edges",
-          "target": "edges"
+          "sampler_name": "Area",
+          "location": "salts_anti_aliasing:smaa_area",
+          "width": 160,
+          "height": 560,
+          "bilinear": true
+        },
+        {
+          "sampler_name": "Search",
+          "location": "salts_anti_aliasing:smaa_search",
+          "width": 64,
+          "height": 16,
+          "bilinear": true
         }
       ],
-      "output": "weights",
-      "uniforms": {
-        "SmaaWeightConfig": [
-          {
-            "name": "SearchStrength",
-            "type": "float",
-            "value": 0.55
-          },
-          {
-            "name": "CornerRounding",
-            "type": "float",
-            "value": 0.30
-          },
-          {
-            "name": "MaxBlend",
-            "type": "float",
-            "value": 0.60
-          }
-        ]
-      }
+      "output": "weights"
     },
     {
       "vertex_shader": "minecraft:core/screenquad",
@@ -75,11 +49,13 @@
       "inputs": [
         {
           "sampler_name": "Color",
-          "target": "minecraft:main"
+          "target": "minecraft:main",
+          "bilinear": true
         },
         {
           "sampler_name": "Weights",
-          "target": "weights"
+          "target": "weights",
+          "bilinear": true
         }
       ],
       "output": "resolved"
@@ -90,7 +66,8 @@
       "inputs": [
         {
           "sampler_name": "In",
-          "target": "resolved"
+          "target": "resolved",
+          "bilinear": false
         }
       ],
       "output": "minecraft:main",

@@ -11,11 +11,6 @@
           "sampler_name": "In",
           "target": "minecraft:main",
           "bilinear": true
-        },
-        {
-          "sampler_name": "Depth",
-          "target": "minecraft:main",
-          "use_depth_buffer": true
         }
       ],
       "output": "swap",
@@ -24,42 +19,17 @@
           {
             "name": "SubpixelBlend",
             "type": "float",
-            "value": 1.35
+            "value": 0.75
           },
           {
             "name": "EdgeThreshold",
             "type": "float",
-            "value": 0.038
+            "value": 0.125
           },
           {
             "name": "EdgeThresholdMin",
             "type": "float",
-            "value": 0.006
-          },
-          {
-            "name": "SearchRadius",
-            "type": "float",
-            "value": 6.0
-          },
-          {
-            "name": "ColorWeight",
-            "type": "float",
-            "value": 1.25
-          },
-          {
-            "name": "DepthWeight",
-            "type": "float",
-            "value": 3.25
-          },
-          {
-            "name": "VarianceGuard",
-            "type": "float",
-            "value": 0.26
-          },
-          {
-            "name": "EdgeConfidenceScale",
-            "type": "float",
-            "value": 1.85
+            "value": 0.0312
           }
         ]
       }
