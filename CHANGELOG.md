@@ -1,6 +1,6 @@
 # Changelog
 
-## X.1 — Minecraft 26.2
+## 1.0 — Minecraft 26.2
 
 These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.2`.
 
