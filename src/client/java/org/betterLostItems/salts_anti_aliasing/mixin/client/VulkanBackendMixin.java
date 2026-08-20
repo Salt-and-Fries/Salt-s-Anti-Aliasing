@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vulkan.VulkanBackend;
 import com.mojang.blaze3d.vulkan.VulkanPhysicalDevice;
 import com.mojang.blaze3d.vulkan.init.VulkanFeature;
 import com.mojang.blaze3d.vulkan.init.VulkanPNextStruct;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss.DlssRuntime;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRuntime;
 import org.lwjgl.system.MemoryStack;
@@ -54,6 +55,12 @@ public abstract class VulkanBackendMixin {
             Runnable criticalShaderLoader,
             CallbackInfoReturnable<GpuDevice> callbackInfo
     ) throws BackendCreationException {
+        MetricsDiagnostics.info(
+                "vulkan.device",
+                "native_upscaler_preinitialization",
+                "windowHandle", "0x" + Long.toUnsignedString(window, 16),
+                "gpuDebugOptions", debugOptions
+        );
         DlssRuntime.instance().preInitializeFromEnvironment();
         FsrRuntime.instance().preInitializeFromEnvironment();
     }
@@ -79,6 +86,8 @@ public abstract class VulkanBackendMixin {
             VulkanPhysicalDevice physicalDevice,
             Set<VulkanFeature> vulkanFeatures
     ) {
+        Set<String> extensionsBefore = Set.copyOf(deviceExtensions);
+        Set<VulkanFeature> featuresBefore = Set.copyOf(vulkanFeatures);
         if (physicalDevice.hasDeviceExtension(KHRGetMemoryRequirements2.VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME)) {
             deviceExtensions.add(KHRGetMemoryRequirements2.VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
 
@@ -136,6 +145,17 @@ public abstract class VulkanBackendMixin {
                     VkPhysicalDeviceDescriptorIndexingFeatures.RUNTIMEDESCRIPTORARRAY
             ));
         }
+        MetricsDiagnostics.info(
+                "vulkan.device",
+                "fidelityfx_device_requirements_evaluated",
+                "deviceName", physicalDevice.deviceName(),
+                "vendorName", physicalDevice.vendorName(),
+                "driverInfo", physicalDevice.driverInfo(),
+                "extensionsBefore", extensionsBefore,
+                "extensionsAfter", deviceExtensions,
+                "featuresBefore", featuresBefore,
+                "featuresAfter", vulkanFeatures
+        );
     }
 
     private static void saltsAntiAliasing$addSupportedFeature(
@@ -143,7 +163,16 @@ public abstract class VulkanBackendMixin {
             VulkanPhysicalDevice physicalDevice,
             VulkanFeature feature
     ) {
-        if (saltsAntiAliasing$isFeatureSupported(physicalDevice, feature)) {
+        boolean supported = saltsAntiAliasing$isFeatureSupported(physicalDevice, feature);
+        MetricsDiagnostics.infoOnce(
+                "vulkan.feature." + physicalDevice.deviceName() + "." + feature,
+                "vulkan.device",
+                "optional_device_feature_queried",
+                "deviceName", physicalDevice.deviceName(),
+                "feature", feature,
+                "supported", supported
+        );
+        if (supported) {
             vulkanFeatures.add(feature);
         }
     }

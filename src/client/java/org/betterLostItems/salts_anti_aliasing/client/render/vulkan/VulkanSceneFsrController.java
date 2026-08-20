@@ -23,6 +23,7 @@ import net.minecraft.world.phys.Vec3;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrEvaluateParameters;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrOptimalSettings;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRuntime;
@@ -157,6 +158,24 @@ public final class VulkanSceneFsrController {
             this.activeMode = config.mode;
             this.activeConfig = config.copy();
             active = true;
+            MetricsDiagnostics.infoOnce(
+                    "fsr-scene-setup-" + config.mode + '-' + config.fsrQualityPreset + '-'
+                            + mainTarget.width + 'x' + mainTarget.height + '-'
+                            + optimalSettings.renderWidth() + 'x' + optimalSettings.renderHeight(),
+                    "fsr_scene",
+                    "scene_setup_complete",
+                    MetricsDiagnostics.fields(
+                            "mode", config.mode,
+                            "qualityPreset", config.fsrQualityPreset,
+                            "frameGenerationRequested", config.mode.usesFsrFrameGeneration(),
+                            "outputWidth", mainTarget.width,
+                            "outputHeight", mainTarget.height,
+                            "renderWidth", optimalSettings.renderWidth(),
+                            "renderHeight", optimalSettings.renderHeight(),
+                            "jitterPhaseCount", optimalSettings.jitterPhaseCount(),
+                            "sharpness", config.sharpenStrength
+                    )
+            );
         } catch (RuntimeException exception) {
             disableAfterFailure(
                     "Disabling AMD FSR after a setup failure",
@@ -185,6 +204,20 @@ public final class VulkanSceneFsrController {
             int result = evaluateFsr(frameConfig, frameState);
             if (result != 0) {
                 SaltsAntiAliasing.LOGGER.warn("AMD FSR evaluate failed with result {}; falling back to scene resolve", result);
+                MetricsDiagnostics.warn("fsr_scene", "evaluation_fallback", MetricsDiagnostics.fields(
+                        "result", result,
+                        "mode", frameConfig.mode,
+                        "qualityPreset", frameConfig.fsrQualityPreset,
+                        "frameGenerationRequested", frameConfig.mode.usesFsrFrameGeneration(),
+                        "renderWidth", sceneTarget == null ? null : sceneTarget.width,
+                        "renderHeight", sceneTarget == null ? null : sceneTarget.height,
+                        "outputWidth", mainTarget == null ? null : mainTarget.width,
+                        "outputHeight", mainTarget == null ? null : mainTarget.height,
+                        "temporalFrameIndex", frameState.temporalFrameIndex(),
+                        "resetHistory", frameState.resetHistory(),
+                        "frameTimeMs", frameState.timing().deltaMs(),
+                        "timingDiscontinuity", frameState.timing().discontinuity()
+                ));
                 resolveSceneColor(sceneTarget, mainTarget);
             } else {
                 VulkanFsrColorTransferRenderer.instance().encode(upscaledColorTarget, mainTarget);
@@ -242,6 +275,17 @@ public final class VulkanSceneFsrController {
                 destroyResourcesAfterFrame = true;
                 SaltsAntiAliasing.LOGGER.error(
                         "Disabling AMD FSR3 frame generation after the HUDless scene capture failed",
+                        exception
+                );
+                MetricsDiagnostics.error(
+                        "fsr_scene",
+                        "hudless_scene_capture_failed",
+                        MetricsDiagnostics.fields(
+                                "sourceAvailable", source != null,
+                                "targetAvailable", hudlessColorTarget != null,
+                                "frameGenerationSwapchainActive",
+                                FsrRuntime.instance().isFrameGenerationSwapchainActive()
+                        ),
                         exception
                 );
             }
@@ -314,6 +358,23 @@ public final class VulkanSceneFsrController {
                 || transparencyMaskTarget == null
                 || upscaledColorTarget == null
                 || hudlessColorTarget == null) {
+            MetricsDiagnostics.warnOnce(
+                    "fsr-evaluate-targets-unavailable",
+                    "fsr_scene",
+                    "evaluation_targets_unavailable",
+                    MetricsDiagnostics.fields(
+                            "scene", sceneTarget != null,
+                            "linearScene", linearSceneTarget != null,
+                            "main", mainTarget != null,
+                            "motionVectors", motionVectorTarget != null,
+                            "opaqueScene", opaqueSceneTarget != null,
+                            "linearOpaqueScene", linearOpaqueSceneTarget != null,
+                            "reactiveMask", reactiveMaskTarget != null,
+                            "transparencyMask", transparencyMaskTarget != null,
+                            "upscaledColor", upscaledColorTarget != null,
+                            "hudlessColor", hudlessColorTarget != null
+                    )
+            );
             return -1;
         }
 
@@ -349,12 +410,41 @@ public final class VulkanSceneFsrController {
                 || transparencyMaskView == 0L
                 || hudlessColorImage == 0L
                 || hudlessColorView == 0L) {
+            MetricsDiagnostics.warnOnce(
+                    "fsr-evaluate-native-handles-unavailable",
+                    "fsr_scene",
+                    "native_resource_handles_unavailable",
+                    MetricsDiagnostics.fields(
+                            "inputColorImage", hex(inputColorImage),
+                            "inputColorView", hex(inputColorView),
+                            "outputColorImage", hex(outputColorImage),
+                            "outputColorView", hex(outputColorView),
+                            "depthImage", hex(depthImage),
+                            "depthView", hex(depthView),
+                            "motionVectorImage", hex(motionVectorImage),
+                            "motionVectorView", hex(motionVectorView),
+                            "opaqueColorImage", hex(opaqueColorImage),
+                            "opaqueColorView", hex(opaqueColorView),
+                            "reactiveMaskImage", hex(reactiveMaskImage),
+                            "reactiveMaskView", hex(reactiveMaskView),
+                            "transparencyMaskImage", hex(transparencyMaskImage),
+                            "transparencyMaskView", hex(transparencyMaskView),
+                            "hudlessColorImage", hex(hudlessColorImage),
+                            "hudlessColorView", hex(hudlessColorView)
+                    )
+            );
             return -2;
         }
 
         CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
         CommandEncoderBackend backend = ((CommandEncoderAccessor) commandEncoder).saltsAntiAliasing$backend();
         if (!(backend instanceof VulkanCommandEncoder vulkanCommandEncoder)) {
+            MetricsDiagnostics.warnOnce(
+                    "fsr-command-encoder-not-vulkan-" + backend.getClass().getName(),
+                    "fsr_scene",
+                    "unsupported_command_encoder",
+                    MetricsDiagnostics.fields("backendClass", backend.getClass().getName())
+            );
             return -3;
         }
 
@@ -427,6 +517,13 @@ public final class VulkanSceneFsrController {
             }
             lastSuccessfulTemporalFrameIndex = -1L;
             lastFrameSignature = null;
+            MetricsDiagnostics.error("fsr_scene", "command_buffer_end_failed", MetricsDiagnostics.fields(
+                    "result", endResult,
+                    "commandBuffer", hex(commandBuffer.address()),
+                    "nativeEvaluationResult", result,
+                    "frameGeneration", parameters.frameGeneration(),
+                    "temporalFrameIndex", frameState.temporalFrameIndex()
+            ), null);
             return endResult;
         }
         vulkanCommandEncoder.execute(commandBuffer);
@@ -456,6 +553,18 @@ public final class VulkanSceneFsrController {
                 || timing.discontinuity()
                 || temporalFrameIndex != lastSuccessfulTemporalFrameIndex + 1L
                 || !signature.equals(lastFrameSignature);
+        if (resetHistory) {
+            MetricsDiagnostics.info("fsr_scene", "history_reset_requested", MetricsDiagnostics.fields(
+                    "temporalReset", temporal.resetHistoryThisFrame(),
+                    "timingDiscontinuity", timing.discontinuity(),
+                    "frameSequenceDiscontinuity", temporalFrameIndex != lastSuccessfulTemporalFrameIndex + 1L,
+                    "configurationChanged", !signature.equals(lastFrameSignature),
+                    "temporalFrameIndex", temporalFrameIndex,
+                    "lastSuccessfulTemporalFrameIndex", lastSuccessfulTemporalFrameIndex,
+                    "frameTimeMs", timing.deltaMs(),
+                    "signature", signature
+            ));
+        }
         return new FsrFrameState(timing, temporalFrameIndex, signature, resetHistory);
     }
 
@@ -845,13 +954,19 @@ public final class VulkanSceneFsrController {
     ) {
         if (target == null || target.useDepth != useDepth) {
             if (target != null) {
+                recordTargetDestroyed(label, target, "incompatible_depth_setting");
                 target.destroyBuffers();
             }
-            return new TextureTarget(label, width, height, useDepth, format);
+            TextureTarget created = new TextureTarget(label, width, height, useDepth, format);
+            recordTargetCreated(label, created, format, useDepth, false);
+            return created;
         }
 
         if (target.width != width || target.height != height) {
+            int previousWidth = target.width;
+            int previousHeight = target.height;
             target.resize(width, height);
+            recordTargetResized(label, previousWidth, previousHeight, width, height);
         }
         return target;
     }
@@ -865,13 +980,19 @@ public final class VulkanSceneFsrController {
     ) {
         if (!(target instanceof VulkanStorageColorTarget)) {
             if (target != null) {
+                recordTargetDestroyed(label, target, "incompatible_storage_target");
                 target.destroyBuffers();
             }
-            return new VulkanStorageColorTarget(label, width, height, format);
+            RenderTarget created = new VulkanStorageColorTarget(label, width, height, format);
+            recordTargetCreated(label, created, format, false, true);
+            return created;
         }
 
         if (target.width != width || target.height != height) {
+            int previousWidth = target.width;
+            int previousHeight = target.height;
             target.resize(width, height);
+            recordTargetResized(label, previousWidth, previousHeight, width, height);
         }
         return target;
     }
@@ -913,6 +1034,19 @@ public final class VulkanSceneFsrController {
                 || destination == null
                 || source.getColorTexture() == null
                 || destination.getColorTexture() == null) {
+            MetricsDiagnostics.warnOnce(
+                    "fsr-copy-unavailable-" + label,
+                    "fsr_scene",
+                    "color_copy_skipped",
+                    MetricsDiagnostics.fields(
+                            "label", label,
+                            "sourceAvailable", source != null,
+                            "destinationAvailable", destination != null,
+                            "sourceColorAvailable", source != null && source.getColorTexture() != null,
+                            "destinationColorAvailable", destination != null
+                                    && destination.getColorTexture() != null
+                    )
+            );
             return;
         }
 
@@ -932,6 +1066,8 @@ public final class VulkanSceneFsrController {
             RuntimeException exception,
             boolean frameGenerationRequested
     ) {
+        AntiAliasingMode failedMode = activeMode;
+        boolean hadMainTarget = mainTarget != null;
         if (frameGenerationRequested) {
             FsrRuntime.instance().onFrameGenerationEvaluationFailure(-1);
         }
@@ -943,6 +1079,14 @@ public final class VulkanSceneFsrController {
         }
         clearFrameState();
         SaltsAntiAliasing.LOGGER.error(message, exception);
+        MetricsDiagnostics.error("fsr_scene", "controller_disabled", MetricsDiagnostics.fields(
+                "message", message,
+                "mode", failedMode,
+                "frameGenerationRequested", frameGenerationRequested,
+                "destroyResourcesDeferred", destroyResourcesAfterFrame,
+                "mainTargetAvailable", hadMainTarget,
+                "recoveryGeneration", FsrRuntime.instance().recoveryGeneration()
+        ), exception);
     }
 
     private void resetDisabledStateWhenRetryIsSafe(AntiAliasingConfig config) {
@@ -956,11 +1100,18 @@ public final class VulkanSceneFsrController {
         }
 
         lastRecoverySignature = signature;
+        boolean recovering = disabledAfterFailure;
         disabledAfterFailure = false;
         lastDispatchTimeNs = 0L;
         lastSuccessfulTemporalFrameIndex = -1L;
         lastFrameSignature = null;
         maskHistoryValid = false;
+        MetricsDiagnostics.info("fsr_scene", "controller_recovery_state_reset", MetricsDiagnostics.fields(
+                "wasDisabled", recovering,
+                "mode", signature.mode(),
+                "qualityPresetOrdinal", signature.qualityPreset(),
+                "runtimeRecoveryGeneration", signature.runtimeGeneration()
+        ));
     }
 
     private void destroyResourcesIfPending() {
@@ -974,6 +1125,35 @@ public final class VulkanSceneFsrController {
     }
 
     private void destroyResources() {
+        if (sceneTarget != null
+                || linearSceneTarget != null
+                || motionVectorTarget != null
+                || opaqueSceneTarget != null
+                || linearOpaqueSceneTarget != null
+                || previousLinearSceneTarget != null
+                || previousLinearOpaqueSceneTarget != null
+                || reactiveMaskTarget != null
+                || transparencyMaskTarget != null
+                || upscaledColorTarget != null
+                || hudlessColorTarget != null) {
+            MetricsDiagnostics.info("fsr_scene", "render_targets_destroyed", MetricsDiagnostics.fields(
+                    "renderWidth", sceneTarget == null ? null : sceneTarget.width,
+                    "renderHeight", sceneTarget == null ? null : sceneTarget.height,
+                    "outputWidth", upscaledColorTarget == null ? null : upscaledColorTarget.width,
+                    "outputHeight", upscaledColorTarget == null ? null : upscaledColorTarget.height,
+                    "scene", sceneTarget != null,
+                    "linearScene", linearSceneTarget != null,
+                    "motionVectors", motionVectorTarget != null,
+                    "opaqueScene", opaqueSceneTarget != null,
+                    "linearOpaqueScene", linearOpaqueSceneTarget != null,
+                    "previousLinearScene", previousLinearSceneTarget != null,
+                    "previousLinearOpaqueScene", previousLinearOpaqueSceneTarget != null,
+                    "reactiveMask", reactiveMaskTarget != null,
+                    "transparencyMask", transparencyMaskTarget != null,
+                    "upscaledColor", upscaledColorTarget != null,
+                    "hudlessColor", hudlessColorTarget != null
+            ));
+        }
         destroyTarget(sceneTarget);
         destroyTarget(linearSceneTarget);
         destroyTarget(motionVectorTarget);
@@ -1050,6 +1230,55 @@ public final class VulkanSceneFsrController {
 
     private static long view(GpuTextureView textureView) {
         return textureView instanceof VulkanGpuTextureView vulkanTextureView ? vulkanTextureView.vkImageView() : 0L;
+    }
+
+    private static void recordTargetCreated(
+            String label,
+            RenderTarget target,
+            GpuFormat format,
+            boolean useDepth,
+            boolean storageCapable
+    ) {
+        MetricsDiagnostics.info("fsr_scene", "render_target_created", MetricsDiagnostics.fields(
+                "label", label,
+                "width", target.width,
+                "height", target.height,
+                "format", format.toString(),
+                "depthEnabled", useDepth,
+                "storageCapable", storageCapable,
+                "implementation", target.getClass().getName()
+        ));
+    }
+
+    private static void recordTargetResized(
+            String label,
+            int previousWidth,
+            int previousHeight,
+            int width,
+            int height
+    ) {
+        MetricsDiagnostics.info("fsr_scene", "render_target_resized", MetricsDiagnostics.fields(
+                "label", label,
+                "previousWidth", previousWidth,
+                "previousHeight", previousHeight,
+                "width", width,
+                "height", height
+        ));
+    }
+
+    private static void recordTargetDestroyed(String label, RenderTarget target, String reason) {
+        MetricsDiagnostics.info("fsr_scene", "render_target_replaced", MetricsDiagnostics.fields(
+                "label", label,
+                "reason", reason,
+                "width", target.width,
+                "height", target.height,
+                "depthEnabled", target.useDepth,
+                "implementation", target.getClass().getName()
+        ));
+    }
+
+    private static String hex(long value) {
+        return "0x" + Long.toUnsignedString(value, 16);
     }
 
     private record CameraParameters(

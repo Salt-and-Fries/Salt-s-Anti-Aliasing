@@ -14,6 +14,7 @@ import com.mojang.blaze3d.textures.FilterMode;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 
 import java.util.Optional;
 
@@ -65,6 +66,17 @@ final class VulkanFsrColorTransferRenderer {
                 || destination == null
                 || source.getColorTextureView() == null
                 || destination.getColorTextureView() == null) {
+            MetricsDiagnostics.warnOnce(
+                    "fsr-color-transfer-input-unavailable-" + label,
+                    "fsr.color_transfer",
+                    "render_skipped",
+                    "label", label,
+                    "sourceAvailable", source != null,
+                    "destinationAvailable", destination != null,
+                    "sourceColorViewAvailable", source != null && source.getColorTextureView() != null,
+                    "destinationColorViewAvailable", destination != null
+                            && destination.getColorTextureView() != null
+            );
             return;
         }
 
@@ -128,6 +140,11 @@ final class VulkanFsrColorTransferRenderer {
         if (!compiled.isValid()) {
             throw new IllegalStateException("Unable to compile FSR color-transfer pipeline " + pipelineId);
         }
+        MetricsDiagnostics.info("fsr.color_transfer", "pipeline_compiled", MetricsDiagnostics.fields(
+                "pipeline", pipelineId,
+                "fragmentShader", fragmentShaderId,
+                "outputFormat", outputFormat
+        ));
         return pipeline;
     }
 }

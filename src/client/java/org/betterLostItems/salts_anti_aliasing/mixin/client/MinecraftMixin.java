@@ -19,7 +19,7 @@ public abstract class MinecraftMixin {
      */
     @Inject(method = "stop", at = @At("HEAD"))
     private void saltsAntiAliasing$flushMetricsOnStop(CallbackInfo callbackInfo) {
-        ModernMinecraftHooks.shutdownMetrics();
+        ModernMinecraftHooks.flushMetrics();
     }
 
     /**
@@ -27,7 +27,7 @@ public abstract class MinecraftMixin {
      */
     @Inject(method = "close", at = @At("HEAD"))
     private void saltsAntiAliasing$flushMetricsOnClose(CallbackInfo callbackInfo) {
-        ModernMinecraftHooks.shutdownMetrics();
+        ModernMinecraftHooks.flushMetrics();
     }
 
     /**
@@ -43,5 +43,6 @@ public abstract class MinecraftMixin {
     )
     private void saltsAntiAliasing$shutdownNativeIntegrations(CallbackInfo callbackInfo) {
         ModernMinecraftHooks.shutdownNativeIntegrations();
+        ModernMinecraftHooks.shutdownMetrics();
     }
 }

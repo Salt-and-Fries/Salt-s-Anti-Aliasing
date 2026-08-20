@@ -3,6 +3,7 @@ package org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.FsrQualityPreset;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanNativeDeviceInfo;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanNativeDeviceRegistry;
 import org.lwjgl.vulkan.KHRSwapchain;
@@ -59,10 +60,28 @@ public final class FsrRuntime {
             resetFrameGenerationPresentTracking();
             recoveryGeneration++;
         }
+        MetricsDiagnostics.info(
+                "fsr.runtime",
+                "configuration_applied",
+                "configurationChanged", nativeConfigurationChanged,
+                "previousConfiguration", previousConfiguration,
+                "configuration", configuration,
+                "validationStatus", configuration.validate(),
+                "frameGenerationRequested", frameGenerationSwapchainRequested,
+                "frameGenerationRequestChanged", requestChanged,
+                "recoveryGeneration", recoveryGeneration
+        );
         refresh();
     }
 
     public synchronized void preInitializeFromEnvironment() {
+        MetricsDiagnostics.info(
+                "fsr.runtime",
+                "environment_preinitialization_requested",
+                "hasAnySetting", configuration.hasAnySetting(),
+                "configuration", configuration,
+                "validationStatus", configuration.validate()
+        );
         if (configuration.hasAnySetting()) {
             refresh();
         }
@@ -77,6 +96,14 @@ public final class FsrRuntime {
             resetFrameGenerationPresentTracking();
             recoveryGeneration++;
         }
+        MetricsDiagnostics.info(
+                "fsr.runtime",
+                "vulkan_device_ready",
+                "deviceInfo", deviceInfo,
+                "coreHandlesComplete", deviceInfo != null && deviceInfo.complete(),
+                "frameGenerationQueuesComplete", deviceInfo != null && deviceInfo.frameGenerationQueuesComplete(),
+                "recoveryGeneration", recoveryGeneration
+        );
         refresh(deviceInfo);
     }
 
@@ -129,11 +156,36 @@ public final class FsrRuntime {
             int outputWidth,
             int outputHeight
     ) {
-        return bridge.queryOptimalSettings(preset, outputWidth, outputHeight);
+        FsrOptimalSettings settings = bridge.queryOptimalSettings(preset, outputWidth, outputHeight);
+        MetricsDiagnostics.infoOnce(
+                "fsr.optimal-settings." + preset + "." + outputWidth + "x" + outputHeight,
+                "fsr.runtime",
+                "optimal_settings_queried",
+                "preset", preset,
+                "outputWidth", outputWidth,
+                "outputHeight", outputHeight,
+                "settings", settings,
+                "runtimeStatus", status()
+        );
+        return settings;
     }
 
     public synchronized int evaluate(FsrEvaluateParameters parameters) {
-        return bridge.evaluate(parameters);
+        int result = bridge.evaluate(parameters);
+        if (result != 0) {
+            MetricsDiagnostics.warnOnce(
+                    "fsr.evaluate." + parameters.fsrVersion() + "." + parameters.frameGeneration() + "."
+                            + result + "." + parameters.renderWidth() + "x" + parameters.renderHeight() + "."
+                            + parameters.outputWidth() + "x" + parameters.outputHeight(),
+                    "fsr.evaluate",
+                    "evaluation_failed",
+                    "result", result,
+                    "parameters", parameters,
+                    "runtimeStatus", status(),
+                    "recoveryGeneration", recoveryGeneration
+            );
+        }
+        return result;
     }
 
     /**
@@ -150,6 +202,13 @@ public final class FsrRuntime {
             SaltsAntiAliasing.LOGGER.warn(
                     "AMD FSR3 frame generation failed during evaluation with result {}; disabling it until the mode or Vulkan device changes",
                     result
+            );
+            MetricsDiagnostics.warn(
+                    "fsr.frame_generation",
+                    "evaluation_disabled_after_failure",
+                    "result", result,
+                    "status", status,
+                    "recoveryGeneration", recoveryGeneration
             );
         }
     }
@@ -169,9 +228,37 @@ public final class FsrRuntime {
             LongBuffer outSwapchain
     ) {
         if (!frameGenerationSwapchainRequested || !status.frameGenerationReady() || frameGenerationSwapchainRejected) {
+            MetricsDiagnostics.infoOnce(
+                    "fsr.swapchain.passthrough." + frameGenerationSwapchainRequested + "."
+                            + status + "." + frameGenerationSwapchainRejected,
+                    "fsr.frame_generation",
+                    "swapchain_creation_passthrough",
+                    "frameGenerationRequested", frameGenerationSwapchainRequested,
+                    "status", status,
+                    "swapchainRejected", frameGenerationSwapchainRejected,
+                    "minimumImageCount", createInfo.minImageCount(),
+                    "imageFormat", createInfo.imageFormat(),
+                    "imageColorSpace", createInfo.imageColorSpace(),
+                    "imageExtent", createInfo.imageExtent().width() + "x" + createInfo.imageExtent().height(),
+                    "imageUsage", createInfo.imageUsage(),
+                    "presentMode", createInfo.presentMode()
+            );
             return KHRSwapchain.vkCreateSwapchainKHR(device, createInfo, allocator, outSwapchain);
         }
 
+        MetricsDiagnostics.info(
+                "fsr.frame_generation",
+                "swapchain_creation_attempted",
+                "minimumImageCount", createInfo.minImageCount(),
+                "imageFormat", createInfo.imageFormat(),
+                "imageColorSpace", createInfo.imageColorSpace(),
+                "imageExtent", createInfo.imageExtent().width() + "x" + createInfo.imageExtent().height(),
+                "imageArrayLayers", createInfo.imageArrayLayers(),
+                "imageUsage", createInfo.imageUsage(),
+                "sharingMode", createInfo.imageSharingMode(),
+                "presentMode", createInfo.presentMode(),
+                "oldSwapchain", hex(createInfo.oldSwapchain())
+        );
         int result = bridge.createFrameGenerationSwapchain(device, createInfo, allocator, outSwapchain);
         if (result == FsrNativeBridge.SWAPCHAIN_UNHANDLED) {
             frameGenerationSwapchainRejected = true;
@@ -182,6 +269,13 @@ public final class FsrRuntime {
                 );
                 frameGenerationSwapchainStatusLogged = true;
             }
+            MetricsDiagnostics.warn(
+                    "fsr.frame_generation",
+                    "swapchain_unavailable_fallback",
+                    "nativeResult", result,
+                    "fallback", "regular Vulkan swapchain",
+                    "status", status
+            );
             return KHRSwapchain.vkCreateSwapchainKHR(device, createInfo, allocator, outSwapchain);
         }
         if (result == 0) {
@@ -194,6 +288,22 @@ public final class FsrRuntime {
                 frameGenerationSwapchainStatusLogged = true;
             }
             refresh();
+            MetricsDiagnostics.info(
+                    "fsr.frame_generation",
+                    "swapchain_created",
+                    "result", result,
+                    "swapchain", outSwapchain.remaining() > 0 ? hex(outSwapchain.get(outSwapchain.position())) : "unavailable",
+                    "recoveryGeneration", recoveryGeneration,
+                    "status", status()
+            );
+        } else {
+            MetricsDiagnostics.warn(
+                    "fsr.frame_generation",
+                    "swapchain_creation_failed",
+                    "result", result,
+                    "status", status,
+                    "recoveryGeneration", recoveryGeneration
+            );
         }
         return result;
     }
@@ -203,7 +313,14 @@ public final class FsrRuntime {
             long swapchain,
             VkAllocationCallbacks allocator
     ) {
-        if (!bridge.destroyFrameGenerationSwapchain(device, swapchain, allocator)) {
+        boolean destroyedByBridge = bridge.destroyFrameGenerationSwapchain(device, swapchain, allocator);
+        MetricsDiagnostics.info(
+                "fsr.frame_generation",
+                "swapchain_destroyed",
+                "swapchain", hex(swapchain),
+                "destroyedByFidelityFx", destroyedByBridge
+        );
+        if (!destroyedByBridge) {
             KHRSwapchain.vkDestroySwapchainKHR(device, swapchain, allocator);
         } else {
             resetFrameGenerationPresentTracking();
@@ -251,7 +368,22 @@ public final class FsrRuntime {
                         frameGenerationPresentTracker.sdkPresentCount(),
                         frameGenerationPresentTracker.gamePresentCount()
                 );
+                MetricsDiagnostics.info(
+                        "fsr.frame_generation",
+                        "output_confirmed",
+                        "sdkPresentCount", frameGenerationPresentTracker.sdkPresentCount(),
+                        "gamePresentCount", frameGenerationPresentTracker.gamePresentCount()
+                );
             }
+        } else if (result != KHRSwapchain.VK_ERROR_OUT_OF_DATE_KHR) {
+            MetricsDiagnostics.warnOnce(
+                    "fsr.present." + result,
+                    "fsr.frame_generation",
+                    "present_failed",
+                    "result", result,
+                    "sdkPresentCount", frameGenerationPresentTracker.sdkPresentCount(),
+                    "gamePresentCount", frameGenerationPresentTracker.gamePresentCount()
+            );
         }
         return result;
     }
@@ -265,6 +397,17 @@ public final class FsrRuntime {
     }
 
     public synchronized void shutdown() {
+        MetricsDiagnostics.info(
+                "fsr.runtime",
+                "shutdown",
+                "statusBeforeShutdown", status(),
+                "configuration", configuration,
+                "frameGenerationSwapchainRequested", frameGenerationSwapchainRequested,
+                "frameGenerationOutputConfirmed", frameGenerationPresentTracker.outputConfirmed(),
+                "sdkPresentCount", frameGenerationPresentTracker.sdkPresentCount(),
+                "gamePresentCount", frameGenerationPresentTracker.gamePresentCount(),
+                "recoveryGeneration", recoveryGeneration
+        );
         bridge.shutdown();
         currentDeviceInfo = null;
         frameGenerationSwapchainRejected = false;
@@ -285,13 +428,35 @@ public final class FsrRuntime {
         status = bridge.configure(configuration, deviceInfo);
         if (bridge.consumeSurfaceReconfigurationRequested()) {
             frameGenerationSurfaceReconfigurationRequested = true;
+            MetricsDiagnostics.info(
+                    "fsr.frame_generation",
+                    "surface_reconfiguration_requested",
+                    "status", status,
+                    "deviceInfo", deviceInfo
+            );
         }
         if (status != previousStatus) {
             SaltsAntiAliasing.LOGGER.info("AMD FSR runtime status: {}", status.message());
+            MetricsDiagnostics.info(
+                    "fsr.runtime",
+                    "status_changed",
+                    "previousStatus", previousStatus,
+                    "currentStatus", status,
+                    "message", status.message(),
+                    "deviceInfo", deviceInfo,
+                    "configuration", configuration,
+                    "frameGenerationRequested", frameGenerationSwapchainRequested,
+                    "frameGenerationRejected", frameGenerationSwapchainRejected,
+                    "recoveryGeneration", recoveryGeneration
+            );
         }
     }
 
     private void resetFrameGenerationPresentTracking() {
         frameGenerationPresentTracker.reset();
+    }
+
+    private static String hex(long value) {
+        return value == 0L ? "0x0" : "0x" + Long.toUnsignedString(value, 16);
     }
 }

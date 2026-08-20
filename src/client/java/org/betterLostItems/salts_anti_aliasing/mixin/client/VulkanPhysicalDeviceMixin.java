@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanFrameGenerationQueueAccess;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanFrameGenerationQueuePlanner;
 import org.lwjgl.glfw.GLFWVulkan;
@@ -85,18 +86,48 @@ public abstract class VulkanPhysicalDeviceMixin implements VulkanFrameGeneration
                     )
             ).orElse(null);
             if (saltsAntiAliasing$frameGenerationQueuePlan == null) {
+                MetricsDiagnostics.warn(
+                        "vulkan.queues",
+                        "frame_generation_queue_plan_unavailable",
+                        "deviceName", owner.deviceName(),
+                        "driverInfo", owner.driverInfo(),
+                        "gameGraphicsQueueFamily", graphicsQueue.leftInt(),
+                        "gameGraphicsQueueIndex", graphicsQueue.rightInt(),
+                        "queueFamilies", families
+                );
                 return;
             }
 
+            Int2IntArrayMap originalQueueCounts = new Int2IntArrayMap();
+            originalQueueCounts.putAll(queueFamilyCreateInfoMap);
             Int2IntArrayMap expandedQueueCounts = new Int2IntArrayMap();
-            expandedQueueCounts.putAll(queueFamilyCreateInfoMap);
+            expandedQueueCounts.putAll(originalQueueCounts);
             saltsAntiAliasing$includeQueue(expandedQueueCounts, saltsAntiAliasing$frameGenerationQueuePlan.asyncCompute());
             saltsAntiAliasing$includeQueue(expandedQueueCounts, saltsAntiAliasing$frameGenerationQueuePlan.present());
             saltsAntiAliasing$includeQueue(expandedQueueCounts, saltsAntiAliasing$frameGenerationQueuePlan.imageAcquire());
             queueFamilyCreateInfoMap = Int2IntMaps.unmodifiable(expandedQueueCounts);
+            MetricsDiagnostics.info(
+                    "vulkan.queues",
+                    "frame_generation_queue_plan_reserved",
+                    "deviceName", owner.deviceName(),
+                    "driverInfo", owner.driverInfo(),
+                    "gameGraphicsQueueFamily", graphicsQueue.leftInt(),
+                    "gameGraphicsQueueIndex", graphicsQueue.rightInt(),
+                    "queueFamilies", families,
+                    "plan", saltsAntiAliasing$frameGenerationQueuePlan,
+                    "requestedQueueCountsBefore", originalQueueCounts,
+                    "requestedQueueCountsAfter", expandedQueueCounts
+            );
         } catch (RuntimeException exception) {
             saltsAntiAliasing$frameGenerationQueuePlan = null;
             SaltsAntiAliasing.LOGGER.warn("Unable to reserve dedicated Vulkan queues for FSR3 frame generation", exception);
+            MetricsDiagnostics.error(
+                    "vulkan.queues",
+                    "frame_generation_queue_reservation_failed",
+                    exception,
+                    "graphicsQueue", graphicsQueue,
+                    "requestedQueueCounts", queueFamilyCreateInfoMap
+            );
         }
     }
 

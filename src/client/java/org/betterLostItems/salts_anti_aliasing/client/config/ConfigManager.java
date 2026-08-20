@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -65,6 +66,13 @@ public final class ConfigManager {
             }
         } catch (IOException | JsonSyntaxException exception) {
             SaltsAntiAliasing.LOGGER.warn("Falling back to default config after failing to read {}", configPath, exception);
+            MetricsDiagnostics.error(
+                    "configuration",
+                    "configuration_load_failed",
+                    exception,
+                    "configPath", configPath,
+                    "fallback", "defaults"
+            );
             config = new AntiAliasingConfig();
             config.sanitize();
             save();
@@ -98,9 +106,17 @@ public final class ConfigManager {
      * Applies a mutation, re-sanitizes the config, and persists the new value.
      */
     public synchronized void edit(Consumer<AntiAliasingConfig> editor) {
+        AntiAliasingConfig previous = config.copy();
         editor.accept(config);
         config.sanitize();
         save();
+        MetricsDiagnostics.info(
+                "configuration",
+                "configuration_changed",
+                "configPath", configPath,
+                "previous", MetricsDiagnostics.configSnapshot(previous),
+                "current", MetricsDiagnostics.configSnapshot(config)
+        );
     }
 
     /**
@@ -114,6 +130,13 @@ public final class ConfigManager {
             }
         } catch (IOException exception) {
             SaltsAntiAliasing.LOGGER.error("Failed to save config to {}", configPath, exception);
+            MetricsDiagnostics.error(
+                    "configuration",
+                    "configuration_save_failed",
+                    exception,
+                    "configPath", configPath,
+                    "configuration", MetricsDiagnostics.configSnapshot(config)
+            );
         }
     }
 }

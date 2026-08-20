@@ -17,6 +17,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.joml.Matrix4f;
 
 import java.util.HashMap;
@@ -64,6 +65,8 @@ public final class VulkanSceneTemporalController {
     private final Matrix4f currentJitteredViewProjection = new Matrix4f();
     private boolean hasViewProjection;
     private boolean resetHistoryThisFrame = true;
+    private String historyResetReason = "initialization";
+    private boolean historyResetRecorded;
     private long frameIndex;
     private ClientLevel capturedLevel;
     private Vec3 capturedCameraPosition;
@@ -122,6 +125,12 @@ public final class VulkanSceneTemporalController {
                 || jitterPhaseCount != nextPhaseCount;
         resetHistoryThisFrame = sequenceChanged;
         if (sequenceChanged) {
+            markHistoryReset("jitter_sequence_changed");
+            MetricsDiagnostics.info("temporal", "jitter_sequence_configured", MetricsDiagnostics.fields(
+                    "width", width,
+                    "height", height,
+                    "phaseCount", nextPhaseCount
+            ));
             jitterFrameIndex = 0;
             previousJitterUvX = 0.0f;
             previousJitterUvY = 0.0f;
@@ -185,6 +194,7 @@ public final class VulkanSceneTemporalController {
         if (lastLevel != null && lastLevel != level) {
             bootstrapFramesRemaining = BOOTSTRAP_FRAME_COUNT;
             historyValid = false;
+            markHistoryReset("client_level_changed");
             clearCameraMotion();
         }
 
@@ -193,6 +203,22 @@ public final class VulkanSceneTemporalController {
                 || lastLevel != level
                 || bootstrapFramesRemaining > 0
                 || resetHistoryThisFrame) {
+            if (!historyResetRecorded) {
+                MetricsDiagnostics.info("temporal", "history_reset", MetricsDiagnostics.fields(
+                        "reason", historyResetReason,
+                        "activeSequence", activeSequence,
+                        "historyValid", historyValid,
+                        "levelChanged", lastLevel != null && lastLevel != level,
+                        "bootstrapFramesRemaining", bootstrapFramesRemaining,
+                        "resetHistoryThisFrame", resetHistoryThisFrame,
+                        "frameIndex", frameIndex,
+                        "width", mainTarget.width,
+                        "height", mainTarget.height,
+                        "jitterPhaseCount", jitterPhaseCount,
+                        "cameraMotionAmount", cameraMotionAmount
+                ));
+                historyResetRecorded = true;
+            }
             lastLevel = level;
             copyCurrentFrameToHistory(mainTarget);
             historyValid = true;
@@ -205,6 +231,12 @@ public final class VulkanSceneTemporalController {
 
         PostChain postChain = minecraft.getShaderManager().getPostChain(TAA_EFFECT_ID, EXTERNAL_TARGETS);
         if (postChain == null) {
+            MetricsDiagnostics.warnOnce(
+                    "taa-post-chain-missing",
+                    "temporal",
+                    "post_chain_unavailable",
+                    MetricsDiagnostics.fields("effect", TAA_EFFECT_ID.toString())
+            );
             return;
         }
 
@@ -221,12 +253,15 @@ public final class VulkanSceneTemporalController {
         copyCurrentFrameToHistory(mainTarget);
         activeSequence = true;
         lastLevel = level;
+        historyResetRecorded = false;
+        historyResetReason = "none";
     }
 
     /**
      * Coordinates reset for inactive mode within the anti-aliasing render, configuration, or compatibility flow.
      */
     public void resetForInactiveMode() {
+        boolean wasActive = activeSequence || historyValid || hasViewProjection;
         activeSequence = false;
         historyValid = false;
         lastLevel = null;
@@ -234,6 +269,13 @@ public final class VulkanSceneTemporalController {
         clearJitter();
         clearCameraMotion();
         clearViewProjection();
+        historyResetReason = "inactive_mode";
+        historyResetRecorded = false;
+        if (wasActive) {
+            MetricsDiagnostics.info("temporal", "sequence_deactivated", MetricsDiagnostics.fields(
+                    "historyTargetAllocated", historyTarget != null
+            ));
+        }
     }
 
     /**
@@ -247,13 +289,29 @@ public final class VulkanSceneTemporalController {
             historyTarget = new TextureTarget(HISTORY_TARGET_LABEL, width, height, true, GpuFormat.RGBA8_UNORM);
             historyValid = false;
             bootstrapFramesRemaining = BOOTSTRAP_FRAME_COUNT;
+            markHistoryReset("history_target_created");
+            MetricsDiagnostics.info("temporal", "history_target_created", MetricsDiagnostics.fields(
+                    "width", width,
+                    "height", height,
+                    "format", GpuFormat.RGBA8_UNORM.toString(),
+                    "depthEnabled", true
+            ));
             return;
         }
 
         if (historyTarget.width != width || historyTarget.height != height) {
+            int previousWidth = historyTarget.width;
+            int previousHeight = historyTarget.height;
             historyTarget.resize(width, height);
             historyValid = false;
             bootstrapFramesRemaining = BOOTSTRAP_FRAME_COUNT;
+            markHistoryReset("history_target_resized");
+            MetricsDiagnostics.info("temporal", "history_target_resized", MetricsDiagnostics.fields(
+                    "previousWidth", previousWidth,
+                    "previousHeight", previousHeight,
+                    "width", width,
+                    "height", height
+            ));
         }
     }
 
@@ -266,6 +324,19 @@ public final class VulkanSceneTemporalController {
                 || mainTarget.getColorTextureView() == null
                 || historyTarget.getColorTextureView() == null) {
             historyValid = false;
+            resetHistoryThisFrame = true;
+            historyResetReason = "history_copy_target_unavailable";
+            MetricsDiagnostics.warnOnce(
+                    "taa-history-copy-target-unavailable",
+                    "temporal",
+                    "history_copy_skipped",
+                    MetricsDiagnostics.fields(
+                            "historyTargetAllocated", historyTarget != null,
+                            "mainColorViewAvailable", mainTarget.getColorTextureView() != null,
+                            "historyColorViewAvailable", historyTarget != null
+                                    && historyTarget.getColorTextureView() != null
+                    )
+            );
             return;
         }
 
@@ -282,6 +353,11 @@ public final class VulkanSceneTemporalController {
      */
     private void destroyResources() {
         if (historyTarget != null) {
+            MetricsDiagnostics.info("temporal", "history_target_destroyed", MetricsDiagnostics.fields(
+                    "width", historyTarget.width,
+                    "height", historyTarget.height,
+                    "historyValid", historyValid
+            ));
             historyTarget.destroyBuffers();
             historyTarget = null;
         }
@@ -437,25 +513,25 @@ public final class VulkanSceneTemporalController {
             CameraRenderState cameraRenderState
     ) {
         if (cameraRenderState == null || cameraRenderState.viewRotationMatrix == null) {
-            resetHistoryThisFrame = true;
+            markHistoryReset("camera_state_unavailable");
             return;
         }
 
         ClientLevel level = Minecraft.getInstance().level;
         Vec3 position = cameraRenderState.pos;
         if (capturedLevel != null && capturedLevel != level) {
-            resetHistoryThisFrame = true;
+            markHistoryReset("captured_level_changed");
         }
         if (capturedCameraPosition != null
                 && position != null
                 && position.distanceToSqr(capturedCameraPosition) > CAMERA_CUT_DISTANCE_SQUARED) {
-            resetHistoryThisFrame = true;
+            markHistoryReset("camera_position_cut");
         }
         if (capturedCameraPosition != null) {
             float rotationDelta = Math.abs(cameraRenderState.xRot - capturedCameraXRot)
                     + Math.abs(Mth.wrapDegrees(cameraRenderState.yRot - capturedCameraYRot));
             if (rotationDelta > CAMERA_CUT_ROTATION_DEGREES) {
-                resetHistoryThisFrame = true;
+                markHistoryReset("camera_rotation_cut");
             }
         }
 
@@ -485,7 +561,7 @@ public final class VulkanSceneTemporalController {
         if (hasViewProjection
                 && (Math.abs(nextCameraFovY - currentCameraFovY) > CAMERA_FOV_RESET_RADIANS
                 || Math.abs(nextCameraFar - currentCameraFar) > 1.0f)) {
-            resetHistoryThisFrame = true;
+            markHistoryReset("camera_projection_changed");
         }
 
         capturedLevel = level;
@@ -497,7 +573,7 @@ public final class VulkanSceneTemporalController {
         if (!hasViewProjection) {
             previousViewProjection.set(currentViewProjection);
             previousCameraPosition = position;
-            resetHistoryThisFrame = true;
+            markHistoryReset("view_projection_initialized");
             hasViewProjection = true;
         }
         frameIndex++;
@@ -564,7 +640,7 @@ public final class VulkanSceneTemporalController {
 
     private void clearViewProjection() {
         hasViewProjection = false;
-        resetHistoryThisFrame = true;
+        markHistoryReset("view_projection_cleared");
         frameIndex = 0L;
         capturedLevel = null;
         capturedCameraPosition = null;
@@ -574,6 +650,14 @@ public final class VulkanSceneTemporalController {
         currentViewProjection.identity();
         previousViewProjection.identity();
         currentJitteredViewProjection.identity();
+    }
+
+    private void markHistoryReset(String reason) {
+        resetHistoryThisFrame = true;
+        if (reason != null && !reason.isBlank()) {
+            historyResetReason = reason;
+        }
+        historyResetRecorded = false;
     }
 
     private static float[] matrixArray(Matrix4f matrix) {

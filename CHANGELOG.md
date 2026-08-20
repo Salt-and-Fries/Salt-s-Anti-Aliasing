@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0 — Minecraft 26.2
+## 1.1 — Minecraft 26.2
 
 These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.2`.
 
@@ -56,6 +56,7 @@ These are the changes introduced on the `fabric-26.2` branch since `fabric-26.1.
 
 ### Documentation And Testing
 
+- Expanded optional metrics reports to version 2 with bounded structured diagnostics covering environment, configuration, Vulkan capabilities, render-resource lifecycles, fallback reasons, native DLSS/FSR state, temporal resets, performance anomalies, and complete exception stack traces.
 - Clarified that SSAA percentages apply per axis: `200%` is conventional 4x SSAA, while the new `800%` maximum renders 64x as many scene pixels as native resolution.
 - Added setup and build documentation for the optional DLSS bridge and bundled FidelityFX bridge.
 - Updated renderer architecture and compatibility documentation for Minecraft 26.2.

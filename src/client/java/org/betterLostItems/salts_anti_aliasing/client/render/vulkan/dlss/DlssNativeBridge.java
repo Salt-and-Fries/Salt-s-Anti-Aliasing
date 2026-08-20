@@ -2,6 +2,7 @@ package org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss;
 
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.DlssQualityPreset;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,12 +45,33 @@ final class DlssNativeBridge {
             );
             if (result != 0) {
                 SaltsAntiAliasing.LOGGER.warn("DLSS native initialization failed with result {}", result);
+                MetricsDiagnostics.warn(
+                        "dlss.native",
+                        "initialization_failed",
+                        "result", result,
+                        "configuration", configuration,
+                        "deviceInfo", deviceInfo
+                );
                 return DlssRuntimeStatus.INITIALIZATION_FAILED;
             }
             initialized = true;
+            MetricsDiagnostics.info(
+                    "dlss.native",
+                    "initialized",
+                    "configuration", configuration,
+                    "deviceInfo", deviceInfo
+            );
         }
 
-        return isSupportedNative() ? DlssRuntimeStatus.READY : DlssRuntimeStatus.UNSUPPORTED;
+        boolean supported = isSupportedNative();
+        MetricsDiagnostics.infoOnce(
+                "dlss.native.supported",
+                "dlss.native",
+                "support_queried",
+                "supported", supported,
+                "initialized", initialized
+        );
+        return supported ? DlssRuntimeStatus.READY : DlssRuntimeStatus.UNSUPPORTED;
     }
 
     DlssOptimalSettings queryOptimalSettings(DlssQualityPreset preset, int outputWidth, int outputHeight) {
@@ -61,6 +83,16 @@ final class DlssNativeBridge {
         float[] sharpness = new float[1];
         int result = queryOptimalSettingsNative(preset.ordinal(), outputWidth, outputHeight, values, sharpness);
         if (result != 0) {
+            MetricsDiagnostics.warnOnce(
+                    "dlss.native.optimal-settings." + preset + "." + outputWidth + "x" + outputHeight + "." + result,
+                    "dlss.native",
+                    "optimal_settings_query_failed",
+                    "result", result,
+                    "preset", preset,
+                    "outputWidth", outputWidth,
+                    "outputHeight", outputHeight,
+                    "fallbackUsed", true
+            );
             return DlssOptimalSettings.fallback(outputWidth, outputHeight);
         }
 
@@ -125,9 +157,22 @@ final class DlssNativeBridge {
             System.load(bridgePath);
             bridgeLoaded = true;
             lastBridgePath = bridgePath;
+            MetricsDiagnostics.info(
+                    "dlss.native",
+                    "jni_bridge_loaded",
+                    "bridgePath", bridgePath,
+                    "pluginPath", pluginPath
+            );
             return true;
         } catch (UnsatisfiedLinkError | SecurityException exception) {
             SaltsAntiAliasing.LOGGER.warn("Unable to load DLSS JNI bridge from {}", bridgePath, exception);
+            MetricsDiagnostics.error(
+                    "dlss.native",
+                    "jni_bridge_load_failed",
+                    exception,
+                    "bridgePath", bridgePath,
+                    "pluginPath", pluginPath
+            );
             bridgeLoaded = false;
             initialized = false;
             return false;
@@ -145,6 +190,13 @@ final class DlssNativeBridge {
             return true;
         }
         if (!Files.isRegularFile(interposer)) {
+            MetricsDiagnostics.warnOnce(
+                    "dlss.native.interposer-missing." + interposerPath,
+                    "dlss.native",
+                    "streamline_interposer_missing",
+                    "interposerPath", interposerPath,
+                    "continuingWithoutExplicitPreload", true
+            );
             return true;
         }
 
@@ -152,9 +204,20 @@ final class DlssNativeBridge {
             System.load(interposerPath);
             interposerLoaded = true;
             lastInterposerPath = interposerPath;
+            MetricsDiagnostics.info(
+                    "dlss.native",
+                    "streamline_interposer_loaded",
+                    "interposerPath", interposerPath
+            );
             return true;
         } catch (UnsatisfiedLinkError | SecurityException exception) {
             SaltsAntiAliasing.LOGGER.warn("Unable to load NVIDIA Streamline interposer from {}", interposerPath, exception);
+            MetricsDiagnostics.error(
+                    "dlss.native",
+                    "streamline_interposer_load_failed",
+                    exception,
+                    "interposerPath", interposerPath
+            );
             interposerLoaded = false;
             return false;
         }

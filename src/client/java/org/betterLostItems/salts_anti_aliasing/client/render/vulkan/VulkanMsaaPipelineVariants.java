@@ -5,6 +5,7 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.ShaderDefines;
 import net.minecraft.resources.Identifier;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.mixin.client.RenderPipelineAccessor;
 
 import java.util.Arrays;
@@ -65,8 +66,9 @@ public final class VulkanMsaaPipelineVariants {
             int samples,
             boolean alphaToCoverage
     ) {
-        return RenderPipelineAccessor.saltsAntiAliasing$create(
-                variantLocation(pipeline.getLocation(), samples, alphaToCoverage),
+        Identifier variantLocation = variantLocation(pipeline.getLocation(), samples, alphaToCoverage);
+        RenderPipeline variant = RenderPipelineAccessor.saltsAntiAliasing$create(
+                variantLocation,
                 pipeline.getVertexShader(),
                 pipeline.getFragmentShader(),
                 copyShaderDefines(pipeline.getShaderDefines()),
@@ -79,6 +81,17 @@ public final class VulkanMsaaPipelineVariants {
                 pipeline.getPrimitiveTopology(),
                 pipeline.getSortKey()
         );
+        MetricsDiagnostics.info("msaa.pipeline", "pipeline_variant_created", MetricsDiagnostics.fields(
+                "sourcePipeline", pipeline.getLocation().toString(),
+                "variantPipeline", variantLocation.toString(),
+                "samples", samples,
+                "alphaToCoverage", alphaToCoverage,
+                "primitiveTopology", pipeline.getPrimitiveTopology(),
+                "colorTargetCount", pipeline.getColorTargetStates().length,
+                "hasDepthStencilState", pipeline.getDepthStencilState() != null,
+                "cullEnabled", pipeline.isCull()
+        ));
+        return variant;
     }
 
     private static Identifier variantLocation(

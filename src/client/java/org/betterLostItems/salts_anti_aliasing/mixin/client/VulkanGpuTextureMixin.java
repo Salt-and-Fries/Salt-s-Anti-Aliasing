@@ -4,6 +4,7 @@ import com.mojang.blaze3d.GpuFormat;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanMsaaState;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSampledTexture;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanStorageTextureUsage;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import com.mojang.blaze3d.vulkan.VulkanDevice;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -57,6 +58,18 @@ public abstract class VulkanGpuTextureMixin implements VulkanSampledTexture {
             CallbackInfo callbackInfo
     ) {
         saltsAntiAliasing$sampleCount = VulkanMsaaState.currentTextureSampleCount();
+        if (saltsAntiAliasing$sampleCount > 1) {
+            MetricsDiagnostics.info("msaa.resource", "multisampled_texture_created", MetricsDiagnostics.fields(
+                    "label", label,
+                    "format", format.toString(),
+                    "width", width,
+                    "height", height,
+                    "depthOrLayers", depthOrLayers,
+                    "mipLevels", mipLevels,
+                    "usageFlags", usage,
+                    "samples", saltsAntiAliasing$sampleCount
+            ));
+        }
     }
 
     @Override

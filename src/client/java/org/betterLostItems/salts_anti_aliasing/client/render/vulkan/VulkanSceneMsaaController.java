@@ -17,6 +17,7 @@ import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.config.MsaaSampleLevel;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.mixin.client.GpuDeviceAccessor;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.KHRSynchronization2;
@@ -212,10 +213,22 @@ public final class VulkanSceneMsaaController {
 
             try {
                 ensureMsaaTarget(width, height, useDepth, samples);
-                reportSampleFallback(requestedSamples, samples);
+                reportSampleFallback(requestedSamples, samples, supportedSamples, lastFailure);
                 return samples;
             } catch (RuntimeException exception) {
                 lastFailure = exception;
+                MetricsDiagnostics.warnOnce(
+                        "vulkan.msaa.allocation-failure." + width + "x" + height + "." + useDepth + "." + samples,
+                        "vulkan.msaa",
+                        "target_allocation_attempt_failed",
+                        exception,
+                        "width", width,
+                        "height", height,
+                        "useDepth", useDepth,
+                        "requestedSamples", requestedSamples,
+                        "capabilitySelectedSamples", supportedSamples,
+                        "attemptedSamples", samples
+                );
                 destroyResources();
             }
         }
@@ -223,7 +236,12 @@ public final class VulkanSceneMsaaController {
         throw new IllegalStateException("Unable to create a Vulkan MSAA scene target", lastFailure);
     }
 
-    private void reportSampleFallback(int requestedSamples, int actualSamples) {
+    private void reportSampleFallback(
+            int requestedSamples,
+            int actualSamples,
+            int supportedSamples,
+            RuntimeException allocationFailure
+    ) {
         if (actualSamples == requestedSamples) {
             lastReportedRequestedSamples = 0;
             lastReportedActualSamples = 0;
@@ -241,6 +259,16 @@ public final class VulkanSceneMsaaController {
                 requestedSamples,
                 actualSamples
         );
+        MetricsDiagnostics.warn(
+                "vulkan.msaa",
+                "sample_count_fallback",
+                "requestedSamples", requestedSamples,
+                "capabilitySelectedSamples", supportedSamples,
+                "actualSamples", actualSamples,
+                "fallbackReason", requestedSamples > supportedSamples ? "device_capability" : "allocation_failure",
+                "allocationFailureType", allocationFailure == null ? null : allocationFailure.getClass().getName(),
+                "allocationFailureMessage", allocationFailure == null ? null : allocationFailure.getMessage()
+        );
     }
 
     private void ensureMsaaTarget(int width, int height, boolean useDepth, int samples) {
@@ -251,14 +279,37 @@ public final class VulkanSceneMsaaController {
                 return null;
             });
             msaaTargetSamples = samples;
+            MetricsDiagnostics.info(
+                    "vulkan.msaa",
+                    "target_created",
+                    "label", TARGET_LABEL,
+                    "width", width,
+                    "height", height,
+                    "useDepth", useDepth,
+                    "colorFormat", GpuFormat.RGBA8_UNORM,
+                    "samples", samples
+            );
             return;
         }
 
         if (msaaTarget.width != width || msaaTarget.height != height) {
+            int previousWidth = msaaTarget.width;
+            int previousHeight = msaaTarget.height;
             VulkanMsaaState.withTextureSampleCount(samples, () -> {
                 msaaTarget.resize(width, height);
                 return null;
             });
+            MetricsDiagnostics.info(
+                    "vulkan.msaa",
+                    "target_resized",
+                    "label", TARGET_LABEL,
+                    "previousWidth", previousWidth,
+                    "previousHeight", previousHeight,
+                    "width", width,
+                    "height", height,
+                    "useDepth", useDepth,
+                    "samples", samples
+            );
         }
     }
 
@@ -444,6 +495,16 @@ public final class VulkanSceneMsaaController {
         destroyResources();
         clearFrameState();
         SaltsAntiAliasing.LOGGER.error(message, exception);
+        MetricsDiagnostics.error(
+                "vulkan.msaa",
+                "controller_disabled_after_failure",
+                exception,
+                "message", message,
+                "width", width,
+                "height", height,
+                "useDepth", useDepth,
+                "requestedSamples", requestedSamples
+        );
     }
 
     private boolean matchesFailedConfiguration(
@@ -481,6 +542,15 @@ public final class VulkanSceneMsaaController {
 
     private void destroyResources() {
         if (msaaTarget != null) {
+            MetricsDiagnostics.info(
+                    "vulkan.msaa",
+                    "target_destroyed",
+                    "label", TARGET_LABEL,
+                    "width", msaaTarget.width,
+                    "height", msaaTarget.height,
+                    "useDepth", msaaTarget.useDepth,
+                    "samples", msaaTargetSamples
+            );
             msaaTarget.destroyBuffers();
             msaaTarget = null;
         }

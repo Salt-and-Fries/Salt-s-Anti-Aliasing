@@ -2,6 +2,7 @@ package org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr;
 
 import net.fabricmc.loader.api.FabricLoader;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +29,17 @@ final class FsrBundledNativeResolver {
     }
 
     static Optional<FsrNativeConfiguration> resolve(String logPath) {
-        if (!PLATFORM_WINDOWS_X64.equals(platformKey())) {
+        String activePlatform = platformKey();
+        if (!PLATFORM_WINDOWS_X64.equals(activePlatform)) {
+            MetricsDiagnostics.infoOnce(
+                    "fsr.bundle.unsupported-platform",
+                    "fsr.bundle",
+                    "bundled_runtime_not_applicable",
+                    "requiredPlatform", PLATFORM_WINDOWS_X64,
+                    "activePlatform", activePlatform,
+                    "osName", System.getProperty("os.name", ""),
+                    "osArchitecture", System.getProperty("os.arch", "")
+            );
             return Optional.empty();
         }
 
@@ -46,7 +57,21 @@ final class FsrBundledNativeResolver {
 
             Files.createDirectories(extractDirectory);
             Path bridgePath = extractIfNeeded(bridge, extractDirectory.resolve(BRIDGE_FILE));
-            extractIfNeeded(runtime, extractDirectory.resolve(RUNTIME_FILE));
+            Path runtimePath = extractIfNeeded(runtime, extractDirectory.resolve(RUNTIME_FILE));
+            MetricsDiagnostics.info(
+                    "fsr.bundle",
+                    "bundled_runtime_resolved",
+                    "platform", activePlatform,
+                    "modVersion", modVersion(),
+                    "bundleHash", bundleHash,
+                    "bridgePath", bridgePath,
+                    "bridgeSizeBytes", bridge.bytes().length,
+                    "bridgeSha256", bridge.sha256(),
+                    "runtimePath", runtimePath,
+                    "runtimeSizeBytes", runtime.bytes().length,
+                    "runtimeSha256", runtime.sha256(),
+                    "logPath", logPath
+            );
             return Optional.of(new FsrNativeConfiguration(
                     bridgePath.toAbsolutePath().toString(),
                     extractDirectory.toAbsolutePath().toString(),
@@ -54,6 +79,14 @@ final class FsrBundledNativeResolver {
             ));
         } catch (IOException | NoSuchAlgorithmException exception) {
             SaltsAntiAliasing.LOGGER.warn("Unable to extract bundled AMD FSR native runtime", exception);
+            MetricsDiagnostics.error(
+                    "fsr.bundle",
+                    "bundled_runtime_resolution_failed",
+                    exception,
+                    "platform", activePlatform,
+                    "modVersion", modVersion(),
+                    "resourceRoot", RESOURCE_ROOT
+            );
             return Optional.empty();
         }
     }

@@ -2,6 +2,7 @@ package org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr;
 
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.FsrQualityPreset;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanNativeDeviceInfo;
 import org.lwjgl.vulkan.VkAllocationCallbacks;
 import org.lwjgl.vulkan.VkDevice;
@@ -44,6 +45,14 @@ final class FsrNativeBridge {
                 // routing alive until that surface has destroyed the proxy through FidelityFX.
                 disableFrameGenerationNative();
                 surfaceReconfigurationRequested = true;
+                MetricsDiagnostics.info(
+                        "fsr.native",
+                        "reinitialization_deferred_for_owned_swapchain",
+                        "previousConfiguration", initializedConfiguration,
+                        "newConfiguration", configuration,
+                        "previousDevice", initializedDeviceInfo,
+                        "newDevice", deviceInfo
+                );
                 return initializedStatus();
             }
         }
@@ -53,6 +62,14 @@ final class FsrNativeBridge {
         }
 
         if (requiresReinitialization) {
+            MetricsDiagnostics.info(
+                    "fsr.native",
+                    "reinitializing",
+                    "previousConfiguration", initializedConfiguration,
+                    "newConfiguration", configuration,
+                    "previousDevice", initializedDeviceInfo,
+                    "newDevice", deviceInfo
+            );
             shutdownNative();
             initialized = false;
             initializedDeviceInfo = null;
@@ -81,11 +98,24 @@ final class FsrNativeBridge {
             );
             if (result != 0) {
                 SaltsAntiAliasing.LOGGER.warn("AMD FSR native initialization failed with result {}", result);
+                MetricsDiagnostics.warn(
+                        "fsr.native",
+                        "initialization_failed",
+                        "result", result,
+                        "configuration", configuration,
+                        "deviceInfo", deviceInfo
+                );
                 return FsrRuntimeStatus.INITIALIZATION_FAILED;
             }
             initialized = true;
             initializedDeviceInfo = deviceInfo;
             initializedConfiguration = configuration;
+            MetricsDiagnostics.info(
+                    "fsr.native",
+                    "initialized",
+                    "configuration", configuration,
+                    "deviceInfo", deviceInfo
+            );
         }
 
         return initializedStatus();
@@ -123,6 +153,16 @@ final class FsrNativeBridge {
         int[] values = new int[3];
         int result = queryOptimalSettingsNative(preset.ordinal(), outputWidth, outputHeight, values);
         if (result != 0) {
+            MetricsDiagnostics.warnOnce(
+                    "fsr.native.optimal-settings." + preset + "." + outputWidth + "x" + outputHeight + "." + result,
+                    "fsr.native",
+                    "optimal_settings_query_failed",
+                    "result", result,
+                    "preset", preset,
+                    "outputWidth", outputWidth,
+                    "outputHeight", outputHeight,
+                    "fallbackUsed", true
+            );
             return FsrOptimalSettings.fallback(preset, outputWidth, outputHeight);
         }
 
@@ -270,13 +310,25 @@ final class FsrNativeBridge {
     }
 
     private FsrRuntimeStatus initializedStatus() {
-        if (!isUpscalingSupportedNative()) {
+        boolean upscalingSupported = isUpscalingSupportedNative();
+        boolean frameGenerationQueuesComplete = initializedDeviceInfo != null
+                && initializedDeviceInfo.frameGenerationQueuesComplete();
+        boolean frameGenerationSupported = frameGenerationQueuesComplete && isFrameGenerationSupportedNative();
+        MetricsDiagnostics.infoOnce(
+                "fsr.native.support." + upscalingSupported + "." + frameGenerationQueuesComplete + "."
+                        + frameGenerationSupported,
+                "fsr.native",
+                "support_queried",
+                "upscalingSupported", upscalingSupported,
+                "frameGenerationQueuesComplete", frameGenerationQueuesComplete,
+                "frameGenerationSupported", frameGenerationSupported,
+                "deviceInfo", initializedDeviceInfo
+        );
+        if (!upscalingSupported) {
             return FsrRuntimeStatus.UNSUPPORTED;
         }
 
-        return initializedDeviceInfo != null
-                && initializedDeviceInfo.frameGenerationQueuesComplete()
-                && isFrameGenerationSupportedNative()
+        return frameGenerationSupported
                 ? FsrRuntimeStatus.FRAME_GENERATION_READY
                 : FsrRuntimeStatus.UPSCALING_READY;
     }
@@ -290,9 +342,20 @@ final class FsrNativeBridge {
             System.load(bridgePath);
             bridgeLoaded = true;
             lastBridgePath = bridgePath;
+            MetricsDiagnostics.info(
+                    "fsr.native",
+                    "jni_bridge_loaded",
+                    "bridgePath", bridgePath
+            );
             return true;
         } catch (UnsatisfiedLinkError | SecurityException exception) {
             SaltsAntiAliasing.LOGGER.warn("Unable to load AMD FSR JNI bridge from {}", bridgePath, exception);
+            MetricsDiagnostics.error(
+                    "fsr.native",
+                    "jni_bridge_load_failed",
+                    exception,
+                    "bridgePath", bridgePath
+            );
             bridgeLoaded = false;
             initialized = false;
             initializedDeviceInfo = null;

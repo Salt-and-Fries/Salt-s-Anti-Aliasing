@@ -1,5 +1,8 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.common;
 
+import com.mojang.blaze3d.systems.DeviceInfo;
+import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
@@ -13,6 +16,7 @@ import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPr
 import org.betterLostItems.salts_anti_aliasing.client.config.SsaaScaleLevel;
 import org.betterLostItems.salts_anti_aliasing.client.debug.EdgeDebugAnalyzer;
 import org.betterLostItems.salts_anti_aliasing.client.debug.EdgeDebugStats;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.client.metrics.PerformanceMetricsRecorder;
 import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderBackend;
 import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderBackendType;
@@ -29,6 +33,10 @@ import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRunti
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRuntimeStatus;
 
 import java.util.EnumSet;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -70,10 +78,22 @@ public final class RenderRuntime {
     public static RenderRuntime bootstrap() {
         ConfigManager configManager = ConfigManager.createDefault();
         configManager.load();
+        PerformanceMetricsRecorder performanceMetricsRecorder = new PerformanceMetricsRecorder(
+                configManager::recordMetricsEnabled,
+                configManager::mode,
+                configManager::snapshot
+        );
+        MetricsDiagnostics.recordEnvironment();
+        MetricsDiagnostics.info(
+                "configuration",
+                "configuration_loaded",
+                "configuration", MetricsDiagnostics.configSnapshot(configManager.snapshot())
+        );
         DlssRuntime.instance().configure(configManager.snapshot());
         FsrRuntime.instance().configure(configManager.snapshot());
 
         RenderBackend backend = new VulkanRenderBackend();
+        recordGpuContext(backend);
         EdgeDebugAnalyzer edgeDebugAnalyzer = new EdgeDebugAnalyzer();
         RenderRuntime runtime = new RenderRuntime(
                 configManager,
@@ -82,11 +102,7 @@ public final class RenderRuntime {
                 new RenderPipelinePlanner(),
                 new VulkanScenePostProcessor(edgeDebugAnalyzer),
                 edgeDebugAnalyzer,
-                new PerformanceMetricsRecorder(
-                        configManager::recordMetricsEnabled,
-                        configManager::mode,
-                        configManager::snapshot
-                )
+                performanceMetricsRecorder
         );
         runtime.ensureActiveModeSupported();
         runtime.rebuildPipeline();
@@ -176,11 +192,27 @@ public final class RenderRuntime {
                     "Ignoring Salt's Anti Aliasing mode {} because Minecraft is not running Vulkan",
                     requestedMode.displayName()
             );
+            MetricsDiagnostics.warn(
+                    "runtime",
+                    "mode_change_rejected",
+                    "requestedMode", requestedMode,
+                    "activeMode", activeMode(),
+                    "reason", "Vulkan backend is not active"
+            );
             return activeMode();
         }
 
         AntiAliasingMode previousMode = activeMode();
         AntiAliasingMode clampedMode = resolveSupportedMode(requestedMode);
+        MetricsDiagnostics.info(
+                "runtime",
+                "mode_change_requested",
+                "previousMode", previousMode,
+                "requestedMode", requestedMode,
+                "resolvedMode", clampedMode,
+                "requiredCapabilities", requiredCapabilities(requestedMode),
+                "availableCapabilities", backend.capabilities()
+        );
         configManager.edit(config -> config.mode = clampedMode);
         edgeDebugAnalyzer.reset(clampedMode);
         rebuildPipeline();
@@ -314,13 +346,36 @@ public final class RenderRuntime {
     }
 
     public void shutdownMetrics() {
+        MetricsDiagnostics.info(
+                "lifecycle",
+                "metrics_shutdown",
+                "activeMode", activeMode(),
+                "pipeline", describePlan()
+        );
         performanceMetricsRecorder.close();
+    }
+
+    public void flushMetrics() {
+        MetricsDiagnostics.infoOnce(
+                "lifecycle.metrics-shutdown-requested",
+                "lifecycle",
+                "metrics_shutdown_requested",
+                "activeMode", activeMode(),
+                "pipeline", describePlan()
+        );
+        performanceMetricsRecorder.flushSnapshot();
     }
 
     /**
      * Releases native renderer integrations after Minecraft has destroyed its GPU surface.
      */
     public void shutdownNativeIntegrations() {
+        MetricsDiagnostics.info(
+                "lifecycle",
+                "native_integrations_shutdown",
+                "dlssStatus", DlssRuntime.instance().status(),
+                "fsrStatus", FsrRuntime.instance().status()
+        );
         DlssRuntime.instance().shutdown();
         FsrRuntime.instance().shutdown();
     }
@@ -351,6 +406,12 @@ public final class RenderRuntime {
 
     public void requestPipelineRebuildWhenBackendReady() {
         rebuildPipelineWhenBackendReady = true;
+        MetricsDiagnostics.info(
+                "pipeline",
+                "pipeline_rebuild_requested",
+                "backendAvailable", canUseAntiAliasing(),
+                "activeMode", activeMode()
+        );
         rebuildPipelineIfBackendReady();
     }
 
@@ -376,6 +437,16 @@ public final class RenderRuntime {
                 backend.type().displayName(),
                 passManager.orderedPassIds(),
                 currentPlan.targets().size()
+        );
+        MetricsDiagnostics.info(
+                "pipeline",
+                "pipeline_configured",
+                "backend", backend.type(),
+                "backendAvailable", backend.isAvailable(),
+                "capabilities", backend.capabilities(),
+                "effectiveConfiguration", MetricsDiagnostics.configSnapshot(effectiveConfig),
+                "passes", describePasses(currentPlan),
+                "targets", describeTargets(currentPlan)
         );
     }
 
@@ -471,6 +542,16 @@ public final class RenderRuntime {
         AntiAliasingMode previousMode = activeMode();
         AntiAliasingMode supportedMode = resolveSupportedMode(AntiAliasingMode.clampImplemented(activeMode()));
         if (supportedMode != activeMode()) {
+            MetricsDiagnostics.warn(
+                    "runtime",
+                    "active_mode_fallback",
+                    "requestedMode", previousMode,
+                    "fallbackMode", supportedMode,
+                    "availableCapabilities", backend.capabilities(),
+                    "requiredCapabilities", requiredCapabilities(previousMode),
+                    "dlssStatus", DlssRuntime.instance().status(),
+                    "fsrStatus", FsrRuntime.instance().status()
+            );
             configManager.edit(config -> config.mode = supportedMode);
             edgeDebugAnalyzer.reset(supportedMode);
             reconfigureSurfaceForFrameGenerationChange(previousMode, supportedMode);
@@ -482,7 +563,70 @@ public final class RenderRuntime {
             AntiAliasingMode newMode
     ) {
         if (previousMode.usesFsrFrameGeneration() != newMode.usesFsrFrameGeneration()) {
+            MetricsDiagnostics.info(
+                    "vulkan.surface",
+                    "surface_reconfiguration_requested",
+                    "previousMode", previousMode,
+                    "newMode", newMode,
+                    "reason", "FSR frame-generation ownership changed"
+            );
             Minecraft.getInstance().invalidateSurfaceConfiguration();
         }
+    }
+
+    private static void recordGpuContext(RenderBackend backend) {
+        try {
+            GpuDevice device = RenderSystem.tryGetDevice();
+            DeviceInfo deviceInfo = device == null ? null : device.getDeviceInfo();
+            MetricsDiagnostics.infoOnce(
+                    "environment.gpu",
+                    "environment",
+                    "gpu_context",
+                    "backendDescription", RenderSystem.getBackendDescription(),
+                    "backendType", backend.type(),
+                    "backendAvailable", backend.isAvailable(),
+                    "gpuDebuggingEnabled", device != null && device.isDebuggingEnabled(),
+                    "deviceName", deviceInfo == null ? "unavailable" : deviceInfo.name(),
+                    "vendorName", deviceInfo == null ? "unavailable" : deviceInfo.vendorName(),
+                    "driverInfo", deviceInfo == null ? "unavailable" : deviceInfo.driverInfo(),
+                    "deviceType", deviceInfo == null ? "unavailable" : deviceInfo.type(),
+                    "deviceBackend", deviceInfo == null ? "unavailable" : deviceInfo.backendName(),
+                    "timestampPeriod", deviceInfo == null ? 0.0f : deviceInfo.timestampPeriod(),
+                    "deviceLimits", deviceInfo == null ? "unavailable" : deviceInfo.limits(),
+                    "deviceFeatures", deviceInfo == null ? "unavailable" : deviceInfo.features(),
+                    "deviceExtensions", deviceInfo == null ? List.of() : deviceInfo.underlyingExtensions(),
+                    "hintsAndWorkarounds", deviceInfo == null ? "unavailable" : deviceInfo.hintsAndWorkarounds()
+            );
+        } catch (RuntimeException exception) {
+            MetricsDiagnostics.error("environment", "gpu_context_failed", exception);
+        }
+    }
+
+    private static List<Map<String, Object>> describePasses(PipelinePlan plan) {
+        List<Map<String, Object>> passes = new ArrayList<>();
+        plan.passes().forEach(pass -> {
+            Map<String, Object> details = new LinkedHashMap<>();
+            details.put("id", pass.id());
+            details.put("requiredCapabilities", pass.requiredCapabilities());
+            details.put("readTargets", pass.readTargets());
+            details.put("writeTargets", pass.writeTargets());
+            passes.add(details);
+        });
+        return passes;
+    }
+
+    private static List<Map<String, Object>> describeTargets(PipelinePlan plan) {
+        List<Map<String, Object>> targets = new ArrayList<>();
+        plan.targets().forEach(target -> {
+            Map<String, Object> details = new LinkedHashMap<>();
+            details.put("id", target.id());
+            details.put("type", target.type());
+            details.put("format", target.format());
+            details.put("sizing", target.sizing());
+            details.put("scale", target.scale());
+            details.put("persistentAcrossFrames", target.persistentAcrossFrames());
+            targets.add(details);
+        });
+        return targets;
     }
 }

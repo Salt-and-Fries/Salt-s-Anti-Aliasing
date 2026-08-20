@@ -9,15 +9,18 @@ import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -34,6 +37,7 @@ public final class PerformanceMetricsRecorder {
     private static final double NANOS_PER_SECOND = 1_000_000_000.0d;
     private static final double NANOS_PER_MILLISECOND = 1_000_000.0d;
     private static final long WRITE_INTERVAL_NANOS = Duration.ofSeconds(5).toNanos();
+    private static final long URGENT_WRITE_INTERVAL_NANOS = Duration.ofSeconds(1).toNanos();
     private static final double LAG_SPIKE_THRESHOLD_MS = 50.0d;
     private static final double LAG_SPIKE_RESET_MS = 40.0d;
     private static final double SEVERE_SPIKE_THRESHOLD_MS = 100.0d;
@@ -46,6 +50,7 @@ public final class PerformanceMetricsRecorder {
     private static final double BELOW_60_FPS = 60.0d;
     private static final double BELOW_45_FPS = 45.0d;
     private static final double BELOW_30_FPS = 30.0d;
+    private static final int MAX_DIAGNOSTIC_EVENTS = 4_096;
 
     private final Path metricsDirectory;
     private final Path latestReportPath;
@@ -53,6 +58,7 @@ public final class PerformanceMetricsRecorder {
     private final Supplier<AntiAliasingMode> modeSupplier;
     private final Supplier<AntiAliasingConfig> configSnapshotSupplier;
     private Session activeSession;
+    private boolean closed;
 
     /**
      * Creates a performance metrics recorder instance with the collaborators or initial state
@@ -68,11 +74,26 @@ public final class PerformanceMetricsRecorder {
             Supplier<AntiAliasingMode> modeSupplier,
             Supplier<AntiAliasingConfig> configSnapshotSupplier
     ) {
-        this.metricsDirectory = FabricLoader.getInstance().getGameDir().resolve("logs");
+        this(
+                FabricLoader.getInstance().getGameDir().resolve("logs"),
+                recordingEnabledSupplier,
+                modeSupplier,
+                configSnapshotSupplier
+        );
+    }
+
+    PerformanceMetricsRecorder(
+            Path metricsDirectory,
+            BooleanSupplier recordingEnabledSupplier,
+            Supplier<AntiAliasingMode> modeSupplier,
+            Supplier<AntiAliasingConfig> configSnapshotSupplier
+    ) {
+        this.metricsDirectory = metricsDirectory;
         this.latestReportPath = metricsDirectory.resolve("salts_anti_aliasing_metrics_latest.json");
         this.recordingEnabledSupplier = recordingEnabledSupplier;
         this.modeSupplier = modeSupplier;
         this.configSnapshotSupplier = configSnapshotSupplier;
+        MetricsDiagnostics.configure(recordingEnabledSupplier, this::recordDiagnostic);
     }
 
     /**
@@ -82,6 +103,9 @@ public final class PerformanceMetricsRecorder {
      * @param displayedFps FPS value reported by Minecraft for the same frame sample
      */
     public synchronized void recordFrame(long frameTimeNs, int displayedFps) {
+        if (closed) {
+            return;
+        }
         if (!recordingEnabledSupplier.getAsBoolean()) {
             finishActiveSessionIfNeeded("record_metrics disabled");
             return;
@@ -96,12 +120,37 @@ public final class PerformanceMetricsRecorder {
             return;
         }
 
-        if (activeSession == null) {
+        boolean startedSession = activeSession == null;
+        if (startedSession) {
             startSession();
         }
 
         activeSession.recordFrame(modeSupplier.get(), frameTimeNs, displayedFps);
-        if (activeSession.shouldWriteSnapshot()) {
+        if (startedSession || activeSession.shouldWriteSnapshot()) {
+            writeLatestSnapshot();
+        }
+    }
+
+    private synchronized void recordDiagnostic(MetricsDiagnostics.DiagnosticEvent event) {
+        if (closed || !recordingEnabledSupplier.getAsBoolean()) {
+            return;
+        }
+
+        boolean startedSession = activeSession == null;
+        if (startedSession) {
+            startSession();
+        }
+        activeSession.recordDiagnostic(event);
+        boolean urgent = !"INFO".equals(event.level());
+        if (startedSession
+                || activeSession.shouldWriteSnapshot()
+                || urgent && activeSession.shouldWriteUrgentSnapshot()) {
+            writeLatestSnapshot();
+        }
+    }
+
+    public synchronized void flushSnapshot() {
+        if (!closed && activeSession != null) {
             writeLatestSnapshot();
         }
     }
@@ -110,6 +159,10 @@ public final class PerformanceMetricsRecorder {
      * Handles close as part of the anti-aliasing render, configuration, or compatibility flow.
      */
     public synchronized void close() {
+        if (closed) {
+            return;
+        }
+        closed = true;
         finishActiveSessionIfNeeded("client shutdown");
     }
 
@@ -225,13 +278,18 @@ public final class PerformanceMetricsRecorder {
         private final Aggregate overall = new Aggregate();
         private final RollingAverage fpsBaseline = new RollingAverage(FPS_DROP_BASELINE_WINDOW);
         private final Path archiveReportPath;
+        private final List<MetricsDiagnostics.DiagnosticEvent> diagnosticEvents = new ArrayList<>();
+        private final Map<String, Long> diagnosticCountsByLevel = new LinkedHashMap<>();
+        private final Map<String, Long> diagnosticCountsByCategory = new LinkedHashMap<>();
 
         private AntiAliasingMode currentMode;
         private boolean inLagSpike;
         private boolean inSevereSpike;
         private boolean inFpsDrop;
         private long modeSwitches;
+        private long droppedDiagnosticEvents;
         private long lastWrittenAtNano = System.nanoTime();
+        private long lastUrgentWrittenAtNano;
 
         /**
          * Handles session as part of the anti-aliasing render, configuration, or compatibility
@@ -266,6 +324,7 @@ public final class PerformanceMetricsRecorder {
             }
 
             if (currentMode != mode) {
+                AntiAliasingMode previousMode = currentMode;
                 if (currentMode != null) {
                     modeSwitches++;
                 }
@@ -274,6 +333,14 @@ public final class PerformanceMetricsRecorder {
                 inLagSpike = false;
                 inSevereSpike = false;
                 inFpsDrop = false;
+                recordInternalDiagnostic(
+                        "INFO",
+                        "performance",
+                        "mode_observed",
+                        "previousMode", previousMode,
+                        "currentMode", mode,
+                        "modeEntryCount", modeEntryCounts.getOrDefault(mode, 0)
+                );
             }
 
             double baselineFps = fpsBaseline.average();
@@ -287,6 +354,16 @@ public final class PerformanceMetricsRecorder {
                     overall.lagSpikes++;
                     perMode.get(mode).lagSpikes++;
                     inLagSpike = true;
+                    recordInternalDiagnostic(
+                            "WARN",
+                            "performance",
+                            "lag_spike",
+                            "mode", mode,
+                            "frameTimeMs", round(frameTimeMs, 3),
+                            "calculatedFps", round(fps),
+                            "displayedFps", displayedFps,
+                            "baselineFps", round(baselineFps)
+                    );
                 }
             } else if (frameTimeMs < LAG_SPIKE_RESET_MS) {
                 inLagSpike = false;
@@ -297,6 +374,16 @@ public final class PerformanceMetricsRecorder {
                     overall.severeLagSpikes++;
                     perMode.get(mode).severeLagSpikes++;
                     inSevereSpike = true;
+                    recordInternalDiagnostic(
+                            "WARN",
+                            "performance",
+                            "severe_lag_spike",
+                            "mode", mode,
+                            "frameTimeMs", round(frameTimeMs, 3),
+                            "calculatedFps", round(fps),
+                            "displayedFps", displayedFps,
+                            "baselineFps", round(baselineFps)
+                    );
                 }
             } else if (frameTimeMs < SEVERE_SPIKE_RESET_MS) {
                 inSevereSpike = false;
@@ -309,6 +396,17 @@ public final class PerformanceMetricsRecorder {
                         overall.fpsDrops++;
                         perMode.get(mode).fpsDrops++;
                         inFpsDrop = true;
+                        recordInternalDiagnostic(
+                                "WARN",
+                                "performance",
+                                "fps_drop",
+                                "mode", mode,
+                                "frameTimeMs", round(frameTimeMs, 3),
+                                "calculatedFps", round(fps),
+                                "displayedFps", displayedFps,
+                                "baselineFps", round(baselineFps),
+                                "percentOfBaseline", round(fps / baselineFps, 4)
+                        );
                     }
                 } else if (fps > baselineFps * FPS_DROP_RECOVERY_RATIO) {
                     inFpsDrop = false;
@@ -316,6 +414,33 @@ public final class PerformanceMetricsRecorder {
             }
 
             fpsBaseline.push(fps);
+        }
+
+        private void recordDiagnostic(MetricsDiagnostics.DiagnosticEvent event) {
+            diagnosticCountsByLevel.merge(event.level(), 1L, Long::sum);
+            diagnosticCountsByCategory.merge(event.category(), 1L, Long::sum);
+            if (diagnosticEvents.size() >= MAX_DIAGNOSTIC_EVENTS) {
+                diagnosticEvents.removeFirst();
+                droppedDiagnosticEvents++;
+            }
+            diagnosticEvents.add(event);
+        }
+
+        private void recordInternalDiagnostic(
+                String level,
+                String category,
+                String event,
+                Object... keyValues
+        ) {
+            recordDiagnostic(new MetricsDiagnostics.DiagnosticEvent(
+                    Instant.now().toString(),
+                    level,
+                    category,
+                    event,
+                    Thread.currentThread().getName(),
+                    MetricsDiagnostics.fields(keyValues),
+                    null
+            ));
         }
 
         /**
@@ -326,12 +451,18 @@ public final class PerformanceMetricsRecorder {
             return System.nanoTime() - lastWrittenAtNano >= WRITE_INTERVAL_NANOS;
         }
 
+        private boolean shouldWriteUrgentSnapshot() {
+            return System.nanoTime() - lastUrgentWrittenAtNano >= URGENT_WRITE_INTERVAL_NANOS;
+        }
+
         /**
          * Handles mark written as part of the anti-aliasing render, configuration, or compatibility
          * flow.
          */
         private void markWritten() {
-            lastWrittenAtNano = System.nanoTime();
+            long now = System.nanoTime();
+            lastWrittenAtNano = now;
+            lastUrgentWrittenAtNano = now;
         }
 
         /**
@@ -351,7 +482,7 @@ public final class PerformanceMetricsRecorder {
         ) {
             MetricsReport report = new MetricsReport();
             report.metadata = new ReportMetadata();
-            report.metadata.reportVersion = 1;
+            report.metadata.reportVersion = 2;
             report.metadata.startedAt = startedAt.toString();
             report.metadata.endedAt = Instant.now().toString();
             report.metadata.finalReport = finalReport;
@@ -380,6 +511,15 @@ public final class PerformanceMetricsRecorder {
                 PerformanceSummary summary = perMode.get(mode).toSummary(modeEntryCounts.getOrDefault(mode, 0));
                 report.perMode.put(mode.name(), summary);
             }
+
+            report.diagnostics = new DiagnosticsSummary();
+            report.diagnostics.maximumRetainedEvents = MAX_DIAGNOSTIC_EVENTS;
+            report.diagnostics.retainedEventCount = diagnosticEvents.size();
+            report.diagnostics.droppedEventCount = droppedDiagnosticEvents;
+            report.diagnostics.countsByLevel = new LinkedHashMap<>(diagnosticCountsByLevel);
+            report.diagnostics.countsByCategory = new LinkedHashMap<>(diagnosticCountsByCategory);
+            report.diagnostics.runtimeAtReportTime = RuntimeSnapshot.capture();
+            report.diagnostics.events = List.copyOf(diagnosticEvents);
 
             return report;
         }
@@ -671,6 +811,7 @@ public final class PerformanceMetricsRecorder {
         public SessionSummary session;
         public PerformanceSummary overall;
         public Map<String, PerformanceSummary> perMode;
+        public DiagnosticsSummary diagnostics;
     }
 
     /**
@@ -707,6 +848,55 @@ public final class PerformanceMetricsRecorder {
         public int modesObserved;
         public long modeSwitches;
         public String currentMode;
+    }
+
+    private static final class DiagnosticsSummary {
+        public int maximumRetainedEvents;
+        public int retainedEventCount;
+        public long droppedEventCount;
+        public Map<String, Long> countsByLevel;
+        public Map<String, Long> countsByCategory;
+        public RuntimeSnapshot runtimeAtReportTime;
+        public List<MetricsDiagnostics.DiagnosticEvent> events;
+    }
+
+    private static final class RuntimeSnapshot {
+        public long maximumHeapBytes;
+        public long committedHeapBytes;
+        public long freeHeapBytes;
+        public long usedHeapBytes;
+        public long totalPhysicalMemoryBytes;
+        public long freePhysicalMemoryBytes;
+        public long committedVirtualMemoryBytes;
+        public long processCpuTimeNs;
+        public double systemCpuLoad;
+        public double processCpuLoad;
+        public double systemLoadAverage;
+        public int availableProcessors;
+        public int activeThreads;
+
+        private static RuntimeSnapshot capture() {
+            Runtime runtime = Runtime.getRuntime();
+            RuntimeSnapshot snapshot = new RuntimeSnapshot();
+            snapshot.maximumHeapBytes = runtime.maxMemory();
+            snapshot.committedHeapBytes = runtime.totalMemory();
+            snapshot.freeHeapBytes = runtime.freeMemory();
+            snapshot.usedHeapBytes = snapshot.committedHeapBytes - snapshot.freeHeapBytes;
+            snapshot.availableProcessors = runtime.availableProcessors();
+            snapshot.activeThreads = Thread.activeCount();
+            java.lang.management.OperatingSystemMXBean operatingSystem =
+                    ManagementFactory.getOperatingSystemMXBean();
+            snapshot.systemLoadAverage = operatingSystem.getSystemLoadAverage();
+            if (operatingSystem instanceof com.sun.management.OperatingSystemMXBean extended) {
+                snapshot.totalPhysicalMemoryBytes = extended.getTotalMemorySize();
+                snapshot.freePhysicalMemoryBytes = extended.getFreeMemorySize();
+                snapshot.committedVirtualMemoryBytes = extended.getCommittedVirtualMemorySize();
+                snapshot.processCpuTimeNs = extended.getProcessCpuTime();
+                snapshot.systemCpuLoad = extended.getCpuLoad();
+                snapshot.processCpuLoad = extended.getProcessCpuLoad();
+            }
+            return snapshot;
+        }
     }
 
     /**

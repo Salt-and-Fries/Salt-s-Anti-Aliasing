@@ -18,6 +18,7 @@ import com.mojang.blaze3d.textures.FilterMode;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
@@ -116,6 +117,17 @@ final class VulkanMotionVectorRenderer {
                 || motionVectorTarget == null
                 || sceneTarget.getDepthTextureView() == null
                 || motionVectorTarget.getColorTextureView() == null) {
+            MetricsDiagnostics.warnOnce(
+                    "motion-vector-input-unavailable-" + pipelineId,
+                    "temporal.motion_vectors",
+                    "render_skipped",
+                    "pipeline", pipelineId,
+                    "sceneTargetAvailable", sceneTarget != null,
+                    "motionVectorTargetAvailable", motionVectorTarget != null,
+                    "sceneDepthViewAvailable", sceneTarget != null && sceneTarget.getDepthTextureView() != null,
+                    "motionVectorColorViewAvailable", motionVectorTarget != null
+                            && motionVectorTarget.getColorTextureView() != null
+            );
             return;
         }
 
@@ -164,6 +176,14 @@ final class VulkanMotionVectorRenderer {
         if (!compiled.isValid()) {
             throw new IllegalStateException("Unable to compile motion-vector pipeline " + pipelineId);
         }
+        MetricsDiagnostics.info("temporal.motion_vectors", "pipeline_compiled", MetricsDiagnostics.fields(
+                "label", label,
+                "pipeline", pipelineId,
+                "fragmentShader", fragmentShaderId,
+                "uniform", motionUniformName,
+                "cancelProjectionJitter", cancelProjectionJitter,
+                "outputFormat", GpuFormat.RG16_FLOAT
+        ));
     }
 
     private void writeSamplerInfo(TextureTarget sceneTarget, TextureTarget motionVectorTarget) {

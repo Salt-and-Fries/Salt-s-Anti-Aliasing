@@ -90,6 +90,20 @@ SSAA percentages are per axis. The 200% option renders at twice the output width
 
 The optional **Cycle AA Mode** key binding is unbound by default so it cannot collide with shader-pack shortcuts (including Iris's `O` binding). It can be assigned under Minecraft's Controls screen; existing custom bindings remain intact. Existing installations that already saved the old `O` default should clear or reassign it once in Controls.
 
+## Metrics And Diagnostics
+
+When `recordMetrics` is enabled, the mod writes `salts_anti_aliasing_metrics_latest.json` to Minecraft's `logs` directory and archives a timestamped copy when the recording session ends. In addition to frame-time and FPS statistics, report version 2 includes a bounded structured diagnostics timeline with:
+
+- complete JVM, operating-system, Fabric mod-list, GPU, driver, Vulkan-device, queue-family, and extension context;
+- requested and effective configuration, pipeline passes, render targets, capability decisions, and automatic fallbacks;
+- MSAA image-format/sample support and allocation attempts;
+- render-target creation, resize, replacement, and destruction events;
+- TAA, DLSS, FSR2, FSR3, and frame-generation initialization, temporal reset, evaluation, swapchain, present, and recovery state;
+- warnings and failures with native result codes and full Java exception stack traces;
+- lag-spike, severe-lag-spike, FPS-drop, heap, processor, and thread information.
+
+The newest 4,096 diagnostic events are retained so a recurring failure cannot grow the report without limit. The report includes total counts by severity/category and a dropped-event count when that limit is exceeded. Recording remains a no-op while `recordMetrics` is disabled.
+
 ## DLSS Super Resolution
 
 DLSS is optional and disabled by default. The repo does not include NVIDIA Streamline/DLSS binaries or a NVIDIA application ID.

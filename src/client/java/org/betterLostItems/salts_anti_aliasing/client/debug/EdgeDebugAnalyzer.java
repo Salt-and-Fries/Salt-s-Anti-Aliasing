@@ -7,6 +7,7 @@ import net.minecraft.util.ARGB;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 
 /**
  * Samples rendered frames to estimate edge strength and aliasing behavior for the optional edge-
@@ -81,9 +82,28 @@ public final class EdgeDebugAnalyzer {
             try (image) {
                 if (generation == analysisGeneration) {
                     latestStats = analyze(image, mode);
+                    MetricsDiagnostics.info("edge_debug", "frame_analyzed", MetricsDiagnostics.fields(
+                            "mode", mode,
+                            "sourceWidth", mainTarget.width,
+                            "sourceHeight", mainTarget.height,
+                            "sampleWidth", image.getWidth(),
+                            "sampleHeight", image.getHeight(),
+                            "downscaleFactor", downscaleFactor,
+                            "edgeCoverage", latestStats.edgeCoverage(),
+                            "harshEdgeRatio", latestStats.harshEdgeRatio(),
+                            "smoothTransitionRatio", latestStats.smoothTransitionRatio(),
+                            "qualityScore", latestStats.qualityScore()
+                    ));
                 }
             } catch (RuntimeException exception) {
                 SaltsAntiAliasing.LOGGER.warn("Failed to analyze Salt's Anti Aliasing edge debug frame", exception);
+                MetricsDiagnostics.warn("edge_debug", "frame_analysis_failed", MetricsDiagnostics.fields(
+                        "mode", mode,
+                        "sourceWidth", mainTarget.width,
+                        "sourceHeight", mainTarget.height,
+                        "downscaleFactor", downscaleFactor,
+                        "generation", generation
+                ), exception);
             } finally {
                 if (generation == analysisGeneration) {
                     capturePending = false;

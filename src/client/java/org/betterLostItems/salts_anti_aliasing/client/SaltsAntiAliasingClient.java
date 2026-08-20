@@ -11,6 +11,7 @@ import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.debug.EdgeDebugHud;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
 
 /**
@@ -82,5 +83,11 @@ public final class SaltsAntiAliasingClient implements ClientModInitializer {
         });
 
         SaltsAntiAliasing.LOGGER.info("Client foundation initialized with {}", renderRuntime.describePlan());
+        MetricsDiagnostics.info("lifecycle", "client_initialized", MetricsDiagnostics.fields(
+                "renderPlan", renderRuntime.describePlan(),
+                "backend", renderRuntime.backendName(),
+                "antiAliasingAvailable", renderRuntime.canUseAntiAliasing(),
+                "activeMode", renderRuntime.activeMode()
+        ));
     }
 }

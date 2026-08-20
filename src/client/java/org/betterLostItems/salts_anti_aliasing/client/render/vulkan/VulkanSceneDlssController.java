@@ -21,6 +21,7 @@ import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss.DlssEvaluateParameters;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss.DlssOptimalSettings;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss.DlssRuntime;
@@ -111,6 +112,14 @@ public final class VulkanSceneDlssController {
             int result = evaluateDlss();
             if (result != 0) {
                 SaltsAntiAliasing.LOGGER.warn("DLSS evaluate failed with result {}; falling back to linear scene resolve", result);
+                MetricsDiagnostics.warn(
+                        "dlss.controller",
+                        "linear_resolve_fallback",
+                        "result", result,
+                        "optimalSettings", optimalSettings,
+                        "sceneSize", sceneTarget == null ? "unavailable" : sceneTarget.width + "x" + sceneTarget.height,
+                        "outputSize", mainTarget == null ? "unavailable" : mainTarget.width + "x" + mainTarget.height
+                );
                 resolveSceneColor(sceneTarget, mainTarget);
             }
         } catch (RuntimeException exception) {
@@ -186,6 +195,19 @@ public final class VulkanSceneDlssController {
                 || depthView == 0L
                 || motionVectorImage == 0L
                 || motionVectorView == 0L) {
+            MetricsDiagnostics.warnOnce(
+                    "dlss.controller.missing-handles",
+                    "dlss.controller",
+                    "evaluate_handles_incomplete",
+                    "inputColorImage", hex(inputColorImage),
+                    "inputColorView", hex(inputColorView),
+                    "outputColorImage", hex(outputColorImage),
+                    "outputColorView", hex(outputColorView),
+                    "depthImage", hex(depthImage),
+                    "depthView", hex(depthView),
+                    "motionVectorImage", hex(motionVectorImage),
+                    "motionVectorView", hex(motionVectorView)
+            );
             return -2;
         }
 
@@ -193,6 +215,12 @@ public final class VulkanSceneDlssController {
         CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
         CommandEncoderBackend backend = ((CommandEncoderAccessor) commandEncoder).saltsAntiAliasing$backend();
         if (!(backend instanceof VulkanCommandEncoder vulkanCommandEncoder)) {
+            MetricsDiagnostics.warnOnce(
+                    "dlss.controller.command-encoder",
+                    "dlss.controller",
+                    "non_vulkan_command_encoder",
+                    "backendType", backend == null ? "null" : backend.getClass().getName()
+            );
             return -3;
         }
 
@@ -224,6 +252,12 @@ public final class VulkanSceneDlssController {
         int result = DlssRuntime.instance().evaluate(parameters);
         int endResult = VK12.vkEndCommandBuffer(commandBuffer);
         if (endResult != VK12.VK_SUCCESS) {
+            MetricsDiagnostics.warn(
+                    "dlss.controller",
+                    "command_buffer_end_failed",
+                    "result", endResult,
+                    "commandBuffer", hex(commandBuffer.address())
+            );
             return endResult;
         }
         vulkanCommandEncoder.execute(commandBuffer);
@@ -254,14 +288,28 @@ public final class VulkanSceneDlssController {
     private void ensureTargets(int width, int height) {
         if (sceneTarget == null) {
             sceneTarget = new TextureTarget(SCENE_TARGET_LABEL, width, height, true, GpuFormat.RGBA8_UNORM);
+            recordTargetChange("created", SCENE_TARGET_LABEL, sceneTarget, GpuFormat.RGBA8_UNORM);
         } else if (sceneTarget.width != width || sceneTarget.height != height) {
+            int previousWidth = sceneTarget.width;
+            int previousHeight = sceneTarget.height;
             sceneTarget.resize(width, height);
+            recordTargetResize(SCENE_TARGET_LABEL, sceneTarget, previousWidth, previousHeight, GpuFormat.RGBA8_UNORM);
         }
 
         if (motionVectorTarget == null) {
             motionVectorTarget = new TextureTarget(MOTION_VECTOR_TARGET_LABEL, width, height, false, GpuFormat.RG16_FLOAT);
+            recordTargetChange("created", MOTION_VECTOR_TARGET_LABEL, motionVectorTarget, GpuFormat.RG16_FLOAT);
         } else if (motionVectorTarget.width != width || motionVectorTarget.height != height) {
+            int previousWidth = motionVectorTarget.width;
+            int previousHeight = motionVectorTarget.height;
             motionVectorTarget.resize(width, height);
+            recordTargetResize(
+                    MOTION_VECTOR_TARGET_LABEL,
+                    motionVectorTarget,
+                    previousWidth,
+                    previousHeight,
+                    GpuFormat.RG16_FLOAT
+            );
         }
     }
 
@@ -289,6 +337,14 @@ public final class VulkanSceneDlssController {
         }
         clearFrameState();
         SaltsAntiAliasing.LOGGER.error(message, exception);
+        MetricsDiagnostics.error(
+                "dlss.controller",
+                "controller_disabled_after_failure",
+                exception,
+                "message", message,
+                "optimalSettings", optimalSettings,
+                "destroyResourcesAfterFrame", destroyResourcesAfterFrame
+        );
     }
 
     private void destroyResourcesIfPending() {
@@ -302,10 +358,12 @@ public final class VulkanSceneDlssController {
 
     private void destroyResources() {
         if (sceneTarget != null) {
+            recordTargetChange("destroyed", SCENE_TARGET_LABEL, sceneTarget, GpuFormat.RGBA8_UNORM);
             sceneTarget.destroyBuffers();
             sceneTarget = null;
         }
         if (motionVectorTarget != null) {
+            recordTargetChange("destroyed", MOTION_VECTOR_TARGET_LABEL, motionVectorTarget, GpuFormat.RG16_FLOAT);
             motionVectorTarget.destroyBuffers();
             motionVectorTarget = null;
         }
@@ -323,6 +381,42 @@ public final class VulkanSceneDlssController {
 
     private static long view(GpuTextureView textureView) {
         return textureView instanceof VulkanGpuTextureView vulkanTextureView ? vulkanTextureView.vkImageView() : 0L;
+    }
+
+    private static void recordTargetChange(String action, String label, RenderTarget target, GpuFormat format) {
+        MetricsDiagnostics.info(
+                "dlss.resources",
+                "target_" + action,
+                "label", label,
+                "width", target.width,
+                "height", target.height,
+                "useDepth", target.useDepth,
+                "format", format
+        );
+    }
+
+    private static void recordTargetResize(
+            String label,
+            RenderTarget target,
+            int previousWidth,
+            int previousHeight,
+            GpuFormat format
+    ) {
+        MetricsDiagnostics.info(
+                "dlss.resources",
+                "target_resized",
+                "label", label,
+                "previousWidth", previousWidth,
+                "previousHeight", previousHeight,
+                "width", target.width,
+                "height", target.height,
+                "useDepth", target.useDepth,
+                "format", format
+        );
+    }
+
+    private static String hex(long value) {
+        return value == 0L ? "0x0" : "0x" + Long.toUnsignedString(value, 16);
     }
 
     private static final class DlssMotionTargetBundle implements PostChain.TargetBundle {

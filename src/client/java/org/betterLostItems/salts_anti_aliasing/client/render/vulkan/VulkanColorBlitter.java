@@ -8,6 +8,7 @@ import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.vulkan.VulkanCommandEncoder;
 import com.mojang.blaze3d.vulkan.VulkanDevice;
 import com.mojang.blaze3d.vulkan.VulkanGpuTexture;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.mixin.client.GpuDeviceAccessor;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.KHRSynchronization2;
@@ -36,6 +37,17 @@ public final class VulkanColorBlitter {
         }
         if (!(sourceTexture instanceof VulkanGpuTexture sourceVulkanTexture)
                 || !(destinationTexture instanceof VulkanGpuTexture destinationVulkanTexture)) {
+            MetricsDiagnostics.error(
+                    "vulkan.blit",
+                    "non_vulkan_texture_rejected",
+                    null,
+                    "sourceTextureClass", sourceTexture.getClass().getName(),
+                    "destinationTextureClass", destinationTexture.getClass().getName(),
+                    "sourceWidth", source.width,
+                    "sourceHeight", source.height,
+                    "destinationWidth", destination.width,
+                    "destinationHeight", destination.height
+            );
             throw new IllegalStateException("Vulkan color blit requires Vulkan texture objects");
         }
 
@@ -72,6 +84,18 @@ public final class VulkanColorBlitter {
             completedBarrier(commandBuffer, stack, sourceVulkanTexture, destinationVulkanTexture);
             int endResult = VK12.vkEndCommandBuffer(commandBuffer);
             if (endResult != VK12.VK_SUCCESS) {
+                MetricsDiagnostics.error(
+                        "vulkan.blit",
+                        "command_buffer_end_failed",
+                        null,
+                        "result", endResult,
+                        "sourceImage", hex(sourceVulkanTexture.vkImage()),
+                        "destinationImage", hex(destinationVulkanTexture.vkImage()),
+                        "sourceWidth", source.width,
+                        "sourceHeight", source.height,
+                        "destinationWidth", destination.width,
+                        "destinationHeight", destination.height
+                );
                 throw new IllegalStateException("Failed to end Vulkan color blit command buffer: " + endResult);
             }
             encoder.execute(commandBuffer);
@@ -177,5 +201,9 @@ public final class VulkanColorBlitter {
         }
 
         throw new IllegalStateException("Minecraft is not running on the Vulkan backend");
+    }
+
+    private static String hex(long value) {
+        return "0x" + Long.toUnsignedString(value, 16);
     }
 }

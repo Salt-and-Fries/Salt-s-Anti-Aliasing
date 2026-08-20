@@ -3,6 +3,7 @@ package org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.DlssQualityPreset;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 
 /**
  * Process-wide DLSS state machine. All callers can ask for status; only configured Vulkan sessions
@@ -23,17 +24,40 @@ public final class DlssRuntime {
     }
 
     public synchronized void configure(AntiAliasingConfig config) {
+        DlssNativeConfiguration previousConfiguration = configuration;
         configuration = DlssNativeConfiguration.fromConfig(config);
+        MetricsDiagnostics.info(
+                "dlss.runtime",
+                "configuration_applied",
+                "configurationChanged", !configuration.equals(previousConfiguration),
+                "bridgePath", configuration.bridgePath(),
+                "pluginPath", configuration.pluginPath(),
+                "logPath", configuration.logPath(),
+                "applicationId", configuration.applicationId(),
+                "validationStatus", configuration.validate()
+        );
         refresh();
     }
 
     public synchronized void preInitializeFromEnvironment() {
+        MetricsDiagnostics.info(
+                "dlss.runtime",
+                "environment_preinitialization_requested",
+                "hasAnySetting", configuration.hasAnySetting(),
+                "validationStatus", configuration.validate()
+        );
         if (configuration.hasAnySetting()) {
             refresh();
         }
     }
 
     public synchronized void onVulkanDeviceReady(DlssVulkanDeviceInfo deviceInfo) {
+        MetricsDiagnostics.info(
+                "dlss.runtime",
+                "vulkan_device_ready",
+                "deviceInfo", deviceInfo,
+                "deviceInfoComplete", deviceInfo != null && deviceInfo.complete()
+        );
         refresh(deviceInfo);
     }
 
@@ -50,14 +74,43 @@ public final class DlssRuntime {
             int outputWidth,
             int outputHeight
     ) {
-        return bridge.queryOptimalSettings(preset, outputWidth, outputHeight);
+        DlssOptimalSettings settings = bridge.queryOptimalSettings(preset, outputWidth, outputHeight);
+        MetricsDiagnostics.infoOnce(
+                "dlss.optimal-settings." + preset + "." + outputWidth + "x" + outputHeight,
+                "dlss.runtime",
+                "optimal_settings_queried",
+                "preset", preset,
+                "outputWidth", outputWidth,
+                "outputHeight", outputHeight,
+                "settings", settings,
+                "runtimeStatus", status
+        );
+        return settings;
     }
 
     public synchronized int evaluate(DlssEvaluateParameters parameters) {
-        return bridge.evaluate(parameters);
+        int result = bridge.evaluate(parameters);
+        if (result != 0) {
+            MetricsDiagnostics.warnOnce(
+                    "dlss.evaluate." + result + "." + parameters.renderWidth() + "x" + parameters.renderHeight()
+                            + "." + parameters.outputWidth() + "x" + parameters.outputHeight(),
+                    "dlss.evaluate",
+                    "evaluation_failed",
+                    "result", result,
+                    "parameters", parameters,
+                    "runtimeStatus", status
+            );
+        }
+        return result;
     }
 
     public synchronized void shutdown() {
+        MetricsDiagnostics.info(
+                "dlss.runtime",
+                "shutdown",
+                "statusBeforeShutdown", status,
+                "configuration", configuration
+        );
         bridge.shutdown();
     }
 
@@ -70,6 +123,15 @@ public final class DlssRuntime {
         status = bridge.configure(configuration, deviceInfo);
         if (status != previousStatus) {
             SaltsAntiAliasing.LOGGER.info("DLSS runtime status: {}", status.message());
+            MetricsDiagnostics.info(
+                    "dlss.runtime",
+                    "status_changed",
+                    "previousStatus", previousStatus,
+                    "currentStatus", status,
+                    "message", status.message(),
+                    "deviceInfo", deviceInfo,
+                    "configuration", configuration
+            );
         }
     }
 }

@@ -11,6 +11,7 @@ import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.debug.EdgeDebugAnalyzer;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.ScenePostProcessor;
 
 import java.util.List;
@@ -65,6 +66,12 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
             temporalDisabledAfterFailure = true;
             temporalResourcePool.clear();
             SaltsAntiAliasing.LOGGER.error("Disabling temporal resolve after a rendering failure", exception);
+            MetricsDiagnostics.error("post_processing", "temporal_resolve_disabled", MetricsDiagnostics.fields(
+                    "mode", config.mode,
+                    "targetWidth", gameRenderer.mainRenderTarget().width,
+                    "targetHeight", gameRenderer.mainRenderTarget().height,
+                    "targetUsesDepth", gameRenderer.mainRenderTarget().useDepth
+            ), exception);
         } finally {
             temporalResourcePool.endFrame();
         }
@@ -108,6 +115,13 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
             finalEffectsDisabledAfterFailure = true;
             finalEffectsResourcePool.clear();
             SaltsAntiAliasing.LOGGER.error("Disabling final scene effects after a rendering failure", exception);
+            MetricsDiagnostics.error("post_processing", "final_effects_disabled", MetricsDiagnostics.fields(
+                    "mode", config.mode,
+                    "sharpenStrength", config.sharpenStrength,
+                    "debugViewsEnabled", config.debugViewsEnabled,
+                    "targetWidth", gameRenderer.mainRenderTarget().width,
+                    "targetHeight", gameRenderer.mainRenderTarget().height
+            ), exception);
         } finally {
             finalEffectsResourcePool.endFrame();
         }
@@ -123,8 +137,30 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
     private void processEffect(Minecraft minecraft, RenderTarget mainTarget, Identifier effectId, AntiAliasingConfig config) {
         PostChain postChain = minecraft.getShaderManager().getPostChain(effectId, LevelTargetBundle.MAIN_TARGETS);
         if (postChain == null) {
+            MetricsDiagnostics.warnOnce(
+                    "post-chain-missing-" + effectId,
+                    "post_processing",
+                    "post_chain_unavailable",
+                    MetricsDiagnostics.fields(
+                            "effect", effectId.toString(),
+                            "mode", config.mode,
+                            "targetWidth", mainTarget.width,
+                            "targetHeight", mainTarget.height
+                    )
+            );
             return;
         }
+
+        MetricsDiagnostics.infoOnce(
+                "post-chain-active-" + effectId,
+                "post_processing",
+                "post_chain_activated",
+                MetricsDiagnostics.fields(
+                        "effect", effectId.toString(),
+                        "mode", config.mode,
+                        "sharpenStrength", config.sharpenStrength
+                )
+        );
 
         VulkanDynamicUniforms.updateSharpening(postChain, config.sharpenStrength);
         postChain.process(mainTarget, finalEffectsResourcePool);

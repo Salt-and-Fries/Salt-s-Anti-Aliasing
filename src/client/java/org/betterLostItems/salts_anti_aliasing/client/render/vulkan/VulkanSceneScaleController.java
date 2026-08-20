@@ -17,6 +17,7 @@ import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPreset;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -96,6 +97,20 @@ public final class VulkanSceneScaleController {
             int sceneWidth = Math.max(1, Math.round(mainTarget.width * config.sceneRenderScale()));
             int sceneHeight = Math.max(1, Math.round(mainTarget.height * config.sceneRenderScale()));
             int maxTextureSize = RenderSystem.getDevice().getDeviceInfo().limits().maxTextureSize();
+            MetricsDiagnostics.infoOnce(
+                    "vulkan.scene-scale.request." + config.mode + "." + mainTarget.width + "x" + mainTarget.height
+                            + "." + sceneWidth + "x" + sceneHeight,
+                    "vulkan.scene_scale",
+                    "target_dimensions_calculated",
+                    "mode", config.mode,
+                    "sceneRenderScale", config.sceneRenderScale(),
+                    "outputWidth", mainTarget.width,
+                    "outputHeight", mainTarget.height,
+                    "sceneWidth", sceneWidth,
+                    "sceneHeight", sceneHeight,
+                    "maximumTextureSize", maxTextureSize,
+                    "useDepth", mainTarget.useDepth
+            );
             if (sceneWidth > maxTextureSize || sceneHeight > maxTextureSize) {
                 warnUnsupportedSceneSize(sceneWidth, sceneHeight, maxTextureSize);
                 return;
@@ -247,11 +262,35 @@ public final class VulkanSceneScaleController {
         if (sceneTarget == null || sceneTarget.useDepth != useDepth) {
             destroyResources();
             sceneTarget = new TextureTarget(TARGET_LABEL, width, height, useDepth, GpuFormat.RGBA8_UNORM);
+            MetricsDiagnostics.info(
+                    "vulkan.scene_scale",
+                    "target_created",
+                    "label", TARGET_LABEL,
+                    "activeMode", activeMode,
+                    "width", width,
+                    "height", height,
+                    "useDepth", useDepth,
+                    "format", GpuFormat.RGBA8_UNORM
+            );
             return;
         }
 
         if (sceneTarget.width != width || sceneTarget.height != height) {
+            int previousWidth = sceneTarget.width;
+            int previousHeight = sceneTarget.height;
             sceneTarget.resize(width, height);
+            MetricsDiagnostics.info(
+                    "vulkan.scene_scale",
+                    "target_resized",
+                    "label", TARGET_LABEL,
+                    "activeMode", activeMode,
+                    "previousWidth", previousWidth,
+                    "previousHeight", previousHeight,
+                    "width", width,
+                    "height", height,
+                    "useDepth", useDepth,
+                    "format", GpuFormat.RGBA8_UNORM
+            );
         }
     }
 
@@ -276,6 +315,15 @@ public final class VulkanSceneScaleController {
                 height,
                 maxTextureSize,
                 maxTextureSize
+        );
+        MetricsDiagnostics.warn(
+                "vulkan.scene_scale",
+                "target_size_unsupported",
+                "requestedWidth", width,
+                "requestedHeight", height,
+                "maximumTextureSize", maxTextureSize,
+                "activeMode", activeMode,
+                "fallback", "native resolution"
         );
     }
 
@@ -304,6 +352,16 @@ public final class VulkanSceneScaleController {
                 width,
                 height,
                 exception
+        );
+        MetricsDiagnostics.error(
+                "vulkan.scene_scale",
+                "target_allocation_failed",
+                exception,
+                "setupSignature", setupSignature,
+                "width", width,
+                "height", height,
+                "activeMode", activeMode,
+                "fallback", "native resolution until configuration changes"
         );
     }
 
@@ -337,9 +395,29 @@ public final class VulkanSceneScaleController {
 
         PostChain postChain = minecraft.getShaderManager().getPostChain(effectId, EXTERNAL_SCALE_TARGETS);
         if (postChain == null) {
+            MetricsDiagnostics.warnOnce(
+                    "scene-scale-post-chain-missing-" + effectId,
+                    "vulkan.scene_scale",
+                    "upscale_post_chain_unavailable",
+                    "effect", effectId,
+                    "mode", config.mode,
+                    "fallback", "linear color resolve"
+            );
             resolveSceneColor(sceneTarget, mainTarget);
             return;
         }
+
+        MetricsDiagnostics.infoOnce(
+                "scene-scale-post-chain-active-" + effectId,
+                "vulkan.scene_scale",
+                "upscale_post_chain_activated",
+                "effect", effectId,
+                "mode", config.mode,
+                "inputWidth", sceneTarget.width,
+                "inputHeight", sceneTarget.height,
+                "outputWidth", mainTarget.width,
+                "outputHeight", mainTarget.height
+        );
 
         // Upscaling itself never chooses a sharpening amount; the universal final pass owns it.
         VulkanDynamicUniforms.updateSharpening(postChain, 0.0f);
@@ -413,11 +491,19 @@ public final class VulkanSceneScaleController {
      * @param exception exception value supplied by the caller or Minecraft callback
      */
     private void disableAfterFailure(String message, RuntimeException exception) {
+        AntiAliasingMode failedMode = activeMode;
         disabledAfterFailure = true;
         destroyResources();
         resourcePool.clear();
         clearFrameState();
         SaltsAntiAliasing.LOGGER.error(message, exception);
+        MetricsDiagnostics.error(
+                "vulkan.scene_scale",
+                "controller_disabled_after_failure",
+                exception,
+                "message", message,
+                "activeMode", failedMode
+        );
     }
 
     /**
@@ -425,6 +511,15 @@ public final class VulkanSceneScaleController {
      */
     private void destroyResources() {
         if (sceneTarget != null) {
+            MetricsDiagnostics.info(
+                    "vulkan.scene_scale",
+                    "target_destroyed",
+                    "label", TARGET_LABEL,
+                    "width", sceneTarget.width,
+                    "height", sceneTarget.height,
+                    "useDepth", sceneTarget.useDepth,
+                    "activeMode", activeMode
+            );
             sceneTarget.destroyBuffers();
             sceneTarget = null;
         }

@@ -19,6 +19,7 @@ import com.mojang.blaze3d.textures.FilterMode;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
@@ -69,6 +70,18 @@ final class VulkanFsrTemporalMaskRenderer {
                 || !hasColor(motionVectors)
                 || !hasColor(reactiveMask)
                 || !hasColor(transparencyMask)) {
+            MetricsDiagnostics.warnOnce(
+                    "fsr-temporal-mask-input-unavailable",
+                    "fsr.masks",
+                    "render_skipped",
+                    "currentColor", hasColor(currentColor),
+                    "currentOpaque", hasColor(currentOpaque),
+                    "previousColor", hasColor(previousColor),
+                    "previousOpaque", hasColor(previousOpaque),
+                    "motionVectors", hasColor(motionVectors),
+                    "reactiveMask", hasColor(reactiveMask),
+                    "transparencyMask", hasColor(transparencyMask)
+            );
             return;
         }
 
@@ -122,6 +135,11 @@ final class VulkanFsrTemporalMaskRenderer {
         if (!compiled.isValid()) {
             throw new IllegalStateException("Unable to compile FSR temporal-mask pipeline");
         }
+        MetricsDiagnostics.info("fsr.masks", "pipeline_compiled", MetricsDiagnostics.fields(
+                "pipeline", pipeline.getLocation(),
+                "outputFormat", GpuFormat.R8_UNORM,
+                "colorAttachmentCount", 2
+        ));
     }
 
     private void writeConfig(

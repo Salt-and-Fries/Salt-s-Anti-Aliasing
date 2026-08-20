@@ -147,6 +147,13 @@ public final class ModernMinecraftHooks {
         }
     }
 
+    /** Flushes the latest report without ending the session while renderer shutdown is pending. */
+    public static void flushMetrics() {
+        if (SaltsAntiAliasingClient.runtimeOrNull() != null) {
+            SaltsAntiAliasingClient.runtime().flushMetrics();
+        }
+    }
+
     /**
      * Releases native renderer integrations after the window surface no longer owns a swapchain.
      */
