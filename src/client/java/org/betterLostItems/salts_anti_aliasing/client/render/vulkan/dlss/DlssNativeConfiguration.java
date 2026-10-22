@@ -1,6 +1,11 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss;
 
+import com.google.gson.Gson;
+import net.fabricmc.loader.api.FabricLoader;
+import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
+import java.nio.file.Files;
+import java.io.IOException;
 
 /**
  * External DLSS runtime settings. System properties and environment variables intentionally
@@ -22,21 +27,40 @@ public record DlssNativeConfiguration(
     private static final String APPLICATION_ID_ENV = "SALTS_DLSS_APPLICATION_ID";
 
     public static DlssNativeConfiguration fromConfig(AntiAliasingConfig config) {
-        return new DlssNativeConfiguration(
+        return withBundledRuntime(new DlssNativeConfiguration(
                 firstNonBlank(System.getProperty(BRIDGE_PROPERTY), System.getenv(BRIDGE_ENV), config.dlssBridgePath),
                 firstNonBlank(System.getProperty(PLUGIN_PROPERTY), System.getenv(PLUGIN_ENV), config.dlssPluginPath),
                 firstNonBlank(System.getProperty(LOG_PROPERTY), System.getenv(LOG_ENV), config.dlssLogPath),
                 firstPositiveInt(System.getProperty(APPLICATION_ID_PROPERTY), System.getenv(APPLICATION_ID_ENV), config.dlssApplicationId)
-        );
+        ));
     }
 
     public static DlssNativeConfiguration fromEnvironment() {
-        return new DlssNativeConfiguration(
+        return withBundledRuntime(new DlssNativeConfiguration(
                 firstNonBlank(System.getProperty(BRIDGE_PROPERTY), System.getenv(BRIDGE_ENV), ""),
                 firstNonBlank(System.getProperty(PLUGIN_PROPERTY), System.getenv(PLUGIN_ENV), ""),
                 firstNonBlank(System.getProperty(LOG_PROPERTY), System.getenv(LOG_ENV), ""),
                 firstPositiveInt(System.getProperty(APPLICATION_ID_PROPERTY), System.getenv(APPLICATION_ID_ENV), 0)
-        );
+        ));
+    }
+
+    private static DlssNativeConfiguration withBundledRuntime(DlssNativeConfiguration configuration) {
+        if (!configuration.bridgePath().isBlank() || !configuration.pluginPath().isBlank()) return configuration;
+        return DlssBundledNativeResolver.resolve(configuration.logPath(), configuration.applicationId()).orElse(configuration);
+    }
+
+    /** Read settings before Vulkan creation without creating or rewriting the config file. */
+    public static DlssNativeConfiguration fromStartup() {
+        var path = FabricLoader.getInstance().getConfigDir().resolve(SaltsAntiAliasing.MOD_ID + ".json");
+        if (Files.isRegularFile(path)) {
+            try (var reader = Files.newBufferedReader(path)) {
+                var config = new Gson().fromJson(reader, AntiAliasingConfig.class);
+                if (config != null) return fromConfig(config);
+            } catch (IOException | RuntimeException exception) {
+                SaltsAntiAliasing.LOGGER.warn("Unable to read early DLSS configuration", exception);
+            }
+        }
+        return fromEnvironment();
     }
 
     public boolean hasAnySetting() {
@@ -52,9 +76,6 @@ public record DlssNativeConfiguration(
         }
         if (pluginPath.isBlank()) {
             return DlssRuntimeStatus.PLUGIN_PATH_MISSING;
-        }
-        if (applicationId <= 0) {
-            return DlssRuntimeStatus.APPLICATION_ID_MISSING;
         }
         return DlssRuntimeStatus.READY;
     }

@@ -1,20 +1,20 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.Std140Builder;
 import com.mojang.blaze3d.buffers.Std140SizeCalculator;
-import com.mojang.blaze3d.pipeline.BindGroupLayout;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.CompiledRenderPipeline;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.CompiledRenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.shaders.UniformType;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.renderpearl.api.pipeline.UniformType;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
@@ -34,18 +34,7 @@ import java.util.Optional;
 final class VulkanMotionVectorRenderer {
     private static final int BUFFER_USAGE = GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST;
     private static final int SAMPLER_INFO_SIZE = new Std140SizeCalculator().putVec2().putVec2().get();
-    private static final int LEGACY_MOTION_CONFIG_SIZE = new Std140SizeCalculator()
-            .putVec4()
-            .putVec4()
-            .putVec4()
-            .putVec4()
-            .putVec4()
-            .putVec4()
-            .putVec4()
-            .putVec4()
-            .putVec4()
-            .get();
-    private static final int JITTER_CORRECTED_MOTION_CONFIG_SIZE = new Std140SizeCalculator()
+    private static final int MOTION_CONFIG_SIZE = new Std140SizeCalculator()
             .putVec4()
             .putVec4()
             .putVec4()
@@ -66,22 +55,19 @@ final class VulkanMotionVectorRenderer {
             "Salt's DLSS Motion Vectors",
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":pipeline/dlss_motion_vectors_rg16f"),
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":post/dlss_motion_vectors"),
-            "DlssMotionConfig",
-            false
+            "DlssMotionConfig"
     );
     private static final VulkanMotionVectorRenderer FSR = new VulkanMotionVectorRenderer(
             "Salt's FSR Motion Vectors",
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":pipeline/fsr_motion_vectors_rg16f"),
             Identifier.parse(SaltsAntiAliasing.MOD_ID + ":post/fsr_motion_vectors"),
-            "FsrMotionConfig",
-            true
+            "FsrMotionConfig"
     );
 
     private final String label;
     private final Identifier pipelineId;
     private final Identifier fragmentShaderId;
     private final String motionUniformName;
-    private final boolean cancelProjectionJitter;
     private RenderPipeline pipeline;
     private GpuBuffer samplerInfoBuffer;
     private GpuBuffer motionConfigBuffer;
@@ -90,14 +76,12 @@ final class VulkanMotionVectorRenderer {
             String label,
             Identifier pipelineId,
             Identifier fragmentShaderId,
-            String motionUniformName,
-            boolean cancelProjectionJitter
+            String motionUniformName
     ) {
         this.label = label;
         this.pipelineId = pipelineId;
         this.fragmentShaderId = fragmentShaderId;
         this.motionUniformName = motionUniformName;
-        this.cancelProjectionJitter = cancelProjectionJitter;
     }
 
     static VulkanMotionVectorRenderer dlss() {
@@ -141,11 +125,11 @@ final class VulkanMotionVectorRenderer {
                 motionVectorTarget.getColorTextureView(),
                 Optional.empty()
         )) {
-            renderPass.setPipeline(pipeline);
+            renderPass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.setUniform("SamplerInfo", samplerInfoBuffer);
             renderPass.setUniform(motionUniformName, motionConfigBuffer);
-            renderPass.bindTexture(
+            renderPass.setUniform(
                     "SceneDepthSampler",
                     sceneTarget.getDepthTextureView(),
                     RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
@@ -160,7 +144,7 @@ final class VulkanMotionVectorRenderer {
         }
 
         BindGroupLayout layout = BindGroupLayout.builder()
-                .withSampler("SceneDepthSampler")
+                .withUniform("SceneDepthSampler", UniformType.COMBINED_IMAGE_SAMPLER)
                 .withUniform("SamplerInfo", UniformType.UNIFORM_BUFFER)
                 .withUniform(motionUniformName, UniformType.UNIFORM_BUFFER)
                 .build();
@@ -172,8 +156,8 @@ final class VulkanMotionVectorRenderer {
                 .withColorTargetState(new ColorTargetState(Optional.empty(), GpuFormat.RG16_FLOAT, MOTION_WRITE_MASK))
                 .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
                 .build();
-        CompiledRenderPipeline compiled = RenderSystem.getDevice().precompilePipeline(pipeline);
-        if (!compiled.isValid()) {
+        CompiledRenderPipeline compiled = RenderSystem.getCompiledPipelineNullable(pipeline);
+        if (compiled == null) {
             throw new IllegalStateException("Unable to compile motion-vector pipeline " + pipelineId);
         }
         MetricsDiagnostics.info("temporal.motion_vectors", "pipeline_compiled", MetricsDiagnostics.fields(
@@ -181,7 +165,7 @@ final class VulkanMotionVectorRenderer {
                 "pipeline", pipelineId,
                 "fragmentShader", fragmentShaderId,
                 "uniform", motionUniformName,
-                "cancelProjectionJitter", cancelProjectionJitter,
+                "cancelProjectionJitter", true,
                 "outputFormat", GpuFormat.RG16_FLOAT
         ));
     }
@@ -199,31 +183,14 @@ final class VulkanMotionVectorRenderer {
 
     private void writeMotionConfig(VulkanSceneTemporalController controller, int width, int height) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            int bufferSize = cancelProjectionJitter
-                    ? JITTER_CORRECTED_MOTION_CONFIG_SIZE
-                    : LEGACY_MOTION_CONFIG_SIZE;
-            ByteBuffer data = stack.malloc(bufferSize);
+            ByteBuffer data = stack.malloc(MOTION_CONFIG_SIZE);
             Std140Builder builder = Std140Builder.intoBuffer(data);
-            putMatrix(
-                    builder,
-                    cancelProjectionJitter
-                            ? controller.currentJitteredClipToWorldArray()
-                            : controller.currentClipToWorldArray()
-            );
-            if (cancelProjectionJitter) {
-                putMatrix(builder, controller.currentViewProjectionArray());
-            }
+            putMatrix(builder, controller.currentJitteredClipToWorldArray());
+            putMatrix(builder, controller.currentViewProjectionArray());
             putMatrix(builder, controller.previousViewProjectionArray());
             builder.putVec4(Math.max(1, width), Math.max(1, height), 0.0f, 0.0f);
-            if (cancelProjectionJitter) {
-                float[] cameraTranslation = controller.cameraTranslationToPreviousArray();
-                builder.putVec4(
-                        cameraTranslation[0],
-                        cameraTranslation[1],
-                        cameraTranslation[2],
-                        0.0f
-                );
-            }
+            float[] cameraTranslation = controller.cameraTranslationToPreviousArray();
+            builder.putVec4(cameraTranslation[0], cameraTranslation[1], cameraTranslation[2], 0.0f);
             data.flip();
             motionConfigBuffer = writeUniformBuffer(motionConfigBuffer, data, motionUniformName);
         }

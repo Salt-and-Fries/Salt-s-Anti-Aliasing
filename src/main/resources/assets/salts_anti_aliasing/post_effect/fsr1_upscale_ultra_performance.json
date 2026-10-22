@@ -12,30 +12,7 @@
         }
       ],
       "output": "minecraft:main",
-      "uniforms": {
-        "Fsr1Config": [
-          {
-            "name": "SourceScale",
-            "type": "float",
-            "value": 0.50
-          },
-          {
-            "name": "EdgeBlend",
-            "type": "float",
-            "value": 0.58
-          },
-          {
-            "name": "DetailBoost",
-            "type": "float",
-            "value": 0.0
-          },
-          {
-            "name": "ClampBoost",
-            "type": "float",
-            "value": 0.16
-          }
-        ]
-      }
+      "uniforms": {}
     }
   ]
 }

@@ -1,16 +1,16 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.GpuFormat;
+import com.mojang.renderpearl.api.GpuFormat;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.systems.GpuDevice;
-import com.mojang.blaze3d.systems.GpuDeviceBackend;
+import com.mojang.renderpearl.api.device.GpuDevice;
+import com.mojang.renderpearl.backend.api.GpuDeviceBackend;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.vulkan.VulkanCommandEncoder;
-import com.mojang.blaze3d.vulkan.VulkanDevice;
-import com.mojang.blaze3d.vulkan.VulkanGpuTexture;
+import com.mojang.renderpearl.api.textures.GpuTexture;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
+import com.mojang.renderpearl.backend.vulkan.VulkanCommandEncoder;
+import com.mojang.renderpearl.backend.vulkan.VulkanDevice;
+import com.mojang.renderpearl.backend.vulkan.VulkanGpuTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
@@ -39,6 +39,7 @@ public final class VulkanSceneMsaaController {
     private boolean active;
     private TextureTarget msaaTarget;
     private RenderTarget mainTarget;
+    private GpuTextureView transparencyDepthView;
     private int msaaTargetSamples = 1;
     private int lastReportedRequestedSamples;
     private int lastReportedActualSamples;
@@ -69,7 +70,7 @@ public final class VulkanSceneMsaaController {
         }
 
         RenderTarget mainTarget = gameRenderer.mainRenderTarget();
-        if (!mainTarget.useDepth || mainTarget.width <= 0 || mainTarget.height <= 0) {
+        if (!mainTarget.hasDepth() || mainTarget.width <= 0 || mainTarget.height <= 0) {
             return;
         }
 
@@ -78,7 +79,7 @@ public final class VulkanSceneMsaaController {
             if (matchesFailedConfiguration(
                     mainTarget.width,
                     mainTarget.height,
-                    mainTarget.useDepth,
+                    mainTarget.hasDepth(),
                     requestedSamples
             )) {
                 return;
@@ -90,7 +91,7 @@ public final class VulkanSceneMsaaController {
             ensureMsaaTargetWithFallback(
                     mainTarget.width,
                     mainTarget.height,
-                    mainTarget.useDepth,
+                    mainTarget.hasDepth(),
                     config.msaaSampleLevel
             );
             this.mainTarget = mainTarget;
@@ -102,7 +103,7 @@ public final class VulkanSceneMsaaController {
                     exception,
                     mainTarget.width,
                     mainTarget.height,
-                    mainTarget.useDepth,
+                    mainTarget.hasDepth(),
                     requestedSamples
             );
         }
@@ -133,7 +134,7 @@ public final class VulkanSceneMsaaController {
                     exception,
                     mainTarget == null ? -1 : mainTarget.width,
                     mainTarget == null ? -1 : mainTarget.height,
-                    mainTarget != null && mainTarget.useDepth,
+                    mainTarget != null && mainTarget.hasDepth(),
                     requestedSamples
             );
         } finally {
@@ -143,6 +144,26 @@ public final class VulkanSceneMsaaController {
 
     public RenderTarget overrideMainTarget() {
         return active ? msaaTarget : null;
+    }
+
+    /** Called outside render passes after the opaque scene is complete. */
+    public void prepareTransparencyDepth() {
+        if (!active || mainTarget == null) {
+            return;
+        }
+        // Read the original single-sample target without the scene redirection hook.
+        active = false;
+        try {
+            transparencyDepthView = mainTarget.getDepthTextureView();
+        } finally {
+            active = true;
+        }
+        VulkanDepthResolver.resolve(vulkanDevice(), msaaTarget, transparencyDepthView);
+    }
+
+    public GpuTextureView transparencyDepthView(RenderTarget target) {
+        return active && target == msaaTarget && transparencyDepthView != null
+                ? transparencyDepthView : target.getDepthTextureView();
     }
 
     public GpuTexture overrideColorTexture(RenderTarget target) {
@@ -272,10 +293,10 @@ public final class VulkanSceneMsaaController {
     }
 
     private void ensureMsaaTarget(int width, int height, boolean useDepth, int samples) {
-        if (msaaTarget == null || msaaTarget.useDepth != useDepth || msaaTargetSamples != samples) {
+        if (msaaTarget == null || msaaTarget.hasDepth() != useDepth || msaaTargetSamples != samples) {
             destroyResources();
             VulkanMsaaState.withTextureSampleCount(samples, () -> {
-                msaaTarget = new TextureTarget(TARGET_LABEL, width, height, useDepth, GpuFormat.RGBA8_UNORM);
+                msaaTarget = new TextureTarget(TARGET_LABEL, width, height, GpuFormat.RGBA8_UNORM, useDepth ? GpuFormat.D32_FLOAT : null);
                 return null;
             });
             msaaTargetSamples = samples;
@@ -367,6 +388,8 @@ public final class VulkanSceneMsaaController {
                     resolveRegion
             );
             resolvedBarrier(commandBuffer, stack, sourceVulkanTexture, targetVulkanTexture);
+            int endResult = VK12.vkEndCommandBuffer(commandBuffer);
+            if (endResult != VK12.VK_SUCCESS) throw new IllegalStateException("Cannot end MSAA color resolve command buffer: " + endResult);
             encoder.execute(commandBuffer);
         }
     }
@@ -548,7 +571,7 @@ public final class VulkanSceneMsaaController {
                     "label", TARGET_LABEL,
                     "width", msaaTarget.width,
                     "height", msaaTarget.height,
-                    "useDepth", msaaTarget.useDepth,
+                    "useDepth", msaaTarget.hasDepth(),
                     "samples", msaaTargetSamples
             );
             msaaTarget.destroyBuffers();
@@ -560,6 +583,7 @@ public final class VulkanSceneMsaaController {
     private void clearFrameState() {
         active = false;
         mainTarget = null;
+        transparencyDepthView = null;
         VulkanMsaaState.endScene();
     }
 }

@@ -1,4 +1,4 @@
-#version 330
+#version 450
 
 /*
  * NVIDIA FXAA 3.11 by Timothy Lottes
@@ -54,8 +54,8 @@ layout(std140) uniform FxaaConfig {
     float EdgeThresholdMin;
 };
 
-in vec2 texCoord;
-out vec4 fragColor;
+layout(location = 0) in vec2 texCoord;
+layout(location = 0) out vec4 fragColor;
 
 const int FXAA_SEARCH_STEP_COUNT = 11;
 const float FXAA_SEARCH_STEPS[FXAA_SEARCH_STEP_COUNT] = float[](

@@ -4,6 +4,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.OptionsList;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
@@ -29,7 +30,8 @@ public final class AntiAliasingVideoSettingsSection {
             RenderRuntime runtime,
             boolean dropdownExpanded,
             boolean improvedTransparencyEnabled,
-            Runnable onDropdownToggled
+            Runnable onDropdownToggled,
+            Screen parent
     ) {
         list.addHeader(Component.translatable(SECTION_HEADER_KEY));
 
@@ -38,7 +40,8 @@ public final class AntiAliasingVideoSettingsSection {
                 runtime,
                 dropdownExpanded,
                 improvedTransparencyEnabled,
-                onDropdownToggled
+                onDropdownToggled,
+                parent
         );
     }
 
@@ -51,7 +54,8 @@ public final class AntiAliasingVideoSettingsSection {
             RenderRuntime runtime,
             boolean dropdownExpanded,
             boolean improvedTransparencyEnabled,
-            Runnable onDropdownToggled
+            Runnable onDropdownToggled,
+            Screen parent
     ) {
         int wideRowWidth = Math.max(MIN_WIDE_ROW_WIDTH, list.getRowWidth());
         Button dropdownButton = Button.builder(dropdownLabel(runtime.activeMode()), button -> onDropdownToggled.run())
@@ -65,6 +69,11 @@ public final class AntiAliasingVideoSettingsSection {
             secondaryControl.setWidth(wideRowWidth);
             list.addBig(secondaryControl);
         }
+
+        list.addBig(Button.builder(Component.translatable("screen.salts_anti_aliasing.credits"), button -> {
+            var minecraft = net.minecraft.client.Minecraft.getInstance();
+            minecraft.setScreenAndShow(new CreditsAndLicensesScreen(parent));
+        }).size(wideRowWidth, ROW_HEIGHT).build());
 
         Controls controls = new Controls(dropdownButton, List.copyOf(secondaryControls));
         refresh(controls, runtime, improvedTransparencyEnabled, dropdownExpanded);

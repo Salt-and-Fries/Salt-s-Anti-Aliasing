@@ -115,6 +115,11 @@
             "name": "CameraMotion",
             "type": "float",
             "value": 0.0
+          },
+          {
+            "name": "CameraTranslationToPrevious",
+            "type": "vec4",
+            "value": [0.0, 0.0, 0.0, 0.0]
           }
         ]
       }

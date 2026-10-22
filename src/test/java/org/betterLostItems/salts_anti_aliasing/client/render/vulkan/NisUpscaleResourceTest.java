@@ -32,10 +32,10 @@ final class NisUpscaleResourceTest {
     void scalingShaderIsEdgeAwareAndSharpeningIndependent() throws IOException {
         String shader = readResource(SHADER_RESOURCE);
 
-        assertTrue(shader.contains("edgeStrength"));
-        assertTrue(shader.contains("edgeTangent"));
-        assertTrue(shader.contains("directionalReconstruction"));
-        assertTrue(shader.contains("sourceScale"));
+        assertTrue(shader.contains("nis_scaler.glsl"));
+        assertTrue(shader.contains("GetEdgeMap"));
+        assertTrue(shader.contains("AddDirFilters"));
+        assertTrue(shader.contains("FilterNormal"));
         assertFalse(shader.contains("NisSharpenConfig"));
         assertFalse(shader.contains("uniform float Sharpness"));
     }

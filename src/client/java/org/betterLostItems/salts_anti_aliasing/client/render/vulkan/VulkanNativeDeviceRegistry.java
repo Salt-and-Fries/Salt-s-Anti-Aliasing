@@ -1,8 +1,8 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.vulkan.VulkanDevice;
-import com.mojang.blaze3d.vulkan.VulkanPhysicalDevice;
-import com.mojang.blaze3d.vulkan.VulkanQueue;
+import com.mojang.renderpearl.backend.vulkan.VulkanDevice;
+import com.mojang.renderpearl.backend.vulkan.VulkanPhysicalDevice;
+import com.mojang.renderpearl.backend.vulkan.VulkanQueue;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
 import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;

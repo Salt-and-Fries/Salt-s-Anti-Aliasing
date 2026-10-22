@@ -1,4 +1,4 @@
-#version 330
+#version 450
 /*
  * Salt's Anti Aliasing post-processing shader.
  *
@@ -24,9 +24,9 @@ layout(std140) uniform NisSharpenConfig {
 };
 
 // Full-screen pass coordinates and final color output for the current pixel.
-in vec2 texCoord;
+layout(location = 0) in vec2 texCoord;
 
-out vec4 fragColor;
+layout(location = 0) out vec4 fragColor;
 
 float luma(vec3 color) {
     return dot(color, vec3(0.299, 0.587, 0.114));

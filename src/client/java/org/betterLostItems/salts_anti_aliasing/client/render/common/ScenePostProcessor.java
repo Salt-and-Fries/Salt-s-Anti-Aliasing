@@ -9,6 +9,9 @@ import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
  * controllers are active for the selected mode.
  */
 public interface ScenePostProcessor {
+    /** Prevents projection jitter when the temporal resolve cannot run. */
+    boolean isTemporalResolveAvailable();
+
     /** Resolves temporal AA immediately after the world, before later scene-only effects. */
     void applyTemporalResolve(GameRenderer gameRenderer, AntiAliasingConfig config);
 

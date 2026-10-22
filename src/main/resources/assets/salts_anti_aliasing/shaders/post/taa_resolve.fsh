@@ -1,4 +1,4 @@
-#version 330
+#version 450
 /*
  * Camera-reprojected temporal anti-aliasing for Minecraft's finite reverse-Z renderer.
  * The current sample stays sharp; only validated, reprojected history contributes.
@@ -32,10 +32,11 @@ layout(std140) uniform TaaConfig {
     float PreviousJitterX;
     float PreviousJitterY;
     float CameraMotion;
+    vec4 CameraTranslationToPrevious;
 };
 
-in vec2 texCoord;
-out vec4 fragColor;
+layout(location = 0) in vec2 texCoord;
+layout(location = 0) out vec4 fragColor;
 
 vec3 rgbToYCoCg(vec3 color) {
     float co = color.r - color.b;
@@ -103,11 +104,8 @@ void main() {
     vec3 currentRgb = texture(CurrentSampler, texCoord).rgb;
     float currentDepth = texture(CurrentDepthSampler, texCoord).r;
 
-    // Vulkan 26.2 uses finite reverse-Z: zero is the far clear value and one is near.
-    if (currentDepth <= 0.000001) {
-        fragColor = vec4(currentRgb, 1.0);
-        return;
-    }
+    // Vulkan uses finite reverse-Z: zero is the far clear value and one is near.
+    bool skyPixel = currentDepth <= 0.000001;
 
     mat4 currentClipToWorld = mat4(
         CurrentClipToWorld0,
@@ -129,6 +127,7 @@ void main() {
         return;
     }
     worldPosition /= worldPosition.w;
+    if (skyPixel) worldPosition.xyz += CameraTranslationToPrevious.xyz;
 
     vec4 previousClip = previousViewProjection * worldPosition;
     if (previousClip.w <= 0.000001) {
@@ -155,6 +154,7 @@ void main() {
         0.05,
         relativeDepthError * max(DepthRejection, 0.0001)
     );
+    if (skyPixel) depthConfidence = historyDepth <= 0.000001 ? 1.0 : 0.0;
 
     vec3 neighborhoodMinimum = vec3(100000.0);
     vec3 neighborhoodMaximum = vec3(-100000.0);

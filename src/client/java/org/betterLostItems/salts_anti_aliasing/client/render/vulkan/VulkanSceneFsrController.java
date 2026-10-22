@@ -1,19 +1,19 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.GpuFormat;
+import com.mojang.renderpearl.api.GpuFormat;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import com.mojang.blaze3d.resource.ResourceHandle;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.CommandEncoderBackend;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.backend.api.CommandEncoderBackend;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.vulkan.VulkanCommandEncoder;
-import com.mojang.blaze3d.vulkan.VulkanGpuTexture;
-import com.mojang.blaze3d.vulkan.VulkanGpuTextureView;
+import com.mojang.renderpearl.api.textures.GpuTexture;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
+import com.mojang.renderpearl.backend.vulkan.VulkanCommandEncoder;
+import com.mojang.renderpearl.backend.vulkan.VulkanGpuTexture;
+import com.mojang.renderpearl.backend.vulkan.VulkanGpuTextureView;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -142,7 +142,7 @@ public final class VulkanSceneFsrController {
         }
 
         RenderTarget mainTarget = gameRenderer.mainRenderTarget();
-        if (!mainTarget.useDepth || mainTarget.width <= 0 || mainTarget.height <= 0) {
+        if (!mainTarget.hasDepth() || mainTarget.width <= 0 || mainTarget.height <= 0) {
             return;
         }
 
@@ -952,12 +952,12 @@ public final class VulkanSceneFsrController {
             boolean useDepth,
             GpuFormat format
     ) {
-        if (target == null || target.useDepth != useDepth) {
+        if (target == null || target.hasDepth() != useDepth) {
             if (target != null) {
                 recordTargetDestroyed(label, target, "incompatible_depth_setting");
                 target.destroyBuffers();
             }
-            TextureTarget created = new TextureTarget(label, width, height, useDepth, format);
+            TextureTarget created = new TextureTarget(label, width, height, format, useDepth ? GpuFormat.D32_FLOAT : null);
             recordTargetCreated(label, created, format, useDepth, false);
             return created;
         }
@@ -1272,7 +1272,7 @@ public final class VulkanSceneFsrController {
                 "reason", reason,
                 "width", target.width,
                 "height", target.height,
-                "depthEnabled", target.useDepth,
+                "depthEnabled", target.hasDepth(),
                 "implementation", target.getClass().getName()
         ));
     }

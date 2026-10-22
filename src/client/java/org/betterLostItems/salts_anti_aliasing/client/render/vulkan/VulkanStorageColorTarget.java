@@ -1,10 +1,10 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.GpuFormat;
+import com.mojang.renderpearl.api.GpuFormat;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.renderpearl.api.device.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.renderpearl.api.textures.GpuTexture;
 
 /**
  * Render target whose color texture may be used as a Vulkan storage image.
@@ -17,7 +17,7 @@ final class VulkanStorageColorTarget extends RenderTarget {
             | VulkanStorageTextureUsage.USAGE_STORAGE;
 
     VulkanStorageColorTarget(String label, int width, int height, GpuFormat format) {
-        super(label, false, format);
+        super(label, format, null);
         RenderSystem.assertOnRenderThread();
         resize(width, height);
     }
@@ -38,7 +38,7 @@ final class VulkanStorageColorTarget extends RenderTarget {
         this.colorTexture = device.createTexture(
                 () -> this.label + " / Color",
                 COLOR_USAGE,
-                this.format,
+                this.colorFormat,
                 width,
                 height,
                 1,

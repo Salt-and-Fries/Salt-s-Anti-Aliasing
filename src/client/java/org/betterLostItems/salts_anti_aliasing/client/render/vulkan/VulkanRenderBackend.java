@@ -1,6 +1,6 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.renderpearl.api.device.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderBackend;
 import org.betterLostItems.salts_anti_aliasing.client.render.api.RenderBackendType;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Vulkan-facing backend descriptor for Minecraft's 26.2 GPU abstraction.
+ * Vulkan-facing backend descriptor for Minecraft's 26.3 GPU abstraction.
  */
 public final class VulkanRenderBackend implements RenderBackend {
     private static final Set<RenderCapability> BASE_CAPABILITIES = EnumSet.of(

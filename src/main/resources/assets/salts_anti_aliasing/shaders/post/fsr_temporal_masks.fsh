@@ -1,4 +1,5 @@
-#version 330
+#version 450
+#include <salts_anti_aliasing:temporal_color_rejection.glsl>
 
 uniform sampler2D CurrentColorSampler;
 uniform sampler2D CurrentOpaqueSampler;
@@ -11,7 +12,7 @@ layout(std140) uniform FsrTemporalMaskConfig {
     vec4 MaskConfig;
 };
 
-in vec2 texCoord;
+layout(location = 0) in vec2 texCoord;
 
 layout(location = 0) out vec4 reactiveMaskOutput;
 layout(location = 1) out vec4 transparencyMaskOutput;
@@ -147,6 +148,10 @@ void main() {
         vec2 edgeChanges = temporalEdgeChanges(currentPixel);
         reactive = clamp((edgeChanges.y - edgeChanges.x) * REACTIVE_SCALE, 0.0, REACTIVE_MAX);
     }
+    vec2 uv = (vec2(currentPixel) + 0.5) / MaskConfig.xy;
+    vec2 motionPixels = texelFetch(MotionVectorSampler, currentPixel, 0).rg;
+    reactive = max(reactive, temporalColorRejection(CurrentColorSampler, PreviousColorSampler,
+            uv, MaskConfig.xy, motionPixels, MaskConfig.zw));
 
     reactiveMaskOutput = vec4(reactive, 0.0, 0.0, 1.0);
     transparencyMaskOutput = vec4(transparencyAndComposition, 0.0, 0.0, 1.0);

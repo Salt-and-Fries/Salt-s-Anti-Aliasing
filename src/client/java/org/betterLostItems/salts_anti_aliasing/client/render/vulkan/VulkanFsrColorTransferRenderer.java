@@ -1,16 +1,17 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.pipeline.BindGroupLayout;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.CompiledRenderPipeline;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.UniformType;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.CompiledRenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
@@ -25,7 +26,7 @@ import java.util.Optional;
 final class VulkanFsrColorTransferRenderer {
     private static final VulkanFsrColorTransferRenderer INSTANCE = new VulkanFsrColorTransferRenderer();
     private static final BindGroupLayout INPUT_LAYOUT = BindGroupLayout.builder()
-            .withSampler("InputSampler")
+            .withUniform("InputSampler", UniformType.COMBINED_IMAGE_SAMPLER)
             .build();
 
     private RenderPipeline decodePipeline;
@@ -86,9 +87,9 @@ final class VulkanFsrColorTransferRenderer {
                 destination.getColorTextureView(),
                 Optional.empty()
         )) {
-            renderPass.setPipeline(pipeline);
+            renderPass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
             RenderSystem.bindDefaultUniforms(renderPass);
-            renderPass.bindTexture(
+            renderPass.setUniform(
                     "InputSampler",
                     source.getColorTextureView(),
                     RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
@@ -136,8 +137,8 @@ final class VulkanFsrColorTransferRenderer {
                 ))
                 .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
                 .build();
-        CompiledRenderPipeline compiled = RenderSystem.getDevice().precompilePipeline(pipeline);
-        if (!compiled.isValid()) {
+        CompiledRenderPipeline compiled = RenderSystem.getCompiledPipelineNullable(pipeline);
+        if (compiled == null) {
             throw new IllegalStateException("Unable to compile FSR color-transfer pipeline " + pipelineId);
         }
         MetricsDiagnostics.info("fsr.color_transfer", "pipeline_compiled", MetricsDiagnostics.fields(

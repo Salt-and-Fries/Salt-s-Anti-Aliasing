@@ -24,6 +24,12 @@ public record DlssEvaluateParameters(
         float motionVectorScaleX,
         float motionVectorScaleY,
         float[] currentViewProjection,
-        float[] previousViewProjection
+        float[] previousViewProjection,
+        float[] projection,
+        float[] cameraParameters,
+        int[] resourceFormats,
+        int[] resourceUsages,
+        long colorRejectionImage,
+        long colorRejectionView
 ) {
 }

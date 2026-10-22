@@ -1,0 +1,12 @@
+{
+  "targets": {},
+  "passes": [
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "salts_anti_aliasing:post/ssaa_resolve",
+      "inputs": [{"sampler_name": "In", "target": "salts_anti_aliasing:scene_color", "bilinear": false}],
+      "output": "minecraft:main",
+      "uniforms": {}
+    }
+  ]
+}

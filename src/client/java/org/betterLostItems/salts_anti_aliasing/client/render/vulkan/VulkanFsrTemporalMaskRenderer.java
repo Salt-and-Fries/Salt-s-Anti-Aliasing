@@ -1,21 +1,21 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.Std140Builder;
 import com.mojang.blaze3d.buffers.Std140SizeCalculator;
-import com.mojang.blaze3d.pipeline.BindGroupLayout;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.CompiledRenderPipeline;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.CompiledRenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.shaders.UniformType;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.RenderPass;
-import com.mojang.blaze3d.systems.RenderPassDescriptor;
+import com.mojang.renderpearl.api.pipeline.UniformType;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.api.commands.RenderPass;
+import com.mojang.renderpearl.api.commands.RenderPassDescriptor;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.FilterMode;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
@@ -35,11 +35,11 @@ final class VulkanFsrTemporalMaskRenderer {
     private static final int CONFIG_SIZE = new Std140SizeCalculator().putVec4().get();
     private static final int MASK_WRITE = ColorTargetState.WRITE_RED;
     private static final BindGroupLayout INPUT_LAYOUT = BindGroupLayout.builder()
-            .withSampler("CurrentColorSampler")
-            .withSampler("CurrentOpaqueSampler")
-            .withSampler("PreviousColorSampler")
-            .withSampler("PreviousOpaqueSampler")
-            .withSampler("MotionVectorSampler")
+            .withUniform("CurrentColorSampler", UniformType.COMBINED_IMAGE_SAMPLER)
+            .withUniform("CurrentOpaqueSampler", UniformType.COMBINED_IMAGE_SAMPLER)
+            .withUniform("PreviousColorSampler", UniformType.COMBINED_IMAGE_SAMPLER)
+            .withUniform("PreviousOpaqueSampler", UniformType.COMBINED_IMAGE_SAMPLER)
+            .withUniform("MotionVectorSampler", UniformType.COMBINED_IMAGE_SAMPLER)
             .withUniform("FsrTemporalMaskConfig", UniformType.UNIFORM_BUFFER)
             .build();
 
@@ -90,7 +90,7 @@ final class VulkanFsrTemporalMaskRenderer {
 
         CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
         RenderPassDescriptor descriptor = RenderPassDescriptor
-                .create(() -> "Salt's FSR Temporal Masks")
+                .builder(() -> "Salt's FSR Temporal Masks")
                 .withColorAttachment(reactiveMask.getColorTextureView())
                 .withColorAttachment(transparencyMask.getColorTextureView())
                 .withRenderArea(new RenderPass.RenderArea(
@@ -98,14 +98,15 @@ final class VulkanFsrTemporalMaskRenderer {
                         0,
                         reactiveMask.width,
                         reactiveMask.height
-                ));
+                )).build();
         try (RenderPass renderPass = commandEncoder.createRenderPass(descriptor)) {
-            renderPass.setPipeline(pipeline);
+            renderPass.setPipeline(RenderSystem.getCompiledPipeline(pipeline));
             RenderSystem.bindDefaultUniforms(renderPass);
             renderPass.setUniform("FsrTemporalMaskConfig", configBuffer);
             bindNearest(renderPass, "CurrentColorSampler", currentColor);
             bindNearest(renderPass, "CurrentOpaqueSampler", currentOpaque);
-            bindNearest(renderPass, "PreviousColorSampler", previousColor);
+            renderPass.setUniform("PreviousColorSampler", previousColor.getColorTextureView(),
+                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR));
             bindNearest(renderPass, "PreviousOpaqueSampler", previousOpaque);
             bindNearest(renderPass, "MotionVectorSampler", motionVectors);
             renderPass.draw(3, 1, 0, 0);
@@ -131,8 +132,8 @@ final class VulkanFsrTemporalMaskRenderer {
                 .withColorTargetState(1, maskTarget)
                 .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
                 .build();
-        CompiledRenderPipeline compiled = RenderSystem.getDevice().precompilePipeline(pipeline);
-        if (!compiled.isValid()) {
+        CompiledRenderPipeline compiled = RenderSystem.getCompiledPipelineNullable(pipeline);
+        if (compiled == null) {
             throw new IllegalStateException("Unable to compile FSR temporal-mask pipeline");
         }
         MetricsDiagnostics.info("fsr.masks", "pipeline_compiled", MetricsDiagnostics.fields(
@@ -177,7 +178,7 @@ final class VulkanFsrTemporalMaskRenderer {
     }
 
     private static void bindNearest(RenderPass renderPass, String samplerName, RenderTarget target) {
-        renderPass.bindTexture(
+        renderPass.setUniform(
                 samplerName,
                 target.getColorTextureView(),
                 RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)

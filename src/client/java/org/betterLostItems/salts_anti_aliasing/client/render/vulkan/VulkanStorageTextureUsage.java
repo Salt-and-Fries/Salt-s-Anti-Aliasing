@@ -1,7 +1,7 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.vulkan.VulkanConst;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.backend.vulkan.VulkanConst;
 import org.lwjgl.vulkan.VK12;
 
 /**

@@ -1,6 +1,6 @@
 package org.betterLostItems.salts_anti_aliasing.mixin.client;
 
-import com.mojang.blaze3d.vulkan.VulkanPhysicalDevice;
+import com.mojang.renderpearl.backend.vulkan.VulkanPhysicalDevice;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
@@ -9,7 +9,7 @@ import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanFrameGenerationQueueAccess;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanFrameGenerationQueuePlanner;
-import org.lwjgl.glfw.GLFWVulkan;
+import org.lwjgl.sdl.SDLVulkan;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VK12;
 import org.lwjgl.vulkan.VkPhysicalDevice;
@@ -70,7 +70,7 @@ public abstract class VulkanPhysicalDeviceMixin implements VulkanFrameGeneration
                         family.queueFlags(),
                         family.queueCount(),
                         queueFamilyCreateInfoMap.get(familyIndex),
-                        GLFWVulkan.glfwGetPhysicalDevicePresentationSupport(
+                        SDLVulkan.SDL_Vulkan_GetPresentationSupport(
                                 physicalDevice.getInstance(),
                                 physicalDevice,
                                 familyIndex

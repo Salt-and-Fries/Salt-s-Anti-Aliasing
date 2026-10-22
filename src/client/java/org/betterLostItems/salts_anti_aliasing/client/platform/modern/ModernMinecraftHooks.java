@@ -1,8 +1,9 @@
 package org.betterLostItems.salts_anti_aliasing.client.platform.modern;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.renderpearl.api.textures.GpuTexture;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -16,11 +17,10 @@ import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneM
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneScaleController;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneTemporalController;
 import org.joml.Matrix4f;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Central bridge between Fabric 26.2 Minecraft hook points and the shared mod runtime.
+ * Central bridge between Fabric 26.3 Minecraft hook points and the shared mod runtime.
  *
  * <p>Mixins should be as small and boring as possible. Their job is to land on a
  * Minecraft method that exists in this version family, collect the raw values exposed by
@@ -48,14 +48,15 @@ public final class ModernMinecraftHooks {
      */
     public static void prepareTemporalJitter(GameRenderer gameRenderer) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
-        boolean temporalActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
+        boolean temporalActive = runtime != null && runtime.isTemporalRenderingActive();
         RenderTarget mainTarget = gameRenderer.mainRenderTarget();
         int jitterPhaseCount = VulkanSceneFsrController.instance().activeJitterPhaseCount();
         VulkanSceneTemporalController.instance().prepareFrameJitter(
                 temporalActive,
                 mainTarget.width,
                 mainTarget.height,
-                jitterPhaseCount
+                jitterPhaseCount,
+                runtime == null ? null : runtime.activeMode()
         );
     }
 
@@ -67,7 +68,7 @@ public final class ModernMinecraftHooks {
             CameraRenderState cameraRenderState
     ) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
-        boolean temporalActive = runtime != null && runtime.activeMode().usesHistoryBuffers();
+        boolean temporalActive = runtime != null && runtime.isTemporalRenderingActive();
         return VulkanSceneTemporalController.instance().configureProjection(
                 projectionMatrix,
                 cameraRenderState,
@@ -265,7 +266,7 @@ public final class ModernMinecraftHooks {
      * Handles the debug-view toggle from Minecraft's debug-key path.
      */
     public static void toggleEdgeDebug(Minecraft minecraft, int key, CallbackInfoReturnable<Boolean> callbackInfo) {
-        if (key != GLFW.GLFW_KEY_K) {
+        if (key != InputConstants.KEY_K) {
             return;
         }
 

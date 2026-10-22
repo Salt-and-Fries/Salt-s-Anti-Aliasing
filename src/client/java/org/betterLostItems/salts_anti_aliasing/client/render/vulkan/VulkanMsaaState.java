@@ -1,8 +1,8 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.systems.RenderPassDescriptor;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.renderpearl.api.commands.RenderPassDescriptor;
+import com.mojang.renderpearl.api.textures.GpuTexture;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +120,7 @@ public final class VulkanMsaaState {
         }
     }
 
-    private static int sampleCount(GpuTextureView textureView) {
+    public static int sampleCount(GpuTextureView textureView) {
         if (textureView == null) {
             return 1;
         }

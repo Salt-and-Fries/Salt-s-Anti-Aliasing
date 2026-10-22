@@ -44,7 +44,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
     }
 
     /**
-     * Adds the Fabric 26.2 video controls after Minecraft has created its normal option rows.
+     * Adds the Fabric 26.3 video controls after Minecraft has created its normal option rows.
      */
     @Inject(method = "addOptions", at = @At("TAIL"))
     private void saltsAntiAliasing$addVideoModeButton(CallbackInfo callbackInfo) {
@@ -58,7 +58,8 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
                 runtime,
                 saltsAntiAliasing$dropdownExpanded,
                 saltsAntiAliasing$improvedTransparencyEnabled(),
-                this::saltsAntiAliasing$toggleDropdown
+                this::saltsAntiAliasing$toggleDropdown,
+                this
         );
         saltsAntiAliasing$dropdownOverlay = new AntiAliasingModeDropdownOverlay(
                 saltsAntiAliasing$sectionControls.dropdownButton(),

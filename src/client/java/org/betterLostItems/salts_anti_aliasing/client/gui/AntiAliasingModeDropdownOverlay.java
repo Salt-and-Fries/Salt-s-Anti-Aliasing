@@ -1,6 +1,7 @@
 package org.betterLostItems.salts_anti_aliasing.client.gui;
 
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -195,13 +196,13 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
         List<AntiAliasingMode> modes = AntiAliasingMode.implementedModes();
         int visibleRows = visibleRows(modes.size());
         if (isScrollbarClick(mouseX, mouseY, modes.size(), visibleRows)) {
-            if (event.button() == 0) {
+            if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
                 startScrollbarDrag(mouseY, modes.size(), visibleRows);
             }
             return true;
         }
 
-        if (event.button() != 0) {
+        if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) {
             return true;
         }
 
@@ -222,7 +223,7 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
             return false;
         }
 
-        if (draggingScrollbar && event.button() == 0) {
+        if (draggingScrollbar && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             List<AntiAliasingMode> modes = AntiAliasingMode.implementedModes();
             int visibleRows = visibleRows(modes.size());
             DropdownScrollbar.Metrics metrics = scrollbarMetrics(modes.size(), visibleRows);
@@ -238,7 +239,7 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        if (!draggingScrollbar || event.button() != 0) {
+        if (!draggingScrollbar || event.button() != InputConstants.MOUSE_BUTTON_LEFT) {
             return false;
         }
 

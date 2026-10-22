@@ -13,8 +13,10 @@ public final class DlssRuntime {
     private static final DlssRuntime INSTANCE = new DlssRuntime();
 
     private final DlssNativeBridge bridge = new DlssNativeBridge();
-    private DlssNativeConfiguration configuration = DlssNativeConfiguration.fromEnvironment();
+    private DlssNativeConfiguration configuration = DlssNativeConfiguration.fromStartup();
     private DlssRuntimeStatus status = configuration.validate();
+    private boolean requirementsSatisfied = true;
+    private boolean deviceCreated;
 
     private DlssRuntime() {
     }
@@ -26,6 +28,10 @@ public final class DlssRuntime {
     public synchronized void configure(AntiAliasingConfig config) {
         DlssNativeConfiguration previousConfiguration = configuration;
         configuration = DlssNativeConfiguration.fromConfig(config);
+        if (deviceCreated && !configuration.equals(previousConfiguration) && configuration.validate().ready()) {
+            status = DlssRuntimeStatus.RESTART_REQUIRED;
+            return;
+        }
         MetricsDiagnostics.info(
                 "dlss.runtime",
                 "configuration_applied",
@@ -52,6 +58,7 @@ public final class DlssRuntime {
     }
 
     public synchronized void onVulkanDeviceReady(DlssVulkanDeviceInfo deviceInfo) {
+        deviceCreated = true;
         MetricsDiagnostics.info(
                 "dlss.runtime",
                 "vulkan_device_ready",
@@ -67,6 +74,21 @@ public final class DlssRuntime {
 
     public synchronized boolean isReady() {
         return status.ready();
+    }
+
+    public synchronized String[] vulkanRequirements() {
+        return bridge.requirements();
+    }
+
+    public synchronized void present(long queue, long presentInfo, boolean after) {
+        bridge.present(queue, presentInfo, after);
+    }
+
+    public synchronized void rejectVulkanRequirements(String reason) {
+        requirementsSatisfied = false;
+        status = DlssRuntimeStatus.UNSUPPORTED;
+        SaltsAntiAliasing.LOGGER.warn("DLSS Vulkan requirements are unavailable: {}", reason);
+        MetricsDiagnostics.warn("dlss.runtime", "vulkan_requirements_unavailable", "reason", reason);
     }
 
     public synchronized DlssOptimalSettings queryOptimalSettings(
@@ -120,7 +142,7 @@ public final class DlssRuntime {
 
     private void refresh(DlssVulkanDeviceInfo deviceInfo) {
         DlssRuntimeStatus previousStatus = status;
-        status = bridge.configure(configuration, deviceInfo);
+        status = requirementsSatisfied ? bridge.configure(configuration, deviceInfo) : DlssRuntimeStatus.UNSUPPORTED;
         if (status != previousStatus) {
             SaltsAntiAliasing.LOGGER.info("DLSS runtime status: {}", status.message());
             MetricsDiagnostics.info(

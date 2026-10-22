@@ -1,14 +1,14 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.GpuFormat;
+import com.mojang.renderpearl.api.GpuFormat;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import com.mojang.blaze3d.resource.ResourceHandle;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.renderpearl.api.textures.GpuTexture;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
@@ -26,13 +26,14 @@ import java.util.Set;
 /**
  * Owns GPU-backed scene rendering at non-native resolution for SSAA and spatial upscalers, then
  * resolves the scene back to the main target. This path uses Minecraft's render target and post
- * chain abstractions, so it can run on either 26.2 backend.
+ * chain abstractions, so it can run on either 26.3 backend.
  */
 public final class VulkanSceneScaleController {
     private static final VulkanSceneScaleController INSTANCE = new VulkanSceneScaleController();
     private static final String TARGET_LABEL = "Salt's Scaled Scene";
     private static final Identifier SCENE_TARGET_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":scene_color");
     private static final Identifier NIS_UPSCALE_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":nis_upscale");
+    private static final Identifier SSAA_RESOLVE_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":ssaa_resolve");
     private static final Identifier FSR1_QUALITY_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_quality");
     private static final Identifier FSR1_BALANCED_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_balanced");
     private static final Identifier FSR1_PERFORMANCE_EFFECT = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":fsr1_upscale_performance");
@@ -89,7 +90,7 @@ public final class VulkanSceneScaleController {
         }
 
         RenderTarget mainTarget = gameRenderer.mainRenderTarget();
-        if (!mainTarget.useDepth || mainTarget.width <= 0 || mainTarget.height <= 0) {
+        if (!mainTarget.hasDepth() || mainTarget.width <= 0 || mainTarget.height <= 0) {
             return;
         }
 
@@ -109,7 +110,7 @@ public final class VulkanSceneScaleController {
                     "sceneWidth", sceneWidth,
                     "sceneHeight", sceneHeight,
                     "maximumTextureSize", maxTextureSize,
-                    "useDepth", mainTarget.useDepth
+                    "useDepth", mainTarget.hasDepth()
             );
             if (sceneWidth > maxTextureSize || sceneHeight > maxTextureSize) {
                 warnUnsupportedSceneSize(sceneWidth, sceneHeight, maxTextureSize);
@@ -118,14 +119,14 @@ public final class VulkanSceneScaleController {
 
             String setupSignature = config.mode
                     + ":" + sceneWidth + "x" + sceneHeight
-                    + ":" + mainTarget.useDepth;
+                    + ":" + mainTarget.hasDepth();
             if (setupSignature.equals(failedSceneSetupSignature)) {
                 return;
             }
 
             lastRejectedSceneSize = null;
             try {
-                ensureSceneTarget(sceneWidth, sceneHeight, mainTarget.useDepth);
+                ensureSceneTarget(sceneWidth, sceneHeight, mainTarget.hasDepth());
             } catch (RuntimeException exception) {
                 rejectSceneSetupUntilConfigurationChanges(setupSignature, sceneWidth, sceneHeight, exception);
                 return;
@@ -259,9 +260,9 @@ public final class VulkanSceneScaleController {
      * @param useDepth use depth value supplied by the caller or Minecraft callback
      */
     private void ensureSceneTarget(int width, int height, boolean useDepth) {
-        if (sceneTarget == null || sceneTarget.useDepth != useDepth) {
+        if (sceneTarget == null || sceneTarget.hasDepth() != useDepth) {
             destroyResources();
-            sceneTarget = new TextureTarget(TARGET_LABEL, width, height, useDepth, GpuFormat.RGBA8_UNORM);
+            sceneTarget = new TextureTarget(TARGET_LABEL, width, height, GpuFormat.RGBA8_UNORM, useDepth ? GpuFormat.D32_FLOAT : null);
             MetricsDiagnostics.info(
                     "vulkan.scene_scale",
                     "target_created",
@@ -436,6 +437,9 @@ public final class VulkanSceneScaleController {
      * @return upscale effect for produced by this helper
      */
     private static Identifier upscaleEffectFor(AntiAliasingConfig config) {
+        if (config.mode == AntiAliasingMode.SSAA) {
+            return SSAA_RESOLVE_EFFECT;
+        }
         return switch (config.mode) {
             case NIS_UPSCALE -> NIS_UPSCALE_EFFECT;
             case FSR1_UPSCALE -> fsr1EffectFor(config.nisUpscaleQualityPreset);
@@ -517,7 +521,7 @@ public final class VulkanSceneScaleController {
                     "label", TARGET_LABEL,
                     "width", sceneTarget.width,
                     "height", sceneTarget.height,
-                    "useDepth", sceneTarget.useDepth,
+                    "useDepth", sceneTarget.hasDepth(),
                     "activeMode", activeMode
             );
             sceneTarget.destroyBuffers();
@@ -542,7 +546,7 @@ public final class VulkanSceneScaleController {
      * @return whether this object requires the described render path
      */
     private static boolean usesDedicatedUpscaleShader(AntiAliasingMode mode) {
-        return mode == AntiAliasingMode.NIS_UPSCALE
+        return mode == AntiAliasingMode.SSAA || mode == AntiAliasingMode.NIS_UPSCALE
                 || mode == AntiAliasingMode.FSR1_UPSCALE;
     }
 

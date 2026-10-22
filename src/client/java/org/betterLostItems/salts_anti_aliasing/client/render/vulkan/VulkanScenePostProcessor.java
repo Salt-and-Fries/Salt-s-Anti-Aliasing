@@ -42,6 +42,11 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
         this.edgeDebugAnalyzer = edgeDebugAnalyzer;
     }
 
+    @Override
+    public boolean isTemporalResolveAvailable() {
+        return !temporalDisabledAfterFailure;
+    }
+
     /**
      * Handles apply as part of the anti-aliasing render, configuration, or compatibility flow.
      * @param gameRenderer Minecraft game renderer whose scene target or post-processing phase is
@@ -70,7 +75,7 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
                     "mode", config.mode,
                     "targetWidth", gameRenderer.mainRenderTarget().width,
                     "targetHeight", gameRenderer.mainRenderTarget().height,
-                    "targetUsesDepth", gameRenderer.mainRenderTarget().useDepth
+                    "targetUsesDepth", gameRenderer.mainRenderTarget().hasDepth()
             ), exception);
         } finally {
             temporalResourcePool.endFrame();

@@ -1,6 +1,6 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.PostPass;
@@ -104,6 +104,15 @@ final class VulkanDynamicUniforms {
             bufferData.putFloat(controller.previousJitterTexelX());
             bufferData.putFloat(controller.previousJitterTexelY());
             bufferData.putFloat(controller.cameraMotionAmount());
+            // std140 aligns the following vec4 to the next 16-byte boundary.
+            bufferData.putFloat(0.0f);
+            bufferData.putFloat(0.0f);
+            bufferData.putFloat(0.0f);
+            float[] translation = controller.cameraTranslationToPreviousArray();
+            bufferData.putFloat(translation[0]);
+            bufferData.putFloat(translation[1]);
+            bufferData.putFloat(translation[2]);
+            bufferData.putFloat(0.0f);
         });
     }
 
@@ -114,11 +123,17 @@ final class VulkanDynamicUniforms {
             int height
     ) {
         updateUniformBuffer(customUniforms, DLSS_MOTION_UNIFORM, bufferData -> {
-            putMatrix(bufferData, controller.currentClipToWorldArray());
+            putMatrix(bufferData, controller.currentJitteredClipToWorldArray());
+            putMatrix(bufferData, controller.currentViewProjectionArray());
             putMatrix(bufferData, controller.previousViewProjectionArray());
             bufferData.putFloat(Math.max(1, width));
             bufferData.putFloat(Math.max(1, height));
             bufferData.putFloat(0.0f);
+            bufferData.putFloat(0.0f);
+            float[] cameraTranslation = controller.cameraTranslationToPreviousArray();
+            bufferData.putFloat(cameraTranslation[0]);
+            bufferData.putFloat(cameraTranslation[1]);
+            bufferData.putFloat(cameraTranslation[2]);
             bufferData.putFloat(0.0f);
         });
     }

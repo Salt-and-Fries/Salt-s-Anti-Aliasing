@@ -1,10 +1,10 @@
-#version 330
+#version 450
 
 uniform sampler2D InputSampler;
 
-in vec2 texCoord;
+layout(location = 0) in vec2 texCoord;
 
-out vec4 fragColor;
+layout(location = 0) out vec4 fragColor;
 
 vec3 linearToSrgb(vec3 color) {
     vec3 positive = max(color, vec3(0.0));

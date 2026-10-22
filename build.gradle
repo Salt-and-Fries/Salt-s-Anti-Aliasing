@@ -1,5 +1,5 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.16.1'
+    id 'net.fabricmc.fabric-loom' version '1.17.21'
     id 'maven-publish'
 }
 
@@ -7,11 +7,17 @@ version = project.mod_version
 group = project.maven_group
 
 base {
-    archivesName = project.archives_base_name
+    archivesName = "${project.archives_base_name}-mc${project.minecraft_version}"
 }
 
 loom {
     splitEnvironmentSourceSets()
+
+    runs {
+        client {
+            runDir "run/${project.minecraft_version}"
+        }
+    }
 
     mods {
         "salts_anti_aliasing" {
@@ -58,6 +64,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
 }
 
 processResources {
@@ -74,6 +81,24 @@ processResources {
 
     from("native/redist") {
         into "assets/${project.archives_base_name.replace('-', '_')}/native"
+    }
+    if (project.hasProperty('dlssRuntimeDirectory')) {
+        def dlssDirectory = project.file(project.property('dlssRuntimeDirectory'))
+        from(dlssDirectory) {
+            include 'bundle.properties', 'salts_dlss_bridge.dll', 'sl.interposer.dll', 'sl.common.dll',
+                    'sl.dlss.dll', 'nvngx_dlss.dll', 'NvLowLatencyVk.dll', 'LICENSE-Streamline.txt',
+                    'LICENSE-NVIDIA-DLSS.txt', 'NOTICE.txt', 'END-USER-TERMS.txt'
+            into "assets/salts_anti_aliasing/native/dlss/windows-x86_64"
+        }
+        doFirst {
+            ['bundle.properties', 'salts_dlss_bridge.dll', 'sl.interposer.dll', 'sl.common.dll',
+             'sl.dlss.dll', 'nvngx_dlss.dll', 'NvLowLatencyVk.dll', 'LICENSE-Streamline.txt',
+             'LICENSE-NVIDIA-DLSS.txt', 'NOTICE.txt', 'END-USER-TERMS.txt'].each { name ->
+                if (!new File(dlssDirectory, name).isFile()) {
+                    throw new GradleException("Incomplete DLSS release runtime: missing ${name}")
+                }
+            }
+        }
     }
 }
 
@@ -101,6 +126,9 @@ java {
 }
 
 jar {
+    if (!project.hasProperty('dlssRuntimeDirectory')) {
+        exclude 'assets/salts_anti_aliasing/native/dlss/**'
+    }
     from("LICENSE.txt") {
         rename { "${it}_${project.archives_base_name}" }
     }

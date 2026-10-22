@@ -1,4 +1,4 @@
-#version 330
+#version 450
 /*
  * SMAA 1x Ultra blend-weight calculation, including the reference horizontal,
  * vertical, and diagonal searches, crossing-edge classification, area lookup,
@@ -14,13 +14,13 @@ layout(std140) uniform SamplerInfo {
     vec2 InSize;
 };
 
-in vec2 texCoord;
-out vec4 fragColor;
+layout(location = 0) in vec2 texCoord;
+layout(location = 0) out vec4 fragColor;
 
 #define SMAA_GLSL_3 1
 #define SMAA_PRESET_ULTRA 1
 #define SMAA_RT_METRICS vec4(1.0 / InSize, InSize)
-#moj_import <salts_anti_aliasing:smaa.glsl>
+#include <salts_anti_aliasing:smaa.glsl>
 
 void main() {
     vec2 pixelCoord;

@@ -1,5 +1,9 @@
 {
   "screen.salts_anti_aliasing.config": "Salt's Anti Aliasing",
+  "screen.salts_anti_aliasing.credits": "Credits and Licenses",
+  "screen.salts_anti_aliasing.credits.developer": "Salt's Anti Aliasing\nDeveloped by Salt and Fries.",
+  "screen.salts_anti_aliasing.credits.nvidia": "NVIDIA RTX™ — DLSS Super Resolution\nDLSS Super Resolution uses NVIDIA's DLSS SDK and NVIDIA Streamline.\nNVIDIA and NVIDIA RTX are trademarks and/or registered trademarks of NVIDIA Corporation in the United States and other countries.\nThis software contains source code provided by NVIDIA Corporation.\nNVIDIA runtime components are governed by their accompanying licenses.",
+  "screen.salts_anti_aliasing.credits.third_party": "Additional algorithms include NVIDIA FXAA and Image Scaling, AMD FidelityFX Super Resolution, and SMAA. Their notices and licenses are included with the corresponding shaders and native components in the mod jar.",
   "key.categories.salts_anti_aliasing.main": "Salt's Anti Aliasing",
   "key.salts_anti_aliasing.cycle_mode": "Cycle AA Mode",
   "options.salts_anti_aliasing.group.image_quality": "Image Quality",
@@ -29,7 +33,7 @@
   "options.salts_anti_aliasing.mode.nis_upscale": "NIS Upscale",
   "options.salts_anti_aliasing.mode.nis_upscale.summary": "Renders below native resolution and scales the scene back up. Use the independent Sharpness control to choose how much detail enhancement is applied afterward.",
   "options.salts_anti_aliasing.mode.dlss_super_resolution": "DLSS Super Resolution",
-  "options.salts_anti_aliasing.mode.dlss_super_resolution.summary": "Uses NVIDIA DLSS on Vulkan to reconstruct a native-resolution image from a lower internal render resolution. Requires external Streamline/DLSS files, a valid app ID, and supported RTX hardware.",
+  "options.salts_anti_aliasing.mode.dlss_super_resolution.summary": "Reconstructs a native-resolution image with NVIDIA DLSS on supported RTX hardware using Vulkan. The Windows x64 release includes the required runtime automatically.",
   "options.salts_anti_aliasing.mode.fsr2_super_resolution": "FSR2 Super Resolution",
   "options.salts_anti_aliasing.mode.fsr2_super_resolution.summary": "Uses AMD FSR2 through the bundled native FidelityFX runtime on Vulkan to reconstruct a native-resolution image from a lower internal render resolution. Requires supported Vulkan hardware.",
   "options.salts_anti_aliasing.mode.fsr3_super_resolution": "FSR3 Super Resolution",

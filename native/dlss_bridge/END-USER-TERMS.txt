@@ -1,0 +1,33 @@
+NVIDIA runtime components in Salt's Anti Aliasing
+
+These terms apply only to the proprietary NVIDIA runtime components included
+with this mod, including nvngx_dlss.dll and any other component governed by
+LICENSE-NVIDIA-DLSS.txt. They do not change the licenses of the mod's own code,
+NVIDIA Streamline components licensed under LICENSE-Streamline.txt, or other
+third-party components governed by their respective licenses.
+
+Permission to use the included proprietary NVIDIA components is limited to
+their use as part of Salt's Anti Aliasing on compatible NVIDIA GPU systems,
+subject to the accompanying NVIDIA RTX SDK license and its supplement. The
+complete NVIDIA license is incorporated into these runtime terms and is
+included in LICENSE-NVIDIA-DLSS.txt. No rights are granted beyond those
+expressly permitted by that license.
+
+You must preserve the applicable copyright, trademark, license, and other
+proprietary notices. You may not reverse engineer, decompile or disassemble
+the proprietary NVIDIA components, or bypass their technical limitations,
+encryption, security, digital rights management, or authentication mechanisms,
+except to the extent an applicable law expressly permits otherwise.
+
+You may not distribute or sublicense the NVIDIA SDK or runtime as a standalone
+product, modify the proprietary NVIDIA components, or copy, sell, rent,
+sublicense, transfer or distribute them except as expressly permitted by the
+accompanying NVIDIA license. The mod's own license does not authorize any of
+these actions with respect to the proprietary NVIDIA components.
+
+The NVIDIA components remain the intellectual property of NVIDIA and its
+suppliers. Their use is subject to the license's warranty disclaimers,
+limitations of liability, termination conditions, export requirements, and
+other applicable restrictions. Refer to the complete license for those terms.
+
+This software contains source code provided by NVIDIA Corporation.

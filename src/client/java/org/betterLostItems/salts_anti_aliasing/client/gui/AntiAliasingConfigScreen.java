@@ -50,7 +50,8 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
                 runtime,
                 dropdownExpanded,
                 improvedTransparencyEnabled(),
-                this::toggleDropdown
+                this::toggleDropdown,
+                this
         );
         dropdownOverlay = new AntiAliasingModeDropdownOverlay(
                 sectionControls.dropdownButton(),

@@ -1,7 +1,7 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.common;
 
-import com.mojang.blaze3d.systems.DeviceInfo;
-import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.renderpearl.api.device.DeviceInfo;
+import com.mojang.renderpearl.api.device.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Coordinates the shared anti-aliasing state machine for the Fabric 26.2 Vulkan renderer.
+ * Coordinates the shared anti-aliasing state machine for the Fabric 26.3 Vulkan renderer.
  */
 public final class RenderRuntime {
     private final ConfigManager configManager;
@@ -73,7 +73,7 @@ public final class RenderRuntime {
     }
 
     /**
-     * Builds the Fabric 26.2 runtime from disk config and the active Minecraft renderer.
+     * Builds the Fabric 26.3 runtime from disk config and the active Minecraft renderer.
      */
     public static RenderRuntime bootstrap() {
         ConfigManager configManager = ConfigManager.createDefault();
@@ -135,6 +135,20 @@ public final class RenderRuntime {
      */
     public boolean canUseAntiAliasing() {
         return isVulkanActive();
+    }
+
+    /** Only jitter frames that have an active temporal consumer, including native setup success. */
+    public boolean isTemporalRenderingActive() {
+        if (!canUseAntiAliasing()) {
+            return false;
+        }
+        return switch (activeMode()) {
+            case TAA -> scenePostProcessor.isTemporalResolveAvailable();
+            case DLSS_SUPER_RESOLUTION -> VulkanSceneDlssController.instance().overrideMainTarget() != null;
+            case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION ->
+                    VulkanSceneFsrController.instance().overrideMainTarget() != null;
+            default -> false;
+        };
     }
 
     /**

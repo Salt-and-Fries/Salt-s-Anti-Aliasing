@@ -1,6 +1,6 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.GpuFormat;
+import com.mojang.renderpearl.api.GpuFormat;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -17,6 +17,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.joml.Matrix4f;
 
@@ -47,6 +48,7 @@ public final class VulkanSceneTemporalController {
     private TextureTarget historyTarget;
     private boolean historyValid;
     private boolean activeSequence;
+    private AntiAliasingMode lastTemporalMode;
     private ClientLevel lastLevel;
     private int jitterFrameIndex;
     private int bootstrapFramesRemaining = BOOTSTRAP_FRAME_COUNT;
@@ -60,9 +62,7 @@ public final class VulkanSceneTemporalController {
     private int jitterHeight;
     private int jitterPhaseCount;
     private final Matrix4f jitteredProjection = new Matrix4f();
-    private final Matrix4f currentViewProjection = new Matrix4f();
-    private final Matrix4f previousViewProjection = new Matrix4f();
-    private final Matrix4f currentJitteredViewProjection = new Matrix4f();
+    private final TemporalCameraMatrices cameraMatrices = new TemporalCameraMatrices();
     private boolean hasViewProjection;
     private boolean resetHistoryThisFrame = true;
     private String historyResetReason = "initialization";
@@ -76,6 +76,8 @@ public final class VulkanSceneTemporalController {
     private float currentCameraNear = 0.05f;
     private float currentCameraFar = 64.0f;
     private float currentCameraFovY = (float) Math.toRadians(70.0);
+    private final Matrix4f currentProjection = new Matrix4f();
+    private final Matrix4f currentViewRotation = new Matrix4f();
     private Vec3 lastCameraPosition;
     private float lastCameraXRot;
     private float lastCameraYRot;
@@ -102,16 +104,23 @@ public final class VulkanSceneTemporalController {
      * @param width width value supplied by the caller or Minecraft callback
      * @param height height value supplied by the caller or Minecraft callback
      * @param requestedPhaseCount temporal jitter sequence length, or zero for native TAA
+     * @param temporalMode active consumer, used to invalidate history when changing temporal modes
      */
     public void prepareFrameJitter(
             boolean temporalActive,
             int width,
             int height,
-            int requestedPhaseCount
+            int requestedPhaseCount,
+            AntiAliasingMode temporalMode
     ) {
         if (!temporalActive) {
-            clearJitter();
+            resetForInactiveMode();
             return;
+        }
+
+        if (lastTemporalMode != temporalMode) {
+            resetForInactiveMode();
+            lastTemporalMode = temporalMode;
         }
 
         if (width <= 0 || height <= 0) {
@@ -184,7 +193,7 @@ public final class VulkanSceneTemporalController {
         }
 
         RenderTarget mainTarget = gameRenderer.mainRenderTarget();
-        if (!mainTarget.useDepth || mainTarget.width <= 0 || mainTarget.height <= 0) {
+        if (!mainTarget.hasDepth() || mainTarget.width <= 0 || mainTarget.height <= 0) {
             return;
         }
 
@@ -237,7 +246,7 @@ public final class VulkanSceneTemporalController {
                     "post_chain_unavailable",
                     MetricsDiagnostics.fields("effect", TAA_EFFECT_ID.toString())
             );
-            return;
+            throw new IllegalStateException("TAA resolve shader is unavailable");
         }
 
         VulkanDynamicUniforms.updateTaa(postChain, this);
@@ -263,6 +272,7 @@ public final class VulkanSceneTemporalController {
     public void resetForInactiveMode() {
         boolean wasActive = activeSequence || historyValid || hasViewProjection;
         activeSequence = false;
+        lastTemporalMode = null;
         historyValid = false;
         lastLevel = null;
         bootstrapFramesRemaining = BOOTSTRAP_FRAME_COUNT;
@@ -284,9 +294,9 @@ public final class VulkanSceneTemporalController {
      * @param height height value supplied by the caller or Minecraft callback
      */
     private void ensureHistoryTarget(int width, int height) {
-        if (historyTarget == null || !historyTarget.useDepth) {
+        if (historyTarget == null || !historyTarget.hasDepth()) {
             destroyResources();
-            historyTarget = new TextureTarget(HISTORY_TARGET_LABEL, width, height, true, GpuFormat.RGBA8_UNORM);
+            historyTarget = new TextureTarget(HISTORY_TARGET_LABEL, width, height, GpuFormat.RGBA8_UNORM, GpuFormat.D32_FLOAT);
             historyValid = false;
             bootstrapFramesRemaining = BOOTSTRAP_FRAME_COUNT;
             markHistoryReset("history_target_created");
@@ -448,15 +458,15 @@ public final class VulkanSceneTemporalController {
     }
 
     public float[] currentViewProjectionArray() {
-        return matrixArray(currentViewProjection);
+        return matrixArray(cameraMatrices.current());
     }
 
     public float[] previousViewProjectionArray() {
-        return matrixArray(hasViewProjection ? previousViewProjection : currentViewProjection);
+        return matrixArray(hasViewProjection ? cameraMatrices.previous() : cameraMatrices.current());
     }
 
     public float[] currentClipToWorldArray() {
-        Matrix4f inverted = new Matrix4f(currentViewProjection);
+        Matrix4f inverted = new Matrix4f(cameraMatrices.current());
         if (Math.abs(inverted.determinant()) <= 1.0e-6f) {
             inverted.identity();
         } else {
@@ -466,7 +476,7 @@ public final class VulkanSceneTemporalController {
     }
 
     public float[] currentJitteredClipToWorldArray() {
-        Matrix4f inverted = new Matrix4f(currentJitteredViewProjection);
+        Matrix4f inverted = new Matrix4f(cameraMatrices.jittered());
         if (Math.abs(inverted.determinant()) <= 1.0e-6f) {
             inverted.identity();
         } else {
@@ -485,6 +495,23 @@ public final class VulkanSceneTemporalController {
 
     public float cameraFovY() {
         return currentCameraFovY;
+    }
+
+    public float[] currentProjectionArray() {
+        return matrixArray(currentProjection);
+    }
+
+    /** Camera constants in the same rebased world coordinates as the temporal matrices. */
+    public float[] dlssCameraParameters() {
+        Matrix4f inverseView = new Matrix4f(currentViewRotation).invert();
+        return new float[] {
+                currentCameraNear, currentCameraFar, currentCameraFovY,
+                Math.abs(currentProjection.m11() / currentProjection.m00()),
+                0.0f, 0.0f, 0.0f,
+                inverseView.m10(), inverseView.m11(), inverseView.m12(),
+                inverseView.m00(), inverseView.m01(), inverseView.m02(),
+                -inverseView.m20(), -inverseView.m21(), -inverseView.m22()
+        };
     }
 
     /**
@@ -536,21 +563,15 @@ public final class VulkanSceneTemporalController {
         }
 
         if (hasViewProjection) {
-            previousViewProjection.set(currentViewProjection);
             previousCameraPosition = capturedCameraPosition;
         }
 
-        Matrix4f view = new Matrix4f(cameraRenderState.viewRotationMatrix);
-        if (cameraRenderState.pos != null) {
-            view.translate(
-                    (float) -cameraRenderState.pos.x,
-                    (float) -cameraRenderState.pos.y,
-                    (float) -cameraRenderState.pos.z
-            );
-        }
-
-        currentViewProjection.set(projectionMatrix).mul(view);
-        currentJitteredViewProjection.set(jitteredProjectionMatrix).mul(view);
+        cameraMatrices.update(projectionMatrix, jitteredProjectionMatrix, cameraRenderState.viewRotationMatrix,
+                position == null ? 0.0 : position.x,
+                position == null ? 0.0 : position.y,
+                position == null ? 0.0 : position.z);
+        currentProjection.set(projectionMatrix);
+        currentViewRotation.set(cameraRenderState.viewRotationMatrix);
 
         float nextCameraFar = Math.max(currentCameraNear, cameraRenderState.depthFar);
         float nextCameraFovY = currentCameraFovY;
@@ -571,7 +592,6 @@ public final class VulkanSceneTemporalController {
         currentCameraFar = nextCameraFar;
         currentCameraFovY = nextCameraFovY;
         if (!hasViewProjection) {
-            previousViewProjection.set(currentViewProjection);
             previousCameraPosition = position;
             markHistoryReset("view_projection_initialized");
             hasViewProjection = true;
@@ -647,9 +667,7 @@ public final class VulkanSceneTemporalController {
         previousCameraPosition = null;
         capturedCameraXRot = 0.0f;
         capturedCameraYRot = 0.0f;
-        currentViewProjection.identity();
-        previousViewProjection.identity();
-        currentJitteredViewProjection.identity();
+        cameraMatrices.reset();
     }
 
     private void markHistoryReset(String reason) {

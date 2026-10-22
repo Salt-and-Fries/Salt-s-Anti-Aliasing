@@ -11,6 +11,7 @@ public enum DlssRuntimeStatus {
     APPLICATION_ID_MISSING("NVIDIA application ID is missing"),
     VULKAN_DEVICE_MISSING("Vulkan device information is not available yet"),
     INITIALIZATION_FAILED("NVIDIA Streamline initialization failed"),
+    RESTART_REQUIRED("Restart Minecraft to enable the configured DLSS runtime"),
     UNSUPPORTED("DLSS is not supported by this GPU, driver, or Streamline runtime"),
     READY("DLSS is ready");
 

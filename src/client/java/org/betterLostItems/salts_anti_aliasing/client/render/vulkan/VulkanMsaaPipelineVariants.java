@@ -1,19 +1,23 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.CompiledRenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 import net.minecraft.client.renderer.ShaderDefines;
 import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.betterLostItems.salts_anti_aliasing.mixin.client.RenderPipelineAccessor;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Creates stable RenderPipeline identities for MSAA sample-count variants.
@@ -21,8 +25,43 @@ import java.util.Set;
 public final class VulkanMsaaPipelineVariants {
     private static final String ALPHA_CUTOUT_DEFINE = "ALPHA_CUTOUT";
     private static final Map<RenderPipeline, Map<VariantKey, RenderPipeline>> VARIANTS = new IdentityHashMap<>();
+    private static final Map<CompiledRenderPipeline, RenderPipeline> SOURCES =
+            Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<String, VariantKey> NATIVE_VARIANTS = new ConcurrentHashMap<>();
 
     private VulkanMsaaPipelineVariants() {
+    }
+
+    public static CompiledRenderPipeline rememberSource(RenderPipeline source, CompiledRenderPipeline compiled) {
+        if (compiled != null) {
+            SOURCES.put(compiled, source);
+        }
+        return compiled;
+    }
+
+    public static CompiledRenderPipeline compiledVariant(
+            CompiledRenderPipeline compiled, int samples, boolean alphaToCoverageRequested
+    ) {
+        if (samples <= 1) {
+            return compiled;
+        }
+        RenderPipeline source = SOURCES.get(compiled);
+        if (source == null) {
+            throw new IllegalStateException("Missing source for multisampled render pipeline " + compiled);
+        }
+        boolean alphaToCoverage = usesAlphaToCoverage(source, samples, alphaToCoverageRequested);
+        return RenderSystem.getCompiledPipeline(variant(source, samples, alphaToCoverage));
+    }
+
+    /** Reads immutable variant metadata on the asynchronous pipeline compilation thread. */
+    public static int nativeSampleCount(String pipelineName, int originalSamples) {
+        VariantKey key = NATIVE_VARIANTS.get(pipelineName);
+        return key == null ? originalSamples : key.samples();
+    }
+
+    public static boolean nativeAlphaToCoverage(String pipelineName) {
+        VariantKey key = NATIVE_VARIANTS.get(pipelineName);
+        return key != null && key.alphaToCoverage();
     }
 
     public static RenderPipeline variant(RenderPipeline pipeline, int samples, boolean alphaToCoverage) {
@@ -50,7 +89,7 @@ public final class VulkanMsaaPipelineVariants {
             boolean requested
     ) {
         boolean hasAlphaCutout = pipeline.getShaderDefines().values().containsKey(ALPHA_CUTOUT_DEFINE);
-        boolean hasBlendedColorTarget = Arrays.stream(pipeline.getColorTargetStates())
+        boolean hasBlendedColorTarget = pipeline.getColorTargetStates().stream()
                 .filter(state -> state != null)
                 .anyMatch(state -> state.blendFunction().isPresent());
         return VulkanAlphaToCoveragePolicy.shouldEnable(
@@ -67,10 +106,10 @@ public final class VulkanMsaaPipelineVariants {
             boolean alphaToCoverage
     ) {
         Identifier variantLocation = variantLocation(pipeline.getLocation(), samples, alphaToCoverage);
+        NATIVE_VARIANTS.put(variantLocation.toString(), new VariantKey(samples, alphaToCoverage));
         RenderPipeline variant = RenderPipelineAccessor.saltsAntiAliasing$create(
                 variantLocation,
-                pipeline.getVertexShader(),
-                pipeline.getFragmentShader(),
+                Map.copyOf(pipeline.getShaders()),
                 copyShaderDefines(pipeline.getShaderDefines()),
                 List.copyOf(pipeline.getBindGroupLayouts()),
                 copyColorTargetStates(pipeline.getColorTargetStates()),
@@ -79,6 +118,7 @@ public final class VulkanMsaaPipelineVariants {
                 pipeline.isCull(),
                 copyVertexFormats(pipeline.getVertexFormatBindings()),
                 pipeline.getPrimitiveTopology(),
+                pipeline.pushConstantSize(),
                 pipeline.getSortKey()
         );
         MetricsDiagnostics.info("msaa.pipeline", "pipeline_variant_created", MetricsDiagnostics.fields(
@@ -87,7 +127,7 @@ public final class VulkanMsaaPipelineVariants {
                 "samples", samples,
                 "alphaToCoverage", alphaToCoverage,
                 "primitiveTopology", pipeline.getPrimitiveTopology(),
-                "colorTargetCount", pipeline.getColorTargetStates().length,
+                "colorTargetCount", pipeline.getColorTargetStates().size(),
                 "hasDepthStencilState", pipeline.getDepthStencilState() != null,
                 "cullEnabled", pipeline.isCull()
         ));
@@ -113,12 +153,12 @@ public final class VulkanMsaaPipelineVariants {
         return new ShaderDefines(Map.copyOf(defines.values()), Set.copyOf(defines.flags()));
     }
 
-    private static ColorTargetState[] copyColorTargetStates(ColorTargetState[] states) {
-        return Arrays.copyOf(states, states.length);
+    private static ColorTargetState[] copyColorTargetStates(List<ColorTargetState> states) {
+        return states.toArray(ColorTargetState[]::new);
     }
 
-    private static VertexFormat[] copyVertexFormats(VertexFormat[] formats) {
-        return Arrays.copyOf(formats, formats.length);
+    private static VertexFormat[] copyVertexFormats(List<VertexFormat> formats) {
+        return formats.toArray(VertexFormat[]::new);
     }
 
     private record VariantKey(int samples, boolean alphaToCoverage) {

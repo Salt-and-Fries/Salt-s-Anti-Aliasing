@@ -1,11 +1,11 @@
 package org.betterLostItems.salts_anti_aliasing.mixin.client;
 
-import com.mojang.blaze3d.GpuFormat;
+import com.mojang.renderpearl.api.GpuFormat;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanMsaaState;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSampledTexture;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanStorageTextureUsage;
 import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
-import com.mojang.blaze3d.vulkan.VulkanDevice;
+import com.mojang.renderpearl.backend.vulkan.VulkanDevice;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Lets the Vulkan MSAA controller create multisampled scene textures through Minecraft's texture API.
  */
-@Mixin(targets = "com.mojang.blaze3d.vulkan.VulkanGpuTexture")
+@Mixin(targets = "com.mojang.renderpearl.backend.vulkan.VulkanGpuTexture")
 public abstract class VulkanGpuTextureMixin implements VulkanSampledTexture {
     @Unique
     private int saltsAntiAliasing$sampleCount = 1;
@@ -38,7 +38,7 @@ public abstract class VulkanGpuTextureMixin implements VulkanSampledTexture {
             method = "<init>",
             at = @At(
                     value = "INVOKE",
-                    target = "Lcom/mojang/blaze3d/vulkan/VulkanConst;textureUsageToVk(ILcom/mojang/blaze3d/GpuFormat;)I"
+                    target = "Lcom/mojang/renderpearl/backend/vulkan/VulkanConst;textureUsageToVk(ILcom/mojang/renderpearl/api/GpuFormat;)I"
             )
     )
     private int saltsAntiAliasing$includeStorageTextureUsage(int usage, GpuFormat format) {

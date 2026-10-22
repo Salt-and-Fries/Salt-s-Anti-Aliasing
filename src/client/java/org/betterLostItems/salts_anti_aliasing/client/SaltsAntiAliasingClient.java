@@ -55,7 +55,7 @@ public final class SaltsAntiAliasingClient implements ClientModInitializer {
         HudElementRegistry.addLast(EDGE_DEBUG_HUD, EdgeDebugHud::render);
         cycleModeKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 CYCLE_MODE_KEY,
-                InputConstants.Type.KEYSYM,
+                InputConstants.Type.KEYBOARD,
                 InputConstants.UNKNOWN.getValue(),
                 KeyMapping.Category.register(KEY_CATEGORY)
         ));

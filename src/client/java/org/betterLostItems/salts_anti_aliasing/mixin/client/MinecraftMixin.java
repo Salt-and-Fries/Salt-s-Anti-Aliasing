@@ -37,7 +37,7 @@ public abstract class MinecraftMixin {
             method = "close",
             at = @At(
                     value = "INVOKE",
-                    target = "Lcom/mojang/blaze3d/systems/GpuSurface;close()V",
+                    target = "Lcom/mojang/renderpearl/api/device/GpuSurface;close()V",
                     shift = At.Shift.AFTER
             )
     )

@@ -1,8 +1,8 @@
 package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
 
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.vulkan.VulkanConst;
-import com.mojang.blaze3d.vulkan.VulkanDevice;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.backend.vulkan.VulkanConst;
+import com.mojang.renderpearl.backend.vulkan.VulkanDevice;
 import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VK12;

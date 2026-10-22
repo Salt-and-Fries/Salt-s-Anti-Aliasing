@@ -15,6 +15,12 @@ final class DlssNativeBridge {
     private boolean bridgeLoaded;
     private boolean interposerLoaded;
     private boolean initialized;
+    private boolean preInitialized;
+    private String[] requirements = new String[0];
+    private DlssQualityPreset settingsPreset;
+    private int settingsWidth;
+    private int settingsHeight;
+    private DlssOptimalSettings cachedSettings;
     private String lastBridgePath = "";
     private String lastInterposerPath = "";
 
@@ -28,15 +34,23 @@ final class DlssNativeBridge {
             return DlssRuntimeStatus.BRIDGE_LOAD_FAILED;
         }
 
+        if (!preInitialized) {
+            int result = preInitializeNative(configuration.pluginPath(), configuration.logPath(), configuration.applicationId());
+            if (result != 0) {
+                SaltsAntiAliasing.LOGGER.warn("DLSS Streamline preinitialization failed with result {}", result);
+                return DlssRuntimeStatus.INITIALIZATION_FAILED;
+            }
+            preInitialized = true;
+            requirements = requirementsNative();
+            MetricsDiagnostics.info("dlss.native", "requirements_queried", "requirements", java.util.List.of(requirements));
+        }
+
         if (deviceInfo == null || !deviceInfo.complete()) {
             return DlssRuntimeStatus.VULKAN_DEVICE_MISSING;
         }
 
         if (!initialized) {
-            int result = initializeNative(
-                    configuration.pluginPath(),
-                    configuration.logPath(),
-                    configuration.applicationId(),
+            int result = initializeDeviceNative(
                     deviceInfo.instance(),
                     deviceInfo.physicalDevice(),
                     deviceInfo.device(),
@@ -78,6 +92,9 @@ final class DlssNativeBridge {
         if (!initialized || outputWidth <= 0 || outputHeight <= 0) {
             return DlssOptimalSettings.fallback(outputWidth, outputHeight);
         }
+        if (cachedSettings != null && settingsPreset == preset && settingsWidth == outputWidth && settingsHeight == outputHeight) {
+            return cachedSettings;
+        }
 
         int[] values = new int[6];
         float[] sharpness = new float[1];
@@ -96,7 +113,7 @@ final class DlssNativeBridge {
             return DlssOptimalSettings.fallback(outputWidth, outputHeight);
         }
 
-        return new DlssOptimalSettings(
+        cachedSettings = new DlssOptimalSettings(
                 Math.max(1, values[0]),
                 Math.max(1, values[1]),
                 Math.max(1, values[2]),
@@ -105,6 +122,10 @@ final class DlssNativeBridge {
                 Math.max(1, values[5]),
                 sharpness[0]
         );
+        settingsPreset = preset;
+        settingsWidth = outputWidth;
+        settingsHeight = outputHeight;
+        return cachedSettings;
     }
 
     int evaluate(DlssEvaluateParameters parameters) {
@@ -112,7 +133,7 @@ final class DlssNativeBridge {
             return -1;
         }
 
-        return evaluateNative(
+        return evaluateNativeV2(
                 parameters.commandBuffer(),
                 parameters.inputColorImage(),
                 parameters.inputColorView(),
@@ -133,14 +154,23 @@ final class DlssNativeBridge {
                 parameters.motionVectorScaleX(),
                 parameters.motionVectorScaleY(),
                 parameters.currentViewProjection(),
-                parameters.previousViewProjection()
+                parameters.previousViewProjection(),
+                parameters.projection(),
+                parameters.cameraParameters(),
+                parameters.resourceFormats(),
+                parameters.resourceUsages(),
+                parameters.colorRejectionImage(),
+                parameters.colorRejectionView()
         );
     }
 
     void shutdown() {
-        if (bridgeLoaded && initialized) {
+        if (bridgeLoaded && preInitialized) {
             shutdownNative();
             initialized = false;
+            preInitialized = false;
+            requirements = new String[0];
+            cachedSettings = null;
         }
     }
 
@@ -155,6 +185,9 @@ final class DlssNativeBridge {
 
         try {
             System.load(bridgePath);
+            if (abiVersionNative() != 2) {
+                throw new UnsatisfiedLinkError("DLSS bridge ABI 2 required; rebuild the native bridge for Fabric 26.3");
+            }
             bridgeLoaded = true;
             lastBridgePath = bridgePath;
             MetricsDiagnostics.info(
@@ -223,10 +256,30 @@ final class DlssNativeBridge {
         }
     }
 
-    private static native int initializeNative(
+    String[] requirements() {
+        return requirements.clone();
+    }
+
+    void present(long queue, long presentInfo, boolean after) {
+        if (initialized) {
+            int result = presentNative(queue, presentInfo, after);
+            if (result != 0) MetricsDiagnostics.warnOnce("dlss.present." + result,
+                    "dlss.native", "present_bookkeeping_failed", "result", result);
+        }
+    }
+
+    private static native int abiVersionNative();
+    private static native int presentNative(long queue, long presentInfo, boolean after);
+
+    private static native int preInitializeNative(
             String pluginPath,
             String logPath,
-            int applicationId,
+            int applicationId
+    );
+
+    private static native String[] requirementsNative();
+
+    private static native int initializeDeviceNative(
             long vkInstance,
             long vkPhysicalDevice,
             long vkDevice,
@@ -244,7 +297,7 @@ final class DlssNativeBridge {
             float[] outSharpness
     );
 
-    private static native int evaluateNative(
+    private static native int evaluateNativeV2(
             long commandBuffer,
             long inputColorImage,
             long inputColorView,
@@ -265,7 +318,13 @@ final class DlssNativeBridge {
             float motionVectorScaleX,
             float motionVectorScaleY,
             float[] currentViewProjection,
-            float[] previousViewProjection
+            float[] previousViewProjection,
+            float[] projection,
+            float[] cameraParameters,
+            int[] resourceFormats,
+            int[] resourceUsages,
+            long colorRejectionImage,
+            long colorRejectionView
     );
 
     private static native void shutdownNative();
