@@ -6,6 +6,7 @@
   "client": [
     "AbstractSelectionListAccessor",
     "CommandEncoderAccessor",
+    "DebugEntryFpsMixin",
     "FrontendGpuDeviceMixin",
     "FrontendRenderPassMixin",
     "GameRendererMixin",
@@ -25,7 +26,23 @@
     "VulkanGpuSurfaceMixin",
     "VulkanGpuTextureMixin",
     "VulkanRenderPipelineMixin",
-    "VideoSettingsScreenMixin"
+    "VideoSettingsScreenMixin",
+    "EntityRenderStateMixin",
+    "EntityRenderDispatcherMixin",
+    "ModelFeatureRendererMixin",
+    "GuiDrawAccessor",
+    "GuiRendererMixin",
+    "SimpleFeatureRenderPhaseMixin",
+    "TranslucentFeatureRenderPhaseMixin",
+    "ItemFeatureRendererMixin",
+    "BlockModelFeatureRendererMixin",
+    "CustomFeatureRendererMixin",
+    "BlockEntityRenderDispatcherMixin",
+    "MovingBlockFeatureRendererMixin",
+    "MovingBlockRenderStateMixin",
+    "RenderTypeFeatureRendererMixin",
+    "ParticleEngineMixin",
+    "SingleQuadParticleMixin"
   ],
   "injectors": {
     "defaultRequire": 1

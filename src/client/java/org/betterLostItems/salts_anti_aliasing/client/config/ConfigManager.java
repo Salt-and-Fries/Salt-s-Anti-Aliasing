@@ -86,6 +86,21 @@ public final class ConfigManager {
         return config.copy();
     }
 
+    public synchronized void editLive(Consumer<AntiAliasingConfig> editor) {
+        editor.accept(config);
+        config.sanitize();
+    }
+
+    /** Image-quality reset keeps explicitly configured native runtime locations. */
+    public synchronized void resetControls() {
+        AntiAliasingConfig old=config;
+        config=new AntiAliasingConfig();
+        config.dlssBridgePath=old.dlssBridgePath;config.dlssPluginPath=old.dlssPluginPath;
+        config.dlssLogPath=old.dlssLogPath;config.dlssApplicationId=old.dlssApplicationId;
+        config.fsrBridgePath=old.fsrBridgePath;config.fsrRuntimePath=old.fsrRuntimePath;config.fsrLogPath=old.fsrLogPath;
+        config.sanitize();save();
+    }
+
     /**
      * Handles mode as part of the anti-aliasing render, configuration, or compatibility flow.
      * @return active anti-aliasing mode

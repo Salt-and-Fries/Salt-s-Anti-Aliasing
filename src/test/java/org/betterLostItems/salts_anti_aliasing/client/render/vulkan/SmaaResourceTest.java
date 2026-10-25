@@ -55,12 +55,13 @@ final class SmaaResourceTest {
     }
 
     @Test
-    void passWrappersUseTheOfficialUltraContracts() throws IOException {
+    void passWrappersUseTheOfficialConfigurableContracts() throws IOException {
         String edge = readUtf8(RESOURCE_ROOT + "shaders/post/smaa_edge_detect.fsh");
         String weights = readUtf8(RESOURCE_ROOT + "shaders/post/smaa_weight_blend.fsh");
         String neighborhood = readUtf8(RESOURCE_ROOT + "shaders/post/smaa_neighborhood_blend.fsh");
 
-        assertTrue(edge.contains("#define SMAA_PRESET_ULTRA 1"));
+        assertTrue(edge.contains("#define SMAA_THRESHOLD EdgeThreshold"));
+        assertTrue(weights.contains("#define SMAA_MAX_SEARCH_STEPS int(SearchSteps)"));
         assertTrue(edge.contains("SMAAColorEdgeDetectionPS"));
         assertTrue(weights.contains("uniform sampler2D AreaSampler;"));
         assertTrue(weights.contains("uniform sampler2D SearchSampler;"));

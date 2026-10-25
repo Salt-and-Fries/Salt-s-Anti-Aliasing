@@ -95,7 +95,7 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
             return;
         }
 
-        List<AntiAliasingMode> modes = AntiAliasingMode.implementedModes();
+        List<AntiAliasingMode> modes = AntiAliasingMode.selectableModes();
         if (modes.isEmpty()) {
             return;
         }
@@ -125,7 +125,7 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
             int rowY = contentY + row * OPTION_HEIGHT;
             boolean selectable = canSelectMode(runtime, mode);
             boolean hovered = isInRect(mouseX, mouseY, contentX, rowY, rowWidth, OPTION_HEIGHT);
-            if (mode == runtime.activeMode()) {
+            if (mode == runtime.activeMode().selectionMode()) {
                 graphics.fill(contentX, rowY, contentX + rowWidth, rowY + OPTION_HEIGHT, ROW_SELECTED_COLOR);
             } else if (hovered) {
                 graphics.fill(
@@ -193,7 +193,7 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
             return true;
         }
 
-        List<AntiAliasingMode> modes = AntiAliasingMode.implementedModes();
+        List<AntiAliasingMode> modes = AntiAliasingMode.selectableModes();
         int visibleRows = visibleRows(modes.size());
         if (isScrollbarClick(mouseX, mouseY, modes.size(), visibleRows)) {
             if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
@@ -224,7 +224,7 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
         }
 
         if (draggingScrollbar && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
-            List<AntiAliasingMode> modes = AntiAliasingMode.implementedModes();
+            List<AntiAliasingMode> modes = AntiAliasingMode.selectableModes();
             int visibleRows = visibleRows(modes.size());
             DropdownScrollbar.Metrics metrics = scrollbarMetrics(modes.size(), visibleRows);
             firstVisibleIndex = DropdownScrollbar.indexForDrag(
@@ -303,14 +303,13 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
             return true;
         }
 
-        return !improvedTransparencySupplier.getAsBoolean() && runtime.canSelectMode(mode);
+        return runtime.canSelectMode(mode);
     }
 
     private Component modeTooltip(RenderRuntime runtime, AntiAliasingMode mode) {
-        if (mode != AntiAliasingMode.OFF && improvedTransparencySupplier.getAsBoolean()) {
-            return Component.translatable(MODE_OPTION_IMPROVED_TRANSPARENCY_TOOLTIP_KEY, ClientText.label(mode));
+        if (mode == AntiAliasingMode.DLSS_SUPER_RESOLUTION && !runtime.canConfigureMode(mode)) {
+            return Component.translatable("options.salts_anti_aliasing.dlss_setup.tooltip");
         }
-
         if (!runtime.canSelectMode(mode)) {
             return Component.translatable(
                     MODE_OPTION_DISABLED_TOOLTIP_KEY,
@@ -320,7 +319,7 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
         }
 
         return Component.translatable(
-                runtime.activeMode() == mode ? MODE_OPTION_SELECTED_TOOLTIP_KEY : MODE_OPTION_TOOLTIP_KEY,
+                runtime.activeMode().selectionMode() == mode ? MODE_OPTION_SELECTED_TOOLTIP_KEY : MODE_OPTION_TOOLTIP_KEY,
                 ClientText.label(mode),
                 ClientText.summary(mode)
         );
@@ -342,7 +341,7 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
     }
 
     private int maxFirstVisibleIndex() {
-        int modeCount = AntiAliasingMode.implementedModes().size();
+        int modeCount = AntiAliasingMode.selectableModes().size();
         return Math.max(0, modeCount - visibleRows(modeCount));
     }
 

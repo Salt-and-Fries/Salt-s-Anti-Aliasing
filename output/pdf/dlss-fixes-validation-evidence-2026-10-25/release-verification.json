@@ -1,0 +1,15 @@
+{
+  "tests": 142,
+  "failures": 0,
+  "errors": 0,
+  "jarSha256": "67f3bde273b7cd5b244c21798671df278d4e55023b0f72dcbb438ab631347377",
+  "dlls": [
+    "assets/salts_anti_aliasing/native/dlss/windows-x86_64/salts_dlss_bridge.dll",
+    "assets/salts_anti_aliasing/native/windows-x86_64/amd_fidelityfx_vk.dll",
+    "assets/salts_anti_aliasing/native/windows-x86_64/salts_fsr_bridge.dll"
+  ],
+  "normalConfigUnchanged": true,
+  "normalOptionsUnchanged": true,
+  "nativeBridgeMatches": true,
+  "testClientJarMatches": true
+}

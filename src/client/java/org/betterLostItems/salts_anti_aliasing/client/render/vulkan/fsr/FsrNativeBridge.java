@@ -135,6 +135,15 @@ final class FsrNativeBridge {
         }
     }
 
+    void setPresentationInputs(long depth,long motion) {
+        if(!initialized)return;
+        try { setPresentationInputsNative(depth,motion); }
+        catch(UnsatisfiedLinkError oldBridge) { throw new IllegalStateException("Frame generation requires the updated native bridge",oldBridge); }
+    }
+    private static native void setPresentationInputsNative(long depth,long motion);
+
+    void flushDiagnosticCapture() { if(initialized)flushDiagnosticCaptureNative(); }
+
     long frameGenerationPresentCount() {
         return initialized ? getFrameGenerationPresentCountNative() : -1L;
     }
@@ -299,6 +308,13 @@ final class FsrNativeBridge {
         return presentFrameGenerationSwapchainNative(queue.address(), presentInfo.address());
     }
 
+    void releaseRenderResources() {
+        if(initialized) {
+            try { releaseRenderResourcesNative(); }
+            catch(UnsatisfiedLinkError oldOverride) { MetricsDiagnostics.warnOnce("old-native-retirement-Fsr","lifecycle","native_retirement_unavailable","reason","The custom bridge predates resource retirement"); }
+        }
+    }
+
     void shutdown() {
         if (bridgeLoaded && initialized) {
             shutdownNative();
@@ -392,6 +408,7 @@ final class FsrNativeBridge {
     private static native void disableFrameGenerationNative();
 
     private static native long getFrameGenerationPresentCountNative();
+    private static native void flushDiagnosticCaptureNative();
 
     private static native int queryOptimalSettingsNative(
             int qualityPreset,
@@ -481,5 +498,6 @@ final class FsrNativeBridge {
 
     private static native int presentFrameGenerationSwapchainNative(long vkQueue, long presentInfoAddress);
 
+    private static native void releaseRenderResourcesNative();
     private static native void shutdownNative();
 }

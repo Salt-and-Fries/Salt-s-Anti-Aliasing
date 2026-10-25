@@ -10,6 +10,7 @@ import com.mojang.renderpearl.api.pipeline.ColorTargetState;
 import com.mojang.renderpearl.api.pipeline.CompiledRenderPipeline;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.renderpearl.api.pipeline.UniformType;
 import com.mojang.renderpearl.api.commands.CommandEncoder;
 import com.mojang.renderpearl.api.commands.RenderPass;
@@ -88,12 +89,19 @@ final class VulkanMotionVectorRenderer {
         return DLSS;
     }
 
+    static void releaseAll() { DLSS.release(); FSR.release(); }
+    private void release() {
+        if (samplerInfoBuffer != null) samplerInfoBuffer.close();
+        if (motionConfigBuffer != null) motionConfigBuffer.close();
+        samplerInfoBuffer = motionConfigBuffer = null;
+    }
+
     static VulkanMotionVectorRenderer fsr() {
         return FSR;
     }
 
     void render(
-            TextureTarget sceneTarget,
+            RenderTarget sceneTarget,
             TextureTarget motionVectorTarget,
             VulkanSceneTemporalController temporalController
     ) {
@@ -136,6 +144,7 @@ final class VulkanMotionVectorRenderer {
             );
             renderPass.draw(3, 1, 0, 0);
         }
+        VulkanEntityMotionRenderer.render(sceneTarget,motionVectorTarget,temporalController);
     }
 
     private void ensurePipeline() {
@@ -170,7 +179,7 @@ final class VulkanMotionVectorRenderer {
         ));
     }
 
-    private void writeSamplerInfo(TextureTarget sceneTarget, TextureTarget motionVectorTarget) {
+    private void writeSamplerInfo(RenderTarget sceneTarget, TextureTarget motionVectorTarget) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             ByteBuffer data = stack.malloc(SAMPLER_INFO_SIZE);
             Std140Builder.intoBuffer(data)

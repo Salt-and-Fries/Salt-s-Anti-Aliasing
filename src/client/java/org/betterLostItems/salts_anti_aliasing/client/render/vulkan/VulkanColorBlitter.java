@@ -26,6 +26,10 @@ public final class VulkanColorBlitter {
     }
 
     public static void blitColor(RenderTarget source, RenderTarget destination) {
+        blitColor(source,destination,false);
+    }
+
+    public static void blitColor(RenderTarget source,RenderTarget destination,boolean flipY) {
         if (source == null || destination == null || source == destination) {
             return;
         }
@@ -69,8 +73,8 @@ public final class VulkanColorBlitter {
                     .layerCount(1);
             region.srcOffsets(0).set(0, 0, 0);
             region.srcOffsets(1).set(source.width, source.height, 1);
-            region.dstOffsets(0).set(0, 0, 0);
-            region.dstOffsets(1).set(destination.width, destination.height, 1);
+            region.dstOffsets(0).set(0, flipY ? destination.height : 0, 0);
+            region.dstOffsets(1).set(destination.width, flipY ? 0 : destination.height, 1);
 
             VK12.vkCmdBlitImage(
                     commandBuffer,

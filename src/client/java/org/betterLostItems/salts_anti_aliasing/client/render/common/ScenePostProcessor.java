@@ -9,6 +9,9 @@ import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
  * controllers are active for the selected mode.
  */
 public interface ScenePostProcessor {
+    void retry();
+    void maintain(AntiAliasingConfig config);
+
     /** Prevents projection jitter when the temporal resolve cannot run. */
     boolean isTemporalResolveAvailable();
 

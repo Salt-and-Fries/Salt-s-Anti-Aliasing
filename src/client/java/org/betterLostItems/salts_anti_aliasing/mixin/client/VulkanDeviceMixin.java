@@ -19,6 +19,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(targets = "com.mojang.renderpearl.backend.vulkan.VulkanDevice")
 public abstract class VulkanDeviceMixin {
+    @Inject(method = "close", at = @At("HEAD"))
+    private void saltsAntiAliasing$releasePassBuffers(CallbackInfo callbackInfo) {
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanPassResources.release((VulkanDevice)(Object)this);
+    }
     @Inject(method = "<init>", at = @At("RETURN"))
     private void saltsAntiAliasing$captureDlssVulkanHandles(
             VulkanInstance instance,

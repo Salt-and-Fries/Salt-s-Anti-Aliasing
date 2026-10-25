@@ -32,6 +32,8 @@ public abstract class FrontendRenderPassMixin {
         if (!(device instanceof VulkanDevice)) {
             return pipeline;
         }
+        pipeline=org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanAttachmentPipelineVariants.select(pipeline,colorAttachments);
+        pipeline=org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanTextureDetail.select(pipeline);
         int samples = VulkanMsaaCompatibility.commonAttachmentSampleCount(colorAttachments.stream()
                 .filter(attachment -> attachment != null && attachment.textureView() != null)
                 .mapToInt(attachment -> VulkanMsaaState.sampleCount(attachment.textureView()))

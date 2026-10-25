@@ -207,6 +207,7 @@ public final class MetricsDiagnostics {
                 "keepHudAtNativeResolution", config.keepHudAtNativeResolution,
                 "debugViewsEnabled", config.debugViewsEnabled,
                 "recordMetrics", config.recordMetrics,
+                "tuning", new com.google.gson.Gson().toJsonTree(config.tuning),
                 "dlssBridgePath", config.dlssBridgePath,
                 "dlssPluginPath", config.dlssPluginPath,
                 "dlssLogPath", config.dlssLogPath,

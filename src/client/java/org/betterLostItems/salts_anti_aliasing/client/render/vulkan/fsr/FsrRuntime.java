@@ -362,6 +362,12 @@ public final class FsrRuntime {
 
         if (result == 0 || result == KHRSwapchain.VK_SUBOPTIMAL_KHR) {
             long sdkPresentCount = bridge.frameGenerationPresentCount();
+            if(frameGenerationPresentTracker.gamePresentCount()%120==0) {
+                MetricsDiagnostics.info("fsr.frame_generation","present_counts",
+                        "gameFrames",frameGenerationPresentTracker.gamePresentCount(),
+                        "displayPresentCounter",sdkPresentCount,
+                        "applicationPresentIntervalMs",frameGenerationPresentTracker.lastIntervalMs());
+            }
             if (frameGenerationPresentTracker.recordSuccessfulGamePresent(sdkPresentCount)) {
                 SaltsAntiAliasing.LOGGER.info(
                         "AMD FSR3 frame generation confirmed: {} display presents from {} rendered game frames",
@@ -388,6 +394,25 @@ public final class FsrRuntime {
         return result;
     }
 
+    public synchronized void setPresentationInputs(long depth,long motion) { bridge.setPresentationInputs(depth,motion); }
+
+    public synchronized void flushDiagnosticCapture() { bridge.flushDiagnosticCapture(); }
+
+    public synchronized long renderedPresentCount() { return frameGenerationPresentTracker.gamePresentCount(); }
+
+    /** Both rates use the same measured window; post-FG includes real and generated presents. */
+    public synchronized String decorateDebugFps(String original) {
+        if (!isFrameGenerationSwapchainActive()) return original;
+        int marker=original.indexOf(" fps");
+        if (marker<0) return original;
+        double rendered=frameGenerationPresentTracker.renderedFps();
+        double presented=frameGenerationPresentTracker.presentedFps();
+        String prefix=rendered>=0 && presented>=0
+                ? Math.round(rendered)+" fps pre-FG | "+Math.round(presented)+" fps post-FG"
+                : original.substring(0,marker)+" fps pre-FG | -- fps post-FG";
+        return prefix+original.substring(marker+4);
+    }
+
     public synchronized long frameGenerationPresentCount() {
         return frameGenerationPresentTracker.sdkPresentCount();
     }
@@ -395,6 +420,8 @@ public final class FsrRuntime {
     public synchronized boolean isFrameGenerationOutputConfirmed() {
         return frameGenerationPresentTracker.outputConfirmed();
     }
+
+    public synchronized void releaseRenderResources() { bridge.releaseRenderResources(); MetricsDiagnostics.info("lifecycle","native_feature_retired","feature","FSR"); }
 
     public synchronized void shutdown() {
         MetricsDiagnostics.info(

@@ -5,6 +5,7 @@
  */
 
 uniform sampler2D CurrentSampler;
+uniform sampler2D MotionSampler;
 uniform sampler2D CurrentDepthSampler;
 uniform sampler2D HistorySampler;
 uniform sampler2D HistoryDepthSampler;
@@ -33,6 +34,7 @@ layout(std140) uniform TaaConfig {
     float PreviousJitterY;
     float CameraMotion;
     vec4 CameraTranslationToPrevious;
+    vec4 ResolveOptions;
 };
 
 layout(location = 0) in vec2 texCoord;
@@ -101,8 +103,12 @@ vec3 sampleHistoryCatmullRom(vec2 uv) {
 
 void main() {
     vec2 texel = 1.0 / max(InSize, vec2(1.0));
-    vec3 currentRgb = texture(CurrentSampler, texCoord).rgb;
-    float currentDepth = texture(CurrentDepthSampler, texCoord).r;
+    // Resolve onto an unjittered output grid. History color is already resolved;
+    // only raw history depth remains on the previous jittered grid.
+    vec2 sourceUv = clamp(texCoord + vec2(CurrentJitterX, -CurrentJitterY) * texel,
+            texel * 0.5, vec2(1.0) - texel * 0.5);
+    vec3 currentRgb = texture(CurrentSampler, sourceUv).rgb;
+    float currentDepth = texture(CurrentDepthSampler, sourceUv).r;
 
     // Vulkan uses finite reverse-Z: zero is the far clear value and one is near.
     bool skyPixel = currentDepth <= 0.000001;
@@ -120,10 +126,10 @@ void main() {
         PreviousViewProjection3
     );
 
-    vec4 currentClip = vec4(texCoord * 2.0 - 1.0, currentDepth, 1.0);
+    vec4 currentClip = vec4(sourceUv * 2.0 - 1.0, currentDepth, 1.0);
     vec4 worldPosition = currentClipToWorld * currentClip;
     if (abs(worldPosition.w) <= 0.000001) {
-        fragColor = vec4(currentRgb, 1.0);
+        fragColor = vec4(currentRgb, 0.0);
         return;
     }
     worldPosition /= worldPosition.w;
@@ -131,24 +137,30 @@ void main() {
 
     vec4 previousClip = previousViewProjection * worldPosition;
     if (previousClip.w <= 0.000001) {
-        fragColor = vec4(currentRgb, 1.0);
+        fragColor = vec4(currentRgb, 0.0);
         return;
     }
 
     vec3 previousNdc = previousClip.xyz / previousClip.w;
-    vec2 previousUnjitteredUv = previousNdc.xy * 0.5 + 0.5;
+    vec2 previousUnjitteredUv = texCoord + texture(MotionSampler,sourceUv).rg * texel;
     vec2 previousJitterUv = vec2(PreviousJitterX, -PreviousJitterY) * texel;
-    vec2 historyUv = previousUnjitteredUv + previousJitterUv;
+    vec2 historyUv = previousUnjitteredUv;
     vec2 historyMargin = texel * 1.5;
     if (any(lessThan(historyUv, historyMargin)) || any(greaterThan(historyUv, vec2(1.0) - historyMargin))) {
-        fragColor = vec4(currentRgb, 1.0);
+        fragColor = vec4(currentRgb, 0.0);
         return;
     }
 
-    float historyDepth = texture(HistoryDepthSampler, historyUv).r;
+    float historyDepth = texture(HistoryDepthSampler, historyUv + previousJitterUv).r;
     float expectedHistoryDepth = previousNdc.z;
     float depthScale = max(max(abs(historyDepth), abs(expectedHistoryDepth)), 0.0001);
     float relativeDepthError = abs(historyDepth - expectedHistoryDepth) / depthScale;
+    // Validate the footprint covered by the previous jittered depth sample. A thin
+    // edge can move between adjacent depth texels without being a disocclusion.
+    for(int y=0;y<2;++y)for(int x=0;x<2;++x) {
+        float d=texture(HistoryDepthSampler,historyUv+previousJitterUv+(vec2(x,y)-0.5)*texel).r;
+        relativeDepthError=min(relativeDepthError,abs(d-expectedHistoryDepth)/max(max(abs(d),abs(expectedHistoryDepth)),0.0001));
+    }
     float depthConfidence = 1.0 - smoothstep(
         0.01,
         0.05,
@@ -163,7 +175,7 @@ void main() {
     for (int y = -1; y <= 1; ++y) {
         for (int x = -1; x <= 1; ++x) {
             vec2 sampleUv = clamp(
-                texCoord + vec2(float(x), float(y)) * texel,
+                sourceUv + vec2(float(x), float(y)) * texel,
                 texel * 0.5,
                 vec2(1.0) - texel * 0.5
             );
@@ -181,7 +193,8 @@ void main() {
     vec3 varianceMinimum = max(neighborhoodMinimum, neighborhoodMean - standardDeviation * VarianceGamma);
     vec3 varianceMaximum = min(neighborhoodMaximum, neighborhoodMean + standardDeviation * VarianceGamma);
 
-    vec3 historyValue = rgbToYCoCg(sampleHistoryCatmullRom(historyUv));
+    vec3 historyValue = rgbToYCoCg(ResolveOptions.x > 0.5
+            ? sampleHistoryCatmullRom(historyUv) : texture(HistorySampler, historyUv).rgb);
     vec3 clippedHistory = clipToAabb(historyValue, varianceMinimum, varianceMaximum);
     vec3 currentValue = rgbToYCoCg(currentRgb);
 
@@ -206,9 +219,15 @@ void main() {
         * motionConfidence
         * cameraConfidence,
         0.0,
-        0.95
+        0.98
     );
 
     vec3 resolved = mix(currentValue, clippedHistory, historyWeight);
-    fragColor = vec4(max(yCoCgToRgb(resolved), vec3(0.0)), 1.0);
+    float diagnostic = historyWeight;
+    if (ResolveOptions.y == 5.0) diagnostic = depthConfidence;
+    if (ResolveOptions.y == 6.0) diagnostic = lumaConfidence;
+    if (ResolveOptions.y == 7.0) diagnostic = clippingConfidence;
+    if (ResolveOptions.y == 8.0) diagnostic = motionConfidence * cameraConfidence;
+    // RGB history remains the resolved image while alpha carries the selected diagnostic.
+    fragColor = vec4(max(yCoCgToRgb(resolved), vec3(0.0)), diagnostic);
 }

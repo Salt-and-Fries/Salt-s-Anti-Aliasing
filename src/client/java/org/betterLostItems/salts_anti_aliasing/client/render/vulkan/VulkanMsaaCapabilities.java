@@ -8,12 +8,32 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VK12;
 import org.lwjgl.vulkan.VkImageFormatProperties;
 import org.lwjgl.vulkan.VkPhysicalDevice;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Queries the actual Vulkan image-format sample masks used by Minecraft render targets.
  */
 public final class VulkanMsaaCapabilities {
     private static final int RENDER_TARGET_TEXTURE_USAGE = 15;
+    private record Request(GpuFormat colorFormat, boolean useDepth, int samples) {}
+    // Physical format support is immutable for the lifetime of a device. Hand/scene AA
+    // asks on every frame, but native driver queries and diagnostic formatting run once.
+    private static final Map<VulkanDevice, Map<Request, Integer>> CACHE = new WeakHashMap<>();
+    private static final Map<org.lwjgl.vulkan.VkDevice, Boolean> SAMPLE_SHADING = new WeakHashMap<>();
+    public static final com.mojang.renderpearl.backend.vulkan.init.VulkanFeature HAND_SAMPLE_SHADING =
+            new com.mojang.renderpearl.backend.vulkan.init.VulkanFeature(
+                    com.mojang.renderpearl.backend.vulkan.VulkanFeatureSets.VK10_FEATURES_STRUCT,
+                    "sampleRateShading");
+
+    public static void recordSampleShading(org.lwjgl.vulkan.VkDevice device, boolean enabled) {
+        synchronized (SAMPLE_SHADING) { SAMPLE_SHADING.put(device, enabled); }
+    }
+
+    public static boolean handSampleShadingEnabled(VulkanDevice device) {
+        synchronized (SAMPLE_SHADING) { return Boolean.TRUE.equals(SAMPLE_SHADING.get(device.vkDevice())); }
+    }
 
     private VulkanMsaaCapabilities() {
     }
@@ -23,6 +43,16 @@ public final class VulkanMsaaCapabilities {
             GpuFormat colorFormat,
             boolean useDepth,
             int requestedSamples
+    ) {
+        synchronized (CACHE) {
+            return CACHE.computeIfAbsent(device, ignored -> new HashMap<>()).computeIfAbsent(
+                    new Request(colorFormat, useDepth, requestedSamples),
+                    ignored -> querySupportedSceneSamples(device, colorFormat, useDepth, requestedSamples));
+        }
+    }
+
+    private static int querySupportedSceneSamples(
+            VulkanDevice device, GpuFormat colorFormat, boolean useDepth, int requestedSamples
     ) {
         int supportedSampleMask = imageSampleMask(device, colorFormat);
         if (useDepth) {

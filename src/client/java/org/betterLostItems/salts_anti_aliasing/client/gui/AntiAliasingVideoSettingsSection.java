@@ -6,24 +6,23 @@ import net.minecraft.client.gui.components.OptionsList;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Appends Salt's Anti Aliasing controls as a dedicated section in Minecraft's video settings list.
- */
+/** Builds the common mode picker and basic controls inside the dedicated settings screen. */
 public final class AntiAliasingVideoSettingsSection {
     private static final int MIN_WIDE_ROW_WIDTH = 150;
     private static final int ROW_HEIGHT = 20;
     private static final String SECTION_HEADER_KEY = "options.salts_anti_aliasing.section";
     private static final String DROPDOWN_LABEL_KEY = "options.salts_anti_aliasing.dropdown";
-    private static final String DROPDOWN_TOOLTIP_KEY = "options.salts_anti_aliasing.dropdown.tooltip";
+    private static final String DROPDOWN_TOOLTIP_KEY =
+            "options.salts_anti_aliasing.dropdown.tooltip";
 
-    private AntiAliasingVideoSettingsSection() {
-    }
+    private AntiAliasingVideoSettingsSection() {}
 
     public static Controls addTo(
             OptionsList list,
@@ -31,8 +30,7 @@ public final class AntiAliasingVideoSettingsSection {
             boolean dropdownExpanded,
             boolean improvedTransparencyEnabled,
             Runnable onDropdownToggled,
-            Screen parent
-    ) {
+            Screen parent) {
         list.addHeader(Component.translatable(SECTION_HEADER_KEY));
 
         return addControlsTo(
@@ -41,8 +39,7 @@ public final class AntiAliasingVideoSettingsSection {
                 dropdownExpanded,
                 improvedTransparencyEnabled,
                 onDropdownToggled,
-                parent
-        );
+                parent);
     }
 
     /**
@@ -55,13 +52,15 @@ public final class AntiAliasingVideoSettingsSection {
             boolean dropdownExpanded,
             boolean improvedTransparencyEnabled,
             Runnable onDropdownToggled,
-            Screen parent
-    ) {
+            Screen parent) {
         int wideRowWidth = Math.max(MIN_WIDE_ROW_WIDTH, list.getRowWidth());
-        Button dropdownButton = Button.builder(dropdownLabel(runtime.activeMode()), button -> onDropdownToggled.run())
-                .size(wideRowWidth, ROW_HEIGHT)
-                .tooltip(dropdownTooltip(runtime.activeMode(), dropdownExpanded))
-                .build();
+        Button dropdownButton =
+                Button.builder(
+                                dropdownLabel(runtime.activeMode()),
+                                button -> onDropdownToggled.run())
+                        .size(wideRowWidth, ROW_HEIGHT)
+                        .tooltip(dropdownTooltip(runtime.activeMode(), dropdownExpanded))
+                        .build();
         list.addBig(dropdownButton);
 
         List<AbstractWidget> secondaryControls = secondaryControls(runtime, runtime.activeMode());
@@ -69,11 +68,6 @@ public final class AntiAliasingVideoSettingsSection {
             secondaryControl.setWidth(wideRowWidth);
             list.addBig(secondaryControl);
         }
-
-        list.addBig(Button.builder(Component.translatable("screen.salts_anti_aliasing.credits"), button -> {
-            var minecraft = net.minecraft.client.Minecraft.getInstance();
-            minecraft.setScreenAndShow(new CreditsAndLicensesScreen(parent));
-        }).size(wideRowWidth, ROW_HEIGHT).build());
 
         Controls controls = new Controls(dropdownButton, List.copyOf(secondaryControls));
         refresh(controls, runtime, improvedTransparencyEnabled, dropdownExpanded);
@@ -84,8 +78,7 @@ public final class AntiAliasingVideoSettingsSection {
             Controls controls,
             RenderRuntime runtime,
             boolean improvedTransparencyEnabled,
-            boolean dropdownExpanded
-    ) {
+            boolean dropdownExpanded) {
         if (controls == null) {
             return;
         }
@@ -95,15 +88,14 @@ public final class AntiAliasingVideoSettingsSection {
         controls.dropdownButton().setTooltip(dropdownTooltip(activeMode, dropdownExpanded));
         controls.dropdownButton().active = true;
 
-        boolean controlsActive = !improvedTransparencyEnabled
-                && runtime.canUseAntiAliasing()
-                && runtime.canSelectMode(activeMode);
+        boolean controlsActive = runtime.canConfigureMode(activeMode);
         for (AbstractWidget secondaryControl : controls.secondaryControls()) {
             secondaryControl.active = controlsActive;
         }
     }
 
-    private static List<AbstractWidget> secondaryControls(RenderRuntime runtime, AntiAliasingMode activeMode) {
+    private static List<AbstractWidget> secondaryControls(
+            RenderRuntime runtime, AntiAliasingMode activeMode) {
         List<AbstractWidget> controls = new ArrayList<>();
         for (ControlKind controlKind : controlLayout(activeMode)) {
             controls.add(createControl(runtime, controlKind));
@@ -113,16 +105,18 @@ public final class AntiAliasingVideoSettingsSection {
 
     static List<ControlKind> controlLayout(AntiAliasingMode activeMode) {
         return switch (activeMode) {
-            case MSAA -> List.of(
-                    ControlKind.SHARPNESS,
-                    ControlKind.MSAA_SAMPLES,
-                    ControlKind.MSAA_ALPHA_TO_COVERAGE
-            );
+            case MSAA ->
+                    List.of(
+                            ControlKind.SHARPNESS,
+                            ControlKind.MSAA_SAMPLES,
+                            ControlKind.MSAA_ALPHA_TO_COVERAGE);
             case SSAA -> List.of(ControlKind.SHARPNESS, ControlKind.SSAA_SCALE);
             case NIS_UPSCALE, FSR1_UPSCALE ->
                     List.of(ControlKind.SHARPNESS, ControlKind.SPATIAL_UPSCALE_QUALITY);
             case DLSS_SUPER_RESOLUTION -> List.of(ControlKind.SHARPNESS, ControlKind.DLSS_QUALITY);
-            case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION ->
+            case FSR2_SUPER_RESOLUTION,
+                            FSR3_SUPER_RESOLUTION,
+                            FSR3_SUPER_RESOLUTION_FRAME_GENERATION ->
                     List.of(ControlKind.SHARPNESS, ControlKind.FSR_QUALITY);
             default -> List.of(ControlKind.SHARPNESS);
         };
@@ -145,18 +139,14 @@ public final class AntiAliasingVideoSettingsSection {
     }
 
     private static Tooltip dropdownTooltip(AntiAliasingMode activeMode, boolean dropdownExpanded) {
-        return Tooltip.create(Component.translatable(
-                DROPDOWN_TOOLTIP_KEY,
-                ClientText.label(activeMode),
-                ClientText.summary(activeMode)
-        ));
+        return Tooltip.create(
+                Component.translatable(
+                        DROPDOWN_TOOLTIP_KEY,
+                        ClientText.label(activeMode),
+                        ClientText.summary(activeMode)));
     }
 
-    public record Controls(
-            Button dropdownButton,
-            List<AbstractWidget> secondaryControls
-    ) {
-    }
+    public record Controls(Button dropdownButton, List<AbstractWidget> secondaryControls) {}
 
     enum ControlKind {
         SHARPNESS,

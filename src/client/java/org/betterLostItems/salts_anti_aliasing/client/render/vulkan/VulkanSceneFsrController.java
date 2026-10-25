@@ -74,6 +74,10 @@ public final class VulkanSceneFsrController {
     private static final float VIEW_SPACE_TO_METERS = 1.0f;
 
     private final CrossFrameResourcePool resourcePool = new CrossFrameResourcePool(3);
+    public void retry() { lastRecoverySignature=null; disabledAfterFailure=false; maskHistoryValid=false; lastSuccessfulTemporalFrameIndex=-1L; }
+    public RenderTarget motionTarget() { return motionVectorTarget; }
+    public RenderTarget rejectionTarget() { return reactiveMaskTarget; }
+    private final NativeFeatureRetirement retirement=new NativeFeatureRetirement();
     private boolean disabledAfterFailure;
     private boolean destroyResourcesAfterFrame;
     private boolean active;
@@ -89,6 +93,13 @@ public final class VulkanSceneFsrController {
     private TextureTarget transparencyMaskTarget;
     private RenderTarget upscaledColorTarget;
     private TextureTarget hudlessColorTarget;
+    private TextureTarget presentationHudlessTarget;
+    private TextureTarget presentationMotionDepthTarget;
+    private boolean hudlessCapturedThisFrame;
+
+    public RenderTarget hudlessWorldOverlayTarget() {
+        return hudlessCapturedThisFrame && Minecraft.getInstance().gui.screen()==null ? hudlessColorTarget : null;
+    }
     private RenderTarget mainTarget;
     private AntiAliasingMode activeMode = AntiAliasingMode.OFF;
     private AntiAliasingConfig activeConfig;
@@ -104,6 +115,8 @@ public final class VulkanSceneFsrController {
 
     private VulkanSceneFsrController() {
     }
+
+    public long allocatedTargetBytes() { return VulkanOwnedTargetMemory.bytes(sceneTarget,linearSceneTarget,motionVectorTarget,opaqueSceneTarget,linearOpaqueSceneTarget,previousLinearSceneTarget,previousLinearOpaqueSceneTarget,reactiveMaskTarget,transparencyMaskTarget,upscaledColorTarget,hudlessColorTarget,presentationHudlessTarget,presentationMotionDepthTarget); }
 
     public static VulkanSceneFsrController instance() {
         return INSTANCE;
@@ -121,6 +134,11 @@ public final class VulkanSceneFsrController {
 
     public void beginSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
         RenderSystem.assertOnRenderThread();
+        hudlessCapturedThisFrame=false;
+        if(!config.mode.usesFsrFrameGeneration()) {
+            destroyTarget(presentationHudlessTarget);presentationHudlessTarget=null;
+            destroyTarget(presentationMotionDepthTarget);presentationMotionDepthTarget=null;
+        }
         nativeSharpeningSucceededThisFrame = false;
         destroyResourcesIfPending();
         resetDisabledStateWhenRetryIsSafe(config);
@@ -128,7 +146,9 @@ public final class VulkanSceneFsrController {
         frameGenerationHudlessSource = null;
         clearFrameState();
 
-        if (disabledAfterFailure || !isFsrMode(config.mode) || !FsrRuntime.instance().isUpscalingReady()) {
+        if (!isFsrMode(config.mode)) { destroyResources(); resourcePool.clear(); retirement.inactive(()->FsrRuntime.instance().releaseRenderResources()); return; }
+        retirement.active();
+        if (disabledAfterFailure || !FsrRuntime.instance().isUpscalingReady()) {
             return;
         }
 
@@ -197,11 +217,20 @@ public final class VulkanSceneFsrController {
         try {
             active = false;
             ensureOpaqueSceneCaptured();
-            prepareLinearColorInputs();
-            generateMotionVectors();
+            try(var gpuTiming=VulkanGpuProfiler.scope(config.mode+".decode")) { prepareLinearColorInputs(); }
+            try(var gpuTiming=VulkanGpuProfiler.scope(config.mode+".motion")) { generateMotionVectors(); }
+            if(frameConfig.mode.usesFsrFrameGeneration()) {
+                presentationMotionDepthTarget=ensureTarget(presentationMotionDepthTarget,"Salt's FG Presentation Motion/Depth",
+                        sceneTarget.width,sceneTarget.height,true,GpuFormat.RG16_FLOAT);
+                presentationHudlessTarget=ensureTarget(presentationHudlessTarget,"Salt's FG Presentation Color",
+                        mainTarget.width,mainTarget.height,false,GpuFormat.RGBA8_UNORM);
+                VulkanPresentationInputRenderer.render(sceneTarget,motionVectorTarget,presentationMotionDepthTarget);
+                FsrRuntime.instance().setPresentationInputs(image(presentationMotionDepthTarget.getDepthTexture()),
+                        image(presentationMotionDepthTarget.getColorTexture()));
+            }
             FsrFrameState frameState = prepareFrameState(frameConfig);
-            generateTemporalMasks(frameState.resetHistory());
-            int result = evaluateFsr(frameConfig, frameState);
+            try(var gpuTiming=VulkanGpuProfiler.scope(config.mode+".masks")) { generateTemporalMasks(frameState.resetHistory()); }
+            int result; try(var gpuTiming=VulkanGpuProfiler.scope(config.mode+".native")) { result=evaluateFsr(frameConfig,frameState); }
             if (result != 0) {
                 SaltsAntiAliasing.LOGGER.warn("AMD FSR evaluate failed with result {}; falling back to scene resolve", result);
                 MetricsDiagnostics.warn("fsr_scene", "evaluation_fallback", MetricsDiagnostics.fields(
@@ -219,9 +248,11 @@ public final class VulkanSceneFsrController {
                         "timingDiscontinuity", frameState.timing().discontinuity()
                 ));
                 resolveSceneColor(sceneTarget, mainTarget);
+                org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.failure(config.mode,"FSR result "+result);
             } else {
-                VulkanFsrColorTransferRenderer.instance().encode(upscaledColorTarget, mainTarget);
+            try(var gpuTiming=VulkanGpuProfiler.scope(config.mode+".encode")) { VulkanFsrColorTransferRenderer.instance().encode(upscaledColorTarget, mainTarget); }
                 nativeSharpeningSucceededThisFrame = frameConfig.sharpenStrength > 0.0f;
+                org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.success(config.mode,sceneTarget.width,sceneTarget.height);
             }
 
             if (result == 0 && frameConfig.mode.usesFsrFrameGeneration()) {
@@ -252,8 +283,9 @@ public final class VulkanSceneFsrController {
     }
 
     /**
-     * Captures the scene-only output after final post effects and immediately before Minecraft
-     * starts drawing the GUI. FidelityFX uses this image to keep generated frames HUD-free.
+     * Captures the post-processed world before first-person hand and GUI rendering. Those layers
+     * have no corresponding world depth/motion and must be restored through HUD-less composition,
+     * rather than warped using the background's vectors. With no hand pass, the GUI boundary calls it.
      */
     public void captureFrameGenerationHudlessColor() {
         RenderSystem.assertOnRenderThread();
@@ -269,6 +301,7 @@ public final class VulkanSceneFsrController {
                 && FsrRuntime.instance().isFrameGenerationSwapchainActive()) {
             try {
                 copyColor(source, hudlessColorTarget, "Salt's FSR HUDless Color Copy");
+                hudlessCapturedThisFrame=true;
             } catch (RuntimeException exception) {
                 FsrRuntime.instance().onFrameGenerationEvaluationFailure(-2);
                 disabledAfterFailure = true;
@@ -289,6 +322,14 @@ public final class VulkanSceneFsrController {
                         exception
                 );
             }
+        }
+    }
+
+    /** Runs after GUI world overlays and before the proxy swapchain consumes the frame. */
+    public void prepareFrameGenerationPresentation() {
+        if(hudlessCapturedThisFrame && hudlessColorTarget!=null && presentationHudlessTarget!=null) {
+            VulkanColorBlitter.blitColor(hudlessColorTarget,presentationHudlessTarget,true);
+            hudlessCapturedThisFrame=false;
         }
     }
 
@@ -392,8 +433,8 @@ public final class VulkanSceneFsrController {
         long reactiveMaskView = view(reactiveMaskTarget.getColorTextureView());
         long transparencyMaskImage = image(transparencyMaskTarget.getColorTexture());
         long transparencyMaskView = view(transparencyMaskTarget.getColorTextureView());
-        long hudlessColorImage = image(hudlessColorTarget.getColorTexture());
-        long hudlessColorView = view(hudlessColorTarget.getColorTextureView());
+        long hudlessColorImage = image((config.mode.usesFsrFrameGeneration()?presentationHudlessTarget:hudlessColorTarget).getColorTexture());
+        long hudlessColorView = view((config.mode.usesFsrFrameGeneration()?presentationHudlessTarget:hudlessColorTarget).getColorTextureView());
         if (inputColorImage == 0L
                 || inputColorView == 0L
                 || outputColorImage == 0L
@@ -457,7 +498,7 @@ public final class VulkanSceneFsrController {
         FsrEvaluateParameters parameters = new FsrEvaluateParameters(
                 commandBuffer.address(),
                 fsrVersion(config.mode),
-                config.mode.usesFsrFrameGeneration(),
+                config.mode.usesFsrFrameGeneration() && config.tuning.debugView==org.betterLostItems.salts_anti_aliasing.client.config.RenderTuning.DebugView.NONE,
                 inputColorImage,
                 inputColorView,
                 outputColorImage,
@@ -803,8 +844,7 @@ public final class VulkanSceneFsrController {
         }
 
         VulkanFsrColorTransferRenderer renderer = VulkanFsrColorTransferRenderer.instance();
-        renderer.decode(sceneTarget, linearSceneTarget);
-        renderer.decode(opaqueSceneTarget, linearOpaqueSceneTarget);
+        renderer.decodePair(sceneTarget, opaqueSceneTarget, linearSceneTarget, linearOpaqueSceneTarget);
     }
 
     private void generateTemporalMasks(boolean fsrHistoryReset) {
@@ -1072,6 +1112,7 @@ public final class VulkanSceneFsrController {
             FsrRuntime.instance().onFrameGenerationEvaluationFailure(-1);
         }
         disabledAfterFailure = true;
+        org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.failure(failedMode,exception.getMessage());
         destroyResourcesAfterFrame = mainTarget != null;
         if (!destroyResourcesAfterFrame) {
             destroyResources();
@@ -1165,6 +1206,8 @@ public final class VulkanSceneFsrController {
         destroyTarget(transparencyMaskTarget);
         destroyTarget(upscaledColorTarget);
         destroyTarget(hudlessColorTarget);
+        destroyTarget(presentationHudlessTarget);presentationHudlessTarget=null;
+        destroyTarget(presentationMotionDepthTarget);presentationMotionDepthTarget=null;
         sceneTarget = null;
         linearSceneTarget = null;
         motionVectorTarget = null;

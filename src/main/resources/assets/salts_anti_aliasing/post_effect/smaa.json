@@ -15,7 +15,31 @@
           "bilinear": false
         }
       ],
-      "output": "edges"
+      "output": "edges",
+      "uniforms": {
+        "SmaaConfig": [
+          {
+            "name": "EdgeThreshold",
+            "type": "float",
+            "value": 0.05
+          },
+          {
+            "name": "SearchSteps",
+            "type": "float",
+            "value": 32
+          },
+          {
+            "name": "DiagonalSteps",
+            "type": "float",
+            "value": 16
+          },
+          {
+            "name": "CornerRounding",
+            "type": "float",
+            "value": 25
+          }
+        ]
+      }
     },
     {
       "vertex_shader": "minecraft:core/screenquad",
@@ -41,7 +65,31 @@
           "bilinear": true
         }
       ],
-      "output": "weights"
+      "output": "weights",
+      "uniforms": {
+        "SmaaConfig": [
+          {
+            "name": "EdgeThreshold",
+            "type": "float",
+            "value": 0.05
+          },
+          {
+            "name": "SearchSteps",
+            "type": "float",
+            "value": 32
+          },
+          {
+            "name": "DiagonalSteps",
+            "type": "float",
+            "value": 16
+          },
+          {
+            "name": "CornerRounding",
+            "type": "float",
+            "value": 25
+          }
+        ]
+      }
     },
     {
       "vertex_shader": "minecraft:core/screenquad",
@@ -58,7 +106,31 @@
           "bilinear": true
         }
       ],
-      "output": "resolved"
+      "output": "resolved",
+      "uniforms": {
+        "SmaaConfig": [
+          {
+            "name": "EdgeThreshold",
+            "type": "float",
+            "value": 0.05
+          },
+          {
+            "name": "SearchSteps",
+            "type": "float",
+            "value": 32
+          },
+          {
+            "name": "DiagonalSteps",
+            "type": "float",
+            "value": 16
+          },
+          {
+            "name": "CornerRounding",
+            "type": "float",
+            "value": 25
+          }
+        ]
+      }
     },
     {
       "vertex_shader": "minecraft:core/screenquad",

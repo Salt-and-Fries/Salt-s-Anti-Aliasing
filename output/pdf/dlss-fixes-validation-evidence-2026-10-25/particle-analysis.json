@@ -1,0 +1,34 @@
+{
+  "particle-valid-v3": {
+    "frames": 24,
+    "nonzeroMin": 5350,
+    "nonzeroMax": 7663,
+    "maxPixels": 9.045043338231084,
+    "quadsMin": 224,
+    "quadsMax": 310
+  },
+  "particle-off": {
+    "frames": 12,
+    "nonzeroMin": 0,
+    "nonzeroMax": 0,
+    "maxPixels": 6.550276566594242e-06,
+    "quadsMin": 0,
+    "quadsMax": 0
+  },
+  "particle-on": {
+    "frames": 24,
+    "nonzeroMin": 6966,
+    "nonzeroMax": 8258,
+    "maxPixels": 1.507533309467304,
+    "quadsMin": 285,
+    "quadsMax": 324
+  },
+  "particle-oit": {
+    "frames": 24,
+    "nonzeroMin": 6230,
+    "nonzeroMax": 7462,
+    "maxPixels": 1.2795763947971495,
+    "quadsMin": 283,
+    "quadsMax": 315
+  }
+}

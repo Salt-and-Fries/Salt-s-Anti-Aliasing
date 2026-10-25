@@ -41,23 +41,36 @@ public final class VulkanSceneDlssController {
     private static final String MOTION_VECTOR_TARGET_LABEL = "Salt's DLSS Motion Vectors";
     private static final Vector4f ZERO = new Vector4f(0.0f, 0.0f, 0.0f, 0.0f);
 
+    private String lastConfiguration;
+    public void retry() { disabledAfterFailure=false; resetHistoryPending=true; }
+    public RenderTarget motionTarget() { return motionVectorTarget; }
+    private final NativeFeatureRetirement retirement=new NativeFeatureRetirement();
     private boolean disabledAfterFailure;
     private boolean destroyResourcesAfterFrame;
     private boolean active;
     private TextureTarget sceneTarget;
     private TextureTarget motionVectorTarget;
     private VulkanStorageColorTarget outputTarget;
-    private TextureTarget previousColorTarget;
-    private TextureTarget colorRejectionTarget;
-    private boolean colorHistoryValid;
+    private boolean resetHistoryPending = true;
+    private boolean linearColor;
+    public boolean linearColor() { return sceneTarget != null && linearColor; }
     private RenderTarget mainTarget;
     private DlssOptimalSettings optimalSettings = DlssOptimalSettings.fallback(1, 1);
 
     private VulkanSceneDlssController() {
     }
 
+    public long allocatedTargetBytes() { return VulkanOwnedTargetMemory.bytes(sceneTarget,motionVectorTarget,outputTarget); }
+
     public static VulkanSceneDlssController instance() {
         return INSTANCE;
+    }
+
+    /** DLSS coverage is independent of the native TAA tuning and changes with render scale. */
+    public int activeJitterPhaseCount() {
+        return active && mainTarget != null
+                ? optimalSettings.jitterPhaseCount(mainTarget.width, mainTarget.height)
+                : 0;
     }
 
     public void beginSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
@@ -65,7 +78,11 @@ public final class VulkanSceneDlssController {
         destroyResourcesIfPending();
         clearFrameState();
 
-        if (disabledAfterFailure || config.mode != AntiAliasingMode.DLSS_SUPER_RESOLUTION || !DlssRuntime.instance().isReady()) {
+        String configuration=config.mode+":"+config.dlssQualityPreset+":"+config.tuning.dlssModel+":"+config.tuning.dlssColorInput+":"+gameRenderer.mainRenderTarget().getColorTexture().getFormat()+":"+gameRenderer.mainRenderTarget().width+"x"+gameRenderer.mainRenderTarget().height;
+        if (!configuration.equals(lastConfiguration)) { retry(); lastConfiguration=configuration; }
+        if (config.mode != AntiAliasingMode.DLSS_SUPER_RESOLUTION) { destroyResources(); retirement.inactive(()->DlssRuntime.instance().releaseRenderResources()); return; }
+        retirement.active();
+        if (disabledAfterFailure || !DlssRuntime.instance().isReady()) {
             return;
         }
 
@@ -80,8 +97,25 @@ public final class VulkanSceneDlssController {
         }
 
         try {
+            boolean requestedLinear = config.tuning.dlssColorInput.linear(
+                    mainTarget.getColorTexture().getFormat().name().contains("FLOAT"));
+            if (sceneTarget != null && requestedLinear != linearColor) {
+                // Streamline does not recreate a feature for an HDR-flag-only change.
+                // Retire all submitted work before releasing that feature and its textures.
+                CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
+                try (var fence = encoder.createFence()) {
+                    encoder.submit();
+                    if (!fence.awaitCompletion(2_000_000_000L))
+                        throw new IllegalStateException("Timed out retiring the previous DLSS color encoding");
+                }
+                DlssRuntime.instance().releaseRenderResources();
+                destroyResources();
+            }
+            linearColor = requestedLinear;
             optimalSettings = DlssRuntime.instance().queryOptimalSettings(
                     config.dlssQualityPreset,
+                    config.tuning.dlssModel,
+                    linearColor,
                     mainTarget.width,
                     mainTarget.height
             );
@@ -102,9 +136,13 @@ public final class VulkanSceneDlssController {
 
         try {
             active = false;
-            generateMotionVectors();
-            generateColorRejection();
-            int result = evaluateDlss();
+            if (!VulkanSceneTemporalController.instance().hasValidFrameMatrices()) {
+                resolveSceneColor(sceneTarget, mainTarget);
+                resetHistoryPending = true;
+                return;
+            }
+            try(var gpuTiming=VulkanGpuProfiler.scope("DLSS.motion")) { generateMotionVectors(); }
+            int result; try(var gpuTiming=VulkanGpuProfiler.scope("DLSS.native")) { result=evaluateDlss(); }
             if (result != 0) {
                 SaltsAntiAliasing.LOGGER.warn("DLSS evaluate failed with result {}; falling back to linear scene resolve", result);
                 MetricsDiagnostics.warn(
@@ -116,17 +154,18 @@ public final class VulkanSceneDlssController {
                         "outputSize", mainTarget == null ? "unavailable" : mainTarget.width + "x" + mainTarget.height
                 );
                 resolveSceneColor(sceneTarget, mainTarget);
+                org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.failure(config.mode,"DLSS result "+result);
                 disabledAfterFailure = true;
                 destroyResourcesAfterFrame = true;
             } else {
                 VulkanColorBlitter.blitColor(outputTarget, mainTarget);
+                org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.success(config.mode,sceneTarget.width,sceneTarget.height);
                 MetricsDiagnostics.infoOnce("dlss.evaluate.success." + sceneTarget.width + "x" + sceneTarget.height
                                 + "." + mainTarget.width + "x" + mainTarget.height,
                         "dlss.controller", "evaluation_succeeded", "renderWidth", sceneTarget.width,
                         "renderHeight", sceneTarget.height, "outputWidth", mainTarget.width, "outputHeight", mainTarget.height);
             }
-            VulkanColorBlitter.blitColor(sceneTarget, previousColorTarget);
-            colorHistoryValid = true;
+            resetHistoryPending = false;
         } catch (RuntimeException exception) {
             try {
                 resolveSceneColor(sceneTarget, mainTarget);
@@ -250,7 +289,7 @@ public final class VulkanSceneDlssController {
                 mainTarget.height,
                 temporal.currentJitterTexelX(),
                 temporal.currentJitterTexelY(),
-                temporal.resetHistoryThisFrame(),
+                temporal.resetHistoryThisFrame() || resetHistoryPending,
                 temporal.frameIndex(),
                 1.0f / Math.max(1, sceneTarget.width),
                 1.0f / Math.max(1, sceneTarget.height),
@@ -259,9 +298,7 @@ public final class VulkanSceneDlssController {
                 temporal.currentProjectionArray(),
                 temporal.dlssCameraParameters(),
                 resourceFormats(),
-                resourceUsages(),
-                image(colorRejectionTarget.getColorTexture()),
-                view(colorRejectionTarget.getColorTextureView())
+                resourceUsages()
         );
 
         int result;
@@ -287,7 +324,7 @@ public final class VulkanSceneDlssController {
 
     private GpuTexture[] nativeResources() {
         return new GpuTexture[] {sceneTarget.getColorTexture(), outputTarget.getColorTexture(),
-                sceneTarget.getDepthTexture(), motionVectorTarget.getColorTexture(), colorRejectionTarget.getColorTexture()};
+                sceneTarget.getDepthTexture(), motionVectorTarget.getColorTexture()};
     }
 
     private int[] resourceFormats() {
@@ -336,45 +373,28 @@ public final class VulkanSceneDlssController {
                 motionVectorTarget,
                 VulkanSceneTemporalController.instance()
         );
-    }
-
-    private void generateColorRejection() {
-        var temporal = VulkanSceneTemporalController.instance();
-        if (!colorHistoryValid || temporal.resetHistoryThisFrame()) {
-            VulkanColorBlitter.blitColor(sceneTarget, previousColorTarget);
-        }
-        VulkanTemporalColorRejectionRenderer.render(sceneTarget, previousColorTarget,
-                motionVectorTarget, colorRejectionTarget, temporal);
+        VulkanParticleMotionRenderer.render(sceneTarget, motionVectorTarget, VulkanSceneTemporalController.instance());
     }
 
     private void ensureTargets(int width, int height, int outputWidth, int outputHeight) {
-        if (previousColorTarget == null) {
-            previousColorTarget = new TextureTarget("Salt's DLSS Color History", width, height, GpuFormat.RGBA8_UNORM, null);
-            // Streamline's Vulkan format conversion supports R16F but omits R8_UNORM.
-            colorRejectionTarget = new TextureTarget("Salt's DLSS History Rejection", width, height, GpuFormat.R16_FLOAT, null);
-            colorHistoryValid = false;
-        } else if (previousColorTarget.width != width || previousColorTarget.height != height) {
-            previousColorTarget.resize(width, height);
-            colorRejectionTarget.resize(width, height);
-            colorHistoryValid = false;
-        }
+        GpuFormat colorFormat = linearColor ? GpuFormat.RGBA16_FLOAT : GpuFormat.RGBA8_UNORM;
         if (outputTarget == null) {
-            outputTarget = new VulkanStorageColorTarget("Salt's DLSS Output", outputWidth, outputHeight, GpuFormat.RGBA8_UNORM);
+            outputTarget = new VulkanStorageColorTarget("Salt's DLSS Output", outputWidth, outputHeight, colorFormat);
         } else if (outputTarget.width != outputWidth || outputTarget.height != outputHeight) {
             outputTarget.resize(outputWidth, outputHeight);
         }
         if (sceneTarget == null) {
-            sceneTarget = new TextureTarget(SCENE_TARGET_LABEL, width, height, GpuFormat.RGBA8_UNORM, GpuFormat.D32_FLOAT);
-            recordTargetChange("created", SCENE_TARGET_LABEL, sceneTarget, GpuFormat.RGBA8_UNORM);
+            sceneTarget = new TextureTarget(SCENE_TARGET_LABEL, width, height, colorFormat, GpuFormat.D32_FLOAT);
+            recordTargetChange("created", SCENE_TARGET_LABEL, sceneTarget, colorFormat);
         } else if (sceneTarget.width != width || sceneTarget.height != height) {
             int previousWidth = sceneTarget.width;
             int previousHeight = sceneTarget.height;
             sceneTarget.resize(width, height);
-            recordTargetResize(SCENE_TARGET_LABEL, sceneTarget, previousWidth, previousHeight, GpuFormat.RGBA8_UNORM);
+            recordTargetResize(SCENE_TARGET_LABEL, sceneTarget, previousWidth, previousHeight, colorFormat);
         }
 
         if (motionVectorTarget == null) {
-            motionVectorTarget = new TextureTarget(MOTION_VECTOR_TARGET_LABEL, width, height, GpuFormat.RG16_FLOAT, null);
+            motionVectorTarget = new TextureTarget(MOTION_VECTOR_TARGET_LABEL, width, height, GpuFormat.RG16_FLOAT, GpuFormat.D32_FLOAT);
             recordTargetChange("created", MOTION_VECTOR_TARGET_LABEL, motionVectorTarget, GpuFormat.RG16_FLOAT);
         } else if (motionVectorTarget.width != width || motionVectorTarget.height != height) {
             int previousWidth = motionVectorTarget.width;
@@ -408,6 +428,7 @@ public final class VulkanSceneDlssController {
 
     private void disableAfterFailure(String message, RuntimeException exception) {
         disabledAfterFailure = true;
+        org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.failure(AntiAliasingMode.DLSS_SUPER_RESOLUTION,exception.getMessage());
         destroyResourcesAfterFrame = mainTarget != null;
         if (!destroyResourcesAfterFrame) {
             destroyResources();
@@ -434,21 +455,14 @@ public final class VulkanSceneDlssController {
     }
 
     private void destroyResources() {
-        if (previousColorTarget != null) {
-            previousColorTarget.destroyBuffers();
-            previousColorTarget = null;
-        }
-        if (colorRejectionTarget != null) {
-            colorRejectionTarget.destroyBuffers();
-            colorRejectionTarget = null;
-        }
-        colorHistoryValid = false;
+        VulkanParticleMotionRenderer.release();
+        resetHistoryPending = true;
         if (outputTarget != null) {
             outputTarget.destroyBuffers();
             outputTarget = null;
         }
         if (sceneTarget != null) {
-            recordTargetChange("destroyed", SCENE_TARGET_LABEL, sceneTarget, GpuFormat.RGBA8_UNORM);
+            recordTargetChange("destroyed", SCENE_TARGET_LABEL, sceneTarget, sceneTarget.getColorTexture().getFormat());
             sceneTarget.destroyBuffers();
             sceneTarget = null;
         }

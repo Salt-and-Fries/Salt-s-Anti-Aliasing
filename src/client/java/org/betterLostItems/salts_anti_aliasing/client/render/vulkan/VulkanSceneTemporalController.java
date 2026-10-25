@@ -18,6 +18,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.config.RenderTuning;
 import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 import org.joml.Matrix4f;
 
@@ -34,19 +35,34 @@ public final class VulkanSceneTemporalController {
     private static final String HISTORY_TARGET_LABEL = "Salt's TAA History";
     private static final Identifier HISTORY_TARGET_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":taa_history");
     private static final Identifier TAA_EFFECT_ID = Identifier.parse(SaltsAntiAliasing.MOD_ID + ":taa");
-    private static final Set<Identifier> EXTERNAL_TARGETS = Set.of(PostChain.MAIN_TARGET_ID, HISTORY_TARGET_ID);
+    private static final Set<Identifier> EXTERNAL_TARGETS = Set.of(PostChain.MAIN_TARGET_ID, HISTORY_TARGET_ID, Identifier.parse(SaltsAntiAliasing.MOD_ID+":taa_motion"));
     private static final int BOOTSTRAP_FRAME_COUNT = 1;
-    private static final int TAA_JITTER_PHASE_COUNT = 16;
-    private static final float TAA_BASE_HISTORY_WEIGHT = 0.90f;
-    private static final float TAA_LUMA_REJECTION = 1.0f;
-    private static final float TAA_DEPTH_REJECTION = 1.0f;
-    private static final float TAA_VARIANCE_GAMMA = 1.25f;
     private static final double CAMERA_CUT_DISTANCE_SQUARED = 16.0;
     private static final float CAMERA_CUT_ROTATION_DEGREES = 45.0f;
     private static final float CAMERA_FOV_RESET_RADIANS = (float) Math.toRadians(1.0);
 
+    private RenderTuning tuning = new RenderTuning();
+    private boolean resolveWithoutHistory;
     private TextureTarget historyTarget;
+    private TextureTarget motionTarget;
+    private static final Identifier MOTION_TARGET_ID=Identifier.parse(SaltsAntiAliasing.MOD_ID+":taa_motion");
+
+    private boolean configurationResetPending;
+    private int lastTextureBias;
+    public void configureTuning(RenderTuning tuning) {
+        int bias=VulkanTextureDetail.activeQuarterSteps();
+        if(this.tuning.entityMotion!=tuning.entityMotion || this.tuning.taaHistoryFilter!=tuning.taaHistoryFilter
+                || this.tuning.debugView!=tuning.debugView || lastTextureBias!=bias
+                || this.tuning.motionVertexBudget!=tuning.motionVertexBudget
+                || this.tuning.dlssParticleAlphaThreshold!=tuning.dlssParticleAlphaThreshold)configurationResetPending=true;
+        lastTextureBias=bias;
+        this.tuning=tuning.copy();
+    }
+    public RenderTuning tuning() { return tuning; }
+    public RenderTarget motionTarget() { return motionTarget; }
     private boolean historyValid;
+    private boolean capturedFrameValid;
+    public boolean hasValidFrameMatrices() { return capturedFrameValid; }
     private boolean activeSequence;
     private AntiAliasingMode lastTemporalMode;
     private ClientLevel lastLevel;
@@ -69,6 +85,9 @@ public final class VulkanSceneTemporalController {
     private boolean historyResetRecorded;
     private long frameIndex;
     private ClientLevel capturedLevel;
+    private Object capturedPerspective;
+    private Object capturedCameraEntity;
+    private long previousCaptureNanos;
     private Vec3 capturedCameraPosition;
     private Vec3 previousCameraPosition;
     private float capturedCameraXRot;
@@ -94,6 +113,8 @@ public final class VulkanSceneTemporalController {
      * Handles instance as part of the anti-aliasing render, configuration, or compatibility flow.
      * @return singleton controller instance
      */
+    public long allocatedTargetBytes() { return VulkanOwnedTargetMemory.bytes(historyTarget,motionTarget); }
+
     public static VulkanSceneTemporalController instance() {
         return INSTANCE;
     }
@@ -128,11 +149,13 @@ public final class VulkanSceneTemporalController {
             return;
         }
 
-        int nextPhaseCount = requestedPhaseCount > 0 ? requestedPhaseCount : TAA_JITTER_PHASE_COUNT;
+        int nextPhaseCount = requestedPhaseCount > 0 ? requestedPhaseCount : tuning.taaJitterPhases;
         boolean sequenceChanged = jitterWidth != width
                 || jitterHeight != height
                 || jitterPhaseCount != nextPhaseCount;
-        resetHistoryThisFrame = sequenceChanged;
+        resetHistoryThisFrame = sequenceChanged || configurationResetPending;
+        if(configurationResetPending)historyResetReason="input_tuning_changed";
+        configurationResetPending=false;
         if (sequenceChanged) {
             markHistoryReset("jitter_sequence_changed");
             MetricsDiagnostics.info("temporal", "jitter_sequence_configured", MetricsDiagnostics.fields(
@@ -168,6 +191,15 @@ public final class VulkanSceneTemporalController {
             boolean temporalActive
     ) {
         if (!temporalActive || projectionMatrix == null) {
+            capturedFrameValid = false;
+            return projectionMatrix;
+        }
+
+        capturedFrameValid = cameraRenderState != null
+                && TemporalMatrixValidity.usable(projectionMatrix)
+                && TemporalMatrixValidity.usable(cameraRenderState.viewRotationMatrix);
+        if (!capturedFrameValid) {
+            markHistoryReset("invalid_camera_matrix");
             return projectionMatrix;
         }
 
@@ -207,6 +239,8 @@ public final class VulkanSceneTemporalController {
             clearCameraMotion();
         }
 
+        resolveWithoutHistory = !activeSequence || !historyValid || lastLevel != level
+                || bootstrapFramesRemaining > 0 || resetHistoryThisFrame;
         if (!activeSequence
                 || !historyValid
                 || lastLevel != level
@@ -235,7 +269,6 @@ public final class VulkanSceneTemporalController {
             if (bootstrapFramesRemaining > 0) {
                 bootstrapFramesRemaining--;
             }
-            return;
         }
 
         PostChain postChain = minecraft.getShaderManager().getPostChain(TAA_EFFECT_ID, EXTERNAL_TARGETS);
@@ -249,21 +282,26 @@ public final class VulkanSceneTemporalController {
             throw new IllegalStateException("TAA resolve shader is unavailable");
         }
 
+        VulkanMotionVectorRenderer.fsr().render(mainTarget,motionTarget,this);
         VulkanDynamicUniforms.updateTaa(postChain, this);
 
         FrameGraphBuilder frameGraphBuilder = new FrameGraphBuilder();
         ResourceHandle<RenderTarget> mainHandle = frameGraphBuilder.importExternal("salts_taa_main", mainTarget);
         ResourceHandle<RenderTarget> historyHandle = frameGraphBuilder.importExternal("salts_taa_history", historyTarget);
 
-        PostChain.TargetBundle targetBundle = new TemporalTargetBundle(mainHandle, historyHandle);
+        ResourceHandle<RenderTarget> motionHandle=frameGraphBuilder.importExternal("salts_taa_motion",motionTarget);
+        PostChain.TargetBundle targetBundle = new TemporalTargetBundle(mainHandle, historyHandle,motionHandle);
         postChain.addToFrame(frameGraphBuilder, mainTarget.width, mainTarget.height, targetBundle);
-        frameGraphBuilder.execute(resourcePool);
+            try(var gpuTiming=VulkanGpuProfiler.scope("TAA.resolve")) { frameGraphBuilder.execute(resourcePool); }
 
-        copyCurrentFrameToHistory(mainTarget);
+        historyTarget.copyDepthFrom(mainTarget);
+        historyValid=true;
         activeSequence = true;
         lastLevel = level;
         historyResetRecorded = false;
         historyResetReason = "none";
+        resetHistoryThisFrame = false;
+        org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.success(AntiAliasingMode.TAA, mainTarget.width, mainTarget.height);
     }
 
     /**
@@ -271,6 +309,7 @@ public final class VulkanSceneTemporalController {
      */
     public void resetForInactiveMode() {
         boolean wasActive = activeSequence || historyValid || hasViewProjection;
+        destroyResources();
         activeSequence = false;
         lastTemporalMode = null;
         historyValid = false;
@@ -294,8 +333,10 @@ public final class VulkanSceneTemporalController {
      * @param height height value supplied by the caller or Minecraft callback
      */
     private void ensureHistoryTarget(int width, int height) {
+        if(motionTarget==null)motionTarget=new TextureTarget("Salt's TAA Motion",width,height,GpuFormat.RG16_FLOAT,null);
+        else if(motionTarget.width!=width || motionTarget.height!=height)motionTarget.resize(width,height);
         if (historyTarget == null || !historyTarget.hasDepth()) {
-            destroyResources();
+            if(historyTarget!=null)historyTarget.destroyBuffers();
             historyTarget = new TextureTarget(HISTORY_TARGET_LABEL, width, height, GpuFormat.RGBA8_UNORM, GpuFormat.D32_FLOAT);
             historyValid = false;
             bootstrapFramesRemaining = BOOTSTRAP_FRAME_COUNT;
@@ -362,6 +403,7 @@ public final class VulkanSceneTemporalController {
      * Coordinates destroy resources within the anti-aliasing render, configuration, or compatibility flow.
      */
     private void destroyResources() {
+        if(motionTarget!=null){motionTarget.destroyBuffers();motionTarget=null;}
         if (historyTarget != null) {
             MetricsDiagnostics.info("temporal", "history_target_destroyed", MetricsDiagnostics.fields(
                     "width", historyTarget.width,
@@ -378,7 +420,7 @@ public final class VulkanSceneTemporalController {
      * @return base history weight produced by this helper
      */
     public float baseHistoryWeight() {
-        return TAA_BASE_HISTORY_WEIGHT;
+        return resolveWithoutHistory ? 0.0f : tuning.taaHistoryWeight;
     }
 
     /**
@@ -387,7 +429,7 @@ public final class VulkanSceneTemporalController {
      * @return luma rejection produced by this helper
      */
     public float lumaRejection() {
-        return TAA_LUMA_REJECTION;
+        return tuning.taaLumaRejection;
     }
 
     /**
@@ -396,14 +438,14 @@ public final class VulkanSceneTemporalController {
      * @return depth rejection produced by this helper
      */
     public float depthRejection() {
-        return TAA_DEPTH_REJECTION;
+        return tuning.taaDepthRejection;
     }
 
     /**
      * Returns the standard-deviation multiplier used to clip reprojected history.
      */
     public float varianceGamma() {
-        return TAA_VARIANCE_GAMMA;
+        return tuning.taaVarianceGamma;
     }
 
     /**
@@ -546,6 +588,17 @@ public final class VulkanSceneTemporalController {
 
         ClientLevel level = Minecraft.getInstance().level;
         Vec3 position = cameraRenderState.pos;
+        var minecraft = Minecraft.getInstance();
+        Object perspective = minecraft.options.getCameraType();
+        Object cameraEntity = minecraft.getCameraEntity();
+        long now = System.nanoTime();
+        if (hasViewProjection && (perspective != capturedPerspective || cameraEntity != capturedCameraEntity))
+            markHistoryReset("camera_identity_changed");
+        if (previousCaptureNanos != 0 && now - previousCaptureNanos > 1_000_000_000L)
+            markHistoryReset("rendering_resumed");
+        capturedPerspective = perspective;
+        capturedCameraEntity = cameraEntity;
+        previousCaptureNanos = now;
         if (capturedLevel != null && capturedLevel != level) {
             markHistoryReset("captured_level_changed");
         }
@@ -659,10 +712,13 @@ public final class VulkanSceneTemporalController {
     }
 
     private void clearViewProjection() {
+        capturedFrameValid = false;
         hasViewProjection = false;
         markHistoryReset("view_projection_cleared");
         frameIndex = 0L;
         capturedLevel = null;
+        capturedPerspective = capturedCameraEntity = null;
+        previousCaptureNanos = 0;
         capturedCameraPosition = null;
         previousCameraPosition = null;
         capturedCameraXRot = 0.0f;
@@ -723,9 +779,11 @@ public final class VulkanSceneTemporalController {
          * @param mainHandle main handle value supplied by the caller or Minecraft callback
          * @param historyHandle history handle value supplied by the caller or Minecraft callback
          */
-        private TemporalTargetBundle(ResourceHandle<RenderTarget> mainHandle, ResourceHandle<RenderTarget> historyHandle) {
+        private TemporalTargetBundle(ResourceHandle<RenderTarget> mainHandle, ResourceHandle<RenderTarget> historyHandle,
+                                     ResourceHandle<RenderTarget> motionHandle) {
             targets.put(PostChain.MAIN_TARGET_ID, mainHandle);
             targets.put(HISTORY_TARGET_ID, historyHandle);
+            targets.put(MOTION_TARGET_ID,motionHandle);
         }
 
         /**

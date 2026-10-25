@@ -8,6 +8,8 @@ import net.minecraft.client.renderer.GameRenderer;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.config.RenderTuning;
+import java.util.function.Consumer;
 import org.betterLostItems.salts_anti_aliasing.client.config.ConfigManager;
 import org.betterLostItems.salts_anti_aliasing.client.config.DlssQualityPreset;
 import org.betterLostItems.salts_anti_aliasing.client.config.FsrQualityPreset;
@@ -123,6 +125,97 @@ public final class RenderRuntime {
         return configManager.snapshot();
     }
 
+    /** Sliders preview live; the containing screen commits once on close. */
+    public void editTuning(Consumer<RenderTuning> editor) { configManager.editLive(config -> editor.accept(config.tuning)); }
+    public void saveSettings() { configManager.save(); }
+    public void editSettings(Consumer<AntiAliasingConfig> editor) { configManager.edit(editor); rebuildPipeline(); }
+    public void editSettingsLive(Consumer<AntiAliasingConfig> editor) { configManager.editLive(editor); }
+
+    private volatile boolean retryRequested;
+
+    public void retryRendering() { retryRequested=true; }
+
+    public String allocationStatusText() {
+        return String.format(java.util.Locale.ROOT,"AA scene targets: %.1f MiB (estimate)",
+                org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanOwnedTargetMemory.totalBytes()/1048576.0);
+    }
+    public String frameGenerationStatusText() {
+        FsrRuntime f=FsrRuntime.instance();
+        return "Game frames: "+f.renderedPresentCount()+" / display presents: "+f.frameGenerationPresentCount();
+    }
+
+    public String dlssMemoryStatusText() {
+        long bytes = DlssRuntime.instance().estimatedVramBytes();
+        return bytes < 0 ? "DLSS SDK VRAM estimate: unavailable"
+                : String.format(java.util.Locale.ROOT,"DLSS SDK VRAM estimate: %.1f MiB", bytes / 1048576.0);
+    }
+
+    public String dlssMotionCoverageText() {
+        var c = org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.coverage();
+        int particles = org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanParticleMotionRenderer.lastRenderedQuads();
+        return "Moving vertices: " + c.movingVertices() + " / particles: " + particles;
+    }
+
+    public String dlssMotionCoverageDetails() {
+        var c = org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.coverage();
+        return "Captured object vertices: " + c.capturedVertices() + " / budget " + c.vertexBudget()
+                + "\nStable meshes: " + c.stableMeshes() + "; newly visible: " + c.newMeshes()
+                + "\nChanged topology: " + c.topologyChanges() + "; capped: " + c.cappedMeshes()
+                + "; unidentified captured submissions: " + c.unidentifiedMeshes()
+                + "\nParticle billboards captured: "
+                + org.betterLostItems.salts_anti_aliasing.client.render.vulkan.ParticleMotionGeometry.capturedQuads()
+                + "; new/unmatched: "
+                + org.betterLostItems.salts_anti_aliasing.client.render.vulkan.ParticleMotionGeometry.unmatchedQuads()
+                  + "; capped: " + org.betterLostItems.salts_anti_aliasing.client.render.vulkan.ParticleMotionGeometry.droppedQuads()
+                + "\nCounts cover intercepted renderers; third-party renderers may need explicit support.";
+    }
+
+    public String renderStatusText() {
+        if (activeMode() == AntiAliasingMode.DLSS_SUPER_RESOLUTION && !dlssRuntimeStatus().ready())
+            return dlssRuntimeStatus().message();
+        if(!canUseAntiAliasing())return "Select Vulkan in Video Settings to use anti aliasing";
+        if(Minecraft.getInstance().level==null)return "Ready - enter a world to preview";
+        return RenderingHealth.describe(activeMode());
+    }
+
+    public void resetMethodSettings() {
+        configManager.edit(c->{
+            var defaults=new AntiAliasingConfig();
+            c.sharpenStrength=defaults.sharpenStrength;
+            c.tuning.sharpener=defaults.tuning.sharpener;c.tuning.sharpenLimit=defaults.tuning.sharpenLimit;
+            c.tuning.debugView=RenderTuning.DebugView.NONE;c.debugViewsEnabled=false;
+            for(var setting:org.betterLostItems.salts_anti_aliasing.client.config.NumericTuningSetting.forMode(c.mode,true))
+                setting.reset(c.tuning,defaults.tuning);
+            switch(c.mode){
+                case MSAA -> {c.msaaSampleLevel=defaults.msaaSampleLevel;c.msaaAlphaToCoverage=defaults.msaaAlphaToCoverage;}
+                case SSAA -> {c.ssaaScaleLevel=defaults.ssaaScaleLevel;c.tuning.ssaaFilter=defaults.tuning.ssaaFilter;c.tuning.ssaaLinearLight=defaults.tuning.ssaaLinearLight;}
+                case SMAA -> c.tuning.smaaQuality=defaults.tuning.smaaQuality;
+                case NIS_UPSCALE,FSR1_UPSCALE -> {c.nisUpscaleQualityPreset=defaults.nisUpscaleQualityPreset;c.tuning.spatialAa=defaults.tuning.spatialAa;c.tuning.smaaQuality=defaults.tuning.smaaQuality;}
+                case TAA -> {c.tuning.taaHistoryFilter=defaults.tuning.taaHistoryFilter;c.tuning.taaJitterPhases=defaults.tuning.taaJitterPhases;}
+                case DLSS_SUPER_RESOLUTION -> {c.dlssQualityPreset=defaults.dlssQualityPreset;c.tuning.dlssModel=defaults.tuning.dlssModel;c.tuning.dlssColorInput=defaults.tuning.dlssColorInput;}
+                case FSR2_SUPER_RESOLUTION,FSR3_SUPER_RESOLUTION,FSR3_SUPER_RESOLUTION_FRAME_GENERATION -> c.fsrQualityPreset=defaults.fsrQualityPreset;
+                default -> {}
+            }
+            if(c.mode.usesHistoryBuffers()) {c.tuning.entityMotion=true;c.tuning.motionVertexBudget=defaults.tuning.motionVertexBudget;}
+            if(c.mode==AntiAliasingMode.DLSS_SUPER_RESOLUTION || c.mode.usesFsrQualityControl() || c.mode.usesSpatialUpscaleQualityControl()) {
+                c.tuning.upscalerHandAa=defaults.tuning.upscalerHandAa;
+                c.tuning.upscalerHandAlphaToCoverage=defaults.tuning.upscalerHandAlphaToCoverage;
+                c.tuning.mipBiasMode=defaults.tuning.mipBiasMode;c.tuning.mipBias=defaults.tuning.mipBias;c.tuning.mipBiasOffset=defaults.tuning.mipBiasOffset;
+            }
+            if(c.mode==AntiAliasingMode.NIS_UPSCALE || c.mode==AntiAliasingMode.FSR1_UPSCALE)
+                for(var pre:java.util.List.of(AntiAliasingMode.FXAA,AntiAliasingMode.SMAA))
+                    for(var setting:org.betterLostItems.salts_anti_aliasing.client.config.NumericTuningSetting.forMode(pre,true))
+                        setting.reset(c.tuning,defaults.tuning);
+        });
+        rebuildPipeline();retryRendering();
+    }
+
+    public void resetAllSettings() {
+        AntiAliasingMode previous=activeMode();
+        configManager.resetControls();rebuildPipeline();
+        reconfigureSurfaceForFrameGenerationChange(previous,activeMode());retryRendering();
+    }
+
     /**
      * Reports whether Minecraft is currently running on Vulkan.
      */
@@ -156,12 +249,18 @@ public final class RenderRuntime {
      */
     public boolean canSelectMode(AntiAliasingMode mode) {
         AntiAliasingMode requestedMode = AntiAliasingMode.clampImplemented(mode);
-        if (requestedMode == AntiAliasingMode.OFF) {
+        if (requestedMode == AntiAliasingMode.OFF || requestedMode == AntiAliasingMode.DLSS_SUPER_RESOLUTION) {
             return true;
         }
 
         return canUseAntiAliasing()
                 && (isModeSupported(requestedMode) || isNativeModeWaitingForVulkan(requestedMode));
+    }
+
+    /** DLSS can be selected for setup before its native renderer is available. */
+    public boolean canConfigureMode(AntiAliasingMode mode) {
+        return canUseAntiAliasing() && canSelectMode(mode)
+                && (mode != AntiAliasingMode.DLSS_SUPER_RESOLUTION || dlssRuntimeStatus().ready());
     }
 
     /**
@@ -197,11 +296,11 @@ public final class RenderRuntime {
     }
 
     /**
-     * Applies a requested mode. Non-off modes are blocked when Minecraft is not running Vulkan.
+     * Applies a requested mode. DLSS remains selectable so its setup screen can be reached.
      */
     public AntiAliasingMode setMode(AntiAliasingMode mode) {
         AntiAliasingMode requestedMode = AntiAliasingMode.clampImplemented(mode);
-        if (requestedMode != AntiAliasingMode.OFF && !canUseAntiAliasing()) {
+        if (requestedMode != AntiAliasingMode.OFF && requestedMode != AntiAliasingMode.DLSS_SUPER_RESOLUTION && !canUseAntiAliasing()) {
             SaltsAntiAliasing.LOGGER.info(
                     "Ignoring Salt's Anti Aliasing mode {} because Minecraft is not running Vulkan",
                     requestedMode.displayName()
@@ -227,7 +326,7 @@ public final class RenderRuntime {
                 "requiredCapabilities", requiredCapabilities(requestedMode),
                 "availableCapabilities", backend.capabilities()
         );
-        configManager.edit(config -> config.mode = clampedMode);
+        configManager.edit(config -> {config.mode = clampedMode;config.tuning.debugView=RenderTuning.DebugView.NONE;config.debugViewsEnabled=false;});
         edgeDebugAnalyzer.reset(clampedMode);
         rebuildPipeline();
         reconfigureSurfaceForFrameGenerationChange(previousMode, clampedMode);
@@ -344,6 +443,7 @@ public final class RenderRuntime {
     }
 
     public void applyScenePostProcessing(GameRenderer gameRenderer) {
+        if (frameGenerationPostEffectsApplied) return;
         rebuildPipelineIfBackendReady();
         if (!canUseAntiAliasing()) {
             return;
@@ -354,12 +454,35 @@ public final class RenderRuntime {
         VulkanSceneFsrController.instance().captureFrameGenerationHudlessColor();
     }
 
+    private boolean frameGenerationPostEffectsApplied;
+
+    /** Finish the FG world input before native-resolution hand color is drawn over it. */
+    public void beforeHandRendering(GameRenderer renderer) {
+        if (!effectiveConfigSnapshot().mode.usesFsrFrameGeneration()) return;
+        applyScenePostProcessing(renderer);
+        frameGenerationPostEffectsApplied = true;
+    }
+
+    public void maintainWithoutWorld(GameRenderer renderer) {
+        if(Minecraft.getInstance().level!=null)return;
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanGpuProfiler.beginFrame();
+        var inactive=effectiveConfigSnapshot();inactive.mode=AntiAliasingMode.OFF;
+        VulkanSceneMsaaController.instance().beginSceneRendering(renderer,inactive);
+        VulkanSceneScaleController.instance().beginSceneRendering(renderer,inactive);
+        VulkanSceneDlssController.instance().beginSceneRendering(renderer,inactive);
+        VulkanSceneFsrController.instance().beginSceneRendering(renderer,inactive);
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneTemporalController.instance().resetForInactiveMode();
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.beginFrame(inactive);
+        scenePostProcessor.maintain(inactive);
+    }
+
     public void recordRenderedFrame(long frameTimeNs, int displayedFps) {
         rebuildPipelineIfBackendReady();
         performanceMetricsRecorder.recordFrame(frameTimeNs, displayedFps);
     }
 
     public void shutdownMetrics() {
+        configManager.save();
         MetricsDiagnostics.info(
                 "lifecycle",
                 "metrics_shutdown",
@@ -395,18 +518,30 @@ public final class RenderRuntime {
     }
 
     public void beginSceneRendering(GameRenderer gameRenderer) {
+        frameGenerationPostEffectsApplied = false;
         rebuildPipelineIfBackendReady();
         AntiAliasingConfig config = effectiveConfigSnapshot();
         VulkanSceneMsaaController.instance().beginSceneRendering(gameRenderer, config);
-        if (config.mode == AntiAliasingMode.OFF) {
-            return;
+        if (retryRequested) {
+            retryRequested=false;
+            scenePostProcessor.retry();
+            VulkanSceneScaleController.instance().retry();
+            VulkanSceneDlssController.instance().retry();
+            VulkanSceneFsrController.instance().retry();
+            VulkanSceneMsaaController.instance().retry();
+            RenderingHealth.clear();
         }
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanGpuProfiler.beginFrame();
+        scenePostProcessor.maintain(config);
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.beginFrame(config);
         VulkanSceneDlssController.instance().beginSceneRendering(gameRenderer, config);
         VulkanSceneFsrController.instance().beginSceneRendering(gameRenderer, config);
         VulkanSceneScaleController.instance().beginSceneRendering(gameRenderer, config);
     }
 
     public void endSceneRendering(GameRenderer gameRenderer) {
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanTextureDetail.endScene();
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.endWorldCapture();
         rebuildPipelineIfBackendReady();
         AntiAliasingConfig config = effectiveConfigSnapshot();
         VulkanSceneMsaaController.instance().endSceneRendering(gameRenderer, config);
@@ -464,9 +599,15 @@ public final class RenderRuntime {
         );
     }
 
-    private AntiAliasingConfig effectiveConfigSnapshot() {
+    /** Rendering uses a native scene while a selected DLSS method awaits setup or restart. */
+    public AntiAliasingConfig effectiveConfigSnapshot() {
         AntiAliasingConfig config = configManager.snapshot();
-        if (!canUseAntiAliasing()) {
+        if (config.mode == AntiAliasingMode.DLSS_SUPER_RESOLUTION && !canConfigureMode(config.mode)) {
+            config.mode = AntiAliasingMode.OFF;
+            config.sharpenStrength = 0.0f;
+            config.debugViewsEnabled = false;
+            config.tuning.debugView = RenderTuning.DebugView.NONE;
+        } else if (!canUseAntiAliasing()) {
             config.mode = AntiAliasingMode.OFF;
         } else {
             config.mode = resolveSupportedMode(config.mode);
@@ -490,13 +631,13 @@ public final class RenderRuntime {
         AntiAliasingMode nextMode = AntiAliasingMode.clampImplemented(mode);
         do {
             nextMode = nextMode.nextImplemented();
-        } while (!isModeSupported(nextMode));
+        } while (nextMode != AntiAliasingMode.DLSS_SUPER_RESOLUTION && !isModeSupported(nextMode));
 
         return nextMode;
     }
 
     private AntiAliasingMode resolveSupportedMode(AntiAliasingMode mode) {
-        if (isModeSupported(mode) || isNativeModeWaitingForVulkan(mode)) {
+        if (mode == AntiAliasingMode.DLSS_SUPER_RESOLUTION || isModeSupported(mode) || isNativeModeWaitingForVulkan(mode)) {
             return mode;
         }
         if (mode == AntiAliasingMode.FSR3_SUPER_RESOLUTION_FRAME_GENERATION

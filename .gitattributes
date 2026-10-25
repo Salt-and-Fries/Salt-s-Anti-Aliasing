@@ -1,0 +1,11 @@
+# Keep binary deliverables intact on Windows checkouts.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.dll binary
+*.jar binary
+
+# Preserve the exact bytes of captured validation evidence.
+output/** -text -whitespace
+*.log -text -whitespace

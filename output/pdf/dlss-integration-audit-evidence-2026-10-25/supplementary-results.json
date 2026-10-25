@@ -1,0 +1,74 @@
+[
+  {
+    "label": "entity-valid-ready",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 2
+  },
+  {
+    "label": "entity-valid-vectors",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 32
+  },
+  {
+    "label": "entity-valid-disabled",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 32
+  },
+  {
+    "label": "entity-valid-restored",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 32
+  },
+  {
+    "label": "native-hand-valid",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "texture-off",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "texture-auto",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "texture-sharpen",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "resize-1080",
+    "status": "DLSS Super Resolution - 1280 x 720",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 12
+  },
+  {
+    "label": "dlaa-1080",
+    "status": "DLSS Super Resolution - 1920 x 1080",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 12
+  },
+  {
+    "label": "resize-720",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 4
+  },
+  {
+    "label": "quality-final",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 4
+  }
+]

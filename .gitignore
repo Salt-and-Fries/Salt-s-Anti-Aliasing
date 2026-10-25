@@ -22,3 +22,10 @@ run
 
 # Runtime/test log output
 logs/
+
+# Local attachments and report-rendering scratch files
+/.codex-remote-attachments/
+/tmp/
+
+# Generated mod builds (keep reports and validation evidence under output)
+/output/**/*.jar

@@ -12,6 +12,16 @@ public record DlssOptimalSettings(
         int maxRenderHeight,
         float sharpness
 ) {
+    /** NVIDIA's base-eight sample coverage, using the SDK's actual input dimensions. */
+    public int jitterPhaseCount(int outputWidth, int outputHeight) {
+        if (renderWidth <= 0 || renderHeight <= 0 || outputWidth <= 0 || outputHeight <= 0) {
+            return 8;
+        }
+        double inputPixels = (double) renderWidth * renderHeight;
+        double outputPixels = (double) outputWidth * outputHeight;
+        return (int) Math.max(8, Math.ceil(8.0 * outputPixels / inputPixels));
+    }
+
     public static DlssOptimalSettings fallback(int outputWidth, int outputHeight) {
         int renderWidth = Math.max(1, Math.round(outputWidth * 0.5f));
         int renderHeight = Math.max(1, Math.round(outputHeight * 0.5f));

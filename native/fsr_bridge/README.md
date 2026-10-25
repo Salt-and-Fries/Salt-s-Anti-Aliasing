@@ -51,3 +51,15 @@ lower-memory path and avoids making HUD-less resource lifetimes depend on an ove
 the dedicated async-compute role is still reserved and validated for the replacement swapchain.
 
 Keep `native/redist/windows-x86_64/LICENSE-AMD-FidelityFX.txt` in sync with the bundled AMD runtime.
+
+The audit implementation adds native feature retirement and presentation-oriented motion/depth
+inputs. Rebuild the bridge together with the Java mod when using custom overrides; older bridges
+cannot provide the corrected frame-generation input contract.
+
+For diagnostic presentation capture, set `SALTS_FSR_CAPTURE_DIR` to an existing writable location
+before launching Minecraft. The opt-in callback preserves the SDK's default no-separate-UI copy and
+captures up to 48 actual presentation callbacks after warm-up, plus the presentation and HUD-less
+inputs. Readbacks are bounded to approximately 256 MiB plus two input images. They flush on context
+teardown or the diagnostic JNI flush, after waiting for SDK/GPU completion. PPM files and JSON metadata
+include generated/rendered flags, frame IDs and CPU callback times. Those times are not monitor
+scanout times or input-latency measurements. Leave this variable unset for ordinary play and profiling.

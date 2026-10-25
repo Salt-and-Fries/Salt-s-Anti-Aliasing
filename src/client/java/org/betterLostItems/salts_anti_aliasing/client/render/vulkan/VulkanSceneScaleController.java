@@ -16,6 +16,8 @@ import net.minecraft.resources.Identifier;
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.config.RenderTuning;
+import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth;
 import org.betterLostItems.salts_anti_aliasing.client.config.NisUpscaleQualityPreset;
 import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 
@@ -43,6 +45,8 @@ public final class VulkanSceneScaleController {
 
     private final CrossFrameResourcePool resourcePool = new CrossFrameResourcePool(3);
     private boolean disabledAfterFailure;
+    private String lastConfiguration;
+    public void retry() { disabledAfterFailure=false; failedSceneSetupSignature=null; }
     private boolean active;
     private TextureTarget sceneTarget;
     private RenderTarget mainTarget;
@@ -61,6 +65,8 @@ public final class VulkanSceneScaleController {
      * Handles instance as part of the anti-aliasing render, configuration, or compatibility flow.
      * @return singleton controller instance
      */
+    public long allocatedTargetBytes() { return VulkanOwnedTargetMemory.bytes(sceneTarget); }
+
     public static VulkanSceneScaleController instance() {
         return INSTANCE;
     }
@@ -76,13 +82,15 @@ public final class VulkanSceneScaleController {
         RenderSystem.assertOnRenderThread();
         clearFrameState();
 
-        if (disabledAfterFailure) {
-            return;
-        }
+        String configuration = config.mode+":"+config.sceneRenderScale()+":"+gameRenderer.mainRenderTarget().width+"x"+gameRenderer.mainRenderTarget().height;
+        if (!configuration.equals(lastConfiguration)) { retry(); lastConfiguration=configuration; }
         if (!usesScaledSceneTarget(config.mode)) {
             failedSceneSetupSignature = null;
+            destroyResources(); resourcePool.clear();
             return;
         }
+        if (disabledAfterFailure) return;
+        this.activeMode=config.mode;
 
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null) {
@@ -114,6 +122,7 @@ public final class VulkanSceneScaleController {
             );
             if (sceneWidth > maxTextureSize || sceneHeight > maxTextureSize) {
                 warnUnsupportedSceneSize(sceneWidth, sceneHeight, maxTextureSize);
+                RenderingHealth.failure(config.mode,"Requested size exceeds GPU limit; using native resolution");
                 return;
             }
 
@@ -344,6 +353,7 @@ public final class VulkanSceneScaleController {
             RuntimeException exception
     ) {
         failedSceneSetupSignature = setupSignature;
+        RenderingHealth.failure(activeMode,"Target allocation failed; lower the scale or output size");
         destroyResources();
         resourcePool.clear();
         clearFrameState();
@@ -388,6 +398,14 @@ public final class VulkanSceneScaleController {
             RenderTarget mainTarget,
             AntiAliasingConfig config
     ) {
+        if (config.mode != AntiAliasingMode.SSAA && config.tuning.spatialAa != RenderTuning.SpatialAa.OFF) {
+            String preEffect = config.tuning.spatialAa == RenderTuning.SpatialAa.SMAA ? "smaa" : "fxaa";
+            PostChain pre = minecraft.getShaderManager().getPostChain(
+                    Identifier.parse(SaltsAntiAliasing.MOD_ID+":"+preEffect), Set.of(PostChain.MAIN_TARGET_ID));
+            if (pre == null) throw new IllegalStateException("Spatial pre-AA shader unavailable");
+            VulkanDynamicUniforms.updateTuning(pre,config);
+            try(var gpuTiming=VulkanGpuProfiler.scope(config.mode+".pre_"+preEffect)) { pre.process(sceneTarget,resourcePool); }
+        }
         Identifier effectId = upscaleEffectFor(config);
         if (effectId == null) {
             resolveSceneColor(sceneTarget, mainTarget);
@@ -405,6 +423,7 @@ public final class VulkanSceneScaleController {
                     "fallback", "linear color resolve"
             );
             resolveSceneColor(sceneTarget, mainTarget);
+            RenderingHealth.failure(config.mode,"Upscale shader unavailable; using linear resolve");
             return;
         }
 
@@ -421,14 +440,15 @@ public final class VulkanSceneScaleController {
         );
 
         // Upscaling itself never chooses a sharpening amount; the universal final pass owns it.
-        VulkanDynamicUniforms.updateSharpening(postChain, 0.0f);
+        VulkanDynamicUniforms.updateTuning(postChain, config);
 
         FrameGraphBuilder frameGraphBuilder = new FrameGraphBuilder();
         ResourceHandle<RenderTarget> mainHandle = frameGraphBuilder.importExternal("salts_upscale_main", mainTarget);
         ResourceHandle<RenderTarget> sceneHandle = frameGraphBuilder.importExternal("salts_upscale_scene", sceneTarget);
         SceneScaleTargetBundle targetBundle = new SceneScaleTargetBundle(mainHandle, sceneHandle);
         postChain.addToFrame(frameGraphBuilder, mainTarget.width, mainTarget.height, targetBundle);
-        frameGraphBuilder.execute(resourcePool);
+            try(var gpuTiming=VulkanGpuProfiler.scope(config.mode+".resolve")) { frameGraphBuilder.execute(resourcePool); }
+        RenderingHealth.success(config.mode,sceneTarget.width,sceneTarget.height);
     }
 
     /**
@@ -497,6 +517,7 @@ public final class VulkanSceneScaleController {
     private void disableAfterFailure(String message, RuntimeException exception) {
         AntiAliasingMode failedMode = activeMode;
         disabledAfterFailure = true;
+        RenderingHealth.failure(failedMode, exception.getMessage());
         destroyResources();
         resourcePool.clear();
         clearFrameState();

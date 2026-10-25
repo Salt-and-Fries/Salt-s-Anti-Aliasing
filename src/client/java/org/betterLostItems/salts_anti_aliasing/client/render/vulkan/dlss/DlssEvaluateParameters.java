@@ -28,8 +28,6 @@ public record DlssEvaluateParameters(
         float[] projection,
         float[] cameraParameters,
         int[] resourceFormats,
-        int[] resourceUsages,
-        long colorRejectionImage,
-        long colorRejectionView
+        int[] resourceUsages
 ) {
 }

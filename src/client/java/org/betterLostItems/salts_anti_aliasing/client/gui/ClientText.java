@@ -32,7 +32,7 @@ public final class ClientText {
      * @return text component shown to the player
      */
     public static Component label(AntiAliasingMode mode) {
-        return Component.translatable(mode.translationKey());
+        return Component.translatable(mode.selectionMode().translationKey());
     }
 
     /**

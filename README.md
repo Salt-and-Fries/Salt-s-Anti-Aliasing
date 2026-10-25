@@ -91,6 +91,38 @@ SSAA percentages are per axis. The 200% option renders at twice the output width
 
 The optional **Cycle AA Mode** key binding is unbound by default so it cannot collide with shader-pack shortcuts (including Iris's `O` binding). It can be assigned under Minecraft's Controls screen; existing custom bindings remain intact. Existing installations that already saved the old `O` default should clear or reassign it once in Controls.
 
+## Anti Aliasing Settings
+
+Open **Options → Video Settings → Anti Aliasing Settings**. All mod controls now live in this
+dedicated menu. Mod Menu and the Sodium integration open the same screen.
+
+The selected method determines which controls appear. **Advanced controls** exposes additional
+parameters, diagnostic views and optional native-runtime overrides. Sliders preview immediately;
+leaving the screen saves them. Reset this method restores its image-quality defaults, while Reset
+all restores the mod's controls without erasing explicit native-runtime paths.
+
+| Method | Available image-quality controls |
+| --- | --- |
+| FXAA | Subpixel blend, edge threshold, minimum contrast |
+| MSAA | Sample count and optional cutout alpha-to-coverage |
+| SSAA | Per-axis resolution scale, area/tent resolve, linear-light/encoded averaging |
+| SMAA | Low/Medium/High/Ultra search quality and edge threshold |
+| FSR1 / NIS | Input-resolution preset, SMAA/FXAA/Off pre-AA and its controls, optional terrain MIP bias |
+| TAA | History contribution, luminance/depth rejection, variance clipping, jitter length, history filter, geometry motion and confidence views |
+| DLSS | SDK quality preset, geometry motion, color-rejection controls, terrain MIP bias and buffer diagnostics |
+| FSR2 / FSR3 | SDK quality preset, geometry motion, reactive/composition-mask controls, terrain MIP bias and buffer diagnostics |
+| FSR3 + FG | FSR3 controls, frame-generation toggle and rendered/display-present counters |
+
+Every method also has independent sharpening. The generic filter is explicitly named as a custom
+edge-adaptive filter, with optional mild unsharp filtering and a bounded overshoot control. FSR2/3
+use native sharpening when their evaluation succeeds. Sharpening defaults to zero; terrain MIP
+bias defaults to Off because aggressive detail sampling can increase shimmer. Configuration v3
+migrates older settings and preserves explicit v2 sharpening values.
+
+Diagnostics show the effective renderer, internal resolution, fallback reason and estimated payload
+of directly owned scene targets. The estimate excludes SDK allocations, temporary post-chain targets
+and driver overhead. **Retry rendering** clears recoverable controller failures on the render thread.
+
 ## Metrics And Diagnostics
 
 When `recordMetrics` is enabled, the mod writes `salts_anti_aliasing_metrics_latest.json` to Minecraft's `logs` directory and archives a timestamped copy when the recording session ends. In addition to frame-time and FPS statistics, report version 2 includes a bounded structured diagnostics timeline with:
@@ -107,20 +139,27 @@ The newest 4,096 diagnostic events are retained so a recurring failure cannot gr
 
 ## DLSS Super Resolution
 
-Players using the Windows x64 release jar can select DLSS normally on supported RTX hardware;
-the production runtime is included and extracted automatically. No SDK download, path configuration,
-or personal application ID is needed. DLSS Auto selects Quality through 1080p, Balanced through 1440p,
-and Performance above 1440p.
+DLSS requires Windows x64, supported RTX hardware, Vulkan, and a user-downloaded NVIDIA runtime.
+The public jar includes the mod's JNI bridge; NVIDIA's runtime DLLs are excluded from every build.
+Open **Video Settings → Anti Aliasing Settings**, select **DLSS Super Resolution**, then use
+**Set up DLSS** below Advanced controls. Download Streamline **2.14.1**,
+extract it, then connect `bin/x64/nvngx_dlss.dll` using the system file picker. The mod checks the
+five matching production DLLs and copies them into this Minecraft instance. Restart Minecraft
+completely, then select DLSS Super Resolution. See [the setup guide](docs/dlss-setup.md).
 
-The repository does not commit NVIDIA binaries. Maintainers stage the signed production files and
-build the bundled jar using `native/dlss_bridge/Stage-ReleaseRuntime.ps1` and the build instructions
-in `native/dlss_bridge/README.md`. NVIDIA's SDK license includes separate distribution, attribution,
-and release-notification requirements; successful runtime initialization is not NVIDIA endorsement.
+This same flow works with `./gradlew runClient`. Its settings live in `run/26.3`, separately from
+your launcher installation. Developers can instead use a local runtime for one launch:
 
-For unbundled development builds or explicit runtime overrides, provide:
+```powershell
+.\gradlew.bat runClient -PdlssRuntimeDirectory="C:/SDKs/Streamline/bin/x64"
+```
+
+The property only sets the development JVM's runtime path; it never packages NVIDIA DLLs.
+DLSS Auto selects Quality through 1080p, Balanced through 1440p, and Performance above 1440p.
+Advanced explicit overrides remain available:
 
 ```text
-dlssBridgePath       absolute path to salts_dlss_bridge.dll
+dlssBridgePath       optional custom bridge path (blank uses the included bridge)
 dlssPluginPath       absolute path to the Streamline plugin/DLSS runtime folder
 dlssApplicationId    optional NVIDIA-provided application ID (0 uses the mod's project ID)
 dlssLogPath          optional absolute log output folder
@@ -144,7 +183,7 @@ salts.dlss.applicationId
 salts.dlss.logPath
 ```
 
-The native bridge project lives in `native/dlss_bridge`. The normal Gradle build does not compile it; build it separately against a local NVIDIA Streamline SDK.
+The native bridge project lives in `native/dlss_bridge`. The normal Gradle build packages the prebuilt bridge from `native/redist/dlss/windows-x86_64`; rebuilding it requires a local NVIDIA Streamline SDK.
 
 Fabric 26.3 requires bridge ABI 2; rebuild older bridge DLLs. Configure the runtime before starting Minecraft, because Streamline's required Vulkan extensions and features must be enabled when the device is created. Changing runtime paths during a session requires a restart.
 
@@ -228,13 +267,20 @@ Its game directory is `run/26.3`, separate from older development worlds and mod
 - Temporal reprojection uses camera-relative matrices, Vulkan reverse-Z depth, and
   previous-minus-current pixel motion. Coordinates are subtracted in double precision
   before upload, and clear-depth sky preserves rotation without translation parallax.
-- FSR and DLSS reject unexplained color changes to reduce history trails from animated
-  textures and objects without entity motion vectors. DLSS uses a supported R16F hint.
+- TAA, FSR and DLSS overlay depth-validated motion from matched entity-model, item and moving-block
+  vertices. Stable block-entity submissions can also contribute animated model geometry. Unsupported
+  custom geometry and particles still rely on camera motion plus color/depth rejection; DLSS uses
+  a supported R16F color-change hint.
+- FSR1/NIS receive configurable pre-AA. SSAA defaults to linear-light area integration, with a tent
+  filter and legacy encoded-light choice. TAA resolves current/history samples onto an unjittered grid.
+- Inactive scene targets are released, and native render features retire after GPU completion.
+- Frame generation receives presentation-oriented color, depth and motion, including matching world
+  overlays in the HUD-less image. This corrects an upside-down input that prevented useful interpolation.
 
 ## Fabric 26.3 Quality Verification
 
 Validated on Windows x64 with an RTX 3060 Ti, NVIDIA driver 591.86, and Java 25.
-The automated suite includes 16 shipped fragment shaders compiled to Vulkan 1.2 SPIR-V
+The automated suite includes all shipped fragment shaders compiled to Vulkan 1.2 SPIR-V
 and reprojection tests at ordinary coordinates and near the world border.
 
 Runtime checks exercised every exposed mode, spatial and temporal quality changes,
@@ -250,6 +296,11 @@ and third-party renderer combinations still need their own verification. Spatial
 methods retain their normal limitations on temporal shimmer, and temporal methods
 can still lose detail at low internal resolutions or around disocclusion.
 
+The audit implementation and follow-up evidence are documented in
+[the implementation and validation notes](docs/fabric-26.3-implementation-validation.md), including
+enlarged game captures, stationary TAA measurements, actual generated-frame captures and remaining
+coverage limits. Sparse, nonblocking GPU pass timestamps are included when metrics recording is enabled.
+
 ## Porting Guide For Other Jars
 
 When syncing a sibling jar branch:
@@ -264,7 +315,7 @@ When syncing a sibling jar branch:
 ## Current Renderer Notes
 
 The anti-aliasing settings include a Credits and Licenses screen with developer attribution,
-NVIDIA attribution, and the complete licenses and end-user terms included in a DLSS release jar.
+NVIDIA attribution, the Streamline interface license, and available license notices copied with a user-imported DLSS runtime.
 The proprietary NVIDIA runtime remains subject to its accompanying license; the mod's own
 license does not grant rights to it. NVIDIA's release notification and applicable written
 approval of proposed trademark uses remain separate release requirements.
@@ -280,7 +331,7 @@ licenses. This proposed credit is included in the pending NVIDIA release review.
 - Anti-aliasing is blocked unless Minecraft reports an active Vulkan device.
 - MSAA uses native Vulkan multisampled scene textures and resolves into Minecraft's main target after world rendering. Cutout textures keep Minecraft's binary alpha behavior by default, with optional alpha-to-coverage for players who prefer smoother cutout edges.
 - TAA uses jitter, a persistent history target, and dynamic uniforms.
-- DLSS redirects world rendering to a Streamline-selected internal-resolution target. Release builds can bundle the Windows x64 production runtime, which extracts automatically; see `native/dlss_bridge/README.md` for release packaging. A documented custom-engine Project ID is used when no NVIDIA-issued application ID exists.
+- DLSS redirects world rendering to a Streamline-selected internal-resolution target. Players connect the Windows x64 production runtime through Set up DLSS; NVIDIA DLLs are excluded from public jars. A documented custom-engine Project ID is used when no NVIDIA-issued application ID exists.
 - FSR2/FSR3 use the bundled FidelityFX Vulkan runtime on Windows x64 and can be overridden with explicit native paths. FSR3 Frame Generation uses the SDK replacement swapchain, dedicated queue roles, per-present interpolation state, and a HUD-less scene image.
 - Dynamic uniforms are uploaded through writable GPU buffers when Minecraft's post-chain uniforms are immutable.
 
@@ -301,6 +352,7 @@ Before calling a Fabric 26.3 branch change ready:
 .\gradlew.bat build
 .\gradlew.bat runClient
 Open Video Settings
+Open Anti Aliasing Settings
 Cycle modes from Off through TAA
 Enter a world
 Toggle edge debug with F3+K

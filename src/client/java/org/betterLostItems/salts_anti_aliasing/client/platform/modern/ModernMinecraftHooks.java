@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
+import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneDlssController;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneFsrController;
@@ -46,11 +47,34 @@ public final class ModernMinecraftHooks {
     /**
      * Prepares the per-frame temporal jitter before the world projection and camera state are consumed.
      */
+    public static boolean beginEntityGeometrySubmission(net.minecraft.client.renderer.entity.state.EntityRenderState state) {
+        return org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.enterEntity(
+                ((org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityTemporalState)state).saltsAntiAliasing$entityId());
+    }
+    public static boolean beginBlockGeometrySubmission(net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState state) {
+        return state.blockPos==null?org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.enterEntity(-1):
+                org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.enterBlock(state.blockPos.asLong());
+    }
+    public static void endGeometrySubmission() { org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.exitSubmission(); }
+    public static void tagGeometrySubmission(Object submit) { org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.tagSubmission(submit); }
+    public static com.mojang.blaze3d.vertex.VertexConsumer captureSubmittedGeometry(Object submit,Object kind,Object layer,com.mojang.blaze3d.vertex.VertexConsumer consumer) {
+        return org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.captureSubmitted(submit,kind,layer,consumer);
+    }
+    public static com.mojang.blaze3d.vertex.VertexConsumer captureModelGeometry(net.minecraft.client.renderer.feature.ModelFeatureRenderer.Submit<?> submit,com.mojang.blaze3d.vertex.VertexConsumer consumer) {
+        return org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.capture(submit,consumer);
+    }
+
     public static void prepareTemporalJitter(GameRenderer gameRenderer) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
         boolean temporalActive = runtime != null && runtime.isTemporalRenderingActive();
         RenderTarget mainTarget = gameRenderer.mainRenderTarget();
+        if(runtime!=null) org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanTextureDetail.beginScene(
+                runtime.effectiveConfigSnapshot(),mainTarget.width,gameRenderer.gameRenderState().windowRenderState.width);
+        if (runtime != null) VulkanSceneTemporalController.instance().configureTuning(runtime.configSnapshot().tuning);
         int jitterPhaseCount = VulkanSceneFsrController.instance().activeJitterPhaseCount();
+        if (runtime != null && runtime.activeMode() == AntiAliasingMode.DLSS_SUPER_RESOLUTION) {
+            jitterPhaseCount = VulkanSceneDlssController.instance().activeJitterPhaseCount();
+        }
         VulkanSceneTemporalController.instance().prepareFrameJitter(
                 temporalActive,
                 mainTarget.width,
@@ -111,6 +135,8 @@ public final class ModernMinecraftHooks {
      */
     public static void recordRenderedFrame(GameRenderer gameRenderer, boolean renderLevel) {
         RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        if(runtime!=null) VulkanSceneFsrController.instance().prepareFrameGenerationPresentation();
+        if (runtime != null) runtime.maintainWithoutWorld(gameRenderer);
         if (runtime != null && renderLevel) {
             Minecraft minecraft = Minecraft.getInstance();
             runtime.recordRenderedFrame(minecraft.getFrameTimeNs(), minecraft.getFps());

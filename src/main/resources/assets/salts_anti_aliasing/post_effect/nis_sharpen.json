@@ -19,17 +19,17 @@
           {
             "name": "Sharpness",
             "type": "float",
-            "value": 0.0
+            "value": 0
           },
           {
-            "name": "EdgeBoost",
+            "name": "Algorithm",
             "type": "float",
-            "value": 1.1
+            "value": 0
           },
           {
-            "name": "ClampBoost",
+            "name": "OvershootLimit",
             "type": "float",
-            "value": 0.18
+            "value": 0.03
           }
         ]
       }

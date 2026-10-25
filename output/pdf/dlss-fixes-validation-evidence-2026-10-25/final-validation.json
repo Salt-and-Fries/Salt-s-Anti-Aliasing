@@ -1,0 +1,13 @@
+{
+  "vuidCount": 0,
+  "syncHazards": 0,
+  "shutdownLeaks": false,
+  "cleanExit": true,
+  "healthyRecovery": "DLSS Super Resolution - 853 x 480",
+  "pinholeWarning": false,
+  "worldUnload": {
+    "hasWorld": false,
+    "handAaBytes": 0,
+    "ownedTargetBytes": 0
+  }
+}

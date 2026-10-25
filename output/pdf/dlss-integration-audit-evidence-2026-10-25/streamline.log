@@ -1,0 +1,1189 @@
+[streamline][info]log.cpp:131[logva] Log file G:\Codex Projects\Salts Anti Aliasing\run\dlss-deep-audit-20261025\dlss-logs\sl.log opened on 25.10.2026 at 03-20-32
+[03-20-32][streamline][info][tid:23756][0s:002ms:911us]pluginManager.cpp:430[setHostSDKVersion] Streamline v2.14.1.98614dad6 - built on Fri Aug 28 13:38:13 2026 - host SDK v2.14.1
+[03-20-32][streamline][info][tid:23756][0s:182ms:979us]pluginManager.cpp:545[findPlugins] Looking for plugins in G:\Codex Projects\Salts Anti Aliasing\run\26.3\salts_anti_aliasing\native\dlss\runtime\e0a745ad6ede2b9f7201e2a8be6a5af7b40eb1e3356eee17f16e14da149c2011 ...
+[03-20-32][streamline][info][tid:23756][0s:183ms:033us]pluginManager.cpp:1048[loadPlugins] eLoadDownloadedPlugins flag not passed to preferences, OTA'd plugins will not be loaded!
+[03-20-32][streamline][info][tid:23756][0s:217ms:295us]plugin.cpp:94[isAppDenylisted] Plugin path: G:\Codex Projects\Salts Anti Aliasing\run\26.3\salts_anti_aliasing\native\dlss\runtime\e0a745ad6ede2b9f7201e2a8be6a5af7b40eb1e3356eee17f16e14da149c2011\
+[03-20-32][streamline][info][tid:23756][0s:217ms:538us]plugin.cpp:110[isAppDenylisted] Plugin is not from OTA - denylist does not apply
+[03-20-32][streamline][info][tid:23756][0s:217ms:579us]commonInterface.cpp:165[getSystemCaps] Enumerating up to 8 adapters but only one of them can be used to create a device - no mGPU support in this SDK
+[03-20-32][streamline][info][tid:23756][0s:233ms:304us]commonInterface.cpp:287[getSystemCaps] >-----------------------------------------
+[03-20-32][streamline][info][tid:23756][0s:233ms:340us]commonInterface.cpp:290[getSystemCaps] NVIDIA driver 591.86
+[03-20-32][streamline][info][tid:23756][0s:234ms:328us]commonInterface.cpp:315[getSystemCaps] Adapter 0 architecture 0x170 implementation 0x4 revision 0xa1 - bit 0x1 - LUID 0.70244
+[03-20-32][streamline][info][tid:23756][0s:234ms:339us]commonInterface.cpp:321[getSystemCaps] -----------------------------------------<
+[03-20-32][streamline][info][tid:23756][0s:234ms:556us]commonEntry.cpp:2045[getOSVersionAndUpdateTimerResolution] Changed high resolution timer resolution to 5000 [100 ns units].
+[03-20-32][streamline][info][tid:23756][0s:234ms:570us]commonEntry.cpp:2124[updateEmbeddedJSON] Detected Windows OS version 10.0.26300
+[03-20-32][streamline][info][tid:23756][0s:234ms:648us]pluginManager.cpp:907[mapPlugins] Loaded plugin 'sl.common' - version 2.14.1.98614dad6 PRODUCTION - id 4294967295 - priority 0 - adapter mask 0x3 - interposer 'no'
+[03-20-32][streamline][info][tid:23756][0s:239ms:562us]plugin.cpp:94[isAppDenylisted] Plugin path: G:\Codex Projects\Salts Anti Aliasing\run\26.3\salts_anti_aliasing\native\dlss\runtime\e0a745ad6ede2b9f7201e2a8be6a5af7b40eb1e3356eee17f16e14da149c2011\
+[03-20-32][streamline][info][tid:23756][0s:239ms:766us]plugin.cpp:110[isAppDenylisted] Plugin is not from OTA - denylist does not apply
+[03-20-32][streamline][info][tid:23756][0s:385ms:355us]commonEntry.cpp:1042[getNGXFeatureRequirements] Native VK OFA feature supported on this device!
+[03-20-33][streamline][info][tid:23756][1s:052ms:082us]commonEntry.cpp:1100[getNGXFeatureRequirements] NGX feature 1 requirements - minOS 10.0.0 minHW 0x160
+[03-20-33][streamline][info][tid:23756][1s:052ms:162us]pluginManager.cpp:907[mapPlugins] Loaded plugin 'sl.dlss' - version 2.14.1.98614dad6 PRODUCTION - id 0 - priority 100 - adapter mask 0x1 - interposer 'no'
+[03-20-33][streamline][info][tid:23756][1s:052ms:498us]pluginManager.cpp:1190[loadPlugins] Plugin execution order based on priority:
+[03-20-33][streamline][info][tid:23756][1s:052ms:560us]pluginManager.cpp:1193[loadPlugins] P0 - sl.common
+[03-20-33][streamline][info][tid:23756][1s:052ms:625us]pluginManager.cpp:1193[loadPlugins] P100 - sl.dlss
+[03-20-34][streamline][info][tid:23756][1s:757ms:241us]pluginManager.cpp:1393[initializePlugins] Initializing plugins - api 0.0.1 - application ID 100721531
+[03-20-34][streamline][info][tid:23756][1s:757ms:422us]vknvll2.cpp:416[CreateVkNvLowLatency2] Failed to init VkNvLowLatency2: 2
+[03-20-34][streamline][info][tid:23756][1s:765ms:192us]commonEntry.cpp:1568[slOnPluginStartup] At least one plugin requires NGX, trying to initialize ...
+[03-20-34][streamline][info][tid:23756][1s:765ms:300us]commonEntry.cpp:1368[ngxLog] [Unknown(32764)] [2026-10-25 03:20:34] [NGXSafeInitializeLog:150] App logging hooks successfully initialized
+
+[03-20-34][streamline][info][tid:23756][1s:765ms:481us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXSafeInitializeLog:133] App logging hooks successfully initialized
+
+[03-20-34][streamline][info][tid:23756][1s:784ms:828us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXGetPathUsingQAI:512] Path to driverStore found using QAI: C:\Windows\System32\DriverStore\FileRepository\nvmdi.inf_amd64_210156e74c27f99d
+
+[03-20-34][streamline][info][tid:23756][1s:784ms:867us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXGetPath:980] using path for models: C:\ProgramData/NVIDIA/NGX/models/
+
+[03-20-34][streamline][info][tid:23756][1s:784ms:877us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXGetPath:980] using path for models: C:\ProgramData/NVIDIA/NGX/models/
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:305us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [ModifyExistingFolderDACL:211] updated access control list for NGX cache (NGX cache should now be usable by all authenticated users)
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:342us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXCreateModelsFolder:1081] model folder created: C:\ProgramData/NVIDIA/NGX/models/
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:469us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [dlss]
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:496us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658702=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:505us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658701=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:514us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_86310F0=2.3.1
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:520us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9FEB50=1.0.108
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:527us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_84DA8F3=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:534us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9FF4BC=1.0.108
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:540us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9FD524=1.0.108
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:547us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9DF510=1.3.106
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:553us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_8674AA0=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:560us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9CB0B8=1.0.108
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:566us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9E26B0=2.1.28
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:573us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9D48D0=1.0.108
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:579us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E99B5EC=1.2.109
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:586us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_86B4384=3.5.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:624us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9DFA64=1.0.108
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:633us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_87DD3F4=2.4.12
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:640us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9FD6C0=1.0.108
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:647us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9CF688=2.2.15
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:654us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9D6F08=1.0.108
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:660us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9BF564=2.1.201
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:667us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9DB4F4=1.0.108
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:673us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9D2F5C=1.2.110
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:680us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9D7388=1.0.108
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:686us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9F5618=2.1.29
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:693us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9DAE68=1.2.109
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:699us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9D8C54=1.2.109
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:706us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9D3EF0=2.1.28
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:713us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9FACDC=2.1.201
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:753us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_875A16C=2.3.4
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:771us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_F7361DC=2.1.28
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:779us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9C3560=2.1.201
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:786us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9B0430=2.1.28
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:793us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:799us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_870691C=2.5.1
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:806us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_86E8150=2.2.10
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:812us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_86B0DB4=2.2.10
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:819us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_8776ED8=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:825us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_8615228=2.4.2
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:831us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_86AA7B4=2.3.1
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:840us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_87211B8=2.4.12
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:848us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_8618954=3.1.11
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:856us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9393FC=2.2.6
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:862us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_8656478=3.5.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:868us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_876232C=3.7.10
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:875us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658700=310.9.16
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:881us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [dlssg]
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:888us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_84DA8F3=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:895us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_87DD3F4=1.0.3
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:901us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658701=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:907us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_876232C=3.7.10
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:914us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658702=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:920us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_8656478=3.5.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:927us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:933us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_87211B8=1.0.3
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:939us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_86B4384=3.5.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:946us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_86AA7B4=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:952us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658700=310.9.16
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:958us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [dlisp]
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:965us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9CF688=2.1.15
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:971us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=310.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:980us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E99B5EC=1.2.102
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:987us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9D8C54=1.2.106
+
+[03-20-34][streamline][info][tid:23756][1s:822ms:993us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9D2F5C=1.2.106
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:000us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9DF510=1.3.101
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:025us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_B9DAE68=1.2.106
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:033us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [sl_dlss_g_0]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:040us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=2.14.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:047us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [sl_reflex_0]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:053us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=2.14.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:059us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [sl_common_0]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:066us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=2.14.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:072us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [sl_dlss_0]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:078us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=2.14.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:085us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [sl_pcl_0]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:091us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=2.14.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:098us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [sl_deepdvc_0]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:105us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=2.14.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:111us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [deepdvc]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:117us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:123us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658702=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:130us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658701=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:136us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_86AA7B4=0.0.0
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:142us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [sl_sdk_0]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:149us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=2.14.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:155us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [dlss_override]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:162us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658700=310.9.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:168us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [dlssd]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:174us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658700=310.9.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:181us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [sl_dlss_d_0]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:188us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=2.14.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:195us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [sl_nis_0]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:201us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=2.14.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:208us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1153] [sl_nvperf_0]
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:214us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXLoadConfig:1159] app_E658703=2.14.16
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:220us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::LoadMappingFileData:268] listItem.engineVersion .* listItem.genericCMSId 86aa7b4
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:227us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::LoadMappingFileData:282]  project id 3F9D696D4363312194B0ECB2671E899F cms id B9FBD50
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:234us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::LoadMappingFileData:268] listItem.engineVersion .* listItem.genericCMSId 8618954
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:240us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::LoadMappingFileData:268] listItem.engineVersion .* listItem.genericCMSId b9b05cc
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:247us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::LoadMappingFileData:268] listItem.engineVersion .* listItem.genericCMSId 876232c
+
+[03-20-34][streamline][info][tid:23756][1s:823ms:254us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [MapProjectId:1914] Found cms id 876232c for engine: custom engineVersion Minecraft-RenderPearl-26.3 projectID 15777de6-c4ac-4992-988c-12af5c9c6058
+
+[03-20-34][streamline][info][tid:23756][1s:899ms:801us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXDRSInit:327] NvAPI_DRS_FindApplicationByName -166
+
+[03-20-34][streamline][info][tid:23756][1s:906ms:185us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXInitContext:241] called from module sl.common.dll at G:\Codex Projects\Salts Anti Aliasing\run\26.3\salts_anti_aliasing\native\dlss\runtime\e0a745ad6ede2b9f7201e2a8be6a5af7b40eb1e3356eee17f16e14da149c2011
+
+[03-20-34][streamline][info][tid:23756][1s:906ms:237us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dldenoiser, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][1s:906ms:274us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][1s:906ms:283us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][1s:906ms:302us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXReportStatusFeedback:1042] Override shared memory was opened successfully
+
+[03-20-34][streamline][info][tid:23756][1s:906ms:312us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXReportStatusFeedback:1054] Override shared memory was mapped successfully
+
+[03-20-34][streamline][info][tid:23756][1s:906ms:348us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlss, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][1s:964ms:497us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][1s:964ms:538us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXSecureLoadFeature:1311] Feature dlss failed to load (cmsid 141959980) from cache (location: C:\ProgramData/NVIDIA/NGX/models/dlss\versions\198410\files, name: 160_876232C.bin)
+
+[03-20-34][streamline][info][tid:23756][1s:964ms:549us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][1s:964ms:556us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXSecureLoadFeature:1311] Feature dlss failed to load (cmsid 241534723) from cache (location: C:\ProgramData/NVIDIA/NGX/models/dlss\versions\0\files, name: 160_E658703.bin)
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:695us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:737us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXSecureLoadFeature:1427] app 876232C feature dlss snippet: G:\Codex Projects\Salts Anti Aliasing\run\26.3\salts_anti_aliasing\native\dlss\runtime\e0a745ad6ede2b9f7201e2a8be6a5af7b40eb1e3356eee17f16e14da149c2011/nvngx_dlss.dll version: 310.9.1
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:775us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlinpainting, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:802us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:831us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:840us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlisr, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:848us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:855us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:864us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlslowmo, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:872us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:878us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:896us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlvsr, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:905us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:917us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:927us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlcolorize, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:936us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:944us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:962us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlstyletransfer, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:970us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:977us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:134ms:992us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlvdenoiser, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:000us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:008us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:018us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlisp, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:028us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:038us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:062us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlresolve, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:089us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:100us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:108us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlssg, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:116us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:125us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:167us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature deepdvc, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:177us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:185us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:194us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature dlssd, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:202us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:210us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:217us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature truehdr, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:226us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:234us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:243us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature latewarp, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:250us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:258us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:267us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [NGXContextDenyListData::IsFeatureDenied:667] Feature vsr, denial value 0 for Cms ID 876232c
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:275us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:135ms:282us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:34] [`anonymous-namespace'::SnippetLocationInfo::load:677] NGXLoadFromPath failed: -1160773628
+
+[03-20-34][streamline][info][tid:23756][2s:296ms:761us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][NGXInitLog:208] App logging hooks successfully initialized
+
+[03-20-34][streamline][info][tid:23756][2s:296ms:812us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][NGXInitLog:214] Build v310.9.1 CL 38868064
+
+[03-20-34][streamline][info][tid:23756][2s:296ms:821us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][NGXInitLog:216] Built with APP_NAME = default
+
+[03-20-34][streamline][info][tid:23756][2s:296ms:828us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][NGXInitLog:226] Loaded from path "G:\Codex Projects\Salts Anti Aliasing\run\26.3\salts_anti_aliasing\native\dlss\runtime\e0a745ad6ede2b9f7201e2a8be6a5af7b40eb1e3356eee17f16e14da149c2011/nvngx_dlss.dll" by java.exe
+
+[03-20-34][streamline][info][tid:23756][2s:297ms:109us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][NGXCubinVulkan::Init:204] Enabling texmode_raw
+
+[03-20-34][streamline][info][tid:23756][2s:297ms:218us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][NGXCubinKernelMap::InitCubins:42] Loading NGXCubin kernels
+
+[03-20-34][streamline][info][tid:23756][2s:297ms:566us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][NGXCubinGeneric::SetGPUArch:413] SetGPUArch:: Gpu count = 1, luid: 0x11264
+
+[03-20-34][streamline][info][tid:23756][2s:298ms:785us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][NGXCubinGeneric::SetGPUArch:473] m_gpuArch = 0x170
+
+[03-20-34][streamline][info][tid:23756][2s:299ms:526us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][NGXCubinGeneric::genericPostInit:164] Fast UAV clear: supported
+
+[03-20-34][streamline][info][tid:23756][2s:299ms:548us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][DLSSCubinKernelMap::InitCubins:303] Setting DLAA Cubins
+
+[03-20-34][streamline][info][tid:23756][2s:299ms:558us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][DLSSCubinKernelMap::InitCubins:303] Setting DLSS Debug Cubins
+
+[03-20-34][streamline][info][tid:23756][2s:299ms:614us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][DLSSCubinKernelMap::InitCubins:303] Setting DLTSS Engine Cubins
+
+[03-20-34][streamline][info][tid:23756][2s:299ms:652us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][DLSSCubinKernelMap::InitCubins:303] Setting DLTSS NW Cubins
+
+[03-20-34][streamline][info][tid:23756][2s:299ms:685us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][DLSSCubinKernelMap::InitCubins:303] Setting DLTSS NW E5M3_SKIP Cubins
+
+[03-20-34][streamline][info][tid:23756][2s:299ms:714us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][DLSSCubinKernelMap::InitCubins:303] Setting DLTSS NW Cubins
+
+[03-20-34][streamline][info][tid:23756][2s:299ms:736us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:34] [tid:23756][DldnCubinKernelMap::InitCubins:138] Setting DLDN Engine Pre / Post Cubins
+
+[03-20-34][streamline][info][tid:23756][2s:310ms:963us]pluginManager.cpp:1499[mapPluginCallbacks] Callback sl.common:slSetData:0x0
+[03-20-34][streamline][info][tid:23756][2s:311ms:004us]pluginManager.cpp:1500[mapPluginCallbacks] Callback sl.common:slGetData:0x0
+[03-20-34][streamline][info][tid:23756][2s:311ms:013us]pluginManager.cpp:1501[mapPluginCallbacks] Callback sl.common:slAllocateResources:0x0
+[03-20-34][streamline][info][tid:23756][2s:311ms:020us]pluginManager.cpp:1502[mapPluginCallbacks] Callback sl.common:slFreeResources:0x0
+[03-20-34][streamline][info][tid:23756][2s:311ms:027us]pluginManager.cpp:1503[mapPluginCallbacks] Callback sl.common:slEvaluateFeature:0x7ffd586da0c0
+[03-20-34][streamline][info][tid:23756][2s:311ms:034us]pluginManager.cpp:1504[mapPluginCallbacks] Callback sl.common:slSetTag:0x7ffd586d8ba0
+[03-20-34][streamline][info][tid:23756][2s:311ms:041us]pluginManager.cpp:1505[mapPluginCallbacks] Callback sl.common:slSetTagForFrame:0x7ffd586d8d10
+[03-20-34][streamline][info][tid:23756][2s:311ms:047us]pluginManager.cpp:1506[mapPluginCallbacks] Callback sl.common:slSetConsts:0x7ffd586d9ba0
+[03-20-34][streamline][info][tid:23756][2s:311ms:054us]pluginManager.cpp:1290[processPluginHooks] Hook sl.common:slHookVkPresent:before - OK
+[03-20-34][streamline][info][tid:23756][2s:311ms:061us]pluginManager.cpp:1290[processPluginHooks] Hook sl.common:slHookVkAfterPresent:after - OK
+[03-20-34][streamline][warn][tid:23756][2s:311ms:068us]pluginManager.cpp:1272[processPluginHooks] Hook sl.common:Vulkan:CmdBindPipeline is NOT supported, plugin will not function properly
+[03-20-34][streamline][warn][tid:23756][2s:311ms:106us]pluginManager.cpp:1272[processPluginHooks] Hook sl.common:Vulkan:CmdBindDescriptorSets is NOT supported, plugin will not function properly
+[03-20-34][streamline][warn][tid:23756][2s:311ms:115us]pluginManager.cpp:1272[processPluginHooks] Hook sl.common:Vulkan:BeginCommandBuffer is NOT supported, plugin will not function properly
+[03-20-34][streamline][info][tid:23756][2s:311ms:123us]pluginManager.cpp:1266[processPluginHooks] Hook sl.common:slHookCreateSwapChain:before - skipped
+[03-20-34][streamline][info][tid:23756][2s:311ms:129us]pluginManager.cpp:1266[processPluginHooks] Hook sl.common:slHookCreateSwapChainForHwnd:before - skipped
+[03-20-34][streamline][info][tid:23756][2s:311ms:136us]pluginManager.cpp:1266[processPluginHooks] Hook sl.common:slHookCreateSwapChainForCoreWindow:before - skipped
+[03-20-34][streamline][info][tid:23756][2s:311ms:143us]pluginManager.cpp:1266[processPluginHooks] Hook sl.common:slHookResizeSwapChainPre:before - skipped
+[03-20-34][streamline][info][tid:23756][2s:311ms:150us]pluginManager.cpp:1266[processPluginHooks] Hook sl.common:slHookPresent:before - skipped
+[03-20-34][streamline][info][tid:23756][2s:311ms:156us]pluginManager.cpp:1266[processPluginHooks] Hook sl.common:slHookAfterPresent:after - skipped
+[03-20-34][streamline][info][tid:23756][2s:311ms:166us]pluginManager.cpp:1266[processPluginHooks] Hook sl.common:slHookPresent1:before - skipped
+[03-20-34][streamline][info][tid:23756][2s:311ms:285us]pluginManager.cpp:1266[processPluginHooks] Hook sl.common:slHookAfterPresent:after - skipped
+[03-20-34][streamline][info][tid:23756][2s:311ms:307us]pluginManager.cpp:1499[mapPluginCallbacks] Callback sl.dlss:slSetData:0x7ffdb16bc770
+[03-20-34][streamline][info][tid:23756][2s:311ms:315us]pluginManager.cpp:1500[mapPluginCallbacks] Callback sl.dlss:slGetData:0x7ffdb16c0ee0
+[03-20-34][streamline][info][tid:23756][2s:311ms:322us]pluginManager.cpp:1501[mapPluginCallbacks] Callback sl.dlss:slAllocateResources:0x7ffdb16c1670
+[03-20-34][streamline][info][tid:23756][2s:311ms:329us]pluginManager.cpp:1502[mapPluginCallbacks] Callback sl.dlss:slFreeResources:0x7ffdb16c1710
+[03-20-34][streamline][info][tid:23756][2s:311ms:335us]pluginManager.cpp:1503[mapPluginCallbacks] Callback sl.dlss:slEvaluateFeature:0x0
+[03-20-34][streamline][info][tid:23756][2s:311ms:342us]pluginManager.cpp:1504[mapPluginCallbacks] Callback sl.dlss:slSetTag:0x0
+[03-20-34][streamline][info][tid:23756][2s:311ms:348us]pluginManager.cpp:1505[mapPluginCallbacks] Callback sl.dlss:slSetTagForFrame:0x0
+[03-20-34][streamline][info][tid:23756][2s:311ms:355us]pluginManager.cpp:1506[mapPluginCallbacks] Callback sl.dlss:slSetConsts:0x0
+[03-20-34][streamline][info][tid:23756][2s:311ms:362us]pluginManager.cpp:1251[processPluginHooks] Plugin 'sl.dlss' has no registered hooks
+[03-20-39][streamline][warn][tid:23756][7s:664ms:002us]commonEntry.cpp:595[validateCommonConstants] Value consts.cameraPinholeOffset should not be left as invalid
+[03-20-39][streamline][info][tid:23756][7s:664ms:077us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:20:39] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:109us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:122us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:136us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:180us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:190us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:198us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:205us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:212us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:219us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:226us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:232us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-20-39][streamline][info][tid:23756][7s:664ms:239us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-20-39][streamline][info][tid:23756][7s:668ms:918us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-20-39][streamline][info][tid:23756][7s:668ms:971us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-20-39][streamline][info][tid:23756][7s:668ms:981us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:20:39] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-20-39][streamline][info][tid:23756][7s:711ms:405us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (853,480)(optimal) -> (1280,720) for viewport 0
+[03-20-39][streamline][info][tid:23756][7s:711ms:454us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,853,480)
+[03-20-39][streamline][info][tid:23756][7s:711ms:464us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-20-39][streamline][info][tid:23756][7s:711ms:471us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,853,480)
+[03-20-39][streamline][info][tid:23756][7s:711ms:478us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,853,480)
+[03-21-29][streamline][info][tid:23756][56s:891ms:211us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-21-29][streamline][info][tid:23756][56s:891ms:311us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:21:29] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:327us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:335us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:343us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:349us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:356us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:363us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:370us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:377us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:383us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:390us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:396us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-21-29][streamline][info][tid:23756][56s:891ms:403us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-21-29][streamline][info][tid:23756][56s:892ms:468us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-21-29][streamline][info][tid:23756][56s:892ms:496us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-21-29][streamline][info][tid:23756][56s:892ms:507us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:29] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-21-29][streamline][info][tid:23756][56s:926ms:813us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (1280,720)(optimal) -> (1280,720) for viewport 0
+[03-21-29][streamline][info][tid:23756][56s:926ms:856us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,1280,720)
+[03-21-29][streamline][info][tid:23756][56s:926ms:866us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-21-29][streamline][info][tid:23756][56s:926ms:873us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,1280,720)
+[03-21-29][streamline][info][tid:23756][56s:926ms:882us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,1280,720)
+[03-21-32][streamline][info][tid:23756][60s:152ms:797us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-21-32][streamline][info][tid:23756][60s:152ms:839us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:21:32] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:848us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:856us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:863us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:870us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:876us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:883us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:890us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:898us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:904us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:911us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:920us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:928us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:936us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:943us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-21-32][streamline][info][tid:23756][60s:152ms:949us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:32] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-21-32][streamline][info][tid:23756][60s:191ms:224us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (640,360)(optimal) -> (1280,720) for viewport 0
+[03-21-32][streamline][info][tid:23756][60s:191ms:279us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,640,360)
+[03-21-32][streamline][info][tid:23756][60s:191ms:289us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-21-32][streamline][info][tid:23756][60s:191ms:297us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,640,360)
+[03-21-32][streamline][info][tid:23756][60s:191ms:304us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,640,360)
+[03-21-35][streamline][info][tid:23756][63s:388ms:764us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-21-35][streamline][info][tid:23756][63s:388ms:844us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:21:35] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:858us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:866us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:874us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:881us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:888us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:895us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:906us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:915us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:922us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:928us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:934us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:941us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:949us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:956us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-21-35][streamline][info][tid:23756][63s:388ms:963us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:35] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-21-35][streamline][info][tid:23756][63s:424ms:658us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (427,240)(optimal) -> (1280,720) for viewport 0
+[03-21-35][streamline][info][tid:23756][63s:424ms:702us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,427,240)
+[03-21-35][streamline][info][tid:23756][63s:424ms:712us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-21-35][streamline][info][tid:23756][63s:424ms:719us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,427,240)
+[03-21-35][streamline][info][tid:23756][63s:424ms:726us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,427,240)
+[03-21-40][streamline][info][tid:23756][68s:602ms:884us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-21-40][streamline][info][tid:23756][68s:602ms:944us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:21:40] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-21-40][streamline][info][tid:23756][68s:602ms:956us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-21-40][streamline][info][tid:23756][68s:602ms:965us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-21-40][streamline][info][tid:23756][68s:602ms:972us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-21-40][streamline][info][tid:23756][68s:602ms:983us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-21-40][streamline][info][tid:23756][68s:602ms:991us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-21-40][streamline][info][tid:23756][68s:602ms:998us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-21-40][streamline][info][tid:23756][68s:603ms:004us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-21-40][streamline][info][tid:23756][68s:603ms:011us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-21-40][streamline][info][tid:23756][68s:603ms:018us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-21-40][streamline][info][tid:23756][68s:603ms:024us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-21-40][streamline][info][tid:23756][68s:603ms:031us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-21-40][streamline][info][tid:23756][68s:603ms:038us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-21-40][streamline][info][tid:23756][68s:603ms:046us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-21-40][streamline][info][tid:23756][68s:603ms:053us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-21-40][streamline][info][tid:23756][68s:603ms:059us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:21:40] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-21-40][streamline][info][tid:23756][68s:636ms:803us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (853,480)(optimal) -> (1280,720) for viewport 0
+[03-21-40][streamline][info][tid:23756][68s:636ms:849us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,853,480)
+[03-21-40][streamline][info][tid:23756][68s:636ms:858us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-21-40][streamline][info][tid:23756][68s:636ms:865us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,853,480)
+[03-21-40][streamline][info][tid:23756][68s:636ms:871us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,853,480)
+[03-22-07][streamline][info][tid:23756][94s:852ms:306us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-22-07][streamline][info][tid:23756][94s:852ms:415us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:22:07] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:446us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:456us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:463us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:470us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:477us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:483us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:491us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset M
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:499us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset M
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:506us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset M
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:514us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset M
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:521us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset M
+
+[03-22-07][streamline][info][tid:23756][94s:852ms:530us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:07] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-22-07][streamline][info][tid:23756][94s:862ms:895us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (853,480)(optimal) -> (1280,720) for viewport 0
+[03-22-07][streamline][info][tid:23756][94s:862ms:935us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,853,480)
+[03-22-07][streamline][info][tid:23756][94s:862ms:945us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-22-07][streamline][info][tid:23756][94s:862ms:961us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,853,480)
+[03-22-07][streamline][info][tid:23756][94s:862ms:970us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,853,480)
+[03-22-10][streamline][info][tid:23756][98s:356ms:776us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-22-10][streamline][info][tid:23756][98s:356ms:826us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:22:10] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:853us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:863us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:870us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:876us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:883us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:890us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:896us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset L
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:904us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset L
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:911us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset L
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:917us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset L
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:924us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset L
+
+[03-22-10][streamline][info][tid:23756][98s:356ms:930us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:10] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-22-10][streamline][info][tid:23756][98s:365ms:842us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (853,480)(optimal) -> (1280,720) for viewport 0
+[03-22-10][streamline][info][tid:23756][98s:365ms:898us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,853,480)
+[03-22-10][streamline][info][tid:23756][98s:365ms:914us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-22-10][streamline][info][tid:23756][98s:365ms:921us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,853,480)
+[03-22-10][streamline][info][tid:23756][98s:365ms:927us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,853,480)
+[03-22-14][streamline][info][tid:23756][101s:889ms:285us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-22-14][streamline][info][tid:23756][101s:889ms:329us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:22:14] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:352us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:362us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:369us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:376us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:383us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:389us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:396us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:404us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:410us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:417us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:424us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:435us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:468us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:477us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-22-14][streamline][info][tid:23756][101s:889ms:484us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:14] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-22-14][streamline][info][tid:23756][101s:923ms:008us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (1280,720)(optimal) -> (1280,720) for viewport 0
+[03-22-14][streamline][info][tid:23756][101s:923ms:056us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,1280,720)
+[03-22-14][streamline][info][tid:23756][101s:923ms:066us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-22-14][streamline][info][tid:23756][101s:923ms:073us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,1280,720)
+[03-22-14][streamline][info][tid:23756][101s:923ms:079us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,1280,720)
+[03-22-17][streamline][info][tid:23756][105s:360ms:173us]dlssEntry.cpp:893[slFreeResources] Releasing DLSSContext instance id 3167741520
+[03-22-21][streamline][info][tid:23756][108s:882ms:865us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:22:21] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:905us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:914us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:922us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:928us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:935us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:942us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:949us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:959us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:967us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:974us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:981us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-22-21][streamline][info][tid:23756][108s:882ms:988us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-22-21][streamline][info][tid:23756][108s:883ms:929us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-22-21][streamline][info][tid:23756][108s:883ms:961us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-22-21][streamline][info][tid:23756][108s:883ms:970us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:21] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-22-21][streamline][info][tid:23756][108s:917ms:849us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (853,480)(optimal) -> (1280,720) for viewport 0
+[03-22-21][streamline][info][tid:23756][108s:917ms:891us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,853,480)
+[03-22-21][streamline][info][tid:23756][108s:917ms:900us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-22-21][streamline][info][tid:23756][108s:917ms:907us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,853,480)
+[03-22-21][streamline][info][tid:23756][108s:917ms:913us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,853,480)
+[03-22-29][streamline][info][tid:23756][117s:591ms:847us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-22-29][streamline][info][tid:23756][117s:591ms:894us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:22:29] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-22-29][streamline][info][tid:23756][117s:591ms:927us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-22-29][streamline][info][tid:23756][117s:591ms:957us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-22-29][streamline][info][tid:23756][117s:591ms:966us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-22-29][streamline][info][tid:23756][117s:591ms:974us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-22-29][streamline][info][tid:23756][117s:591ms:985us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-22-29][streamline][info][tid:23756][117s:591ms:993us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-22-29][streamline][info][tid:23756][117s:592ms:000us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-22-29][streamline][info][tid:23756][117s:592ms:007us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-22-29][streamline][info][tid:23756][117s:592ms:014us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-22-29][streamline][info][tid:23756][117s:592ms:021us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-22-29][streamline][info][tid:23756][117s:592ms:028us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-22-29][streamline][info][tid:23756][117s:592ms:036us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-22-29][streamline][info][tid:23756][117s:593ms:034us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-22-29][streamline][info][tid:23756][117s:593ms:063us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-22-29][streamline][info][tid:23756][117s:593ms:072us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:29] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-22-29][streamline][info][tid:23756][117s:628ms:681us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (1280,720)(optimal) -> (1280,720) for viewport 0
+[03-22-29][streamline][info][tid:23756][117s:628ms:736us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,1280,720)
+[03-22-29][streamline][info][tid:23756][117s:628ms:746us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-22-29][streamline][info][tid:23756][117s:628ms:753us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,1280,720)
+[03-22-29][streamline][info][tid:23756][117s:628ms:760us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,1280,720)
+[03-22-33][streamline][info][tid:23756][121s:119ms:411us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-22-33][streamline][info][tid:23756][121s:119ms:476us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:22:33] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:497us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:513us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:525us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:536us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:547us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:558us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:569us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:581us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:591us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:617us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:629us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:641us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:652us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:664us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-22-33][streamline][info][tid:23756][121s:119ms:675us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:22:33] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-22-33][streamline][info][tid:23756][121s:152ms:067us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (853,480)(optimal) -> (1280,720) for viewport 0
+[03-22-33][streamline][info][tid:23756][121s:152ms:121us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,853,480)
+[03-22-33][streamline][info][tid:23756][121s:152ms:130us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-22-33][streamline][info][tid:23756][121s:152ms:137us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,853,480)
+[03-22-33][streamline][info][tid:23756][121s:152ms:144us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,853,480)
+[03-24-08][streamline][info][tid:23756][216s:413ms:834us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-24-08][streamline][info][tid:23756][216s:413ms:873us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:24:08] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:882us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:890us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:897us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:903us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:910us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:917us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:924us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:931us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:938us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:944us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:953us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-24-08][streamline][info][tid:23756][216s:413ms:995us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-24-08][streamline][info][tid:23756][216s:415ms:193us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 10 MiB allocated
+
+[03-24-08][streamline][info][tid:23756][216s:415ms:213us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 12 MiB aliased
+
+[03-24-08][streamline][info][tid:23756][216s:415ms:221us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:08] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 8 MiB aliased
+
+[03-24-08][streamline][info][tid:23756][216s:451ms:046us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (1280,720)(optimal) -> (1920,1080) for viewport 0
+[03-24-08][streamline][info][tid:23756][216s:451ms:094us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,1280,720)
+[03-24-08][streamline][info][tid:23756][216s:451ms:103us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1920,1080)
+[03-24-08][streamline][info][tid:23756][216s:451ms:111us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,1280,720)
+[03-24-08][streamline][info][tid:23756][216s:451ms:118us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,1280,720)
+[03-24-12][streamline][info][tid:23756][219s:863ms:946us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-24-12][streamline][info][tid:23756][219s:864ms:083us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:24:12] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:144us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:170us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:191us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:210us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:228us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:245us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:268us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:289us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:306us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:321us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:337us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-24-12][streamline][info][tid:23756][219s:864ms:354us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-24-12][streamline][info][tid:23756][219s:866ms:000us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 10 MiB allocated
+
+[03-24-12][streamline][info][tid:23756][219s:866ms:041us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 12 MiB aliased
+
+[03-24-12][streamline][info][tid:23756][219s:866ms:061us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:12] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 8 MiB aliased
+
+[03-24-12][streamline][info][tid:23756][219s:916ms:110us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (1920,1080)(optimal) -> (1920,1080) for viewport 0
+[03-24-12][streamline][info][tid:23756][219s:916ms:156us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,1920,1080)
+[03-24-12][streamline][info][tid:23756][219s:916ms:165us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1920,1080)
+[03-24-12][streamline][info][tid:23756][219s:916ms:173us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,1920,1080)
+[03-24-12][streamline][info][tid:23756][219s:916ms:179us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,1920,1080)
+[03-24-16][streamline][info][tid:23756][224s:108ms:551us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-24-16][streamline][info][tid:23756][224s:108ms:709us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:24:16] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:738us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:749us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:758us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:769us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:778us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:787us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:812us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:838us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:847us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:854us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:861us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:868us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:900us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 10 MiB allocated
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:909us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 12 MiB aliased
+
+[03-24-16][streamline][info][tid:23756][224s:108ms:916us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:16] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 8 MiB aliased
+
+[03-24-16][streamline][info][tid:23756][224s:145ms:406us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (1280,720)(optimal) -> (1920,1080) for viewport 0
+[03-24-16][streamline][info][tid:23756][224s:145ms:449us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,1280,720)
+[03-24-16][streamline][info][tid:23756][224s:145ms:458us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1920,1080)
+[03-24-16][streamline][info][tid:23756][224s:145ms:465us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,1280,720)
+[03-24-16][streamline][info][tid:23756][224s:145ms:472us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,1280,720)
+[03-24-17][streamline][info][tid:23756][224s:907ms:799us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-24-17][streamline][info][tid:23756][224s:907ms:837us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:24:17] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:846us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:855us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:861us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:869us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:875us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:882us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:888us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:895us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:902us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:908us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:915us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:921us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:928us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:935us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-24-17][streamline][info][tid:23756][224s:907ms:944us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:24:17] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-24-17][streamline][info][tid:23756][224s:942ms:680us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (853,480)(optimal) -> (1280,720) for viewport 0
+[03-24-17][streamline][info][tid:23756][224s:942ms:705us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,853,480)
+[03-24-17][streamline][info][tid:23756][224s:942ms:713us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-24-17][streamline][info][tid:23756][224s:942ms:720us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,853,480)
+[03-24-17][streamline][info][tid:23756][224s:942ms:726us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,853,480)
+[03-26-40][streamline][info][tid:23756][368s:527ms:222us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-26-40][streamline][info][tid:23756][368s:527ms:313us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:26:40] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:328us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:337us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:345us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:352us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:359us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:366us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:373us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset M
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:380us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset M
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:387us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset M
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:393us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset M
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:403us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset M
+
+[03-26-40][streamline][info][tid:23756][368s:527ms:411us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:40] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-26-40][streamline][info][tid:23756][368s:535ms:076us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (853,480)(optimal) -> (1280,720) for viewport 0
+[03-26-40][streamline][info][tid:23756][368s:535ms:132us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,853,480)
+[03-26-40][streamline][info][tid:23756][368s:535ms:143us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-26-40][streamline][info][tid:23756][368s:535ms:157us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,853,480)
+[03-26-40][streamline][info][tid:23756][368s:535ms:163us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,853,480)
+[03-26-43][streamline][info][tid:23756][371s:027ms:414us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-26-43][streamline][info][tid:23756][371s:027ms:518us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:26:43] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:547us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:557us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:564us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:571us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:579us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:586us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:593us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset L
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:600us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset L
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:611us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset L
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:619us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset L
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:626us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset L
+
+[03-26-43][streamline][info][tid:23756][371s:027ms:633us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:43] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-26-43][streamline][info][tid:23756][371s:034ms:893us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (853,480)(optimal) -> (1280,720) for viewport 0
+[03-26-43][streamline][info][tid:23756][371s:034ms:932us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,853,480)
+[03-26-43][streamline][info][tid:23756][371s:034ms:942us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-26-43][streamline][info][tid:23756][371s:034ms:949us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,853,480)
+[03-26-43][streamline][info][tid:23756][371s:034ms:956us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,853,480)
+[03-26-46][streamline][info][tid:23756][374s:029ms:214us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-26-46][streamline][info][tid:23756][374s:029ms:332us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:26:46] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:350us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:359us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:365us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:374us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:382us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:391us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:405us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:460us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:474us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:482us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:489us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:496us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:504us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:511us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-26-46][streamline][info][tid:23756][374s:029ms:517us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:46] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-26-46][streamline][info][tid:23756][374s:064ms:673us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (1280,720)(optimal) -> (1280,720) for viewport 0
+[03-26-46][streamline][info][tid:23756][374s:064ms:713us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,1280,720)
+[03-26-46][streamline][info][tid:23756][374s:064ms:722us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-26-46][streamline][info][tid:23756][374s:064ms:729us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,1280,720)
+[03-26-46][streamline][info][tid:23756][374s:064ms:735us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,1280,720)
+[03-26-48][streamline][info][tid:23756][376s:035ms:742us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-26-48][streamline][info][tid:23756][376s:035ms:870us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:26:48] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-26-48][streamline][info][tid:23756][376s:035ms:905us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-26-48][streamline][info][tid:23756][376s:035ms:918us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-26-48][streamline][info][tid:23756][376s:035ms:928us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-26-48][streamline][info][tid:23756][376s:035ms:943us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-26-48][streamline][info][tid:23756][376s:035ms:951us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-26-48][streamline][info][tid:23756][376s:035ms:958us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-26-48][streamline][info][tid:23756][376s:035ms:966us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset M
+
+[03-26-48][streamline][info][tid:23756][376s:035ms:973us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset M
+
+[03-26-48][streamline][info][tid:23756][376s:035ms:980us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset M
+
+[03-26-48][streamline][info][tid:23756][376s:035ms:987us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset M
+
+[03-26-48][streamline][info][tid:23756][376s:035ms:993us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset M
+
+[03-26-48][streamline][info][tid:23756][376s:036ms:000us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:48] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-26-48][streamline][info][tid:23756][376s:041ms:043us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (1280,720)(optimal) -> (1280,720) for viewport 0
+[03-26-48][streamline][info][tid:23756][376s:041ms:083us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,1280,720)
+[03-26-48][streamline][info][tid:23756][376s:041ms:093us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-26-48][streamline][info][tid:23756][376s:041ms:100us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,1280,720)
+[03-26-48][streamline][info][tid:23756][376s:041ms:106us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,1280,720)
+[03-26-51][streamline][info][tid:23756][379s:529ms:344us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-26-51][streamline][info][tid:23756][379s:529ms:499us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:26:51] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:531us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:541us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:551us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:560us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:567us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:574us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:581us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset L
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:588us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset L
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:595us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset L
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:602us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset L
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:609us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset L
+
+[03-26-51][streamline][info][tid:23756][379s:529ms:616us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:26:51] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-26-51][streamline][info][tid:23756][379s:534ms:291us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (1280,720)(optimal) -> (1280,720) for viewport 0
+[03-26-51][streamline][info][tid:23756][379s:534ms:323us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,1280,720)
+[03-26-51][streamline][info][tid:23756][379s:534ms:332us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-26-51][streamline][info][tid:23756][379s:534ms:339us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,1280,720)
+[03-26-51][streamline][info][tid:23756][379s:534ms:346us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,1280,720)
+[03-27-36][streamline][info][tid:23756][424s:538ms:822us]dlssEntry.cpp:366[dlssBeginEvent] Detected resize, recreating DLSSContext feature
+[03-27-36][streamline][info][tid:23756][424s:538ms:949us]commonEntry.cpp:1368[ngxLog] [Unknown(32765)] [2026-10-25 03:27:36] [NVSDK_NGX_CreateFeature_Validate:715] app id is 141959980 
+
+[03-27-36][streamline][info][tid:23756][424s:538ms:996us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (DLAA) Using Default Overriden Preset Preset_D
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:023us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Quality) Using Default Overriden Preset Preset_D
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:042us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Balanced) Using Default Overriden Preset Preset_D
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:058us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (Perf) Using Default Overriden Preset Preset_D
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:074us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraPerf) Using Default Overriden Preset Preset_D
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:089us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxRayReconstruction::FillCreationParams::<lambda_5bd36971463f469fd81574f74f368df1>::operator ():1733] Info: (UltraQuality) Using Default Overriden Preset Preset_D
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:104us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (DLAA) Using App hint Preset K
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:119us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Quality) Using App hint Preset K
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:133us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Balanced) Using App hint Preset K
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:148us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (Perf) Using App hint Preset K
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:163us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2763] Info: (UltraPerf) Using App hint Preset K
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:178us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][NgxDltss::FillCreationParams::<lambda_cef418e50ae0bb979313c68b3f92b7fd>::operator ():2753] Info: (UltraQuality) App hint Preset Unspecified or Overridden, using title default Preset K
+
+[03-27-36][streamline][info][tid:23756][424s:539ms:980us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:399] Container0Tensor: 6 MiB allocated
+
+[03-27-36][streamline][info][tid:23756][424s:540ms:010us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:403] Container1Tensor: 7 MiB aliased
+
+[03-27-36][streamline][info][tid:23756][424s:540ms:019us]commonEntry.cpp:1368[ngxLog] [SuperSampling] [2026-10-25 03:27:36] [tid:23756][PaddedWindowNetwork::CreatePaddedWindowNetwork:407] Container2Tensor: 5 MiB aliased
+
+[03-27-36][streamline][info][tid:23756][424s:577ms:973us]dlssEntry.cpp:474[dlssBeginEvent] Created DLSSContext feature (853,480)(optimal) -> (1280,720) for viewport 0
+[03-27-36][streamline][info][tid:23756][424s:578ms:028us]dlssEntry.cpp:476[dlssBeginEvent] DLSSContext color_in extents (0,0,853,480)
+[03-27-36][streamline][info][tid:23756][424s:578ms:038us]dlssEntry.cpp:477[dlssBeginEvent] DLSSContext color_out extents (0,0,1280,720)
+[03-27-36][streamline][info][tid:23756][424s:578ms:045us]dlssEntry.cpp:478[dlssBeginEvent] DLSSContext depth extents (0,0,853,480)
+[03-27-36][streamline][info][tid:23756][424s:578ms:052us]dlssEntry.cpp:479[dlssBeginEvent] DLSSContext mvec extents (0,0,853,480)
+[03-30-13][streamline][info][tid:23756][580s:865ms:204us]dlssEntry.cpp:893[slFreeResources] Releasing DLSSContext instance id 3167742736
+[03-30-14][streamline][info][tid:23756][582s:359ms:401us]pluginManager.cpp:1202[unloadPlugins] Unloading all plugins ...
+[03-30-14][streamline][info][tid:23756][582s:359ms:448us]plugin.cpp:344[onShutdown] Shutting down plugin sl.dlss
+[03-30-14][streamline][info][tid:23756][582s:359ms:665us]commonEntry.cpp:1872[slOnPluginShutdown] Shutting down NGX
+[03-30-14][streamline][info][tid:23756][582s:388ms:718us]plugin.cpp:344[onShutdown] Shutting down plugin sl.common
+[03-30-14][streamline][info][tid:23756][582s:388ms:839us]generic.cpp:360[shutdown] Delayed destroy resource list count 0

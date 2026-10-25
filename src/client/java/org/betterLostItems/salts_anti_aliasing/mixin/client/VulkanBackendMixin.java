@@ -76,9 +76,16 @@ public abstract class VulkanBackendMixin {
         Set<VulkanFeature> vulkanFeatures = new HashSet<>(featureSet.features());
         saltsAntiAliasing$enableFidelityFxDeviceSupport(deviceExtensions, physicalDevice, vulkanFeatures);
         saltsAntiAliasing$enableDlssDeviceSupport(deviceExtensions, physicalDevice, vulkanFeatures);
-        return createDevice(new FeatureSet(
+        var handShading = org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanMsaaCapabilities.HAND_SAMPLE_SHADING;
+        saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice, handShading);
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanDeviceFeatureNormalizer
+                .normalize(deviceExtensions, vulkanFeatures);
+        VkDevice device = createDevice(new FeatureSet(
                 featureSet.name(), Set.copyOf(deviceExtensions), Set.copyOf(vulkanFeatures), featureSet.condition()
         ), physicalDevice);
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanMsaaCapabilities
+                .recordSampleShading(device, vulkanFeatures.contains(handShading));
+        return device;
     }
 
     private static void saltsAntiAliasing$enableFidelityFxDeviceSupport(
@@ -88,6 +95,9 @@ public abstract class VulkanBackendMixin {
     ) {
         Set<String> extensionsBefore = Set.copyOf(deviceExtensions);
         Set<VulkanFeature> featuresBefore = Set.copyOf(vulkanFeatures);
+        // FidelityFX's half-precision permutations also declare core SPIR-V Int16.
+        saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice,
+                new VulkanFeature(VulkanFeatureSets.VK10_FEATURES_STRUCT, "shaderInt16"));
         if (physicalDevice.hasDeviceExtension(KHRGetMemoryRequirements2.VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME)) {
             deviceExtensions.add(KHRGetMemoryRequirements2.VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
 
@@ -159,6 +169,14 @@ public abstract class VulkanBackendMixin {
     private static void saltsAntiAliasing$enableDlssDeviceSupport(
             Set<String> extensions, VulkanPhysicalDevice physicalDevice, Set<VulkanFeature> features) {
         var runtime = DlssRuntime.instance();
+        if (runtime.hasConfiguredRuntime()) {
+            // Streamline's common Vulkan compute shaders declare this core capability even
+            // though it is absent from the extension-only DLSS requirements list.
+            VulkanFeature unformattedWrites = new VulkanFeature(VulkanFeatureSets.VK10_FEATURES_STRUCT,
+                    "shaderStorageImageWriteWithoutFormat");
+            if (saltsAntiAliasing$isFeatureSupported(physicalDevice, unformattedWrites)) features.add(unformattedWrites);
+            else runtime.rejectVulkanRequirements("Missing shaderStorageImageWriteWithoutFormat");
+        }
         for (String requirement : runtime.vulkanRequirements()) {
             if (requirement.startsWith("device:")) {
                 String name = requirement.substring(7);

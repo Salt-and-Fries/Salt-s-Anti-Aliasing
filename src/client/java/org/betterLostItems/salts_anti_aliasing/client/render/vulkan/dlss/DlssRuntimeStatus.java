@@ -8,6 +8,7 @@ public enum DlssRuntimeStatus {
     BRIDGE_PATH_MISSING("DLSS JNI bridge path is missing"),
     BRIDGE_LOAD_FAILED("DLSS JNI bridge failed to load"),
     PLUGIN_PATH_MISSING("NVIDIA Streamline plugin path is missing"),
+    RUNTIME_FILES_INVALID("DLSS runtime files are missing or incompatible; open Set up DLSS"),
     APPLICATION_ID_MISSING("NVIDIA application ID is missing"),
     VULKAN_DEVICE_MISSING("Vulkan device information is not available yet"),
     INITIALIZATION_FAILED("NVIDIA Streamline initialization failed"),

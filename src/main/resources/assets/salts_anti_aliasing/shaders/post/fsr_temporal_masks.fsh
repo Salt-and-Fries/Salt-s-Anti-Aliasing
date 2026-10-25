@@ -9,7 +9,7 @@ uniform sampler2D MotionVectorSampler;
 
 layout(std140) uniform FsrTemporalMaskConfig {
     // xy: render size, zw: previous-minus-current projection jitter in pixel space.
-    vec4 MaskConfig;
+    vec4 MaskConfig; vec4 Reactivity; vec4 Composition;
 };
 
 layout(location = 0) in vec2 texCoord;
@@ -17,11 +17,11 @@ layout(location = 0) in vec2 texCoord;
 layout(location = 0) out vec4 reactiveMaskOutput;
 layout(location = 1) out vec4 transparencyMaskOutput;
 
-const float TC_THRESHOLD = 0.05;
+#define TC_THRESHOLD Composition.x
 const float TC_GATE_THRESHOLD = 0.01;
-const float TC_SCALE = 0.5;
+#define TC_SCALE Composition.y
 const float AUTOGEN_EPSILON = 0.01;
-const float REACTIVE_SCALE = 5.0;
+#define REACTIVE_SCALE Composition.z
 const float REACTIVE_MAX = 0.9;
 
 ivec2 renderSize() {
@@ -40,12 +40,12 @@ vec3 currentOpaque(ivec2 pixel) {
     return texelFetch(CurrentOpaqueSampler, clampPixel(pixel), 0).rgb;
 }
 
-vec3 previousColor(ivec2 pixel) {
-    return texelFetch(PreviousColorSampler, clampPixel(pixel), 0).rgb;
+vec3 previousColor(vec2 uv) {
+    return texture(PreviousColorSampler, uv).rgb;
 }
 
-vec3 previousOpaque(ivec2 pixel) {
-    return texelFetch(PreviousOpaqueSampler, clampPixel(pixel), 0).rgb;
+vec3 previousOpaque(vec2 uv) {
+    return texture(PreviousOpaqueSampler, uv).rgb;
 }
 
 vec3 rgbToYCoCg(vec3 color) {
@@ -56,18 +56,19 @@ vec3 rgbToYCoCg(vec3 color) {
     );
 }
 
-ivec2 reprojectedPixel(ivec2 pixel) {
+vec2 reprojectedUv(ivec2 pixel) {
     ivec2 currentPixel = clampPixel(pixel);
     vec2 motionPixels = texelFetch(MotionVectorSampler, currentPixel, 0).rg;
     vec2 previousPixelCenter = vec2(currentPixel) + vec2(0.5) + motionPixels + MaskConfig.zw;
-    return clampPixel(ivec2(floor(previousPixelCenter)));
+    vec2 halfTexel = 0.5 / MaskConfig.xy;
+    return clamp(previousPixelCenter / MaskConfig.xy, halfTexel, 1.0 - halfTexel);
 }
 
-float temporalCompositionChange(ivec2 currentPixel, ivec2 previousPixel) {
+float temporalCompositionChange(ivec2 currentPixel, vec2 previousUv) {
     vec3 currentPre = rgbToYCoCg(currentOpaque(currentPixel));
     vec3 currentPost = rgbToYCoCg(currentColor(currentPixel));
-    vec3 previousPre = rgbToYCoCg(previousOpaque(previousPixel));
-    vec3 previousPost = rgbToYCoCg(previousColor(previousPixel));
+    vec3 previousPre = rgbToYCoCg(previousOpaque(previousUv));
+    vec3 previousPost = rgbToYCoCg(previousColor(previousUv));
     vec3 contributionChange = abs(abs(currentPost - currentPre) - abs(previousPost - previousPre));
     return clamp(dot(contributionChange, vec3(1.0)), 0.0, 1.0);
 }
@@ -75,11 +76,11 @@ float temporalCompositionChange(ivec2 currentPixel, ivec2 previousPixel) {
 // AMD's experimental TCR path uses this conservative prefilter before the binary
 // composition-change test. It rejects tiny jitter-only differences that would otherwise
 // invalidate history at every hard water/cloud edge.
-float temporalCompositionGate(ivec2 currentPixel, ivec2 previousPixel) {
+float temporalCompositionGate(ivec2 currentPixel, vec2 previousUv) {
     vec3 currentPre = rgbToYCoCg(currentOpaque(currentPixel));
     vec3 currentPost = rgbToYCoCg(currentColor(currentPixel));
-    vec3 previousPre = rgbToYCoCg(previousOpaque(previousPixel));
-    vec3 previousPost = rgbToYCoCg(previousColor(previousPixel));
+    vec3 previousPre = rgbToYCoCg(previousOpaque(previousUv));
+    vec3 previousPost = rgbToYCoCg(previousColor(previousUv));
     vec3 currentContribution = currentPost - currentPre;
     vec3 previousContribution = previousPost - previousPre;
     bool hasTransparency = any(greaterThan(abs(currentContribution), vec3(AUTOGEN_EPSILON)));
@@ -104,11 +105,11 @@ vec2 temporalEdgeChanges(ivec2 currentPixel) {
     for (int y = -1; y <= 1; ++y) {
         for (int x = -1; x <= 1; ++x) {
             ivec2 samplePixel = currentPixel + ivec2(x, y);
-            ivec2 previousSamplePixel = reprojectedPixel(samplePixel);
+            vec2 previousSampleUv = reprojectedUv(samplePixel);
             vec3 currentOpaqueSample = currentOpaque(samplePixel);
-            vec3 previousOpaqueSample = previousOpaque(previousSamplePixel);
+            vec3 previousOpaqueSample = previousOpaque(previousSampleUv);
             vec3 currentContribution = abs(currentColor(samplePixel) - currentOpaqueSample);
-            vec3 previousContribution = abs(previousColor(previousSamplePixel) - previousOpaqueSample);
+            vec3 previousContribution = abs(previousColor(previousSampleUv) - previousOpaqueSample);
             opaqueDifference[index] = length(currentOpaqueSample - previousOpaqueSample);
             transparentDifference[index] = length(currentContribution - previousContribution);
             ++index;
@@ -134,11 +135,11 @@ vec2 temporalEdgeChanges(ivec2 currentPixel) {
 
 void main() {
     ivec2 currentPixel = clampPixel(ivec2(texCoord * MaskConfig.xy));
-    ivec2 previousPixel = reprojectedPixel(currentPixel);
+    vec2 previousUv = reprojectedUv(currentPixel);
 
     float compositionCandidate = 0.0;
-    if (temporalCompositionGate(currentPixel, previousPixel) > TC_GATE_THRESHOLD) {
-        float compositionChange = temporalCompositionChange(currentPixel, previousPixel);
+    if (temporalCompositionGate(currentPixel, previousUv) > TC_GATE_THRESHOLD) {
+        float compositionChange = temporalCompositionChange(currentPixel, previousUv);
         compositionCandidate = compositionChange < TC_THRESHOLD ? 0.0 : 1.0;
     }
     float transparencyAndComposition = compositionCandidate * TC_SCALE;
@@ -150,9 +151,9 @@ void main() {
     }
     vec2 uv = (vec2(currentPixel) + 0.5) / MaskConfig.xy;
     vec2 motionPixels = texelFetch(MotionVectorSampler, currentPixel, 0).rg;
-    reactive = max(reactive, temporalColorRejection(CurrentColorSampler, PreviousColorSampler,
-            uv, MaskConfig.xy, motionPixels, MaskConfig.zw));
+    reactive = max(reactive*Reactivity.x, temporalColorRejection(CurrentColorSampler, PreviousColorSampler,
+            uv, MaskConfig.xy, motionPixels, MaskConfig.zw,Reactivity));
 
-    reactiveMaskOutput = vec4(reactive, 0.0, 0.0, 1.0);
+    reactiveMaskOutput = vec4(clamp(reactive,0.0,Reactivity.z), 0.0, 0.0, 1.0);
     transparencyMaskOutput = vec4(transparencyAndComposition, 0.0, 0.0, 1.0);
 }

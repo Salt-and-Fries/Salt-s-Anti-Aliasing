@@ -1,0 +1,780 @@
+{
+  "camera-yaw": {
+    "samples": 88462,
+    "p95PixelError": 0.0010023033985075366,
+    "p99PixelError": 0.001716090864892742
+  },
+  "camera-pitch": {
+    "samples": 89940,
+    "p95PixelError": 0.00046710829106946496,
+    "p99PixelError": 0.0004975163104600452
+  },
+  "camera-strafe": {
+    "samples": 88120,
+    "p95PixelError": 0.0007529315613396541,
+    "p99PixelError": 0.0009542737610473928
+  },
+  "static-quality": {
+    "frames": 24,
+    "edgeTemporalStd": 0.7665541633635897,
+    "meanFrameDifference": 0.03441060846095171
+  },
+  "static-dlaa": {
+    "frames": 24,
+    "edgeTemporalStd": 0.2388726311210338,
+    "meanFrameDifference": 0.021272467679790335
+  },
+  "static-performance": {
+    "frames": 24,
+    "edgeTemporalStd": 1.541132528935233,
+    "meanFrameDifference": 0.03754777132351503
+  },
+  "static-ultra_performance": {
+    "frames": 24,
+    "edgeTemporalStd": 1.0600927457194966,
+    "meanFrameDifference": 0.03607150540788985
+  },
+  "mip-auto": {
+    "frames": 24,
+    "edgeTemporalStd": 0.7656053596005874,
+    "meanFrameDifference": 0.033962330575602884
+  },
+  "mip-off": {
+    "frames": 24,
+    "edgeTemporalStd": 0.7647685419888911,
+    "meanFrameDifference": 0.03447984509769407
+  },
+  "stress-262k": {
+    "capturedVertices": 262144,
+    "movingVertices": 0,
+    "stableMeshes": 1560,
+    "newMeshes": 0,
+    "topologyChanges": 0,
+    "cappedMeshes": 645,
+    "unidentifiedMeshes": 0,
+    "vertexBudget": 262144
+  },
+  "stress-1m": {
+    "capturedVertices": 370840,
+    "movingVertices": 760,
+    "stableMeshes": 2208,
+    "newMeshes": 0,
+    "topologyChanges": 0,
+    "cappedMeshes": 0,
+    "unidentifiedMeshes": 0,
+    "vertexBudget": 1048576
+  },
+  "stress-2m": {
+    "capturedVertices": 370840,
+    "movingVertices": 472,
+    "stableMeshes": 2208,
+    "newMeshes": 0,
+    "topologyChanges": 0,
+    "cappedMeshes": 0,
+    "unidentifiedMeshes": 0,
+    "vertexBudget": 2097152
+  },
+  "stress-cleanup": {
+    "capturedVertices": 952,
+    "movingVertices": 472,
+    "stableMeshes": 6,
+    "newMeshes": 0,
+    "topologyChanges": 0,
+    "cappedMeshes": 0,
+    "unidentifiedMeshes": 0,
+    "vertexBudget": 1048576
+  },
+  "color-linear_hdr-0": [
+    {
+      "source": [
+        0.00099945068359375,
+        0.00099945068359375,
+        0.00099945068359375
+      ],
+      "output": [
+        0.0009984970092773438,
+        0.0009984970092773438,
+        0.0009984970092773438
+      ],
+      "absError": [
+        9.5367431640625e-07,
+        9.5367431640625e-07,
+        9.5367431640625e-07
+      ]
+    },
+    {
+      "source": [
+        0.00099945068359375,
+        0.00099945068359375,
+        0.00099945068359375
+      ],
+      "output": [
+        0.0009984970092773438,
+        0.0009984970092773438,
+        0.0009984970092773438
+      ],
+      "absError": [
+        9.5367431640625e-07,
+        9.5367431640625e-07,
+        9.5367431640625e-07
+      ]
+    },
+    {
+      "source": [
+        0.00099945068359375,
+        0.00099945068359375,
+        0.00099945068359375
+      ],
+      "output": [
+        0.0009984970092773438,
+        0.0009984970092773438,
+        0.0009984970092773438
+      ],
+      "absError": [
+        9.5367431640625e-07,
+        9.5367431640625e-07,
+        9.5367431640625e-07
+      ]
+    },
+    {
+      "source": [
+        0.00099945068359375,
+        0.00099945068359375,
+        0.00099945068359375
+      ],
+      "output": [
+        0.0009984970092773438,
+        0.0009984970092773438,
+        0.0009984970092773438
+      ],
+      "absError": [
+        9.5367431640625e-07,
+        9.5367431640625e-07,
+        9.5367431640625e-07
+      ]
+    }
+  ],
+  "color-linear_hdr-1": [
+    {
+      "source": [
+        0.03997802734375,
+        0.03997802734375,
+        0.03997802734375
+      ],
+      "output": [
+        0.03997802734375,
+        0.03997802734375,
+        0.03997802734375
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.03997802734375,
+        0.03997802734375,
+        0.03997802734375
+      ],
+      "output": [
+        0.03997802734375,
+        0.03997802734375,
+        0.03997802734375
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.03997802734375,
+        0.03997802734375,
+        0.03997802734375
+      ],
+      "output": [
+        0.03997802734375,
+        0.03997802734375,
+        0.03997802734375
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.03997802734375,
+        0.03997802734375,
+        0.03997802734375
+      ],
+      "output": [
+        0.03997802734375,
+        0.03997802734375,
+        0.03997802734375
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "color-linear_hdr-2": [
+    {
+      "source": [
+        0.179931640625,
+        0.5,
+        0.89990234375
+      ],
+      "output": [
+        0.1796875,
+        0.5,
+        0.89990234375
+      ],
+      "absError": [
+        0.000244140625,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.179931640625,
+        0.5,
+        0.89990234375
+      ],
+      "output": [
+        0.1796875,
+        0.5,
+        0.89990234375
+      ],
+      "absError": [
+        0.000244140625,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.179931640625,
+        0.5,
+        0.89990234375
+      ],
+      "output": [
+        0.1796875,
+        0.5,
+        0.89990234375
+      ],
+      "absError": [
+        0.000244140625,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.179931640625,
+        0.5,
+        0.89990234375
+      ],
+      "output": [
+        0.1796875,
+        0.5,
+        0.89990234375
+      ],
+      "absError": [
+        0.000244140625,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "color-linear_hdr-3": [
+    {
+      "source": [
+        4.0,
+        2.0,
+        0.5
+      ],
+      "output": [
+        3.998046875,
+        1.9990234375,
+        0.50048828125
+      ],
+      "absError": [
+        0.001953125,
+        0.0009765625,
+        0.00048828125
+      ]
+    },
+    {
+      "source": [
+        4.0,
+        2.0,
+        0.5
+      ],
+      "output": [
+        3.998046875,
+        2.0,
+        0.50048828125
+      ],
+      "absError": [
+        0.001953125,
+        0.0,
+        0.00048828125
+      ]
+    },
+    {
+      "source": [
+        4.0,
+        2.0,
+        0.5
+      ],
+      "output": [
+        3.998046875,
+        1.9990234375,
+        0.50048828125
+      ],
+      "absError": [
+        0.001953125,
+        0.0009765625,
+        0.00048828125
+      ]
+    },
+    {
+      "source": [
+        4.0,
+        2.0,
+        0.5
+      ],
+      "output": [
+        3.998046875,
+        1.9990234375,
+        0.50048828125
+      ],
+      "absError": [
+        0.001953125,
+        0.0009765625,
+        0.00048828125
+      ]
+    }
+  ],
+  "color-perceptual_sdr-0": [
+    {
+      "source": [
+        0.00392156862745098,
+        0.00392156862745098,
+        0.00392156862745098
+      ],
+      "output": [
+        0.00392156862745098,
+        0.00392156862745098,
+        0.00392156862745098
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.00392156862745098,
+        0.00392156862745098,
+        0.00392156862745098
+      ],
+      "output": [
+        0.00392156862745098,
+        0.00392156862745098,
+        0.00392156862745098
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.00392156862745098,
+        0.00392156862745098,
+        0.00392156862745098
+      ],
+      "output": [
+        0.00392156862745098,
+        0.00392156862745098,
+        0.00392156862745098
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.00392156862745098,
+        0.00392156862745098,
+        0.00392156862745098
+      ],
+      "output": [
+        0.00392156862745098,
+        0.00392156862745098,
+        0.00392156862745098
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "color-perceptual_sdr-1": [
+    {
+      "source": [
+        0.0392156862745098,
+        0.0392156862745098,
+        0.0392156862745098
+      ],
+      "output": [
+        0.0392156862745098,
+        0.0392156862745098,
+        0.0392156862745098
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.0392156862745098,
+        0.0392156862745098,
+        0.0392156862745098
+      ],
+      "output": [
+        0.0392156862745098,
+        0.0392156862745098,
+        0.0392156862745098
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.0392156862745098,
+        0.0392156862745098,
+        0.0392156862745098
+      ],
+      "output": [
+        0.0392156862745098,
+        0.0392156862745098,
+        0.0392156862745098
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.0392156862745098,
+        0.0392156862745098,
+        0.0392156862745098
+      ],
+      "output": [
+        0.0392156862745098,
+        0.0392156862745098,
+        0.0392156862745098
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "color-perceptual_sdr-2": [
+    {
+      "source": [
+        0.1803921568627451,
+        0.4980392156862745,
+        0.8980392156862745
+      ],
+      "output": [
+        0.1803921568627451,
+        0.4980392156862745,
+        0.8980392156862745
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.1803921568627451,
+        0.4980392156862745,
+        0.8980392156862745
+      ],
+      "output": [
+        0.1803921568627451,
+        0.4980392156862745,
+        0.8980392156862745
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.1803921568627451,
+        0.4980392156862745,
+        0.8980392156862745
+      ],
+      "output": [
+        0.1803921568627451,
+        0.4980392156862745,
+        0.8980392156862745
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.1803921568627451,
+        0.4980392156862745,
+        0.8980392156862745
+      ],
+      "output": [
+        0.1803921568627451,
+        0.4980392156862745,
+        0.8980392156862745
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "color-perceptual_sdr-3": [
+    {
+      "source": [
+        0.8980392156862745,
+        0.2,
+        0.050980392156862744
+      ],
+      "output": [
+        0.8980392156862745,
+        0.2,
+        0.050980392156862744
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.8980392156862745,
+        0.2,
+        0.050980392156862744
+      ],
+      "output": [
+        0.8980392156862745,
+        0.2,
+        0.050980392156862744
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.8980392156862745,
+        0.2,
+        0.050980392156862744
+      ],
+      "output": [
+        0.8980392156862745,
+        0.2,
+        0.050980392156862744
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "source": [
+        0.8980392156862745,
+        0.2,
+        0.050980392156862744
+      ],
+      "output": [
+        0.8980392156862745,
+        0.2,
+        0.050980392156862744
+      ],
+      "absError": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "tests": {
+    "camera-pitch": "DLSS Super Resolution - 853 x 480",
+    "camera-strafe": "DLSS Super Resolution - 853 x 480",
+    "camera-yaw": "DLSS Super Resolution - 853 x 480",
+    "chest-motion": "DLSS Super Resolution - 853 x 480",
+    "color-linear_hdr-0": "DLSS Super Resolution - 853 x 480",
+    "color-linear_hdr-1": "DLSS Super Resolution - 853 x 480",
+    "color-linear_hdr-2": "DLSS Super Resolution - 853 x 480",
+    "color-linear_hdr-3": "DLSS Super Resolution - 853 x 480",
+    "color-perceptual_sdr-0": "DLSS Super Resolution - 853 x 480",
+    "color-perceptual_sdr-1": "DLSS Super Resolution - 853 x 480",
+    "color-perceptual_sdr-2": "DLSS Super Resolution - 853 x 480",
+    "color-perceptual_sdr-3": "DLSS Super Resolution - 853 x 480",
+    "color-restored": "DLSS Super Resolution - 853 x 480",
+    "dimension-nether": "DLSS Super Resolution - 853 x 480",
+    "dimension-overworld": "DLSS Super Resolution - 853 x 480",
+    "final-dlaa-1080": "DLSS Super Resolution - 1920 x 1080",
+    "final-quality-1080": "DLSS Super Resolution - 1280 x 720",
+    "final-quality-1440": "DLSS Super Resolution - 1707 x 960",
+    "final-quality-720": "DLSS Super Resolution - 853 x 480",
+    "fov-normal": "DLSS Super Resolution - 853 x 480",
+    "fov-wide": "DLSS Super Resolution - 853 x 480",
+    "hand-swing": "DLSS Super Resolution - 853 x 480",
+    "hdr-switch-final": "DLSS Super Resolution - 853 x 480",
+    "mip-auto": "DLSS Super Resolution - 853 x 480",
+    "mip-off": "DLSS Super Resolution - 853 x 480",
+    "model-auto": "DLSS Super Resolution - 853 x 480",
+    "model-k": "DLSS Super Resolution - 853 x 480",
+    "model-l": "DLSS Super Resolution - 853 x 480",
+    "model-m": "DLSS Super Resolution - 853 x 480",
+    "native-hdr-path": "DLSS Super Resolution - 853 x 480",
+    "native-sdr-restored": "DLSS Super Resolution - 853 x 480",
+    "packaged-final-smoke": "DLSS Super Resolution - 853 x 480",
+    "particle-off": "DLSS Super Resolution - 853 x 480",
+    "particle-oit": "DLSS Super Resolution - 853 x 480",
+    "particle-on": "DLSS Super Resolution - 853 x 480",
+    "particle-valid-v3": "DLSS Super Resolution - 853 x 480",
+    "perspective-first_person": "DLSS Super Resolution - 853 x 480",
+    "perspective-third_person_back": "DLSS Super Resolution - 853 x 480",
+    "perspective-third_person_front": "DLSS Super Resolution - 853 x 480",
+    "pig-motion": "DLSS Super Resolution - 853 x 480",
+    "reload-final": "DLSS Super Resolution - 853 x 480",
+    "reload": "DLSS Super Resolution - 853 x 480",
+    "resume-gap": "DLSS Super Resolution - 853 x 480",
+    "sdr-switch-final": "DLSS Super Resolution - 853 x 480",
+    "smoke-dominant": "DLSS Super Resolution - 853 x 480",
+    "smoke-low-coverage": "DLSS Super Resolution - 853 x 480",
+    "smoke-occluded": "DLSS Super Resolution - 853 x 480",
+    "smoke-oit": "DLSS Super Resolution - 853 x 480",
+    "staging-final-smoke": "DLSS Super Resolution - 853 x 480",
+    "static-dlaa": "DLSS Super Resolution - 1280 x 720",
+    "static-performance": "DLSS Super Resolution - 640 x 360",
+    "static-quality": "DLSS Super Resolution - 853 x 480",
+    "static-ultra_performance": "DLSS Super Resolution - 427 x 240",
+    "stress-1m": "DLSS Super Resolution - 853 x 480",
+    "stress-262k": "DLSS Super Resolution - 853 x 480",
+    "stress-2m": "DLSS Super Resolution - 853 x 480",
+    "stress-cleanup": "DLSS Super Resolution - 853 x 480",
+    "texture-native": "DLSS Super Resolution - 1280 x 720",
+    "texture-pack-automatic": "DLSS Super Resolution - 853 x 480",
+    "texture-pack-native": "DLSS Super Resolution - 1280 x 720",
+    "texture-pack-off": "DLSS Super Resolution - 853 x 480",
+    "texture-pack-restored": "DLSS Super Resolution - 853 x 480",
+    "texture-quality-automatic": "DLSS Super Resolution - 853 x 480",
+    "texture-quality-off": "DLSS Super Resolution - 853 x 480",
+    "underwater": "DLSS Super Resolution - 853 x 480"
+  },
+  "smoke-dominant": {
+    "nonzeroMin": 3032,
+    "nonzeroMax": 4149,
+    "quadsMin": 226,
+    "quadsMax": 262
+  },
+  "smoke-low-coverage": {
+    "nonzeroMin": 3029,
+    "nonzeroMax": 4034,
+    "quadsMin": 220,
+    "quadsMax": 258
+  },
+  "smoke-occluded": {
+    "nonzeroMin": 0,
+    "nonzeroMax": 0,
+    "quadsMin": 241,
+    "quadsMax": 277
+  },
+  "smoke-oit": {
+    "nonzeroMin": 1236,
+    "nonzeroMax": 4033,
+    "quadsMin": 137,
+    "quadsMax": 271
+  },
+  "particle-on-coverage": {
+    "minMovingVertices": 0,
+    "maxMovingVertices": 0,
+    "lastGeometryCoverage": {
+      "capturedVertices": 768,
+      "movingVertices": 0,
+      "stableMeshes": 5,
+      "newMeshes": 0,
+      "topologyChanges": 0,
+      "cappedMeshes": 0,
+      "unidentifiedMeshes": 0,
+      "vertexBudget": 1048576
+    }
+  },
+  "pig-motion-coverage": {
+    "minMovingVertices": 252,
+    "maxMovingVertices": 252,
+    "lastGeometryCoverage": {
+      "capturedVertices": 768,
+      "movingVertices": 168,
+      "stableMeshes": 5,
+      "newMeshes": 0,
+      "topologyChanges": 0,
+      "cappedMeshes": 0,
+      "unidentifiedMeshes": 0,
+      "vertexBudget": 1048576
+    }
+  },
+  "chest-motion-coverage": {
+    "minMovingVertices": 108,
+    "maxMovingVertices": 108,
+    "lastGeometryCoverage": {
+      "capturedVertices": 768,
+      "movingVertices": 72,
+      "stableMeshes": 5,
+      "newMeshes": 0,
+      "topologyChanges": 0,
+      "cappedMeshes": 0,
+      "unidentifiedMeshes": 0,
+      "vertexBudget": 1048576
+    }
+  }
+}

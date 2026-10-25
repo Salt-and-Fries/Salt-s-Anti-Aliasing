@@ -39,6 +39,8 @@ public final class VulkanMsaaPipelineVariants {
         return compiled;
     }
 
+    public static RenderPipeline sourceFor(CompiledRenderPipeline compiled) { return SOURCES.get(compiled); }
+
     public static CompiledRenderPipeline compiledVariant(
             CompiledRenderPipeline compiled, int samples, boolean alphaToCoverageRequested
     ) {
@@ -50,7 +52,8 @@ public final class VulkanMsaaPipelineVariants {
             throw new IllegalStateException("Missing source for multisampled render pipeline " + compiled);
         }
         boolean alphaToCoverage = usesAlphaToCoverage(source, samples, alphaToCoverageRequested);
-        return RenderSystem.getCompiledPipeline(variant(source, samples, alphaToCoverage));
+        return RenderSystem.getCompiledPipeline(variant(source, samples, alphaToCoverage,
+                VulkanMsaaState.currentHandRendering()));
     }
 
     /** Reads immutable variant metadata on the asynchronous pipeline compilation thread. */
@@ -64,13 +67,23 @@ public final class VulkanMsaaPipelineVariants {
         return key != null && key.alphaToCoverage();
     }
 
+    public static boolean nativeSampleShading(String pipelineName) {
+        VariantKey key = NATIVE_VARIANTS.get(pipelineName);
+        return key != null && key.handSampleShading();
+    }
+
     public static RenderPipeline variant(RenderPipeline pipeline, int samples, boolean alphaToCoverage) {
+        return variant(pipeline, samples, alphaToCoverage, false);
+    }
+
+    private static RenderPipeline variant(RenderPipeline pipeline, int samples, boolean alphaToCoverage,
+            boolean handSampleShading) {
         int sanitizedSamples = Math.max(1, samples);
         if (sanitizedSamples <= 1) {
             return pipeline;
         }
 
-        VariantKey key = new VariantKey(sanitizedSamples, alphaToCoverage);
+        VariantKey key = new VariantKey(sanitizedSamples, alphaToCoverage, handSampleShading);
         return VARIANTS
                 .computeIfAbsent(pipeline, ignored -> new HashMap<>())
                 .computeIfAbsent(
@@ -78,7 +91,8 @@ public final class VulkanMsaaPipelineVariants {
                         variantKey -> createVariant(
                                 pipeline,
                                 variantKey.samples(),
-                                variantKey.alphaToCoverage()
+                                variantKey.alphaToCoverage(),
+                                variantKey.handSampleShading()
                         )
                 );
     }
@@ -103,10 +117,13 @@ public final class VulkanMsaaPipelineVariants {
     private static RenderPipeline createVariant(
             RenderPipeline pipeline,
             int samples,
-            boolean alphaToCoverage
+            boolean alphaToCoverage,
+            boolean handSampleShading
     ) {
         Identifier variantLocation = variantLocation(pipeline.getLocation(), samples, alphaToCoverage);
-        NATIVE_VARIANTS.put(variantLocation.toString(), new VariantKey(samples, alphaToCoverage));
+        if (handSampleShading) variantLocation = Identifier.fromNamespaceAndPath(variantLocation.getNamespace(),
+                variantLocation.getPath() + "_hand_sample_shading");
+        NATIVE_VARIANTS.put(variantLocation.toString(), new VariantKey(samples, alphaToCoverage, handSampleShading));
         RenderPipeline variant = RenderPipelineAccessor.saltsAntiAliasing$create(
                 variantLocation,
                 Map.copyOf(pipeline.getShaders()),
@@ -126,6 +143,7 @@ public final class VulkanMsaaPipelineVariants {
                 "variantPipeline", variantLocation.toString(),
                 "samples", samples,
                 "alphaToCoverage", alphaToCoverage,
+                "sampleShading", handSampleShading,
                 "primitiveTopology", pipeline.getPrimitiveTopology(),
                 "colorTargetCount", pipeline.getColorTargetStates().size(),
                 "hasDepthStencilState", pipeline.getDepthStencilState() != null,
@@ -161,6 +179,6 @@ public final class VulkanMsaaPipelineVariants {
         return formats.toArray(VertexFormat[]::new);
     }
 
-    private record VariantKey(int samples, boolean alphaToCoverage) {
+    private record VariantKey(int samples, boolean alphaToCoverage, boolean handSampleShading) {
     }
 }

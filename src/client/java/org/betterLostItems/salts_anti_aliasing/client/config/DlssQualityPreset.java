@@ -7,17 +7,23 @@ import java.util.Locale;
  * directly to sl::DLSSMode values and queries NVIDIA's optimal render size for the active output.
  */
 public enum DlssQualityPreset {
-    QUALITY("Quality"),
-    BALANCED("Balanced"),
-    PERFORMANCE("Performance"),
-    ULTRA_PERFORMANCE("Ultra Performance"),
-    AUTO("Auto");
+    DLAA("DLAA (Native)", 5),
+    QUALITY("Quality", 0),
+    BALANCED("Balanced", 1),
+    PERFORMANCE("Performance", 2),
+    ULTRA_PERFORMANCE("Ultra Performance", 3),
+    AUTO("Auto", 4);
 
     private final String displayName;
+    private final int nativeId;
 
-    DlssQualityPreset(String displayName) {
+    DlssQualityPreset(String displayName, int nativeId) {
         this.displayName = displayName;
+        this.nativeId = nativeId;
     }
+
+    /** Stable bridge ID, independent of the slider's display order. */
+    public int nativeId() { return nativeId; }
 
     public String displayName() {
         return displayName;

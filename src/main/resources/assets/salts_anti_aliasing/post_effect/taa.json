@@ -26,6 +26,11 @@
           "sampler_name": "HistoryDepth",
           "target": "salts_anti_aliasing:taa_history",
           "use_depth_buffer": true
+        },
+        {
+          "sampler_name": "Motion",
+          "target": "salts_anti_aliasing:taa_motion",
+          "bilinear": false
         }
       ],
       "output": "swap",
@@ -34,47 +39,87 @@
           {
             "name": "CurrentClipToWorld0",
             "type": "vec4",
-            "value": [1.0, 0.0, 0.0, 0.0]
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ]
           },
           {
             "name": "CurrentClipToWorld1",
             "type": "vec4",
-            "value": [0.0, 1.0, 0.0, 0.0]
+            "value": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ]
           },
           {
             "name": "CurrentClipToWorld2",
             "type": "vec4",
-            "value": [0.0, 0.0, 1.0, 0.0]
+            "value": [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ]
           },
           {
             "name": "CurrentClipToWorld3",
             "type": "vec4",
-            "value": [0.0, 0.0, 0.0, 1.0]
+            "value": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
           },
           {
             "name": "PreviousViewProjection0",
             "type": "vec4",
-            "value": [1.0, 0.0, 0.0, 0.0]
+            "value": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ]
           },
           {
             "name": "PreviousViewProjection1",
             "type": "vec4",
-            "value": [0.0, 1.0, 0.0, 0.0]
+            "value": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ]
           },
           {
             "name": "PreviousViewProjection2",
             "type": "vec4",
-            "value": [0.0, 0.0, 1.0, 0.0]
+            "value": [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ]
           },
           {
             "name": "PreviousViewProjection3",
             "type": "vec4",
-            "value": [0.0, 0.0, 0.0, 1.0]
+            "value": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
           },
           {
             "name": "BaseHistoryWeight",
             "type": "float",
-            "value": 0.90
+            "value": 0.9
           },
           {
             "name": "LumaRejection",
@@ -119,7 +164,22 @@
           {
             "name": "CameraTranslationToPrevious",
             "type": "vec4",
-            "value": [0.0, 0.0, 0.0, 0.0]
+            "value": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "name": "ResolveOptions",
+            "type": "vec4",
+            "value": [
+              1,
+              0,
+              0,
+              0
+            ]
           }
         ]
       }
@@ -133,7 +193,7 @@
           "target": "swap"
         }
       ],
-      "output": "minecraft:main",
+      "output": "salts_anti_aliasing:taa_history",
       "uniforms": {
         "BlitConfig": [
           {
@@ -145,6 +205,26 @@
               1.0,
               1.0
             ]
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "salts_anti_aliasing:post/taa_display",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "output": "minecraft:main",
+      "uniforms": {
+        "TaaDisplayConfig": [
+          {
+            "name": "DebugView",
+            "type": "float",
+            "value": 0
           }
         ]
       }

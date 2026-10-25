@@ -44,6 +44,15 @@ public enum AntiAliasingMode {
             FSR1_UPSCALE,
             TAA
     );
+    private static final List<AntiAliasingMode> SELECTABLE_MODES = IMPLEMENTED_MODES.stream()
+            .filter(mode -> mode != FSR3_SUPER_RESOLUTION_FRAME_GENERATION).toList();
+
+    /** Frame generation is an FSR3 setting; its serialized internal mode remains supported. */
+    public AntiAliasingMode selectionMode() {
+        return usesFsrFrameGeneration() ? FSR3_SUPER_RESOLUTION : this;
+    }
+
+    public static List<AntiAliasingMode> selectableModes() { return SELECTABLE_MODES; }
 
     private final String displayName;
     private final boolean dedicatedUpscale;
@@ -141,8 +150,8 @@ public enum AntiAliasingMode {
      * @return next mode that is implemented by this build
      */
     public AntiAliasingMode nextImplemented() {
-        int currentIndex = IMPLEMENTED_MODES.indexOf(clampImplemented(this));
-        return IMPLEMENTED_MODES.get((currentIndex + 1) % IMPLEMENTED_MODES.size());
+        int currentIndex = SELECTABLE_MODES.indexOf(clampImplemented(this).selectionMode());
+        return SELECTABLE_MODES.get((currentIndex + 1) % SELECTABLE_MODES.size());
     }
 
     /**

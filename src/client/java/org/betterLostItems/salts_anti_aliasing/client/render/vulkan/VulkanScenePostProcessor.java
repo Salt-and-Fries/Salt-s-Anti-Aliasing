@@ -29,6 +29,20 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
     private final CrossFrameResourcePool temporalResourcePool = new CrossFrameResourcePool(3);
     private final CrossFrameResourcePool finalEffectsResourcePool = new CrossFrameResourcePool(3);
     private final EdgeDebugAnalyzer edgeDebugAnalyzer;
+    private String lastConfiguration;
+    @Override public void retry() {
+        VulkanHandAaController.instance().retry();
+        temporalDisabledAfterFailure=false; finalEffectsDisabledAfterFailure=false;
+        VulkanSceneTemporalController.instance().resetForInactiveMode();
+    }
+    @Override public void maintain(AntiAliasingConfig config) {
+        VulkanHandAaController.instance().maintain(config);
+        String signature=config.mode+":"+config.sharpenStrength+":"+config.tuning.spatialAa;
+        if (!signature.equals(lastConfiguration)) { retry(); lastConfiguration=signature; }
+        if (config.mode != AntiAliasingMode.TAA) temporalResourcePool.clear();
+        if (config.mode == AntiAliasingMode.OFF && config.sharpenStrength == 0 && !config.debugViewsEnabled)
+            finalEffectsResourcePool.clear();
+    }
     private boolean temporalDisabledAfterFailure;
     private boolean finalEffectsDisabledAfterFailure;
 
@@ -69,6 +83,7 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
             VulkanSceneTemporalController.instance().apply(gameRenderer, temporalResourcePool);
         } catch (RuntimeException exception) {
             temporalDisabledAfterFailure = true;
+            org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.failure(config.mode,exception.getMessage());
             temporalResourcePool.clear();
             SaltsAntiAliasing.LOGGER.error("Disabling temporal resolve after a rendering failure", exception);
             MetricsDiagnostics.error("post_processing", "temporal_resolve_disabled", MetricsDiagnostics.fields(
@@ -112,12 +127,23 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
                 processEffect(minecraft, gameRenderer.mainRenderTarget(), NIS_SHARPEN_EFFECT, config);
             }
 
+            var view=config.tuning.debugView;
+            if(view==org.betterLostItems.salts_anti_aliasing.client.config.RenderTuning.DebugView.MOTION_VECTORS
+                    || view==org.betterLostItems.salts_anti_aliasing.client.config.RenderTuning.DebugView.REACTIVE_MASK) {
+                boolean motion=view==org.betterLostItems.salts_anti_aliasing.client.config.RenderTuning.DebugView.MOTION_VECTORS;
+                RenderTarget source=config.mode==AntiAliasingMode.TAA?VulkanSceneTemporalController.instance().motionTarget():
+                    config.mode==AntiAliasingMode.DLSS_SUPER_RESOLUTION?
+                        (motion?VulkanSceneDlssController.instance().motionTarget():null):
+                        (motion?VulkanSceneFsrController.instance().motionTarget():VulkanSceneFsrController.instance().rejectionTarget());
+                VulkanTemporalDebugRenderer.render(source,gameRenderer.mainRenderTarget(),motion);
+            }
             edgeDebugAnalyzer.captureIfNeeded(gameRenderer.mainRenderTarget(), config);
             if (config.debugViewsEnabled) {
                 processEffect(minecraft, gameRenderer.mainRenderTarget(), EDGE_DEBUG_EFFECT, config);
             }
         } catch (RuntimeException exception) {
             finalEffectsDisabledAfterFailure = true;
+            org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.failure(config.mode,exception.getMessage());
             finalEffectsResourcePool.clear();
             SaltsAntiAliasing.LOGGER.error("Disabling final scene effects after a rendering failure", exception);
             MetricsDiagnostics.error("post_processing", "final_effects_disabled", MetricsDiagnostics.fields(
@@ -153,7 +179,7 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
                             "targetHeight", mainTarget.height
                     )
             );
-            return;
+            throw new IllegalStateException("Shader unavailable: "+effectId);
         }
 
         MetricsDiagnostics.infoOnce(
@@ -167,8 +193,10 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
                 )
         );
 
-        VulkanDynamicUniforms.updateSharpening(postChain, config.sharpenStrength);
-        postChain.process(mainTarget, finalEffectsResourcePool);
+        VulkanDynamicUniforms.updateTuning(postChain, config);
+            try(var gpuTiming=VulkanGpuProfiler.scope(config.mode+"."+effectId.getPath())) { postChain.process(mainTarget, finalEffectsResourcePool); }
+        if (effectId.equals(FXAA_EFFECT) || effectId.equals(SMAA_EFFECT))
+            org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.success(config.mode,mainTarget.width,mainTarget.height);
     }
 
     /**

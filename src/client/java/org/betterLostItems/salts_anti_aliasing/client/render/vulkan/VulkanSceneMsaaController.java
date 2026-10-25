@@ -51,9 +51,13 @@ public final class VulkanSceneMsaaController {
     private VulkanSceneMsaaController() {
     }
 
+    public long allocatedTargetBytes() { return VulkanOwnedTargetMemory.bytes(msaaTarget); }
+
     public static VulkanSceneMsaaController instance() {
         return INSTANCE;
     }
+
+    public void retry() { clearFailureState(); }
 
     public void beginSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
         RenderSystem.assertOnRenderThread();
@@ -125,7 +129,8 @@ public final class VulkanSceneMsaaController {
                     && mainTarget.getColorTexture() != null
                     && msaaTarget != null
                     && msaaTarget.getColorTexture() != null) {
-                resolveColor(msaaTarget, mainTarget);
+            try(var gpuTiming=VulkanGpuProfiler.scope("MSAA.resolve")) { resolveColor(msaaTarget, mainTarget); }
+                org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.success(config.mode,mainTarget.width,mainTarget.height);
             }
         } catch (RuntimeException exception) {
             int requestedSamples = MsaaSampleLevel.clamp(config.msaaSampleLevel).samples();
@@ -335,6 +340,10 @@ public final class VulkanSceneMsaaController {
     }
 
     private void resolveColor(TextureTarget sourceTarget, RenderTarget target) {
+        resolveColor(sourceTarget, target, msaaTargetSamples);
+    }
+
+    static void resolveColor(TextureTarget sourceTarget, RenderTarget target, int expectedSamples) {
         GpuTexture sourceTexture = sourceTarget.getColorTexture();
         GpuTexture targetTexture = target.getColorTexture();
         if (!(sourceTexture instanceof VulkanGpuTexture sourceVulkanTexture)
@@ -353,10 +362,10 @@ public final class VulkanSceneMsaaController {
                 targetTexture.getHeight(0),
                 sourceTexture.getFormat() == targetTexture.getFormat()
         );
-        if (sourceSamples != msaaTargetSamples) {
+        if (sourceSamples != expectedSamples) {
             throw new IllegalStateException(
                     "Vulkan MSAA resolve source has " + sourceSamples
-                            + "x samples, but the scene target expects " + msaaTargetSamples + "x"
+                            + "x samples, but the target expects " + expectedSamples + "x"
             );
         }
 

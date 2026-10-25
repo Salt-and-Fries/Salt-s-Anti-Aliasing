@@ -1,0 +1,8 @@
+release-fsr2_super_resolution FSR2_SUPER_RESOLUTION FSR2 Super Resolution - 853 x 480 1280 720
+release-fsr3_super_resolution FSR3_SUPER_RESOLUTION FSR3 Super Resolution - 853 x 480 1280 720
+release-taa TAA TAA - 1280 x 720 1280 720
+release-dlss-return DLSS_SUPER_RESOLUTION DLSS Super Resolution - 853 x 480 1280 720
+release-injected-failure DLSS_SUPER_RESOLUTION DLSS Super Resolution - fallback: QA recovery exercise 1280 720
+release-recovered DLSS_SUPER_RESOLUTION DLSS Super Resolution - 853 x 480 1280 720
+release-hdr DLSS_SUPER_RESOLUTION DLSS Super Resolution - 853 x 480 1280 720
+release-sdr DLSS_SUPER_RESOLUTION DLSS Super Resolution - 853 x 480 1280 720

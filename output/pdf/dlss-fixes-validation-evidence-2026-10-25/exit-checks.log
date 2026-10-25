@@ -1,0 +1,6 @@
+exit-check-fsr2_super_resolution FSR2_SUPER_RESOLUTION FSR2 Super Resolution - 853 x 480 1280 720
+exit-check-fsr3_super_resolution FSR3_SUPER_RESOLUTION FSR3 Super Resolution - 853 x 480 1280 720
+exit-check-taa TAA TAA - 1280 x 720 1280 720
+exit-check-dlss DLSS_SUPER_RESOLUTION DLSS Super Resolution - 853 x 480 1280 720
+exit-check-hdr DLSS_SUPER_RESOLUTION DLSS Super Resolution - 853 x 480 1280 720
+exit-check-sdr DLSS_SUPER_RESOLUTION DLSS Super Resolution - 853 x 480 1280 720

@@ -32,7 +32,7 @@ import java.nio.ByteBuffer;
 final class VulkanFsrTemporalMaskRenderer {
     private static final VulkanFsrTemporalMaskRenderer INSTANCE = new VulkanFsrTemporalMaskRenderer();
     private static final int BUFFER_USAGE = GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST;
-    private static final int CONFIG_SIZE = new Std140SizeCalculator().putVec4().get();
+    private static final int CONFIG_SIZE = new Std140SizeCalculator().putVec4().putVec4().putVec4().get();
     private static final int MASK_WRITE = ColorTargetState.WRITE_RED;
     private static final BindGroupLayout INPUT_LAYOUT = BindGroupLayout.builder()
             .withUniform("CurrentColorSampler", UniformType.COMBINED_IMAGE_SAMPLER)
@@ -51,6 +51,11 @@ final class VulkanFsrTemporalMaskRenderer {
 
     static VulkanFsrTemporalMaskRenderer instance() {
         return INSTANCE;
+    }
+
+    static void release() {
+        if (INSTANCE.configBuffer != null) INSTANCE.configBuffer.close();
+        INSTANCE.configBuffer = null;
     }
 
     void render(
@@ -107,7 +112,10 @@ final class VulkanFsrTemporalMaskRenderer {
             bindNearest(renderPass, "CurrentOpaqueSampler", currentOpaque);
             renderPass.setUniform("PreviousColorSampler", previousColor.getColorTextureView(),
                     RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR));
-            bindNearest(renderPass, "PreviousOpaqueSampler", previousOpaque);
+            // Both history layers must use the same fractional footprint, otherwise jitter
+            // alone changes the estimated translucent contribution at hard edges.
+            renderPass.setUniform("PreviousOpaqueSampler", previousOpaque.getColorTextureView(),
+                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR));
             bindNearest(renderPass, "MotionVectorSampler", motionVectors);
             renderPass.draw(3, 1, 0, 0);
         }
@@ -161,6 +169,9 @@ final class VulkanFsrTemporalMaskRenderer {
                     jitterDeltaX,
                     jitterDeltaY
             );
+            var t=temporalController.tuning();
+            data.putFloat(t.reactiveStrength).putFloat(t.reactiveThreshold).putFloat(t.reactiveMaximum).putFloat(0);
+            data.putFloat(t.fsrTransparencyThreshold).putFloat(t.fsrCompositionStrength).putFloat(t.fsrReactiveScale).putFloat(.01f);
             data.flip();
             if (configBuffer == null || configBuffer.isClosed() || configBuffer.size() != data.remaining()) {
                 if (configBuffer != null && !configBuffer.isClosed()) {

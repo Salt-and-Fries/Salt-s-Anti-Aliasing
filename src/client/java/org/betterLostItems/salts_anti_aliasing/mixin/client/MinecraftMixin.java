@@ -14,6 +14,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
+    @Inject(method = "reloadResourcePacks()Ljava/util/concurrent/CompletableFuture;", at = @At("RETURN"))
+    private void saltsAntiAliasing$resetAfterReload(
+            org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<java.util.concurrent.CompletableFuture<Void>> result) {
+        Minecraft minecraft = (Minecraft)(Object)this;
+        result.getReturnValue().thenRun(() -> minecraft.execute(() -> {
+            var runtime = org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient.runtimeOrNull();
+            if (runtime != null) runtime.retryRendering();
+            org.betterLostItems.salts_anti_aliasing.client.render.vulkan.ParticleMotionGeometry.clear();
+        }));
+    }
     /**
      * Flushes metrics when Minecraft begins normal shutdown.
      */

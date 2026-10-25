@@ -16,6 +16,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -26,6 +28,54 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
+    @com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation(
+            method = "render3dHud",
+            at = @At(value = "INVOKE", target =
+                    "Lnet/minecraft/client/renderer/feature/FeatureRenderDispatcher$PreparedFrame;close()V", ordinal = 0))
+    private void saltsAntiAliasing$mirrorScreenEffects(
+            net.minecraft.client.renderer.feature.FeatureRenderDispatcher.PreparedFrame effects,
+            com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> original) {
+        // Water/fire/suffocation overlays change the world too. Match those in the HUD-less
+        // input so automatic UI extraction protects only the hand/HUD, not the entire viewport.
+        RenderTarget hudless = org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneFsrController
+                .instance().hudlessWorldOverlayTarget();
+        try {
+            if (hudless != null && !effects.isEmpty()) {
+                RenderTarget main = ((GameRenderer) (Object) this).mainRenderTarget();
+                // Vanilla's render pass is closed here; its prepared geometry is still alive.
+                try (var mirrored = com.mojang.blaze3d.systems.RenderSystem.getDevice().createCommandEncoder()
+                        .createRenderPass(() -> "Salt's FG World Screen Effects", hudless.getColorTextureView(),
+                                java.util.Optional.empty(), main.getDepthTextureView(), java.util.OptionalDouble.empty())) {
+                    com.mojang.blaze3d.systems.RenderSystem.bindDefaultUniforms(mirrored);
+                    net.minecraft.client.renderer.feature.FeatureRenderDispatcher.renderAllFeatures(mirrored, effects);
+                }
+            }
+        } finally {
+            original.call(effects);
+        }
+    }
+
+    @Inject(method = "renderItemInHand", at = @At("HEAD"))
+    private void saltsAntiAliasing$separateHandFromFrameGeneration(CallbackInfo ci) {
+        var runtime = org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient.runtimeOrNull();
+        if (runtime != null) runtime.beforeHandRendering((GameRenderer) (Object) this);
+    }
+
+    @ModifyArgs(method = "renderItemInHand", at = @At(value = "INVOKE", target =
+            "Lcom/mojang/renderpearl/api/commands/CommandEncoder;createRenderPass(Ljava/util/function/Supplier;Lcom/mojang/renderpearl/api/textures/GpuTextureView;Ljava/util/Optional;Lcom/mojang/renderpearl/api/textures/GpuTextureView;Ljava/util/OptionalDouble;)Lcom/mojang/renderpearl/api/commands/RenderPass;"))
+    private void saltsAntiAliasing$handAttachments(Args args) {
+        RenderTarget hand = org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanHandAaController
+                .instance().begin((GameRenderer) (Object) this, args.get(1), args.get(3));
+        if (hand != null) {
+            args.set(1, hand.getColorTextureView());
+            args.set(3, hand.getDepthTextureView());
+        }
+    }
+
+    @Inject(method = "renderItemInHand", at = @At("RETURN"))
+    private void saltsAntiAliasing$resolveHand(CallbackInfo ci) {
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanHandAaController.instance().end();
+    }
     private static final String LEVEL_RENDER_TARGET =
             "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lcom/mojang/renderpearl/api/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZZ)V";
     private static final String LEVEL_PROJECTION_BUFFER_TARGET =

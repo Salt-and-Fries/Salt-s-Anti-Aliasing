@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-24",
+  "minecraft": "26.3",
+  "platform": "Windows 11 x64",
+  "gpu": "RTX 3060 Ti",
+  "jar": "salts-anti-aliasing-mc26.3-1.1.jar",
+  "jarBytes": 3313785,
+  "jarSha256": "f3c8755055603e219784c47cd5c39c75fec98c6ed59689706b2cf8ece1eb6f49",
+  "nvidiaRuntimeDllsInJar": [],
+  "tests": {
+    "tests": 124,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "unconfiguredRestart": {
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "status": "DLSS is not configured"
+  },
+  "publicJarRendering": {
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "outputWidth": 1280,
+    "outputHeight": 720
+  },
+  "nativeDlssEvaluationFailures": 0,
+  "manualChecks": [
+    "AA button shares the Weather Effect Radius row, before Preferences",
+    "No DLSS setup action with AA Off",
+    "DLSS selectable with no runtime; disabled tuning, advanced, retry and reset controls",
+    "Disabled-control clicks preserve quality and moving-entity settings",
+    "Selected unconfigured DLSS survives a full process restart",
+    "Imported runtime renames footer action to Change DLSS setup...",
+    "Restart-required DLSS keeps tuning controls disabled",
+    "Full restart enables DLSS and restores active basic and advanced controls",
+    "Setup footer stays accessible when advanced controls expand",
+    "Switching to FXAA hides DLSS setup footer",
+    "Public jar runs real DLSS Quality at 853x480 to 1280x720"
+  ],
+  "screenshots": [
+    "video-button-position.png",
+    "unconfigured-dlss.png",
+    "ready-dlss.png"
+  ],
+  "testInstance": "run/dlss-menu-refinement",
+  "rawEvidence": "build/dlss-menu-refinement and run/dlss-menu-refinement"
+}

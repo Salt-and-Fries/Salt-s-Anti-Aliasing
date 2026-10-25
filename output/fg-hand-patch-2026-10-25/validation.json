@@ -1,0 +1,893 @@
+{
+  "jar": "G:\\Codex Projects\\Salts Anti Aliasing\\output\\fg-hand-patch-2026-10-25\\salts-anti-aliasing-mc26.3-1.1.jar",
+  "sha256": "7508123cbba9b088dd478c0e903aa97d9b848389f686e66f2a390d4a8a89fbe6",
+  "tests": {
+    "tests": 130,
+    "failures": 0,
+    "errors": 0
+  },
+  "handComparisons": {
+    "baseline": [
+      {
+        "frame": 90,
+        "maskIou": 0.18972491909385114,
+        "handRgbMae": 55.408512115478516,
+        "backgroundRgbMae": 1.3592010736465454,
+        "handPixels": 1880,
+        "rendered": "present-1-rendered.ppm",
+        "generated": "present-0-generated.ppm"
+      },
+      {
+        "frame": 91,
+        "maskIou": 0.14600326264274063,
+        "handRgbMae": 111.98603057861328,
+        "backgroundRgbMae": 1.2848961353302002,
+        "handPixels": 1169,
+        "rendered": "present-3-rendered.ppm",
+        "generated": "present-2-generated.ppm"
+      },
+      {
+        "frame": 92,
+        "maskIou": 0.08056872037914692,
+        "handRgbMae": 79.12445068359375,
+        "backgroundRgbMae": 1.3477344512939453,
+        "handPixels": 1899,
+        "rendered": "present-5-rendered.ppm",
+        "generated": "present-4-generated.ppm"
+      },
+      {
+        "frame": 93,
+        "maskIou": 0.014267064528161134,
+        "handRgbMae": 62.978492736816406,
+        "backgroundRgbMae": 2.4873135089874268,
+        "handPixels": 10555,
+        "rendered": "present-7-rendered.ppm",
+        "generated": "present-6-generated.ppm"
+      },
+      {
+        "frame": 94,
+        "maskIou": 0.044824291874306074,
+        "handRgbMae": 50.3269157409668,
+        "backgroundRgbMae": 4.011689186096191,
+        "handPixels": 31728,
+        "rendered": "present-9-rendered.ppm",
+        "generated": "present-8-generated.ppm"
+      },
+      {
+        "frame": 95,
+        "maskIou": 0.5325701278703889,
+        "handRgbMae": 31.631595611572266,
+        "backgroundRgbMae": 1.1336771249771118,
+        "handPixels": 35119,
+        "rendered": "present-11-rendered.ppm",
+        "generated": "present-10-generated.ppm"
+      },
+      {
+        "frame": 96,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.02159227803349495,
+        "handPixels": 35119,
+        "rendered": "present-13-rendered.ppm",
+        "generated": "present-12-generated.ppm"
+      },
+      {
+        "frame": 97,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.03297819197177887,
+        "handPixels": 35119,
+        "rendered": "present-15-rendered.ppm",
+        "generated": "present-14-generated.ppm"
+      },
+      {
+        "frame": 98,
+        "maskIou": 0.012282250943244762,
+        "handRgbMae": 89.23614501953125,
+        "backgroundRgbMae": 6.904276371002197,
+        "handPixels": 12457,
+        "rendered": "present-17-rendered.ppm",
+        "generated": "present-16-generated.ppm"
+      },
+      {
+        "frame": 99,
+        "maskIou": 0.04299610894941634,
+        "handRgbMae": 98.20061492919922,
+        "backgroundRgbMae": 3.9450411796569824,
+        "handPixels": 8223,
+        "rendered": "present-19-rendered.ppm",
+        "generated": "present-18-generated.ppm"
+      },
+      {
+        "frame": 100,
+        "maskIou": 0.1288334335538184,
+        "handRgbMae": 74.22740936279297,
+        "backgroundRgbMae": 2.1696274280548096,
+        "handPixels": 4560,
+        "rendered": "present-21-rendered.ppm",
+        "generated": "present-20-generated.ppm"
+      },
+      {
+        "frame": 101,
+        "maskIou": 0.39239068710959685,
+        "handRgbMae": 17.71452522277832,
+        "backgroundRgbMae": 1.0436674356460571,
+        "handPixels": 2577,
+        "rendered": "present-23-rendered.ppm",
+        "generated": "present-22-generated.ppm"
+      },
+      {
+        "frame": 102,
+        "maskIou": 0.19003241491085898,
+        "handRgbMae": 55.43475341796875,
+        "backgroundRgbMae": 1.3543429374694824,
+        "handPixels": 1880,
+        "rendered": "present-25-rendered.ppm",
+        "generated": "present-24-generated.ppm"
+      },
+      {
+        "frame": 103,
+        "maskIou": 0.14492753623188406,
+        "handRgbMae": 112.11320495605469,
+        "backgroundRgbMae": 1.2818553447723389,
+        "handPixels": 1169,
+        "rendered": "present-27-rendered.ppm",
+        "generated": "present-26-generated.ppm"
+      },
+      {
+        "frame": 104,
+        "maskIou": 0.08056872037914692,
+        "handRgbMae": 78.66280364990234,
+        "backgroundRgbMae": 1.2824041843414307,
+        "handPixels": 1899,
+        "rendered": "present-29-rendered.ppm",
+        "generated": "present-28-generated.ppm"
+      },
+      {
+        "frame": 105,
+        "maskIou": 0.014275051315543946,
+        "handRgbMae": 63.832305908203125,
+        "backgroundRgbMae": 2.5254926681518555,
+        "handPixels": 10555,
+        "rendered": "present-31-rendered.ppm",
+        "generated": "present-30-generated.ppm"
+      },
+      {
+        "frame": 106,
+        "maskIou": 0.04441795376801078,
+        "handRgbMae": 54.54909133911133,
+        "backgroundRgbMae": 4.235156059265137,
+        "handPixels": 31730,
+        "rendered": "present-33-rendered.ppm",
+        "generated": "present-32-generated.ppm"
+      },
+      {
+        "frame": 107,
+        "maskIou": 0.5326848422649592,
+        "handRgbMae": 31.686447143554688,
+        "backgroundRgbMae": 1.1383075714111328,
+        "handPixels": 35119,
+        "rendered": "present-35-rendered.ppm",
+        "generated": "present-34-generated.ppm"
+      },
+      {
+        "frame": 108,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.02483428455889225,
+        "handPixels": 35119,
+        "rendered": "present-37-rendered.ppm",
+        "generated": "present-36-generated.ppm"
+      },
+      {
+        "frame": 109,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.026270927861332893,
+        "handPixels": 35119,
+        "rendered": "present-39-rendered.ppm",
+        "generated": "present-38-generated.ppm"
+      },
+      {
+        "frame": 110,
+        "maskIou": 0.012282250943244762,
+        "handRgbMae": 88.67073059082031,
+        "backgroundRgbMae": 6.883449554443359,
+        "handPixels": 12457,
+        "rendered": "present-41-rendered.ppm",
+        "generated": "present-40-generated.ppm"
+      },
+      {
+        "frame": 111,
+        "maskIou": 0.04305474381453341,
+        "handRgbMae": 97.90303802490234,
+        "backgroundRgbMae": 3.9426493644714355,
+        "handPixels": 8223,
+        "rendered": "present-43-rendered.ppm",
+        "generated": "present-42-generated.ppm"
+      },
+      {
+        "frame": 112,
+        "maskIou": 0.12567098200189453,
+        "handRgbMae": 76.116943359375,
+        "backgroundRgbMae": 2.1650784015655518,
+        "handPixels": 4478,
+        "rendered": "present-45-rendered.ppm",
+        "generated": "present-44-generated.ppm"
+      },
+      {
+        "frame": 113,
+        "maskIou": 0.3766016713091922,
+        "handRgbMae": 16.860820770263672,
+        "backgroundRgbMae": 1.0240405797958374,
+        "handPixels": 2577,
+        "rendered": "present-47-rendered.ppm",
+        "generated": "present-46-generated.ppm"
+      }
+    ],
+    "patched": [
+      {
+        "frame": 89,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0019339036662131548,
+        "handPixels": 41,
+        "rendered": "present-1-rendered.ppm",
+        "generated": "present-0-generated.ppm"
+      },
+      {
+        "frame": 90,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.001792765106074512,
+        "handPixels": 40,
+        "rendered": "present-3-rendered.ppm",
+        "generated": "present-2-generated.ppm"
+      },
+      {
+        "frame": 91,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0020261930767446756,
+        "handPixels": 158,
+        "rendered": "present-5-rendered.ppm",
+        "generated": "present-4-generated.ppm"
+      },
+      {
+        "frame": 92,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0011340111959725618,
+        "handPixels": 251,
+        "rendered": "present-7-rendered.ppm",
+        "generated": "present-6-generated.ppm"
+      },
+      {
+        "frame": 93,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.001899026334285736,
+        "handPixels": 562,
+        "rendered": "present-9-rendered.ppm",
+        "generated": "present-8-generated.ppm"
+      },
+      {
+        "frame": 94,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0015425293240696192,
+        "handPixels": 2259,
+        "rendered": "present-11-rendered.ppm",
+        "generated": "present-10-generated.ppm"
+      },
+      {
+        "frame": 95,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0014611294027417898,
+        "handPixels": 3800,
+        "rendered": "present-13-rendered.ppm",
+        "generated": "present-12-generated.ppm"
+      },
+      {
+        "frame": 96,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0016774232499301434,
+        "handPixels": 3698,
+        "rendered": "present-15-rendered.ppm",
+        "generated": "present-14-generated.ppm"
+      },
+      {
+        "frame": 97,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0026733274571597576,
+        "handPixels": 3698,
+        "rendered": "present-17-rendered.ppm",
+        "generated": "present-16-generated.ppm"
+      },
+      {
+        "frame": 98,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0009081295575015247,
+        "handPixels": 3698,
+        "rendered": "present-19-rendered.ppm",
+        "generated": "present-18-generated.ppm"
+      },
+      {
+        "frame": 99,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.002112448215484619,
+        "handPixels": 50,
+        "rendered": "present-21-rendered.ppm",
+        "generated": "present-20-generated.ppm"
+      },
+      {
+        "frame": 100,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0016243094578385353,
+        "handPixels": 32,
+        "rendered": "present-23-rendered.ppm",
+        "generated": "present-22-generated.ppm"
+      },
+      {
+        "frame": 101,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0014642893802374601,
+        "handPixels": 41,
+        "rendered": "present-25-rendered.ppm",
+        "generated": "present-24-generated.ppm"
+      },
+      {
+        "frame": 102,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0012290605809539557,
+        "handPixels": 40,
+        "rendered": "present-27-rendered.ppm",
+        "generated": "present-26-generated.ppm"
+      },
+      {
+        "frame": 103,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.002825666917487979,
+        "handPixels": 159,
+        "rendered": "present-29-rendered.ppm",
+        "generated": "present-28-generated.ppm"
+      },
+      {
+        "frame": 104,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.001183590036816895,
+        "handPixels": 251,
+        "rendered": "present-31-rendered.ppm",
+        "generated": "present-30-generated.ppm"
+      },
+      {
+        "frame": 105,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.002672124421223998,
+        "handPixels": 598,
+        "rendered": "present-33-rendered.ppm",
+        "generated": "present-32-generated.ppm"
+      },
+      {
+        "frame": 106,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0013020093319937587,
+        "handPixels": 2259,
+        "rendered": "present-35-rendered.ppm",
+        "generated": "present-34-generated.ppm"
+      },
+      {
+        "frame": 107,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0017924369312822819,
+        "handPixels": 3800,
+        "rendered": "present-37-rendered.ppm",
+        "generated": "present-36-generated.ppm"
+      },
+      {
+        "frame": 108,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0017436762573197484,
+        "handPixels": 3698,
+        "rendered": "present-39-rendered.ppm",
+        "generated": "present-38-generated.ppm"
+      },
+      {
+        "frame": 109,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0017508501186966896,
+        "handPixels": 3698,
+        "rendered": "present-41-rendered.ppm",
+        "generated": "present-40-generated.ppm"
+      },
+      {
+        "frame": 110,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0010343055473640561,
+        "handPixels": 3698,
+        "rendered": "present-43-rendered.ppm",
+        "generated": "present-42-generated.ppm"
+      },
+      {
+        "frame": 111,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0019729880150407553,
+        "handPixels": 49,
+        "rendered": "present-45-rendered.ppm",
+        "generated": "present-44-generated.ppm"
+      },
+      {
+        "frame": 112,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.0016352306120097637,
+        "handPixels": 32,
+        "rendered": "present-47-rendered.ppm",
+        "generated": "present-46-generated.ppm"
+      }
+    ],
+    "patched-noaa": [
+      {
+        "frame": 90,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.11790666729211807,
+        "handPixels": 10294,
+        "rendered": "present-1-rendered.ppm",
+        "generated": "present-0-generated.ppm"
+      },
+      {
+        "frame": 91,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.11637349426746368,
+        "handPixels": 6694,
+        "rendered": "present-3-rendered.ppm",
+        "generated": "present-2-generated.ppm"
+      },
+      {
+        "frame": 92,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.22017624974250793,
+        "handPixels": 3645,
+        "rendered": "present-5-rendered.ppm",
+        "generated": "present-4-generated.ppm"
+      },
+      {
+        "frame": 93,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.09655474871397018,
+        "handPixels": 2308,
+        "rendered": "present-7-rendered.ppm",
+        "generated": "present-6-generated.ppm"
+      },
+      {
+        "frame": 94,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.09691053628921509,
+        "handPixels": 1574,
+        "rendered": "present-9-rendered.ppm",
+        "generated": "present-8-generated.ppm"
+      },
+      {
+        "frame": 95,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.2025676667690277,
+        "handPixels": 1389,
+        "rendered": "present-11-rendered.ppm",
+        "generated": "present-10-generated.ppm"
+      },
+      {
+        "frame": 96,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.07476335763931274,
+        "handPixels": 3565,
+        "rendered": "present-13-rendered.ppm",
+        "generated": "present-12-generated.ppm"
+      },
+      {
+        "frame": 97,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.08131486922502518,
+        "handPixels": 12312,
+        "rendered": "present-15-rendered.ppm",
+        "generated": "present-14-generated.ppm"
+      },
+      {
+        "frame": 98,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.1738082468509674,
+        "handPixels": 35201,
+        "rendered": "present-17-rendered.ppm",
+        "generated": "present-16-generated.ppm"
+      },
+      {
+        "frame": 99,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.06125032156705856,
+        "handPixels": 35204,
+        "rendered": "present-19-rendered.ppm",
+        "generated": "present-18-generated.ppm"
+      },
+      {
+        "frame": 100,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.05437968298792839,
+        "handPixels": 35204,
+        "rendered": "present-21-rendered.ppm",
+        "generated": "present-20-generated.ppm"
+      },
+      {
+        "frame": 101,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.1582127809524536,
+        "handPixels": 24545,
+        "rendered": "present-23-rendered.ppm",
+        "generated": "present-22-generated.ppm"
+      },
+      {
+        "frame": 102,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.027766358107328415,
+        "handPixels": 10374,
+        "rendered": "present-25-rendered.ppm",
+        "generated": "present-24-generated.ppm"
+      },
+      {
+        "frame": 103,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.029542818665504456,
+        "handPixels": 6697,
+        "rendered": "present-27-rendered.ppm",
+        "generated": "present-26-generated.ppm"
+      },
+      {
+        "frame": 104,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.17804785072803497,
+        "handPixels": 3597,
+        "rendered": "present-29-rendered.ppm",
+        "generated": "present-28-generated.ppm"
+      },
+      {
+        "frame": 105,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.04906728118658066,
+        "handPixels": 2292,
+        "rendered": "present-31-rendered.ppm",
+        "generated": "present-30-generated.ppm"
+      },
+      {
+        "frame": 106,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.06386270374059677,
+        "handPixels": 1578,
+        "rendered": "present-33-rendered.ppm",
+        "generated": "present-32-generated.ppm"
+      },
+      {
+        "frame": 107,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.18032003939151764,
+        "handPixels": 1390,
+        "rendered": "present-35-rendered.ppm",
+        "generated": "present-34-generated.ppm"
+      },
+      {
+        "frame": 108,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.07138478010892868,
+        "handPixels": 3567,
+        "rendered": "present-37-rendered.ppm",
+        "generated": "present-36-generated.ppm"
+      },
+      {
+        "frame": 109,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.07699672132730484,
+        "handPixels": 12623,
+        "rendered": "present-39-rendered.ppm",
+        "generated": "present-38-generated.ppm"
+      },
+      {
+        "frame": 110,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.07755865156650543,
+        "handPixels": 35232,
+        "rendered": "present-41-rendered.ppm",
+        "generated": "present-40-generated.ppm"
+      },
+      {
+        "frame": 111,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.08802769333124161,
+        "handPixels": 35225,
+        "rendered": "present-43-rendered.ppm",
+        "generated": "present-42-generated.ppm"
+      },
+      {
+        "frame": 112,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.19690364599227905,
+        "handPixels": 35224,
+        "rendered": "present-45-rendered.ppm",
+        "generated": "present-44-generated.ppm"
+      },
+      {
+        "frame": 113,
+        "maskIou": 1.0,
+        "handRgbMae": 0.0,
+        "backgroundRgbMae": 0.09724348783493042,
+        "handPixels": 24767,
+        "rendered": "present-47-rendered.ppm",
+        "generated": "present-46-generated.ppm"
+      }
+    ],
+    "patched-water-vulkan": [
+      {
+        "frame": 90,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.3477242887020111,
+        "handPixels": 0,
+        "rendered": "present-1-rendered.ppm",
+        "generated": "present-0-generated.ppm"
+      },
+      {
+        "frame": 91,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.3349596858024597,
+        "handPixels": 0,
+        "rendered": "present-3-rendered.ppm",
+        "generated": "present-2-generated.ppm"
+      },
+      {
+        "frame": 92,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.17632602155208588,
+        "handPixels": 0,
+        "rendered": "present-5-rendered.ppm",
+        "generated": "present-4-generated.ppm"
+      },
+      {
+        "frame": 93,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.3254023790359497,
+        "handPixels": 0,
+        "rendered": "present-7-rendered.ppm",
+        "generated": "present-6-generated.ppm"
+      },
+      {
+        "frame": 94,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.3147173225879669,
+        "handPixels": 0,
+        "rendered": "present-9-rendered.ppm",
+        "generated": "present-8-generated.ppm"
+      },
+      {
+        "frame": 95,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.12997311353683472,
+        "handPixels": 0,
+        "rendered": "present-11-rendered.ppm",
+        "generated": "present-10-generated.ppm"
+      },
+      {
+        "frame": 96,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.2877146303653717,
+        "handPixels": 0,
+        "rendered": "present-13-rendered.ppm",
+        "generated": "present-12-generated.ppm"
+      },
+      {
+        "frame": 97,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.28545069694519043,
+        "handPixels": 0,
+        "rendered": "present-15-rendered.ppm",
+        "generated": "present-14-generated.ppm"
+      },
+      {
+        "frame": 98,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.0915503203868866,
+        "handPixels": 0,
+        "rendered": "present-17-rendered.ppm",
+        "generated": "present-16-generated.ppm"
+      },
+      {
+        "frame": 99,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.2289973944425583,
+        "handPixels": 0,
+        "rendered": "present-19-rendered.ppm",
+        "generated": "present-18-generated.ppm"
+      },
+      {
+        "frame": 100,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.2303423285484314,
+        "handPixels": 0,
+        "rendered": "present-21-rendered.ppm",
+        "generated": "present-20-generated.ppm"
+      },
+      {
+        "frame": 101,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.05848076194524765,
+        "handPixels": 0,
+        "rendered": "present-23-rendered.ppm",
+        "generated": "present-22-generated.ppm"
+      },
+      {
+        "frame": 102,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.1393783539533615,
+        "handPixels": 0,
+        "rendered": "present-25-rendered.ppm",
+        "generated": "present-24-generated.ppm"
+      },
+      {
+        "frame": 103,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.2308022528886795,
+        "handPixels": 0,
+        "rendered": "present-27-rendered.ppm",
+        "generated": "present-26-generated.ppm"
+      },
+      {
+        "frame": 104,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.09258316457271576,
+        "handPixels": 0,
+        "rendered": "present-29-rendered.ppm",
+        "generated": "present-28-generated.ppm"
+      },
+      {
+        "frame": 105,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.21679183840751648,
+        "handPixels": 0,
+        "rendered": "present-31-rendered.ppm",
+        "generated": "present-30-generated.ppm"
+      },
+      {
+        "frame": 106,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.21552923321723938,
+        "handPixels": 0,
+        "rendered": "present-33-rendered.ppm",
+        "generated": "present-32-generated.ppm"
+      },
+      {
+        "frame": 107,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.1041049212217331,
+        "handPixels": 0,
+        "rendered": "present-35-rendered.ppm",
+        "generated": "present-34-generated.ppm"
+      },
+      {
+        "frame": 108,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.19997605681419373,
+        "handPixels": 0,
+        "rendered": "present-37-rendered.ppm",
+        "generated": "present-36-generated.ppm"
+      },
+      {
+        "frame": 109,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.2152150571346283,
+        "handPixels": 0,
+        "rendered": "present-39-rendered.ppm",
+        "generated": "present-38-generated.ppm"
+      },
+      {
+        "frame": 110,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.33749958872795105,
+        "handPixels": 0,
+        "rendered": "present-41-rendered.ppm",
+        "generated": "present-40-generated.ppm"
+      },
+      {
+        "frame": 111,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.1620682179927826,
+        "handPixels": 0,
+        "rendered": "present-43-rendered.ppm",
+        "generated": "present-42-generated.ppm"
+      },
+      {
+        "frame": 112,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.18164651095867157,
+        "handPixels": 0,
+        "rendered": "present-45-rendered.ppm",
+        "generated": "present-44-generated.ppm"
+      },
+      {
+        "frame": 113,
+        "maskIou": null,
+        "handRgbMae": null,
+        "backgroundRgbMae": 0.30078840255737305,
+        "handPixels": 0,
+        "rendered": "present-47-rendered.ppm",
+        "generated": "present-46-generated.ppm"
+      }
+    ]
+  },
+  "notes": [
+    "Hand is restored with HUD-less composition at the application-rendered rate, outside world interpolation.",
+    "No independent particle motion vectors were added; camera/player movement and supported entity geometry remain covered.",
+    "Lighting differs between captures. Pixel and mask metrics compare each generated frame with its matching rendered frame, within the same run.",
+    "The normal-instance comparisons use the earlier audit backup, not a snapshot from the start of this patch. This workflow only read those normal-instance files and never restored or edited them.",
+    "The final Vulkan water-overlay regression completed with real generated presents and visible background interpolation. The sky-test hand colour mask does not work under the blue underwater tint, so its underwater hand-only scores are null; that case was reviewed visually.",
+    "An intermediate overlay hook used an incorrect Minecraft method name and was rejected during startup. The corrected render3dHud hook is in this final JAR. The intervening automatic OpenGL fallback run was excluded from FG validation."
+  ],
+  "normalConfigMatchesHistoricalAuditBackup": false,
+  "normalOptionsMatchHistoricalAuditBackup": false
+}

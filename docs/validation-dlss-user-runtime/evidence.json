@@ -1,0 +1,73 @@
+{
+  "testedDate": "2026-10-24",
+  "platform": "Windows 11 x64",
+  "gpu": "NVIDIA GeForce RTX 3060 Ti",
+  "driver": "591.86",
+  "minecraft": "26.3",
+  "java": "Microsoft OpenJDK 25.0.2",
+  "streamline": "2.14.1",
+  "jar": "salts-anti-aliasing-mc26.3-1.1.jar",
+  "jarBytes": 3311471,
+  "jarSha256": "0ca335f67f43654257d3f571e33e9b10429620c3ce8b6852ffe9d505aaf736e2",
+  "bridgeSha256": "2609dabf9ca826ab01f5610302621dcd0ef10ff264d2851a46913f061ee351a6",
+  "nvidiaRuntimeDllsInJar": [],
+  "tests": {
+    "tests": 124,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "inGameRuns": [
+    {
+      "label": "dlss-imported-active",
+      "timeUtc": "2026-10-25T04:49:39.545031Z",
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "label": "dlss-development-override",
+      "timeUtc": "2026-10-25T04:50:49.746432400Z",
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "label": "final-imported-startup",
+      "timeUtc": "2026-10-25T04:52:50.690921600Z",
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "label": "public-jar-imported-dlss",
+      "timeUtc": "2026-10-25T04:58:37.274846200Z",
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "width": 1280,
+      "height": 720
+    }
+  ],
+  "nativeDlssEvaluationFailures": 0,
+  "manualChecks": [
+    "Setup available with Off and no configured runtime",
+    "Official 2.14.1 release URL opened",
+    "Windows file dialog: cancellation preserved config",
+    "Windows folder dialog: missing companion files named and rejected",
+    "Selecting nvngx_dlss.dll imported five production DLLs and two notices",
+    "Selecting extracted SDK root imported the same private runtime",
+    "Full restart enabled DLSS from the saved import",
+    "Gradle development override worked with blank saved plugin path",
+    "Restart requirement persisted after settings reconfiguration and rendering retry",
+    "Public jar loaded without development source directories",
+    "Public jar main AA status showed restart requirement",
+    "Imported license text readable and scrollable with CRLF normalized"
+  ],
+  "defaultRunClientConfigUnchanged": true,
+  "rawEvidenceDirectory": "build/dlss-user-flow",
+  "instanceDirectory": "run/dlss-user-flow",
+  "testHarnessNote": "An early launch inherited a stale stop request and terminated during startup shader compilation, causing an NVIDIA driver access violation. The stop request was cleared; subsequent complete launches and shutdowns passed. This aborted instrumentation run is excluded from the successful rendering results."
+}

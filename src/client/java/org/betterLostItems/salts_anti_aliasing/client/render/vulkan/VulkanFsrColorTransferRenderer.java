@@ -31,12 +31,42 @@ final class VulkanFsrColorTransferRenderer {
 
     private RenderPipeline decodePipeline;
     private RenderPipeline encodePipeline;
+    private RenderPipeline pairedDecodePipeline;
 
     private VulkanFsrColorTransferRenderer() {
     }
 
     static VulkanFsrColorTransferRenderer instance() {
         return INSTANCE;
+    }
+
+    /** Identical sRGB conversion for both inputs in one MRT pass. */
+    void decodePair(RenderTarget full, RenderTarget opaque, RenderTarget linearFull, RenderTarget linearOpaque) {
+        if (pairedDecodePipeline == null) {
+            ColorTargetState color = new ColorTargetState(Optional.empty(), GpuFormat.RGBA16_FLOAT,
+                    ColorTargetState.WRITE_ALL);
+            pairedDecodePipeline = RenderPipeline.builder(RenderPipelines.POST_PROCESSING_SNIPPET)
+                    .withLocation(Identifier.parse("salts_anti_aliasing:pipeline/fsr_decode_pair"))
+                    .withVertexShader(Identifier.withDefaultNamespace("core/screenquad"))
+                    .withFragmentShader(Identifier.parse("salts_anti_aliasing:post/fsr_decode_pair"))
+                    .withBindGroupLayout(BindGroupLayout.builder()
+                            .withUniform("FullSampler", UniformType.COMBINED_IMAGE_SAMPLER)
+                            .withUniform("OpaqueSampler", UniformType.COMBINED_IMAGE_SAMPLER).build())
+                    .withColorTargetState(0, color).withColorTargetState(1, color)
+                    .withPrimitiveTopology(PrimitiveTopology.TRIANGLES).build();
+        }
+        var descriptor = com.mojang.renderpearl.api.commands.RenderPassDescriptor
+                .builder(() -> "Salt's FSR Paired Linear Decode")
+                .withColorAttachment(linearFull.getColorTextureView())
+                .withColorAttachment(linearOpaque.getColorTextureView()).build();
+        try (RenderPass pass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(descriptor)) {
+            pass.setPipeline(RenderSystem.getCompiledPipeline(pairedDecodePipeline));
+            RenderSystem.bindDefaultUniforms(pass);
+            var nearest = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST);
+            pass.setUniform("FullSampler", full.getColorTextureView(), nearest);
+            pass.setUniform("OpaqueSampler", opaque.getColorTextureView(), nearest);
+            pass.draw(3, 1, 0, 0);
+        }
     }
 
     void decode(RenderTarget source, RenderTarget destination) {

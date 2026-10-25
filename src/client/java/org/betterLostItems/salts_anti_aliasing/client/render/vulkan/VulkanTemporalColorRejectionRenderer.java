@@ -15,6 +15,10 @@ import java.util.Optional;
 final class VulkanTemporalColorRejectionRenderer {
     private static RenderPipeline pipeline;
     private static GpuBuffer configBuffer;
+    static void release() {
+        if (configBuffer != null) configBuffer.close();
+        configBuffer = null;
+    }
 
     static void render(RenderTarget current, RenderTarget previous, RenderTarget motion, RenderTarget mask,
                        VulkanSceneTemporalController temporal) {
@@ -33,10 +37,12 @@ final class VulkanTemporalColorRejectionRenderer {
                     .withPrimitiveTopology(PrimitiveTopology.TRIANGLES).build();
         }
         try (var stack = MemoryStack.stackPush()) {
-            var data = stack.malloc(16);
+            var data = stack.malloc(32);
             data.putFloat(current.width).putFloat(current.height)
                     .putFloat(temporal.previousJitterTexelX() - temporal.currentJitterTexelX())
-                    .putFloat(temporal.currentJitterTexelY() - temporal.previousJitterTexelY()).flip();
+                    .putFloat(temporal.currentJitterTexelY() - temporal.previousJitterTexelY());
+            var t=temporal.tuning();
+            data.putFloat(t.reactiveStrength).putFloat(t.reactiveThreshold).putFloat(t.reactiveMaximum).putFloat(0).flip();
             if (configBuffer == null || configBuffer.isClosed()) {
                 configBuffer = RenderSystem.getDevice().createBuffer(() -> "Salt's Temporal Color Rejection",
                         GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST, data);

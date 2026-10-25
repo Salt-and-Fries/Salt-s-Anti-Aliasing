@@ -16,6 +16,9 @@ loom {
     runs {
         client {
             runDir "run/${project.minecraft_version}"
+            if (project.hasProperty('dlssRuntimeDirectory')) {
+                vmArg "-Dsalts.dlss.pluginPath=${project.file(project.property('dlssRuntimeDirectory')).absolutePath}"
+            }
         }
     }
 
@@ -82,22 +85,14 @@ processResources {
     from("native/redist") {
         into "assets/${project.archives_base_name.replace('-', '_')}/native"
     }
-    if (project.hasProperty('dlssRuntimeDirectory')) {
-        def dlssDirectory = project.file(project.property('dlssRuntimeDirectory'))
-        from(dlssDirectory) {
-            include 'bundle.properties', 'salts_dlss_bridge.dll', 'sl.interposer.dll', 'sl.common.dll',
-                    'sl.dlss.dll', 'nvngx_dlss.dll', 'NvLowLatencyVk.dll', 'LICENSE-Streamline.txt',
-                    'LICENSE-NVIDIA-DLSS.txt', 'NOTICE.txt', 'END-USER-TERMS.txt'
-            into "assets/salts_anti_aliasing/native/dlss/windows-x86_64"
-        }
-        doFirst {
-            ['bundle.properties', 'salts_dlss_bridge.dll', 'sl.interposer.dll', 'sl.common.dll',
-             'sl.dlss.dll', 'nvngx_dlss.dll', 'NvLowLatencyVk.dll', 'LICENSE-Streamline.txt',
-             'LICENSE-NVIDIA-DLSS.txt', 'NOTICE.txt', 'END-USER-TERMS.txt'].each { name ->
-                if (!new File(dlssDirectory, name).isFile()) {
-                    throw new GradleException("Incomplete DLSS release runtime: missing ${name}")
-                }
-            }
+    // Remove stale files produced by older bundled-runtime builds. NVIDIA's runtime is now
+    // exclusively user supplied, including for runClient.
+    doFirst {
+        def previousBundle = destinationDir.toPath().resolve('assets/salts_anti_aliasing/native/dlss/windows-x86_64')
+        ['bundle.properties', 'sl.interposer.dll', 'sl.common.dll', 'sl.dlss.dll',
+         'nvngx_dlss.dll', 'NvLowLatencyVk.dll', 'LICENSE-NVIDIA-DLSS.txt',
+         'NOTICE.txt', 'END-USER-TERMS.txt'].each { name ->
+            java.nio.file.Files.deleteIfExists(previousBundle.resolve(name))
         }
     }
 }
@@ -126,9 +121,10 @@ java {
 }
 
 jar {
-    if (!project.hasProperty('dlssRuntimeDirectory')) {
-        exclude 'assets/salts_anti_aliasing/native/dlss/**'
-    }
+    // Defense against old generated resources or accidental SDK staging in redist.
+    exclude '**/nvngx_*.dll', '**/sl.*.dll', '**/NvLowLatencyVk.dll',
+            '**/native/dlss/**/bundle.properties'
+
     from("LICENSE.txt") {
         rename { "${it}_${project.archives_base_name}" }
     }
@@ -151,3 +147,22 @@ publishing {
         // retrieving dependencies.
     }
 }
+
+// Public builds must never contain NVIDIA's user-downloaded executable runtime.
+tasks.register('verifyPublicJar') {
+    dependsOn tasks.named('jar')
+    inputs.file(tasks.named('jar').flatMap { it.archiveFile })
+    doLast {
+        new java.util.zip.ZipFile(tasks.named('jar').get().archiveFile.get().asFile).withCloseable { zip ->
+            def names = zip.entries().collect { it.name }
+            def forbidden = names.findAll { name ->
+                def file = name.tokenize('/').last()
+                file ==~ /(?i)(nvngx_.*|sl\..*|NvLowLatencyVk)\.dll/
+            }
+            if (!forbidden.empty) throw new GradleException("NVIDIA runtime binaries cannot ship: ${forbidden}")
+            if (!names.contains('assets/salts_anti_aliasing/native/dlss/windows-x86_64/salts_dlss_bridge.dll'))
+                throw new GradleException("The mod's DLSS bridge is missing")
+        }
+    }
+}
+tasks.named('check') { dependsOn tasks.named('verifyPublicJar') }

@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  * live edits isolated from stored defaults.
  */
 public final class AntiAliasingConfig {
-    public static final int CURRENT_CONFIG_VERSION = 2;
+    public static final int CURRENT_CONFIG_VERSION = 3;
     public static final float MIN_SHARPEN_STRENGTH = 0.0f;
     public static final float MAX_SHARPEN_STRENGTH = 1.0f;
     public static final float DEFAULT_SHARPEN_STRENGTH = 0.0f;
@@ -25,6 +25,7 @@ public final class AntiAliasingConfig {
     public DlssQualityPreset dlssQualityPreset = DlssQualityPreset.defaultPreset();
     public FsrQualityPreset fsrQualityPreset = FsrQualityPreset.defaultPreset();
     public float internalResolutionScale = 1.0f;
+    public RenderTuning tuning = new RenderTuning();
     @SerializedName("fsrSharpness")
     private Float legacyFsrSharpness;
     public boolean keepHudAtNativeResolution = true;
@@ -56,6 +57,7 @@ public final class AntiAliasingConfig {
         copy.dlssQualityPreset = dlssQualityPreset;
         copy.fsrQualityPreset = fsrQualityPreset;
         copy.internalResolutionScale = internalResolutionScale;
+        copy.tuning = tuning == null ? new RenderTuning() : tuning.copy();
         copy.keepHudAtNativeResolution = keepHudAtNativeResolution;
         copy.debugViewsEnabled = debugViewsEnabled;
         copy.recordMetrics = recordMetrics;
@@ -87,6 +89,12 @@ public final class AntiAliasingConfig {
         keepHudAtNativeResolution = true;
         sharpenStrength = clamp(sharpenStrength, MIN_SHARPEN_STRENGTH, MAX_SHARPEN_STRENGTH);
         internalResolutionScale = clamp(internalResolutionScale, 0.5f, 1.0f);
+        if (tuning == null) tuning = new RenderTuning();
+        tuning.sanitize();
+        if (mode == AntiAliasingMode.DLSS_SUPER_RESOLUTION
+                && tuning.debugView == RenderTuning.DebugView.REACTIVE_MASK) {
+            tuning.debugView = RenderTuning.DebugView.NONE;
+        }
         dlssBridgePath = sanitizePath(dlssBridgePath);
         dlssPluginPath = sanitizePath(dlssPluginPath);
         dlssLogPath = sanitizePath(dlssLogPath);
@@ -115,7 +123,14 @@ public final class AntiAliasingConfig {
     public float sceneRenderScale() {
         return switch (mode) {
             case SSAA -> ssaaScaleLevel.scaleFactor();
-            case DLSS_SUPER_RESOLUTION -> dlssQualityPreset == DlssQualityPreset.ULTRA_PERFORMANCE ? 0.33f : 0.5f;
+            // Planning estimate only; the DLSS controller uses NVIDIA's actual optimal size.
+            case DLSS_SUPER_RESOLUTION -> switch (dlssQualityPreset) {
+                case DLAA -> 1.0f;
+                case QUALITY -> 2.0f / 3.0f;
+                case BALANCED -> 0.58f;
+                case ULTRA_PERFORMANCE -> 1.0f / 3.0f;
+                default -> 0.5f;
+            };
             case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION ->
                     fsrQualityPreset.scaleFactor();
             case NIS_UPSCALE, FSR1_UPSCALE, FSR1_RCAS -> nisUpscaleQualityPreset.scaleFactor();
@@ -128,7 +143,9 @@ public final class AntiAliasingConfig {
     }
 
     private void migrateLegacyConfig() {
-        if (!needsMigration()) {
+        // Version 2 already migrated sharpening. Do not reinterpret a saved 25% choice as a
+        // legacy default when upgrading to the richer version 3 configuration.
+        if (configVersion != null && configVersion >= 2) {
             mode = AntiAliasingMode.migrateLegacy(mode);
             return;
         }

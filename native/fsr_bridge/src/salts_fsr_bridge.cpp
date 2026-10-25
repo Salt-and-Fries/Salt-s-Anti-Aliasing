@@ -1,4 +1,9 @@
 #include <jni.h>
+#include <chrono>
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <map>
 
 #include <algorithm>
 #include <cstdint>
@@ -78,6 +83,8 @@ uint64_t g_frame_generation_pending_frame_id = 0;
 bool g_frame_generation_last_configured_frame_id_initialized = false;
 bool g_frame_generation_prepared_for_present = false;
 bool g_frame_generation_reset_required = true;
+jlong g_presentation_depth_image = 0;
+jlong g_presentation_motion_image = 0;
 uint64_t g_fsr2_version_id = 0;
 uint64_t g_fsr3_version_id = 0;
 bool g_frame_generation_provider_available = false;
@@ -87,6 +94,8 @@ uint32_t g_context_max_render_width = 0;
 uint32_t g_context_max_render_height = 0;
 uint32_t g_context_max_output_width = 0;
 uint32_t g_context_max_output_height = 0;
+
+#include "present_capture.h"
 
 std::wstring to_wstring(JNIEnv* env, jstring value) {
     if (value == nullptr) {
@@ -421,6 +430,12 @@ ffxReturnCode_t frame_generation_dispatch_callback(ffxDispatchDescFrameGeneratio
     if (params == nullptr || user_context == nullptr || g_ffx_dispatch == nullptr) {
         return FFX_API_RETURN_ERROR_PARAMETER;
     }
+    if(present_capture_enabled()) {
+        std::lock_guard<std::mutex> lock(g_capture_mutex);
+        g_capture_dispatch_resets[params->frameID]=params->reset;
+        while(g_capture_dispatch_resets.size()>256)g_capture_dispatch_resets.erase(g_capture_dispatch_resets.begin());
+        capture_generation_inputs(params);
+    }
     return g_ffx_dispatch(reinterpret_cast<ffxContext*>(user_context), &params->header);
 }
 
@@ -495,6 +510,7 @@ void disable_frame_generation_context() {
 void destroy_frame_generation_context() {
     if (g_frame_generation_context != nullptr) {
         disable_frame_generation_context();
+        flush_present_capture();
         if (g_ffx_destroy_context != nullptr) {
             g_ffx_destroy_context(&g_frame_generation_context, nullptr);
         }
@@ -555,7 +571,7 @@ ffxReturnCode_t ensure_frame_generation_context(
     ffxCreateContextDescFrameGenerationHudless hudless{};
     hudless.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATION_HUDLESS;
     hudless.hudlessBackBufferFormat = FFX_API_SURFACE_FORMAT_R8G8B8A8_UNORM;
-    backend.header.pNext = &hudless.header;
+    backend.header.pNext = present_capture_enabled() && std::getenv("SALTS_FSR_DIAGNOSTIC_NO_HUDLESS") ? nullptr : &hudless.header;
 
     ffxCreateContextDescFrameGeneration create_desc{};
     create_desc.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_FRAMEGENERATION;
@@ -1091,6 +1107,22 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     g_frame_generation_ready = false;
 }
 
+extern "C" JNIEXPORT void JNICALL
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativeBridge_setPresentationInputsNative(JNIEnv*,jclass,jlong depth,jlong motion) {
+    std::lock_guard<std::mutex> lock(g_mutex);
+#if defined(SALTS_FSR_WITH_FFX_SDK)
+    g_presentation_depth_image=depth;g_presentation_motion_image=motion;
+#endif
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativeBridge_flushDiagnosticCaptureNative(JNIEnv*,jclass) {
+    std::lock_guard<std::mutex> lock(g_mutex);
+#if defined(SALTS_FSR_WITH_FFX_SDK)
+    if(present_capture_enabled()) { wait_for_frame_generation_presents(); flush_present_capture(); }
+#endif
+}
+
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativeBridge_getFrameGenerationPresentCountNative(
         JNIEnv*,
@@ -1527,7 +1559,10 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     desc.reactive = mask_input(reactive_mask_image, render_w, render_h);
     desc.transparencyAndComposition = mask_input(transparency_mask_image, render_w, render_h);
     desc.output = output_color(output_color_image, output_w, output_h);
-    desc.jitterOffset = {jitter_x, jitter_y};
+    // Java retains projection/raster jitter. SR consumes the image-space Y convention:
+    // the scene projection applies -2 * jitter_y / render_height. Keep this conversion
+    // at the SR boundary; presentation-oriented frame-generation prepare is separate.
+    desc.jitterOffset = {jitter_x, -jitter_y};
     desc.motionVectorScale = {motion_vector_scale_x, motion_vector_scale_y};
     desc.renderSize = {render_w, render_h};
     desc.upscaleSize = {output_w, output_h};
@@ -1570,14 +1605,16 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         ffxConfigureDescFrameGeneration config{};
         config.header.type = FFX_API_CONFIGURE_DESC_TYPE_FRAMEGENERATION;
         config.swapChain = reinterpret_cast<void*>(g_frame_generation_swapchain);
+        config.presentCallback = present_capture_enabled() ? diagnostic_present_callback : nullptr;
         config.frameGenerationCallback = frame_generation_dispatch_callback;
         config.frameGenerationCallbackUserContext = &g_frame_generation_context;
         config.frameGenerationEnabled = true;
         config.allowAsyncWorkloads = false;
         config.HUDLessColor = {};
-        if (hudless_color_image != 0) {
+        if (hudless_color_image != 0 && !(present_capture_enabled() && std::getenv("SALTS_FSR_DIAGNOSTIC_NO_HUDLESS"))) {
             config.HUDLessColor = hudless_color(hudless_color_image, output_w, output_h);
         }
+        if(present_capture_enabled())g_capture_hudless_input=config.HUDLessColor;
         config.flags = 0;
         config.onlyPresentGenerated = false;
         config.generationRect = {
@@ -1622,7 +1659,7 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         prepare.flags = 0;
         prepare.commandList = command_list;
         prepare.renderSize = {render_w, render_h};
-        prepare.jitterOffset = {jitter_x, jitter_y};
+        prepare.jitterOffset = {jitter_x, -jitter_y};
         prepare.motionVectorScale = {motion_vector_scale_x, motion_vector_scale_y};
         prepare.frameTimeDelta = desc.frameTimeDelta;
         prepare.unused_reset = force_frame_generation_reset;
@@ -1630,8 +1667,10 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
         prepare.cameraFar = camera_near;
         prepare.cameraFovAngleVertical = camera_fov_y;
         prepare.viewSpaceToMetersFactor = view_space_to_meters <= 0.0f ? 1.0f : view_space_to_meters;
-        prepare.depth = depth_input(depth_image, render_w, render_h);
-        prepare.motionVectors = motion_input(motion_vector_image, render_w, render_h);
+        prepare.depth = resource(g_presentation_depth_image,FFX_API_SURFACE_FORMAT_R32_FLOAT,
+                render_w,render_h,FFX_API_RESOURCE_USAGE_DEPTHTARGET,FFX_API_RESOURCE_STATE_GENERIC_READ);
+        prepare.motionVectors = resource(g_presentation_motion_image,FFX_API_SURFACE_FORMAT_R16G16_FLOAT,
+                render_w,render_h,FFX_API_RESOURCE_USAGE_READ_ONLY,FFX_API_RESOURCE_STATE_GENERIC_READ);
 
         result = g_ffx_dispatch(&g_frame_generation_context, &prepare.header);
         if (result != FFX_API_RETURN_OK) {
@@ -1655,6 +1694,15 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
     }
 
     return 0;
+#endif
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativeBridge_releaseRenderResourcesNative(JNIEnv*,jclass) {
+    std::lock_guard<std::mutex> lock(g_mutex);
+#if defined(SALTS_FSR_WITH_FFX_SDK)
+    destroy_frame_generation_context();
+    destroy_upscale_context();
 #endif
 }
 

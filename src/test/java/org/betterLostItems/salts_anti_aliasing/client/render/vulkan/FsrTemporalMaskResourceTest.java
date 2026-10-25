@@ -23,7 +23,7 @@ final class FsrTemporalMaskResourceTest {
         assertTrue(shader.contains("PreviousOpaqueSampler"));
         assertTrue(shader.contains("MotionVectorSampler"));
         assertTrue(shader.contains("temporalCompositionGate"));
-        assertTrue(shader.contains("TC_SCALE = 0.5"));
+        assertTrue(shader.contains("vec4 Composition"));
     }
 
     @Test
@@ -34,7 +34,7 @@ final class FsrTemporalMaskResourceTest {
         assertTrue(shader.contains("temporalEdgeChanges"));
         assertTrue(shader.contains("edgeChanges.y - edgeChanges.x"));
         assertTrue(shader.contains("REACTIVE_MAX = 0.9"));
-        assertTrue(shader.contains("previousSamplePixel = reprojectedPixel(samplePixel)"));
+        assertTrue(shader.contains("previousSampleUv = reprojectedUv(samplePixel)"));
     }
 
     private static String readResource(String path) throws IOException {

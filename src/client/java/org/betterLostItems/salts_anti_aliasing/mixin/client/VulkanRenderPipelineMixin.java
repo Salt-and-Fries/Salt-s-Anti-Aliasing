@@ -41,8 +41,10 @@ public abstract class VulkanRenderPipelineMixin {
             boolean sampleShadingEnabled,
             VulkanDevice device, BackendRenderPipeline.CreateInfo createInfo
     ) {
+        boolean handSampleShading = VulkanMsaaPipelineVariants.nativeSampleShading(createInfo.name());
         return multisampleState
-                .sampleShadingEnable(sampleShadingEnabled)
+                .sampleShadingEnable(sampleShadingEnabled || handSampleShading)
+                .minSampleShading(handSampleShading ? 1.0f : multisampleState.minSampleShading())
                 .alphaToCoverageEnable(VulkanMsaaPipelineVariants.nativeAlphaToCoverage(createInfo.name()));
     }
 }

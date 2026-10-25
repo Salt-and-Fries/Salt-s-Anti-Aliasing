@@ -1,0 +1,134 @@
+[
+  {
+    "label": "static-quality",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 32
+  },
+  {
+    "label": "static-dlaa",
+    "status": "DLSS Super Resolution - 1280 x 720",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 32
+  },
+  {
+    "label": "static-performance",
+    "status": "DLSS Super Resolution - 640 x 360",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 32
+  },
+  {
+    "label": "static-ultra_performance",
+    "status": "DLSS Super Resolution - 427 x 240",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 32
+  },
+  {
+    "label": "static-buffers",
+    "status": "DLSS Super Resolution - 427 x 240",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 2
+  },
+  {
+    "label": "camera-yaw",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 12
+  },
+  {
+    "label": "camera-pitch",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 12
+  },
+  {
+    "label": "camera-strafe",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 12
+  },
+  {
+    "label": "camera-cut",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 4
+  },
+  {
+    "label": "entity-ready",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 2
+  },
+  {
+    "label": "entity-vectors",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "entity-no-vectors",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "entity-restored",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 12
+  },
+  {
+    "label": "particle-k",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "particle-m",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "particle-l",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "particle-dlaa",
+    "status": "DLSS Super Resolution - 1280 x 720",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "particle-off",
+    "status": "Off - native scene",
+    "mode": "OFF",
+    "count": 24
+  },
+  {
+    "label": "chest-motion",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "foliage-quality",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "foliage-dlaa",
+    "status": "DLSS Super Resolution - 1280 x 720",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  },
+  {
+    "label": "underwater",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "count": 24
+  }
+]

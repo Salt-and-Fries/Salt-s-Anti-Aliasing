@@ -1,0 +1,174 @@
+{
+  "jar": "salts-anti-aliasing-mc26.3-1.1.jar",
+  "sha256": "e1031416ded18d9fa45c8e77e07263633f48e1ba8824935c4f94d04e4249a152",
+  "bridgeAbi": 3,
+  "automatedTests": {
+    "tests": 133,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "testedGpu": "NVIDIA GeForce RTX 3060 Ti",
+  "testedBackend": "Vulkan",
+  "testedOutput": [
+    1280,
+    720
+  ],
+  "gameResults": [
+    {
+      "quality": "DLAA",
+      "requestedModel": "AUTO",
+      "status": "DLSS Super Resolution - 1280 x 720",
+      "sizes": [
+        [
+          1280,
+          720,
+          1280,
+          720
+        ]
+      ],
+      "captures": 8
+    },
+    {
+      "quality": "DLAA",
+      "requestedModel": "K",
+      "status": "DLSS Super Resolution - 1280 x 720",
+      "sizes": [
+        [
+          1280,
+          720,
+          1280,
+          720
+        ]
+      ],
+      "captures": 8
+    },
+    {
+      "quality": "DLAA",
+      "requestedModel": "M",
+      "status": "DLSS Super Resolution - 1280 x 720",
+      "sizes": [
+        [
+          1280,
+          720,
+          1280,
+          720
+        ]
+      ],
+      "captures": 8
+    },
+    {
+      "quality": "DLAA",
+      "requestedModel": "L",
+      "status": "DLSS Super Resolution - 1280 x 720",
+      "sizes": [
+        [
+          1280,
+          720,
+          1280,
+          720
+        ]
+      ],
+      "captures": 8
+    },
+    {
+      "quality": "QUALITY",
+      "requestedModel": "AUTO",
+      "status": "DLSS Super Resolution - 853 x 480",
+      "sizes": [
+        [
+          853,
+          480,
+          1280,
+          720
+        ]
+      ],
+      "captures": 8
+    },
+    {
+      "quality": "QUALITY",
+      "requestedModel": "K",
+      "status": "DLSS Super Resolution - 853 x 480",
+      "sizes": [
+        [
+          853,
+          480,
+          1280,
+          720
+        ]
+      ],
+      "captures": 8
+    },
+    {
+      "quality": "QUALITY",
+      "requestedModel": "M",
+      "status": "DLSS Super Resolution - 853 x 480",
+      "sizes": [
+        [
+          853,
+          480,
+          1280,
+          720
+        ]
+      ],
+      "captures": 8
+    },
+    {
+      "quality": "QUALITY",
+      "requestedModel": "L",
+      "status": "DLSS Super Resolution - 853 x 480",
+      "sizes": [
+        [
+          853,
+          480,
+          1280,
+          720
+        ]
+      ],
+      "captures": 8
+    },
+    {
+      "quality": "BALANCED",
+      "requestedModel": "AUTO",
+      "status": "DLSS Super Resolution - 742 x 418"
+    },
+    {
+      "quality": "PERFORMANCE",
+      "requestedModel": "AUTO",
+      "status": "DLSS Super Resolution - 640 x 360"
+    },
+    {
+      "quality": "ULTRA_PERFORMANCE",
+      "requestedModel": "AUTO",
+      "status": "DLSS Super Resolution - 427 x 240"
+    },
+    {
+      "quality": "AUTO",
+      "requestedModel": "AUTO",
+      "status": "DLSS Super Resolution - 853 x 480"
+    },
+    {
+      "quality": "DLAA",
+      "requestedModel": "AUTO",
+      "status": "DLSS Super Resolution - 1280 x 720"
+    }
+  ],
+  "nativeErrors": [],
+  "packagedDlls": [
+    "assets/salts_anti_aliasing/native/dlss/windows-x86_64/salts_dlss_bridge.dll",
+    "assets/salts_anti_aliasing/native/windows-x86_64/amd_fidelityfx_vk.dll",
+    "assets/salts_anti_aliasing/native/windows-x86_64/salts_fsr_bridge.dll"
+  ],
+  "normalConfigUnchanged": true,
+  "normalOptionsUnchanged": true,
+  "uiVerified": [
+    "DLAA far left, Quality immediately next",
+    "Advanced DLSS model cycles K to M",
+    "Single DLSS AA method entry",
+    "DLAA and M persisted to the isolated config"
+  ],
+  "limitations": [
+    "Presets are requested; NVIDIA App overrides can supersede them. No SDK active-model readback is claimed.",
+    "No performance benchmark or claim that all temporal artifacts are eliminated."
+  ]
+}

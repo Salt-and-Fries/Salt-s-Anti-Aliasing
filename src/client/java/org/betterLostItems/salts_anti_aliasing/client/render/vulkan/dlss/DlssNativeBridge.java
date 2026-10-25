@@ -2,6 +2,7 @@ package org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss;
 
 import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
 import org.betterLostItems.salts_anti_aliasing.client.config.DlssQualityPreset;
+import org.betterLostItems.salts_anti_aliasing.client.config.DlssModelPreset;
 import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
 
 import java.nio.file.Files;
@@ -18,6 +19,8 @@ final class DlssNativeBridge {
     private boolean preInitialized;
     private String[] requirements = new String[0];
     private DlssQualityPreset settingsPreset;
+    private DlssModelPreset settingsModel;
+    private boolean settingsHdr;
     private int settingsWidth;
     private int settingsHeight;
     private DlssOptimalSettings cachedSettings;
@@ -28,6 +31,18 @@ final class DlssNativeBridge {
         DlssRuntimeStatus validationStatus = configuration.validate();
         if (!validationStatus.ready()) {
             return validationStatus;
+        }
+
+        // Verify the complete supported set before System.load can execute any NVIDIA code.
+        if (!preInitialized) {
+            try {
+                DlssRuntimeFiles.validate(Path.of(configuration.pluginPath()));
+            } catch (java.io.IOException | RuntimeException exception) {
+                MetricsDiagnostics.warnOnce("dlss.invalid-runtime." + configuration.pluginPath() + exception.getMessage(),
+                        "dlss.native", "runtime_files_invalid", "reason", exception.getMessage());
+                SaltsAntiAliasing.LOGGER.warn("DLSS runtime validation failed: {}", exception.getMessage());
+                return DlssRuntimeStatus.RUNTIME_FILES_INVALID;
+            }
         }
 
         if (!loadBridge(configuration.bridgePath(), configuration.pluginPath())) {
@@ -88,29 +103,35 @@ final class DlssNativeBridge {
         return supported ? DlssRuntimeStatus.READY : DlssRuntimeStatus.UNSUPPORTED;
     }
 
-    DlssOptimalSettings queryOptimalSettings(DlssQualityPreset preset, int outputWidth, int outputHeight) {
+    DlssOptimalSettings queryOptimalSettings(DlssQualityPreset preset, DlssModelPreset model, boolean hdr, int outputWidth, int outputHeight) {
         if (!initialized || outputWidth <= 0 || outputHeight <= 0) {
             return DlssOptimalSettings.fallback(outputWidth, outputHeight);
         }
-        if (cachedSettings != null && settingsPreset == preset && settingsWidth == outputWidth && settingsHeight == outputHeight) {
+        if (cachedSettings != null && settingsPreset == preset && settingsModel == model && settingsHdr == hdr && settingsWidth == outputWidth && settingsHeight == outputHeight) {
             return cachedSettings;
         }
 
         int[] values = new int[6];
         float[] sharpness = new float[1];
-        int result = queryOptimalSettingsNative(preset.ordinal(), outputWidth, outputHeight, values, sharpness);
+        int result = queryOptimalSettingsNative(preset.nativeId(), model.nativeId(), hdr, outputWidth, outputHeight, values, sharpness);
         if (result != 0) {
             MetricsDiagnostics.warnOnce(
-                    "dlss.native.optimal-settings." + preset + "." + outputWidth + "x" + outputHeight + "." + result,
+                    "dlss.native.optimal-settings." + preset + "." + model + "." + outputWidth + "x" + outputHeight + "." + result,
                     "dlss.native",
                     "optimal_settings_query_failed",
                     "result", result,
                     "preset", preset,
+                    "requestedModel", model,
                     "outputWidth", outputWidth,
                     "outputHeight", outputHeight,
-                    "fallbackUsed", true
+                    "fallbackUsed", false
             );
-            return DlssOptimalSettings.fallback(outputWidth, outputHeight);
+            throw new IllegalStateException("DLSS settings rejected: " + preset + "/" + model + " (" + result + ")");
+        }
+
+        if (values[0] <= 0 || values[1] <= 0
+                || (preset == DlssQualityPreset.DLAA && (values[0] != outputWidth || values[1] != outputHeight))) {
+            throw new IllegalStateException("Invalid DLSS render size for " + preset + ": " + values[0] + "x" + values[1]);
         }
 
         cachedSettings = new DlssOptimalSettings(
@@ -123,6 +144,8 @@ final class DlssNativeBridge {
                 sharpness[0]
         );
         settingsPreset = preset;
+        settingsModel = model;
+        settingsHdr = hdr;
         settingsWidth = outputWidth;
         settingsHeight = outputHeight;
         return cachedSettings;
@@ -133,7 +156,7 @@ final class DlssNativeBridge {
             return -1;
         }
 
-        return evaluateNativeV2(
+        return evaluateNativeV3(
                 parameters.commandBuffer(),
                 parameters.inputColorImage(),
                 parameters.inputColorView(),
@@ -158,11 +181,19 @@ final class DlssNativeBridge {
                 parameters.projection(),
                 parameters.cameraParameters(),
                 parameters.resourceFormats(),
-                parameters.resourceUsages(),
-                parameters.colorRejectionImage(),
-                parameters.colorRejectionView()
+                parameters.resourceUsages()
         );
     }
+
+    void releaseRenderResources() {
+        cachedSettings = null;
+        if(initialized) {
+            try { releaseRenderResourcesNative(); }
+            catch(UnsatisfiedLinkError oldOverride) { MetricsDiagnostics.warnOnce("old-native-retirement-Dlss","lifecycle","native_retirement_unavailable","reason","The custom bridge predates resource retirement"); }
+        }
+    }
+
+    long estimatedVramBytes() { return initialized ? estimatedVramBytesNative() : -1; }
 
     void shutdown() {
         if (bridgeLoaded && preInitialized) {
@@ -185,8 +216,8 @@ final class DlssNativeBridge {
 
         try {
             System.load(bridgePath);
-            if (abiVersionNative() != 2) {
-                throw new UnsatisfiedLinkError("DLSS bridge ABI 2 required; rebuild the native bridge for Fabric 26.3");
+            if (abiVersionNative() != 4) {
+                throw new UnsatisfiedLinkError("DLSS bridge ABI 4 required; rebuild the native bridge for the corrected SR resource contract");
             }
             bridgeLoaded = true;
             lastBridgePath = bridgePath;
@@ -291,13 +322,15 @@ final class DlssNativeBridge {
 
     private static native int queryOptimalSettingsNative(
             int qualityPreset,
+            int modelPreset,
+            boolean hdr,
             int outputWidth,
             int outputHeight,
             int[] outSettings,
             float[] outSharpness
     );
 
-    private static native int evaluateNativeV2(
+    private static native int evaluateNativeV3(
             long commandBuffer,
             long inputColorImage,
             long inputColorView,
@@ -322,10 +355,10 @@ final class DlssNativeBridge {
             float[] projection,
             float[] cameraParameters,
             int[] resourceFormats,
-            int[] resourceUsages,
-            long colorRejectionImage,
-            long colorRejectionView
+            int[] resourceUsages
     );
 
+    private static native void releaseRenderResourcesNative();
+    private static native long estimatedVramBytesNative();
     private static native void shutdownNative();
 }

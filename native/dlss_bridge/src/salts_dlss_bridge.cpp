@@ -60,6 +60,8 @@ sl::DLSSMode to_dlss_mode(jint quality_preset, jint output_height) {
             // Streamline has no Auto enum; select a predictable policy from output resolution.
             return output_height <= 1080 ? sl::DLSSMode::eMaxQuality
                     : output_height <= 1440 ? sl::DLSSMode::eBalanced : sl::DLSSMode::eMaxPerformance;
+        case 5:
+            return sl::DLSSMode::eDLAA;
         default:
             return sl::DLSSMode::eBalanced;
     }
@@ -156,7 +158,7 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
 
 extern "C" JNIEXPORT jint JNICALL
 Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNativeBridge_abiVersionNative(JNIEnv*, jclass) {
-    return 2;
+    return 4;
 }
 
 extern "C" JNIEXPORT jobjectArray JNICALL
@@ -257,6 +259,8 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
         JNIEnv* env,
         jclass,
         jint quality_preset,
+        jint model_preset,
+        jboolean hdr,
         jint output_width,
         jint output_height,
         jintArray out_settings,
@@ -268,6 +272,8 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
 
 #if !defined(SALTS_DLSS_WITH_STREAMLINE)
     (void) quality_preset;
+    (void) model_preset;
+    (void) hdr;
     return -100;
 #else
     sl::DLSSOptions options{};
@@ -275,7 +281,17 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
     options.outputWidth = static_cast<uint32_t>(output_width);
     options.outputHeight = static_cast<uint32_t>(output_height);
     options.useAutoExposure = sl::Boolean::eTrue;
-    options.colorBuffersHDR = sl::Boolean::eFalse;
+    options.colorBuffersHDR = hdr ? sl::Boolean::eTrue : sl::Boolean::eFalse;
+    sl::DLSSPreset preset;
+    switch (model_preset) {
+        case 0: preset = sl::DLSSPreset::eDefault; break;
+        case 11: preset = sl::DLSSPreset::ePresetK; break;
+        case 13: preset = sl::DLSSPreset::ePresetM; break;
+        case 12: preset = sl::DLSSPreset::ePresetL; break;
+        default: return -2;
+    }
+    options.dlaaPreset = options.qualityPreset = options.balancedPreset = preset;
+    options.performancePreset = options.ultraPerformancePreset = options.ultraQualityPreset = preset;
 
     sl::DLSSOptimalSettings settings{};
     sl::Result result = slDLSSGetOptimalSettings(options, settings);
@@ -301,7 +317,7 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNativeBridge_evaluateNativeV2(
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNativeBridge_evaluateNativeV3(
         JNIEnv* env,
         jclass,
         jlong command_buffer,
@@ -328,9 +344,7 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
         jfloatArray projection_matrix,
         jfloatArray camera_parameters,
         jintArray resource_formats,
-        jintArray resource_usages,
-        jlong rejection_image,
-        jlong rejection_view) {
+        jintArray resource_usages) {
     std::lock_guard<std::mutex> lock(g_mutex);
     if (!g_initialized || !g_supported) {
         return -1;
@@ -363,8 +377,6 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
     (void) camera_parameters;
     (void) resource_formats;
     (void) resource_usages;
-    (void) rejection_image;
-    (void) rejection_view;
     return -100;
 #else
     sl::float4x4 current = to_float4x4(env, current_view_projection);
@@ -376,10 +388,10 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
     sl::float4x4 projectionInverse{};
     matrixFullInvert(projectionInverse, projection);
     std::array<float, 16> camera{};
-    std::array<jint, 5> formats{}, usages{};
+    std::array<jint, 4> formats{}, usages{};
     env->GetFloatArrayRegion(camera_parameters, 0, 16, camera.data());
-    env->GetIntArrayRegion(resource_formats, 0, 5, formats.data());
-    env->GetIntArrayRegion(resource_usages, 0, 5, usages.data());
+    env->GetIntArrayRegion(resource_formats, 0, 4, formats.data());
+    env->GetIntArrayRegion(resource_usages, 0, 4, usages.data());
     if (env->ExceptionCheck()) return -2;
     matrixFullInvert(currentInverse, current);
     matrixMul(clipToPrev, currentInverse, previous);
@@ -400,23 +412,38 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
     sl::Resource colorOut = image_resource(output_color_image, output_color_view, VK_IMAGE_LAYOUT_GENERAL, output_width, output_height, formats[1], usages[1]);
     sl::Resource depth = image_resource(depth_image, depth_view, VK_IMAGE_LAYOUT_GENERAL, render_width, render_height, formats[2], usages[2]);
     sl::Resource motion = image_resource(motion_vector_image, motion_vector_view, VK_IMAGE_LAYOUT_GENERAL, render_width, render_height, formats[3], usages[3]);
-    sl::Resource rejection = image_resource(rejection_image, rejection_view, VK_IMAGE_LAYOUT_GENERAL, render_width, render_height, formats[4], usages[4]);
+    // Keep extension structures alive until tagging and evaluation have both completed.
+    std::array<sl::SubresourceRange, 4> ranges{};
+    sl::Resource* resources[] = {&colorIn, &colorOut, &depth, &motion};
+    for (size_t index = 0; index < ranges.size(); ++index) {
+        auto& range = ranges[index];
+        range.aspectMask = index == 2 ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+        range.baseMipLevel = 0;
+        range.levelCount = 1;
+        range.baseArrayLayer = 0;
+        range.layerCount = 1;
+        resources[index]->next = &range;
+    }
 
     sl::ResourceTag tags[] = {
             {&colorIn, sl::kBufferTypeScalingInputColor, sl::ResourceLifecycle::eValidUntilEvaluate, &renderExtent},
             {&colorOut, sl::kBufferTypeScalingOutputColor, sl::ResourceLifecycle::eValidUntilEvaluate, &outputExtent},
             {&depth, sl::kBufferTypeDepth, sl::ResourceLifecycle::eValidUntilEvaluate, &renderExtent},
-            {&motion, sl::kBufferTypeMotionVectors, sl::ResourceLifecycle::eValidUntilEvaluate, &renderExtent},
-            {&rejection, sl::kBufferTypeBiasCurrentColorHint, sl::ResourceLifecycle::eValidUntilEvaluate, &renderExtent}
+            {&motion, sl::kBufferTypeMotionVectors, sl::ResourceLifecycle::eValidUntilEvaluate, &renderExtent}
     };
-    result = slSetTagForFrame(*token, viewport, tags, 5, reinterpret_cast<sl::CommandBuffer*>(static_cast<uintptr_t>(command_buffer)));
+    result = slSetTagForFrame(*token, viewport, tags, 4, reinterpret_cast<sl::CommandBuffer*>(static_cast<uintptr_t>(command_buffer)));
     if (result != sl::Result::eOk) {
         return static_cast<jint>(result);
     }
 
     sl::Constants constants{};
+    constants.cameraPinholeOffset = {0.0f, 0.0f};
+    constants.motionVectorsJittered = sl::Boolean::eFalse;
+    constants.motionVectorsDilated = sl::Boolean::eFalse;
     constants.mvecScale = {motion_vector_scale_x, motion_vector_scale_y};
-    constants.jitterOffset = {jitter_x, jitter_y};
+    // Match the scene's image-space sample displacement, not the raw Halton Y value.
+    // The world projection applies -2 * jitter_y / render_height; motion stays unjittered.
+    constants.jitterOffset = {jitter_x, -jitter_y};
     constants.reset = reset_history ? sl::Boolean::eTrue : sl::Boolean::eFalse;
     constants.depthInverted = sl::Boolean::eTrue;
     constants.cameraMotionIncluded = sl::Boolean::eTrue;
@@ -449,6 +476,27 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
             reinterpret_cast<sl::CommandBuffer*>(static_cast<uintptr_t>(command_buffer)));
     return result != sl::Result::eOk ? static_cast<jint>(result) : 0;
 #endif
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNativeBridge_releaseRenderResourcesNative(JNIEnv*,jclass) {
+    std::lock_guard<std::mutex> lock(g_mutex);
+#if defined(SALTS_DLSS_WITH_STREAMLINE)
+    if(g_initialized)slFreeResources(sl::kFeatureDLSS,sl::ViewportHandle{0});
+#endif
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNativeBridge_estimatedVramBytesNative(JNIEnv*, jclass) {
+    std::lock_guard<std::mutex> lock(g_mutex);
+#if defined(SALTS_DLSS_WITH_STREAMLINE)
+    if (g_initialized && g_supported) {
+        sl::DLSSState state{};
+        if (slDLSSGetState(sl::ViewportHandle{0}, state) == sl::Result::eOk)
+            return static_cast<jlong>(state.estimatedVRAMUsageInBytes);
+    }
+#endif
+    return -1;
 }
 
 extern "C" JNIEXPORT void JNICALL

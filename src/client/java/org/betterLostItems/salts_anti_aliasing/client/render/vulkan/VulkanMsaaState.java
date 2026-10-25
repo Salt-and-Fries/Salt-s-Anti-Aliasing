@@ -15,6 +15,7 @@ public final class VulkanMsaaState {
     private static final ThreadLocal<Integer> TEXTURE_SAMPLE_COUNT = ThreadLocal.withInitial(() -> 1);
     private static final ThreadLocal<Boolean> SCENE_ALPHA_TO_COVERAGE =
             ThreadLocal.withInitial(() -> false);
+    private static final ThreadLocal<Boolean> HAND_RENDERING = ThreadLocal.withInitial(() -> false);
     private static final ThreadLocal<Integer> PIPELINE_SAMPLE_COUNT = ThreadLocal.withInitial(() -> 1);
     private static final ThreadLocal<Boolean> PIPELINE_ALPHA_TO_COVERAGE =
             ThreadLocal.withInitial(() -> false);
@@ -53,6 +54,18 @@ public final class VulkanMsaaState {
     public static boolean currentSceneAlphaToCoverage() {
         return SCENE_ALPHA_TO_COVERAGE.get();
     }
+
+    public static void beginHand(boolean alphaToCoverage) {
+        HAND_RENDERING.set(true);
+        beginScene(alphaToCoverage);
+    }
+
+    public static void endHand() {
+        HAND_RENDERING.set(false);
+        endScene();
+    }
+
+    public static boolean currentHandRendering() { return HAND_RENDERING.get(); }
 
     public static void beginRenderPass(RenderPassDescriptor descriptor) {
         RENDER_PASS_SAMPLE_COUNT.set(sampleCount(descriptor));
