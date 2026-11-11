@@ -66,6 +66,7 @@ public final class VulkanRenderBackend implements RenderBackend {
         if (DlssRuntime.instance().isReady()) {
             capabilities.add(RenderCapability.VENDOR_UPSCALING);
         }
+        if (org.betterLostItems.salts_anti_aliasing.client.render.vulkan.xess.XessRuntime.instance().isReady()) capabilities.add(RenderCapability.XESS_UPSCALING);
         if (FsrRuntime.instance().isUpscalingReady()) {
             capabilities.add(RenderCapability.FSR_UPSCALING);
         }

@@ -59,6 +59,7 @@ public abstract class VulkanBackendMixin {
         );
         DlssRuntime.instance().preInitializeFromEnvironment();
         FsrRuntime.instance().preInitializeFromEnvironment();
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.xess.XessRuntime.instance().preInitializeFromEnvironment();
     }
 
     @Redirect(
@@ -76,6 +77,13 @@ public abstract class VulkanBackendMixin {
         Set<VulkanFeature> vulkanFeatures = new HashSet<>(featureSet.features());
         saltsAntiAliasing$enableFidelityFxDeviceSupport(deviceExtensions, physicalDevice, vulkanFeatures);
         saltsAntiAliasing$enableDlssDeviceSupport(deviceExtensions, physicalDevice, vulkanFeatures);
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.xess.XessDeviceRequirements.enable(deviceExtensions, vulkanFeatures, physicalDevice);
+        // Streamline uses the core private-data path when the instance advertises Vulkan 1.3.
+        // This bit must be enabled explicitly even though the extension became core.
+        if (physicalDevice.vkPhysicalDevice().getInstance().getCapabilities().apiVersion >= org.lwjgl.vulkan.VK13.VK_API_VERSION_1_3
+                && DlssRuntime.instance().hasConfiguredRuntime())
+            saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice, new VulkanFeature(
+                    new VulkanPNextStruct(org.lwjgl.vulkan.VkPhysicalDevicePrivateDataFeatures.class), "privateData"));
         var handShading = org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanMsaaCapabilities.HAND_SAMPLE_SHADING;
         saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice, handShading);
         org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanDeviceFeatureNormalizer
@@ -98,6 +106,18 @@ public abstract class VulkanBackendMixin {
         // FidelityFX's half-precision permutations also declare core SPIR-V Int16.
         saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice,
                 new VulkanFeature(VulkanFeatureSets.VK10_FEATURES_STRUCT, "shaderInt16"));
+        // The SDK's FG swapchain shaders use unformatted storage-image reads as well as writes.
+        // RenderPearl uses Vulkan 1.2, so physical-device support alone (or a 1.3 driver) is not enough.
+        boolean frameGenerationFeatures = true;
+        for (String name : java.util.List.of("shaderStorageImageReadWithoutFormat", "shaderStorageImageWriteWithoutFormat")) {
+            VulkanFeature feature = new VulkanFeature(VulkanFeatureSets.VK10_FEATURES_STRUCT, name);
+            if (saltsAntiAliasing$isFeatureSupported(physicalDevice, feature)) vulkanFeatures.add(feature);
+            else {
+                frameGenerationFeatures = false;
+                MetricsDiagnostics.warn("fsr.frame_generation", "required_device_feature_missing", "feature", name);
+            }
+        }
+        FsrRuntime.instance().setFrameGenerationDeviceFeaturesAvailable(frameGenerationFeatures);
         if (physicalDevice.hasDeviceExtension(KHRGetMemoryRequirements2.VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME)) {
             deviceExtensions.add(KHRGetMemoryRequirements2.VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
 

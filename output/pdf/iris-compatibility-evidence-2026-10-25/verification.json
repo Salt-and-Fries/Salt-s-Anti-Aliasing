@@ -1,0 +1,508 @@
+{
+  "date": "2026-10-25",
+  "pdf": "G:\\Codex Projects\\Salts Anti Aliasing\\output\\pdf\\salts-iris-shader-compatibility-analysis-2026-10-25.pdf",
+  "pdfSha256": "434aae9cea54c6465921e6804acb03ecf352d0580c813f135973d944585ac5b7",
+  "pages": 29,
+  "words": 8016,
+  "irisSourceCommit": "671a5c87747d33983d7ed659461a64f46dfcb1f0",
+  "mainSessions": 9,
+  "mainCaptureGroups": 15,
+  "mainScreenshotFrames": 30,
+  "additionalNoSaltsSessions": 2,
+  "additionalNoSaltsScreenshotFrames": 4,
+  "sessions": [
+    {
+      "label": "iris-vulkan-complementary-reimagined-1792962870772",
+      "backend": "vulkan",
+      "pack": "complementary-reimagined",
+      "exitCode": 0,
+      "captureGroups": 4,
+      "shaderStates": [
+        {
+          "usingVulkan": true,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "none",
+          "shaderPackInUse": false
+        },
+        {
+          "usingVulkan": true,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "none",
+          "shaderPackInUse": false
+        },
+        {
+          "usingVulkan": true,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "org.betterLostItems.salts_anti_aliasing.client.gui.AntiAliasingConfigScreen",
+          "shaderPackInUse": false
+        },
+        {
+          "usingVulkan": true,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "net.irisshaders.iris.compat.sodium.config.ShaderPackScreenPlaceholder",
+          "shaderPackInUse": false
+        }
+      ]
+    },
+    {
+      "label": "iris-opengl-complementary-reimagined-1792962917389",
+      "backend": "opengl",
+      "pack": "complementary-reimagined",
+      "exitCode": 0,
+      "captureGroups": 4,
+      "shaderStates": [
+        {
+          "usingVulkan": false,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "none",
+          "shaderPackInUse": true
+        },
+        {
+          "usingVulkan": false,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "none",
+          "shaderPackInUse": true
+        },
+        {
+          "usingVulkan": false,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "org.betterLostItems.salts_anti_aliasing.client.gui.AntiAliasingConfigScreen",
+          "shaderPackInUse": true
+        },
+        {
+          "usingVulkan": false,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "net.irisshaders.iris.gui.screen.ShaderPackScreen",
+          "shaderPackInUse": true
+        }
+      ]
+    },
+    {
+      "label": "baseline-complementary-reimagined-native-1792963029954",
+      "backend": "opengl",
+      "pack": "complementary-reimagined",
+      "exitCode": 0,
+      "captureGroups": 1,
+      "shaderStates": [
+        {
+          "usingVulkan": false,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "none",
+          "shaderPackInUse": true,
+          "shaderStateSource": "Iris public API",
+          "effectiveAaOptions": {
+            "TAA": true,
+            "TAA_DEFINE": "-1",
+            "FXAA_DEFINE": "1",
+            "TAA_JITTER": "1"
+          },
+          "interopExtensions": {
+            "GL_EXT_memory_object": true,
+            "GL_EXT_memory_object_win32": true,
+            "GL_EXT_semaphore": true,
+            "GL_EXT_semaphore_win32": true
+          }
+        }
+      ]
+    },
+    {
+      "label": "baseline-complementary-reimagined-aa-off-1792963064160",
+      "backend": "opengl",
+      "pack": "complementary-reimagined",
+      "exitCode": 0,
+      "captureGroups": 1,
+      "shaderStates": [
+        {
+          "usingVulkan": false,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "none",
+          "shaderPackInUse": true,
+          "shaderStateSource": "Iris public API",
+          "effectiveAaOptions": {
+            "TAA": true,
+            "TAA_DEFINE": "0",
+            "FXAA_DEFINE": "-1",
+            "TAA_JITTER": "1"
+          },
+          "interopExtensions": {
+            "GL_EXT_memory_object": true,
+            "GL_EXT_memory_object_win32": true,
+            "GL_EXT_semaphore": true,
+            "GL_EXT_semaphore_win32": true
+          }
+        }
+      ]
+    },
+    {
+      "label": "baseline-photon-shader-native-1792963091268",
+      "backend": "opengl",
+      "pack": "photon-shader",
+      "exitCode": 0,
+      "captureGroups": 1,
+      "shaderStates": [
+        {
+          "usingVulkan": false,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "none",
+          "shaderPackInUse": true,
+          "shaderStateSource": "Iris public API",
+          "effectiveAaOptions": {
+            "TAA": true,
+            "FXAA": true,
+            "TAAU": false
+          },
+          "interopExtensions": {
+            "GL_EXT_memory_object": true,
+            "GL_EXT_memory_object_win32": true,
+            "GL_EXT_semaphore": true,
+            "GL_EXT_semaphore_win32": true
+          }
+        }
+      ]
+    },
+    {
+      "label": "baseline-photon-shader-aa-off-1792963143575",
+      "backend": "opengl",
+      "pack": "photon-shader",
+      "exitCode": 0,
+      "captureGroups": 1,
+      "shaderStates": [
+        {
+          "usingVulkan": false,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "none",
+          "shaderPackInUse": true,
+          "shaderStateSource": "Iris public API",
+          "effectiveAaOptions": {
+            "TAA": false,
+            "FXAA": false,
+            "TAAU": false
+          },
+          "interopExtensions": {
+            "GL_EXT_memory_object": true,
+            "GL_EXT_memory_object_win32": true,
+            "GL_EXT_semaphore": true,
+            "GL_EXT_semaphore_win32": true
+          }
+        }
+      ]
+    },
+    {
+      "label": "baseline-makeup-ultra-fast-shaders-taa-1792963190757",
+      "backend": "opengl",
+      "pack": "makeup-ultra-fast-shaders",
+      "exitCode": 0,
+      "captureGroups": 1,
+      "shaderStates": [
+        {
+          "usingVulkan": false,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "none",
+          "shaderPackInUse": true,
+          "shaderStateSource": "Iris public API",
+          "effectiveAaOptions": {
+            "AA_TYPE": "2"
+          },
+          "interopExtensions": {
+            "GL_EXT_memory_object": true,
+            "GL_EXT_memory_object_win32": true,
+            "GL_EXT_semaphore": true,
+            "GL_EXT_semaphore_win32": true
+          }
+        }
+      ]
+    },
+    {
+      "label": "baseline-makeup-ultra-fast-shaders-denoise-1792963215926",
+      "backend": "opengl",
+      "pack": "makeup-ultra-fast-shaders",
+      "exitCode": 0,
+      "captureGroups": 1,
+      "shaderStates": [
+        {
+          "usingVulkan": false,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "none",
+          "shaderPackInUse": true,
+          "shaderStateSource": "Iris public API",
+          "effectiveAaOptions": {
+            "AA_TYPE": "1"
+          },
+          "interopExtensions": {
+            "GL_EXT_memory_object": true,
+            "GL_EXT_memory_object_win32": true,
+            "GL_EXT_semaphore": true,
+            "GL_EXT_semaphore_win32": true
+          }
+        }
+      ]
+    },
+    {
+      "label": "baseline-makeup-ultra-fast-shaders-aa-off-1792963256404",
+      "backend": "opengl",
+      "pack": "makeup-ultra-fast-shaders",
+      "exitCode": 0,
+      "captureGroups": 1,
+      "shaderStates": [
+        {
+          "usingVulkan": false,
+          "backendDescription": "LWJGL version 3.4.3-snapshot",
+          "screenClass": "none",
+          "shaderPackInUse": true,
+          "shaderStateSource": "Iris public API",
+          "effectiveAaOptions": {
+            "AA_TYPE": "0"
+          },
+          "interopExtensions": {
+            "GL_EXT_memory_object": true,
+            "GL_EXT_memory_object_win32": true,
+            "GL_EXT_semaphore": true,
+            "GL_EXT_semaphore_win32": true
+          }
+        }
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "variant": "control",
+      "exitCode": 0,
+      "fixedTaaCorrectionWarnings": 1,
+      "saltsJarInstalled": false
+    },
+    {
+      "variant": "uniform-fix",
+      "exitCode": 0,
+      "fixedTaaCorrectionWarnings": 0,
+      "saltsJarInstalled": false
+    }
+  ],
+  "preserved": {
+    "run/26.3/options.txt": true,
+    "run/26.3/config/salts_anti_aliasing.json": true,
+    "build/libs/salts-anti-aliasing-mc26.3-1.1.jar": true,
+    "trackedWorkingTreeDiffUnchanged": true
+  },
+  "repositorySources": [
+    {
+      "path": "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/common/RenderRuntime.java",
+      "sha256": "e7fb486e3a944e354b4b4d6c8e746104f7a92fdb1e24740d5a06636fd3535724",
+      "lines": 787
+    },
+    {
+      "path": "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/api/RenderBackendType.java",
+      "sha256": "3b59253eadd1110088f5f8016a66defd8e4ac5dcd6900e8c5dd44e107d4cc023",
+      "lines": 24
+    },
+    {
+      "path": "src/client/java/org/betterLostItems/salts_anti_aliasing/mixin/client/GameRendererMixin.java",
+      "sha256": "e80c45de7ef39c2171474945623058911d7b4d8958efccd30aa8eb6e44cc8758",
+      "lines": 201
+    },
+    {
+      "path": "src/client/java/org/betterLostItems/salts_anti_aliasing/mixin/client/LevelRendererMixin.java",
+      "sha256": "cee39cd2b42253fead281edf92b26fcc07cdcec6d3f44048c52c4a39d1c8222e",
+      "lines": 83
+    },
+    {
+      "path": "src/client/java/org/betterLostItems/salts_anti_aliasing/client/platform/modern/ModernMinecraftHooks.java",
+      "sha256": "b2bb9e5681893b480fa094e22830162b2a090e7d93523b8aec752fa4b0a74d3c",
+      "lines": 318
+    },
+    {
+      "path": "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanSceneDlssController.java",
+      "sha256": "446de1aa36496c178debcfcc5cc2dc08e857ae1046499c0d999bb91eed9094e4",
+      "lines": 525
+    },
+    {
+      "path": "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanSceneFsrController.java",
+      "sha256": "4f7a46ce386e355e52e3154ba7da27be353369b1ec03f03adc145c6034cf9435",
+      "lines": 1444
+    },
+    {
+      "path": "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanMotionVectorRenderer.java",
+      "sha256": "6bbdf52b090d4d4d047d5f321d4deeb47074d23d41cdb0704864812dc858688b",
+      "lines": 234
+    },
+    {
+      "path": "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanEntityMotionRenderer.java",
+      "sha256": "07c5f2d3829647321cc90971c0c83be8f3f8dbfe740c4805098601d5998e887a",
+      "lines": 160
+    },
+    {
+      "path": "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanHandAaController.java",
+      "sha256": "42ab226ba345ed3033e00cb514d782bfbb3d0454361fdeced9ec086549ff5bf0",
+      "lines": 148
+    },
+    {
+      "path": "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanTextureDetail.java",
+      "sha256": "067075f4bd627c756790b45ff7329f12207d06df9c17bb4d7ebb9a667c7401dc",
+      "lines": 103
+    },
+    {
+      "path": "native/dlss_bridge/src/salts_dlss_bridge.cpp",
+      "sha256": "ce17b9b2e238590d697288274dd5c48da8fad2f3c5c90256426fbae91de22273",
+      "lines": 544
+    },
+    {
+      "path": "native/fsr_bridge/src/salts_fsr_bridge.cpp",
+      "sha256": "d7d379f5bb96206d9d077ef1d5ec36c221529af940aeac8e0dc3fcd469f73014",
+      "lines": 1762
+    }
+  ],
+  "pdfChecks": [
+    {
+      "page": 1,
+      "characters": 1572,
+      "links": 3
+    },
+    {
+      "page": 2,
+      "characters": 1772,
+      "links": 1
+    },
+    {
+      "page": 3,
+      "characters": 1064,
+      "links": 2
+    },
+    {
+      "page": 4,
+      "characters": 1905,
+      "links": 6
+    },
+    {
+      "page": 5,
+      "characters": 1761,
+      "links": 0
+    },
+    {
+      "page": 6,
+      "characters": 1991,
+      "links": 3
+    },
+    {
+      "page": 7,
+      "characters": 2154,
+      "links": 4
+    },
+    {
+      "page": 8,
+      "characters": 1972,
+      "links": 5
+    },
+    {
+      "page": 9,
+      "characters": 1866,
+      "links": 5
+    },
+    {
+      "page": 10,
+      "characters": 1847,
+      "links": 4
+    },
+    {
+      "page": 11,
+      "characters": 2117,
+      "links": 6
+    },
+    {
+      "page": 12,
+      "characters": 2161,
+      "links": 5
+    },
+    {
+      "page": 13,
+      "characters": 2245,
+      "links": 5
+    },
+    {
+      "page": 14,
+      "characters": 2543,
+      "links": 12
+    },
+    {
+      "page": 15,
+      "characters": 2323,
+      "links": 7
+    },
+    {
+      "page": 16,
+      "characters": 2367,
+      "links": 5
+    },
+    {
+      "page": 17,
+      "characters": 2123,
+      "links": 5
+    },
+    {
+      "page": 18,
+      "characters": 2100,
+      "links": 5
+    },
+    {
+      "page": 19,
+      "characters": 1860,
+      "links": 5
+    },
+    {
+      "page": 20,
+      "characters": 2060,
+      "links": 4
+    },
+    {
+      "page": 21,
+      "characters": 1256,
+      "links": 0
+    },
+    {
+      "page": 22,
+      "characters": 1364,
+      "links": 3
+    },
+    {
+      "page": 23,
+      "characters": 2498,
+      "links": 0
+    },
+    {
+      "page": 24,
+      "characters": 2240,
+      "links": 2
+    },
+    {
+      "page": 25,
+      "characters": 2214,
+      "links": 0
+    },
+    {
+      "page": 26,
+      "characters": 2036,
+      "links": 2
+    },
+    {
+      "page": 27,
+      "characters": 1725,
+      "links": 27
+    },
+    {
+      "page": 28,
+      "characters": 1818,
+      "links": 14
+    },
+    {
+      "page": 29,
+      "characters": 2075,
+      "links": 0
+    }
+  ],
+  "evidenceCaveats": [
+    "Vulkan shaderPackInUse=false is inferred from the inspected Vulkan placeholder branch; OpenGL active-pack values are direct Iris public API queries.",
+    "The probe field effectiveAaOptions reads parsed/default option values; it does not prove execution of a derived macro or algorithm.",
+    "A true Iris active-pack state and exit code zero do not certify all shader effects or image quality.",
+    "The initial missing-Fabric-API staging attempt, startup auto-captures and failed PDF layout drafts are excluded.",
+    "No production Iris compatibility, GPU interop, temporal combined path or OpenGL FG presenter was implemented.",
+    "Logs include offline authentication/Realms and Windows performance-counter diagnostics; these are not silently counted as shader failures."
+  ]
+}

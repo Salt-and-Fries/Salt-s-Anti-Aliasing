@@ -1,0 +1,166 @@
+{
+  "I01": {
+    "title": "Iris 1.11.7 Fabric 26.3 release",
+    "url": "https://modrinth.com/mod/iris/version/1.11.7%2B26.3-fabric"
+  },
+  "I02": {
+    "title": "Iris backend selection plugin",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/mixin/IrisMixinPlugin.java"
+  },
+  "I03": {
+    "title": "Iris Vulkan placeholder",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/compat/sodium/config/ShaderPackScreenPlaceholder.java"
+  },
+  "I04": {
+    "title": "Iris public API v0",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/api/java/net/irisshaders/iris/api/v0/IrisApi.java"
+  },
+  "I05": {
+    "title": "Iris API configuration",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/api/java/net/irisshaders/iris/api/v0/IrisApiConfig.java"
+  },
+  "I06": {
+    "title": "Iris world pipeline",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/pipeline/IrisRenderingPipeline.java"
+  },
+  "I07": {
+    "title": "Composite passes and buffer flips",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/pipeline/CompositeRenderer.java"
+  },
+  "I08": {
+    "title": "Final pass and target binding",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/pipeline/FinalPassRenderer.java"
+  },
+  "I09": {
+    "title": "Iris hand and frame hooks",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/mixin/MixinGameRenderer.java"
+  },
+  "I10": {
+    "title": "Iris world and shadow hooks",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/mixin/MixinLevelRenderer.java"
+  },
+  "I11": {
+    "title": "Iris option widget input paths",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/gui/element/widget/BaseOptionElementWidget.java"
+  },
+  "I12": {
+    "title": "Iris option loading and queues",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/Iris.java"
+  },
+  "I13": {
+    "title": "Dimension and pipeline lifetime",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/pipeline/PipelineManager.java"
+  },
+  "I14": {
+    "title": "Iris clip-control override",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/mixin/UndoReverseZTwo.java"
+  },
+  "I15": {
+    "title": "Iris custom uniform resolution",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/uniforms/custom/CustomUniforms.java"
+  },
+  "I16": {
+    "title": "Iris per-phase projection changes",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/mixin/UndoReverseZFour.java"
+  },
+  "I17": {
+    "title": "Iris per-phase depth-clear changes",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/mixin/UndoReverseZFive.java"
+  },
+  "I18": {
+    "title": "Iris gbuffer matrix conversions",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/helpers/MatrixUtils.java"
+  },
+  "I19": {
+    "title": "Iris API depth-flag implementation",
+    "url": "https://github.com/IrisShaders/Iris/blob/671a5c87747d33983d7ed659461a64f46dfcb1f0/common/src/main/java/net/irisshaders/iris/apiimpl/IrisApiV0Impl.java"
+  },
+  "D01": {
+    "title": "Shader-pack option definitions and profiles",
+    "url": "https://shaders.properties/current/reference/shadersproperties/shader_settings/"
+  },
+  "D02": {
+    "title": "Color attachments and flip semantics",
+    "url": "https://shaders.properties/current/reference/buffers/colortex/"
+  },
+  "D03": {
+    "title": "Depth buffer contents",
+    "url": "https://shaders.properties/current/reference/buffers/depthtex/"
+  },
+  "D04": {
+    "title": "Current and previous matrices",
+    "url": "https://shaders.properties/current/reference/uniforms/matrices/"
+  },
+  "D05": {
+    "title": "Program ordering and compute",
+    "url": "https://shaders.properties/current/reference/shadersproperties/ordering/"
+  },
+  "D06": {
+    "title": "Viewport, buffer sizes and blending",
+    "url": "https://shaders.properties/current/reference/shadersproperties/rendering/"
+  },
+  "D07": {
+    "title": "Final pass display-size output",
+    "url": "https://shaders.properties/current/reference/programs/final/"
+  },
+  "D08": {
+    "title": "Iris transformed shader debugging",
+    "url": "https://shaders.properties/current/reference/miscellaneous/debugging_shaders/"
+  },
+  "N01": {
+    "title": "NVIDIA Streamline DLSS integration",
+    "url": "https://github.com/NVIDIA-RTX/Streamline/blob/v2.14.16/docs/ProgrammingGuideDLSS.md"
+  },
+  "N02": {
+    "title": "Streamline device and resource integration",
+    "url": "https://github.com/NVIDIA-RTX/Streamline/blob/v2.14.16/docs/ProgrammingGuide.md"
+  },
+  "A01": {
+    "title": "AMD FSR2 temporal integration",
+    "url": "https://gpuopen.com/manuals/fidelityfx_sdk/techniques/super-resolution-temporal/"
+  },
+  "A02": {
+    "title": "AMD frame interpolation integration",
+    "url": "https://gpuopen.com/manuals/fidelityfx_sdk/techniques/frame-interpolation/"
+  },
+  "K01": {
+    "title": "Khronos external memory and semaphores",
+    "url": "https://registry.khronos.org/OpenGL/extensions/EXT/EXT_external_objects.txt"
+  },
+  "K02": {
+    "title": "Khronos Windows external handles",
+    "url": "https://registry.khronos.org/OpenGL/extensions/EXT/EXT_external_objects_win32.txt"
+  },
+  "P01": {
+    "title": "Complementary Shaders - Reimagined r5.9.3",
+    "url": "https://modrinth.com/shader/complementary-reimagined/version/Bqen1mJX"
+  },
+  "P02": {
+    "title": "Complementary Shaders - Unbound r5.9.3",
+    "url": "https://modrinth.com/shader/complementary-unbound/version/B1kyfoUZ"
+  },
+  "P03": {
+    "title": "BSL Shaders 10.1.8",
+    "url": "https://modrinth.com/shader/bsl-shaders/version/Y68yiql9"
+  },
+  "P04": {
+    "title": "Photon Shaders v1.4",
+    "url": "https://modrinth.com/shader/photon-shader/version/BnGklH5y"
+  },
+  "P05": {
+    "title": "Bliss Shaders 2.1.2",
+    "url": "https://modrinth.com/shader/bliss-shader/version/kC2Y8q1P"
+  },
+  "P06": {
+    "title": "Rethinking Voxels r0.1-beta9",
+    "url": "https://modrinth.com/shader/rethinking-voxels/version/cpD4esk9"
+  },
+  "P07": {
+    "title": "MakeUp - Ultra Fast 9.6",
+    "url": "https://modrinth.com/shader/makeup-ultra-fast-shaders/version/t4YRxQug"
+  },
+  "P08": {
+    "title": "Solas Shader 3.8",
+    "url": "https://modrinth.com/shader/solas-shader/version/XE9yh7pS"
+  }
+}

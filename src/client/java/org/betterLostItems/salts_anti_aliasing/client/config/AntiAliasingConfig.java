@@ -23,6 +23,9 @@ public final class AntiAliasingConfig {
     public SsaaScaleLevel ssaaScaleLevel = SsaaScaleLevel.defaultLevel();
     public NisUpscaleQualityPreset nisUpscaleQualityPreset = NisUpscaleQualityPreset.defaultPreset();
     public DlssQualityPreset dlssQualityPreset = DlssQualityPreset.defaultPreset();
+    public SgsrQualityPreset sgsr1QualityPreset = SgsrQualityPreset.defaultPreset();
+    public SgsrQualityPreset sgsr2QualityPreset = SgsrQualityPreset.defaultPreset();
+    public XessQualityPreset xessQualityPreset = XessQualityPreset.defaultPreset();
     public FsrQualityPreset fsrQualityPreset = FsrQualityPreset.defaultPreset();
     public float internalResolutionScale = 1.0f;
     public RenderTuning tuning = new RenderTuning();
@@ -55,6 +58,9 @@ public final class AntiAliasingConfig {
         copy.ssaaScaleLevel = ssaaScaleLevel;
         copy.nisUpscaleQualityPreset = nisUpscaleQualityPreset;
         copy.dlssQualityPreset = dlssQualityPreset;
+        copy.sgsr1QualityPreset = sgsr1QualityPreset;
+        copy.sgsr2QualityPreset = sgsr2QualityPreset;
+        copy.xessQualityPreset = xessQualityPreset;
         copy.fsrQualityPreset = fsrQualityPreset;
         copy.internalResolutionScale = internalResolutionScale;
         copy.tuning = tuning == null ? new RenderTuning() : tuning.copy();
@@ -85,13 +91,16 @@ public final class AntiAliasingConfig {
         ssaaScaleLevel = SsaaScaleLevel.clamp(ssaaScaleLevel);
         nisUpscaleQualityPreset = NisUpscaleQualityPreset.clamp(nisUpscaleQualityPreset);
         dlssQualityPreset = DlssQualityPreset.clamp(dlssQualityPreset);
+        sgsr1QualityPreset = SgsrQualityPreset.clamp(sgsr1QualityPreset);
+        sgsr2QualityPreset = SgsrQualityPreset.clamp(sgsr2QualityPreset);
+        xessQualityPreset = XessQualityPreset.clamp(xessQualityPreset);
         fsrQualityPreset = FsrQualityPreset.clamp(fsrQualityPreset);
         keepHudAtNativeResolution = true;
         sharpenStrength = clamp(sharpenStrength, MIN_SHARPEN_STRENGTH, MAX_SHARPEN_STRENGTH);
         internalResolutionScale = clamp(internalResolutionScale, 0.5f, 1.0f);
         if (tuning == null) tuning = new RenderTuning();
         tuning.sanitize();
-        if (mode == AntiAliasingMode.DLSS_SUPER_RESOLUTION
+        if ((mode == AntiAliasingMode.DLSS_SUPER_RESOLUTION || mode.usesXessQualityControl() || mode.usesSgsr2QualityControl())
                 && tuning.debugView == RenderTuning.DebugView.REACTIVE_MASK) {
             tuning.debugView = RenderTuning.DebugView.NONE;
         }
@@ -131,6 +140,9 @@ public final class AntiAliasingConfig {
                 case ULTRA_PERFORMANCE -> 1.0f / 3.0f;
                 default -> 0.5f;
             };
+            case SGSR1_UPSCALE -> sgsr1QualityPreset.scaleFactor();
+            case SGSR2_SUPER_RESOLUTION -> sgsr2QualityPreset.scaleFactor();
+            case XESS_SUPER_RESOLUTION -> xessQualityPreset.scaleFactor();
             case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION ->
                     fsrQualityPreset.scaleFactor();
             case NIS_UPSCALE, FSR1_UPSCALE, FSR1_RCAS -> nisUpscaleQualityPreset.scaleFactor();

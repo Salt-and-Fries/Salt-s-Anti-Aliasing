@@ -1,0 +1,23 @@
+{
+  "audit-soak1080-native_aa": {
+    "samples": 1800,
+    "meanMs": 2.990917166666667,
+    "p95Ms": 3.31128,
+    "p99Ms": 3.5700309999999997,
+    "displayedFps": 336
+  },
+  "audit-soak1080-performance": {
+    "samples": 1800,
+    "meanMs": 2.5296007222222223,
+    "p95Ms": 2.908315,
+    "p99Ms": 3.1155869999999997,
+    "displayedFps": 382
+  },
+  "audit-soak1080-quality": {
+    "samples": 1800,
+    "meanMs": 2.685470222222222,
+    "p95Ms": 3.0231299999999997,
+    "p99Ms": 3.3036269999999996,
+    "displayedFps": 380
+  }
+}

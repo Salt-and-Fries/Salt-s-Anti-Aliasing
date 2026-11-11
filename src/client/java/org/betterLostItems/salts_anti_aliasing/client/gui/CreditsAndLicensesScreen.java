@@ -52,6 +52,11 @@ public final class CreditsAndLicensesScreen extends Screen {
             addText(body, Component.translatable("screen.salts_anti_aliasing.credits.developer"));
             addText(body, Component.translatable("screen.salts_anti_aliasing.credits.nvidia"));
             addText(body, Component.translatable("screen.salts_anti_aliasing.credits.third_party"));
+            addText(body, Component.literal("Intel XeSS SDK — Copyright Intel Corporation. Unmodified Intel runtime; Intel Simplified Software License."));
+            addText(body, Component.literal("Snapdragon Game Super Resolution — Qualcomm Innovation Center, Inc. BSD 3-Clause licensed shaders."));
+            addLicenseButton(body,"Qualcomm SGSR License","assets/salts_anti_aliasing/licenses/sgsr/LICENSE-SGSR.txt");
+            addLicenseButton(body, "Intel XeSS License", "xess/windows-x86_64/LICENSE-Intel-XeSS.txt");
+            addLicenseButton(body, "Intel XeSS Third Party Notices", "xess/windows-x86_64/third-party-programs.txt");
             addLicenseButton(body, "NVIDIA DLSS License", "LICENSE-NVIDIA-DLSS.txt");
             addLicenseButton(body, "NVIDIA Streamline License", "LICENSE-Streamline.txt");
             addLicenseButton(body, "NVIDIA Runtime Terms", "END-USER-TERMS.txt");
@@ -74,8 +79,8 @@ public final class CreditsAndLicensesScreen extends Screen {
     }
 
     private void addLicenseButton(LinearLayout body, String label, String file) {
-        String resource = RUNTIME_ROOT + file;
-        Path downloaded = downloadedLicense(file);
+        String resource = file.startsWith("assets/") ? file : file.contains("/") ? "assets/salts_anti_aliasing/native/" + file : RUNTIME_ROOT + file;
+        Path downloaded = file.contains("/") ? null : downloadedLicense(file);
         if (getClass().getClassLoader().getResource(resource) == null && downloaded == null) return;
         body.addChild(
                 Button.builder(

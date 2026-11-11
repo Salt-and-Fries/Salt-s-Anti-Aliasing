@@ -1,0 +1,8 @@
+{
+  "automated": "PDF text, hyperlinks and horizontal content bounds checked",
+  "renderedWith": "Poppler pdftoppm",
+  "result": "passed",
+  "pdfSha256": "434aae9cea54c6465921e6804acb03ecf352d0580c813f135973d944585ac5b7",
+  "review": "All page layouts inspected; dense tables, comparison crops, new diagnostic page and updated depth/source pages inspected at full preview size",
+  "pages": 29
+}

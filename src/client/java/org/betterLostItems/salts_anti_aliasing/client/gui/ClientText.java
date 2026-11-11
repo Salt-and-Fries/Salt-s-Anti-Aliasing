@@ -62,6 +62,14 @@ public final class ClientText {
         return Component.translatable(preset.translationKey());
     }
 
+    public static Component label(org.betterLostItems.salts_anti_aliasing.client.config.XessQualityPreset preset) {
+        return Component.translatable(preset.translationKey());
+    }
+
+    public static Component label(org.betterLostItems.salts_anti_aliasing.client.config.SgsrQualityPreset preset) {
+        return Component.translatable(preset.translationKey());
+    }
+
     public static Component label(FsrQualityPreset preset) {
         return Component.translatable(preset.translationKey());
     }

@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.Collections;
 import java.util.IdentityHashMap;
-import java.util.function.BiConsumer;
+import net.fabricmc.loader.api.FabricLoader;
+import org.betterLostItems.salts_anti_aliasing.client.compat.sodium.SodiumMotionVertexConsumer;
 
 /**
  * Matches the actual transformed vertices emitted by vanilla entity models between frames. This
@@ -44,6 +45,7 @@ public final class EntityMotionGeometry {
     private static final Map<Object, Integer> SUBMISSION_COUNTS = new HashMap<>();
     private static Map<Key, FloatArrayList> recycled = new HashMap<>();
     private static boolean accepting;
+    private static final boolean SODIUM_LOADED = FabricLoader.getInstance().isModLoaded("sodium");
     private static boolean enabled;
     private record Match(FloatArrayList now, FloatArrayList old, int primitiveVertices) {}
     @FunctionalInterface interface MatchConsumer {
@@ -51,6 +53,8 @@ public final class EntityMotionGeometry {
     }
     private static List<Match> matches;
     private static final Set<FloatArrayList> TRUNCATED = Collections.newSetFromMap(new IdentityHashMap<>());
+    private static final Set<FloatArrayList> INVALID = Collections.newSetFromMap(new IdentityHashMap<>());
+    private static final Set<FloatArrayList> PREVIOUS_INVALID = Collections.newSetFromMap(new IdentityHashMap<>());
     private static int vertexBudget = 1048576;
     private static int cappedMeshes, unidentifiedMeshes, newMeshes, changedTopologyMeshes, stableMeshes, matchedVertices;
 
@@ -118,7 +122,11 @@ public final class EntityMotionGeometry {
         enabled = config.mode.usesHistoryBuffers() && config.tuning.entityMotion;
         vertexBudget = config.tuning.motionVertexBudget.vertices();
         matches = null;
+        PREVIOUS_INVALID.clear();
+        PREVIOUS_INVALID.addAll(TRUNCATED);
+        PREVIOUS_INVALID.addAll(INVALID);
         TRUNCATED.clear();
+        INVALID.clear();
         cappedMeshes = unidentifiedMeshes = newMeshes = changedTopologyMeshes = stableMeshes = matchedVertices = 0;
         recycled = previous;
         previous = current;
@@ -155,57 +163,31 @@ public final class EntityMotionGeometry {
     }
 
     private static VertexConsumer wrap(VertexConsumer delegate, FloatArrayList positions) {
-        return new VertexConsumer() {
-            public VertexConsumer addVertex(float x, float y, float z) {
-                delegate.addVertex(x, y, z);
-                if (vertices++ < vertexBudget) {
+        var capture = new MotionCapturingVertexConsumer.Positions() {
+            public void vertex(float x, float y, float z) {
+                if (vertices < vertexBudget) {
+                    vertices++;
                     positions.add(x);
                     positions.add(y);
                     positions.add(z);
                 } else TRUNCATED.add(positions);
-                return this;
             }
-
-            public VertexConsumer setColor(int r, int g, int b, int a) {
-                delegate.setColor(r, g, b, a);
-                return this;
-            }
-
-            public VertexConsumer setColor(int color) {
-                delegate.setColor(color);
-                return this;
-            }
-
-            public VertexConsumer setUv(float u, float v) {
-                delegate.setUv(u, v);
-                return this;
-            }
-
-            public VertexConsumer setUv1(int u, int v) {
-                delegate.setUv1(u, v);
-                return this;
-            }
-
-            public VertexConsumer setUv2(int u, int v) {
-                delegate.setUv2(u, v);
-                return this;
-            }
-
-            public VertexConsumer setUv3(float u, float v) {
-                delegate.setUv3(u, v);
-                return this;
-            }
-
-            public VertexConsumer setNormal(float x, float y, float z) {
-                delegate.setNormal(x, y, z);
-                return this;
-            }
-
-            public VertexConsumer setLineWidth(float width) {
-                delegate.setLineWidth(width);
-                return this;
+            public void invalidate() { INVALID.add(positions); }
+            public int bulkLimit(int requested) {
+                int allowed = Math.min(requested, Math.max(0, vertexBudget - vertices));
+                if (allowed < requested) TRUNCATED.add(positions);
+                return allowed;
             }
         };
+        return SODIUM_LOADED ? SodiumCapture.wrap(delegate, capture)
+                : new MotionCapturingVertexConsumer(delegate, capture);
+    }
+
+    /** Keep the optional subclass out of this class's verifier/type-merge path without Sodium. */
+    private static final class SodiumCapture {
+        static VertexConsumer wrap(VertexConsumer delegate, MotionCapturingVertexConsumer.Positions positions) {
+            return new SodiumMotionVertexConsumer(delegate, positions);
+        }
     }
 
     static int forEachMatched(MatchConsumer consumer) {
@@ -234,6 +216,7 @@ public final class EntityMotionGeometry {
                 };
             }
             if (TRUNCATED.contains(now)) { cappedMeshes++; continue; }
+            if (INVALID.contains(now) || PREVIOUS_INVALID.contains(old)) { changedTopologyMeshes++; continue; }
             if (old == null) { newMeshes++; continue; }
             if (primitiveVertices == 0 || old.size() != now.size()
                     || now.size() % (primitiveVertices * 3) != 0) { changedTopologyMeshes++; continue; }

@@ -16,7 +16,7 @@ final class MethodTuningControls {
     static void add(OptionsList list, RenderRuntime runtime, boolean advanced) {
         AntiAliasingConfig config = runtime.configSnapshot();
         AntiAliasingMode mode = config.mode;
-        // The validated Streamline 2.14.1 / DLSS 310.9.1 runtime supports K/M/L on all RTX GPUs.
+        // Both validated production runtime sets provide K/M/L on RTX GPUs.
         // Older RTX cards run M/L more slowly; they must not be incorrectly filtered out.
         if (advanced && mode.usesDlssQualityControl()) {
             cycle(list, runtime, "dlss_model", DlssModelPreset.values(),
@@ -24,7 +24,7 @@ final class MethodTuningControls {
             cycle(list, runtime, "dlss_color_input", DlssColorInput.values(),
                     t -> t.dlssColorInput, (t, v) -> t.dlssColorInput = v);
         }
-        if (mode.usesDlssQualityControl() || mode.usesFsrQualityControl()
+        if (mode.usesDlssQualityControl() || mode.usesXessQualityControl() || mode.usesSgsr2QualityControl() || mode.usesFsrQualityControl()
                 || mode.usesSpatialUpscaleQualityControl()) {
             cycle(list, runtime, "upscaler_hand_aa", RenderTuning.HandAa.values(),
                     t -> t.upscalerHandAa, (t, v) -> t.upscalerHandAa = v);
@@ -49,7 +49,7 @@ final class MethodTuningControls {
                     (t, v) -> t.ssaaLinearLight = v);
         }
         if (mode == AntiAliasingMode.SMAA) smaa(list, runtime);
-        if (mode == AntiAliasingMode.NIS_UPSCALE || mode == AntiAliasingMode.FSR1_UPSCALE) {
+        if (mode.usesSpatialUpscaleQualityControl()) {
             cycle(
                     list,
                     runtime,
@@ -69,6 +69,7 @@ final class MethodTuningControls {
                     add(list, new TuningSliderWidget(runtime, setting));
             }
         }
+        if (advanced && mode.usesSgsr1QualityControl()) toggle(list,runtime,"sgsr1_edge_direction",t -> t.sgsr1EdgeDirection,(t,v) -> t.sgsr1EdgeDirection=v);
         if (mode.usesHistoryBuffers()) {
             if (advanced) cycle(list, runtime, "motion_vertex_budget", RenderTuning.MotionVertexBudget.values(),
                     t -> t.motionVertexBudget, (t, v) -> t.motionVertexBudget = v);
@@ -107,7 +108,7 @@ final class MethodTuningControls {
             add(list, new TuningSliderWidget(runtime, NumericTuningSetting.SHARPEN_LIMIT));
         }
         if (advanced
-                && (mode == AntiAliasingMode.DLSS_SUPER_RESOLUTION
+                && (mode.usesXessQualityControl() || mode.usesSgsr2QualityControl() || mode == AntiAliasingMode.DLSS_SUPER_RESOLUTION
                         || mode.usesFsrQualityControl()
                         || mode.usesSpatialUpscaleQualityControl())) {
             cycle(

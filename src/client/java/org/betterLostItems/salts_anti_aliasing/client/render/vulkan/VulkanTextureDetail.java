@@ -23,7 +23,7 @@ public final class VulkanTextureDetail {
     public static void beginScene(AntiAliasingConfig config, int renderWidth, int displayWidth) {
         boolean nativeTemporal =
                 config.mode == AntiAliasingMode.DLSS_SUPER_RESOLUTION
-                        || config.mode.usesFsrQualityControl();
+                        || config.mode.usesXessQualityControl() || config.mode.usesSgsr2QualityControl() || config.mode.usesFsrQualityControl();
         boolean spatial = config.mode.usesSpatialUpscaleQualityControl();
         var t = config.tuning;
         activeQuarterSteps =
@@ -34,7 +34,7 @@ public final class VulkanTextureDetail {
                                 t.mipBiasOffset,
                                 renderWidth,
                                 displayWidth,
-                                nativeTemporal)
+                                nativeTemporal && !config.mode.usesXessQualityControl() && !config.mode.usesSgsr2QualityControl())
                         : 0;
     }
 
@@ -52,7 +52,7 @@ public final class VulkanTextureDetail {
         if (source == null || source.getShaderDefines().values().containsKey(DEFINE))
             return compiled;
         Identifier fragment = source.getShaders().get(ShaderType.FRAGMENT);
-        if (fragment == null || !fragment.equals(Identifier.withDefaultNamespace("core/terrain")))
+        if (fragment == null || !TextureDetailShaderPatch.supportsTerrainShader(fragment.toString()))
             return compiled;
         RenderPipeline variant =
                 VARIANTS.computeIfAbsent(source, k -> new HashMap<>())

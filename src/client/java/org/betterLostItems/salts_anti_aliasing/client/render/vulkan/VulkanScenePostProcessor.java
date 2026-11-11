@@ -132,10 +132,16 @@ public final class VulkanScenePostProcessor implements ScenePostProcessor {
                     || view==org.betterLostItems.salts_anti_aliasing.client.config.RenderTuning.DebugView.REACTIVE_MASK) {
                 boolean motion=view==org.betterLostItems.salts_anti_aliasing.client.config.RenderTuning.DebugView.MOTION_VECTORS;
                 RenderTarget source=config.mode==AntiAliasingMode.TAA?VulkanSceneTemporalController.instance().motionTarget():
+                    config.mode.usesSgsr2QualityControl()?
+                        (motion?VulkanSceneSgsrController.instance().motionTarget():null):
+                    config.mode.usesXessQualityControl()?
+                        (motion?VulkanSceneXessController.instance().motionTarget():null):
                     config.mode==AntiAliasingMode.DLSS_SUPER_RESOLUTION?
                         (motion?VulkanSceneDlssController.instance().motionTarget():null):
                         (motion?VulkanSceneFsrController.instance().motionTarget():VulkanSceneFsrController.instance().rejectionTarget());
-                VulkanTemporalDebugRenderer.render(source,gameRenderer.mainRenderTarget(),motion);
+                if (config.mode.usesSgsr2QualityControl() && source!=null && motion)
+                    VulkanTemporalDebugRenderer.render(source,gameRenderer.mainRenderTarget(),true,-.5f*source.width,-.5f*source.height);
+                else VulkanTemporalDebugRenderer.render(source,gameRenderer.mainRenderTarget(),motion);
             }
             edgeDebugAnalyzer.captureIfNeeded(gameRenderer.mainRenderTarget(), config);
             if (config.debugViewsEnabled) {

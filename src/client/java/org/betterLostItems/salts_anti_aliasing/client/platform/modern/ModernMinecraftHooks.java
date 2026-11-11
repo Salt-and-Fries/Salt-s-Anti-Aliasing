@@ -13,6 +13,8 @@ import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
 import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
 import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneDlssController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneXessController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneSgsrController;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneFsrController;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneMsaaController;
 import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneScaleController;
@@ -75,6 +77,9 @@ public final class ModernMinecraftHooks {
         if (runtime != null && runtime.activeMode() == AntiAliasingMode.DLSS_SUPER_RESOLUTION) {
             jitterPhaseCount = VulkanSceneDlssController.instance().activeJitterPhaseCount();
         }
+        if (runtime != null && runtime.activeMode() == AntiAliasingMode.XESS_SUPER_RESOLUTION)
+            jitterPhaseCount = VulkanSceneXessController.instance().activeJitterPhaseCount();
+        if (runtime != null && runtime.activeMode().usesSgsr2QualityControl()) jitterPhaseCount=VulkanSceneSgsrController.instance().activeJitterPhaseCount();
         VulkanSceneTemporalController.instance().prepareFrameJitter(
                 temporalActive,
                 mainTarget.width,
@@ -157,6 +162,16 @@ public final class ModernMinecraftHooks {
             return dlssTarget;
         }
 
+        RenderTarget xessTarget = VulkanSceneXessController.instance().overrideMainTarget();
+        if (xessTarget != null) {
+            return xessTarget;
+        }
+
+        RenderTarget sgsrTarget = VulkanSceneSgsrController.instance().overrideMainTarget();
+        if (sgsrTarget != null) {
+            return sgsrTarget;
+        }
+
         RenderTarget fsrTarget = VulkanSceneFsrController.instance().overrideMainTarget();
         if (fsrTarget != null) {
             return fsrTarget;
@@ -204,6 +219,16 @@ public final class ModernMinecraftHooks {
             return dlssTexture;
         }
 
+        GpuTexture xessTexture = VulkanSceneXessController.instance().overrideColorTexture(target);
+        if (xessTexture != null) {
+            return xessTexture;
+        }
+
+        GpuTexture sgsrTexture = VulkanSceneSgsrController.instance().overrideColorTexture(target);
+        if (sgsrTexture != null) {
+            return sgsrTexture;
+        }
+
         GpuTexture fsrTexture = VulkanSceneFsrController.instance().overrideColorTexture(target);
         if (fsrTexture != null) {
             return fsrTexture;
@@ -224,6 +249,16 @@ public final class ModernMinecraftHooks {
         GpuTextureView dlssTextureView = VulkanSceneDlssController.instance().overrideColorTextureView(target);
         if (dlssTextureView != null) {
             return dlssTextureView;
+        }
+
+        GpuTextureView xessTextureView = VulkanSceneXessController.instance().overrideColorTextureView(target);
+        if (xessTextureView != null) {
+            return xessTextureView;
+        }
+
+        GpuTextureView sgsrTextureView = VulkanSceneSgsrController.instance().overrideColorTextureView(target);
+        if (sgsrTextureView != null) {
+            return sgsrTextureView;
         }
 
         GpuTextureView fsrTextureView = VulkanSceneFsrController.instance().overrideColorTextureView(target);
@@ -248,6 +283,16 @@ public final class ModernMinecraftHooks {
             return dlssTexture;
         }
 
+        GpuTexture xessTexture = VulkanSceneXessController.instance().overrideDepthTexture(target);
+        if (xessTexture != null) {
+            return xessTexture;
+        }
+
+        GpuTexture sgsrTexture = VulkanSceneSgsrController.instance().overrideDepthTexture(target);
+        if (sgsrTexture != null) {
+            return sgsrTexture;
+        }
+
         GpuTexture fsrTexture = VulkanSceneFsrController.instance().overrideDepthTexture(target);
         if (fsrTexture != null) {
             return fsrTexture;
@@ -270,6 +315,16 @@ public final class ModernMinecraftHooks {
             return dlssTextureView;
         }
 
+        GpuTextureView xessTextureView = VulkanSceneXessController.instance().overrideDepthTextureView(target);
+        if (xessTextureView != null) {
+            return xessTextureView;
+        }
+
+        GpuTextureView sgsrTextureView = VulkanSceneSgsrController.instance().overrideDepthTextureView(target);
+        if (sgsrTextureView != null) {
+            return sgsrTextureView;
+        }
+
         GpuTextureView fsrTextureView = VulkanSceneFsrController.instance().overrideDepthTextureView(target);
         if (fsrTextureView != null) {
             return fsrTextureView;
@@ -284,6 +339,8 @@ public final class ModernMinecraftHooks {
     public static boolean redirectCopyDepth(RenderTarget target, RenderTarget sourceTarget) {
         return VulkanSceneMsaaController.instance().redirectCopyDepth(target, sourceTarget)
                 || VulkanSceneDlssController.instance().redirectCopyDepth(target, sourceTarget)
+                || VulkanSceneXessController.instance().redirectCopyDepth(target, sourceTarget)
+                || VulkanSceneSgsrController.instance().redirectCopyDepth(target, sourceTarget)
                 || VulkanSceneFsrController.instance().redirectCopyDepth(target, sourceTarget)
                 || VulkanSceneScaleController.instance().redirectCopyDepth(target, sourceTarget);
     }

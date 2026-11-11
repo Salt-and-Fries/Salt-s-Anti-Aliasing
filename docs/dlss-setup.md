@@ -7,8 +7,8 @@ and this mod. Gradle `runClient` supports the same setup as a launcher installat
    method dropdown. DLSS is always selectable. Until it is ready, its controls are disabled and
    **Set up DLSS** appears directly below Advanced controls.
 2. Click **Download NVIDIA runtime**. It opens NVIDIA's official
-   [Streamline 2.14.1 release](https://github.com/NVIDIA-RTX/Streamline/releases/tag/v2.14.1).
-   Download **`streamline-sdk-v2.14.1.zip`** from Assets and extract it completely. The ARM and
+   [Streamline 2.14.16 release](https://github.com/NVIDIA-RTX/Streamline/releases/tag/v2.14.16).
+   Download **`streamline-sdk-v2.14.16.zip`** from Assets and extract it completely. The ARM and
    Source code archives do not contain the required Windows x64 runtime set.
 3. Click **Connect nvngx_dlss.dll...** and select `bin/x64/nvngx_dlss.dll` from the extracted SDK.
    Alternatively, **Choose runtime folder...** accepts `bin/x64` or the extracted SDK root.
@@ -19,6 +19,13 @@ and this mod. Gradle `runClient` supports the same setup as a launcher installat
    Anti Aliasing Settings. The runtime status reports readiness or the reason it cannot run.
    The setup button changes to **Change DLSS setup...** once a runtime folder is configured,
    allowing you to reconnect it later. It is hidden when another AA method is selected.
+
+Existing complete **Streamline 2.14.1 / DLSS 310.9.1** installations also remain supported.
+The newer set uses **Streamline 2.14.16 / DLSS 310.9.16**. To change versions, use
+**Change DLSS setup...**, connect the complete matching release, and restart. Replacing only
+one DLL with a file from another release is rejected. Advanced settings display the detected
+runtime version. The mod's M/L clear-synchronization repair works with both supported sets;
+upgrading NVIDIA's runtime is optional and is not itself the repair.
 
 ### Quality and model controls
 

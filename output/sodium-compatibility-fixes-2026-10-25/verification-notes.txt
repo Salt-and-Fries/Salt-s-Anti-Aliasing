@@ -1,0 +1,15 @@
+Fabric 26.3 Sodium compatibility patch, 25 October 2026.
+
+Completed the report's MIP adapter, optimized vertex writer, optional runtime profiles and shared FidelityFX feature/presentation/lifetime repairs.
+Automated tests: {'tests': 150, 'failures': 0, 'errors': 0, 'skipped': 0}. Completed capture groups: stable 55, beta 24, no-Sodium shared-arena control 9.
+Final beta validation was clean. Stable/control synchronization findings are limited to the recorded NVIDIA M/L private image clears; do not call those runs universally validation-clean. Final FG paths had no remaining VUIDs or leaked objects, including direct exit.
+Both presentation captures contain 24 generated and 24 rendered frames. The beta run includes a swinging diamond sword and HUD; the sword crop was visually reviewed. Checker comparisons were averaged over capture frames and enlarged without smoothing.
+
+Remaining observations and limits:
+- NVIDIA-owned nv.ngx.dlss.resource image-clear WRITE_AFTER_WRITE hazards were observed in M/L initialization, with and without Sodium, using DLSS 310.9.1 / Streamline 2.14.1. K was clean in the sampled runs. These remain external-runtime findings, not fixed by the Sodium/AMD patch.
+- Exploratory default-auto-arena launches encountered three native jvm.dll 0xc0000005 failures at startup/reload. A fresh nine-case no-Sodium run using LWJGL shared upcall arenas completed successfully. Root cause is unproven; the supported shared policy is applied only to isolated development profiles. Invalid/stale-label retry results are excluded.
+- OpenGL AA, Iris/shader packs, other Sodium versions, and other GPU/driver combinations are outside the completed qualification.
+
+Sources:
+https://github.com/NVIDIA-RTX/Streamline/issues/84
+https://github.com/LWJGL/lwjgl3/blob/master/doc/FFM.md

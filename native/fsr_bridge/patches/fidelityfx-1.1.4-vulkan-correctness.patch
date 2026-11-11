@@ -1,0 +1,192 @@
+diff --git a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.cpp b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.cpp
+index 5c47b25..5e4b9fc 100644
+--- a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.cpp
++++ b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.cpp
+@@ -760,13 +760,13 @@ FfxErrorCode ffxFrameInterpolationSwapchainGetGpuMemoryUsageVK(FfxSwapchain game
+ //////////////////////////////////////////////
+ /// Present
+ //////////////////////////////////////////////
+-VkResult presentToSwapChain(FrameinterpolationPresentInfo* pPresenter, uint32_t imageIndex, uint32_t semaphoreIndex = 0)
++VkResult presentToSwapChain(FrameinterpolationPresentInfo* pPresenter, uint32_t imageIndex)
+ {
+     VkPresentInfoKHR presentInfoKHR   = {};
+     presentInfoKHR.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+     presentInfoKHR.pNext              = nullptr;
+     presentInfoKHR.waitSemaphoreCount = 1;
+-    presentInfoKHR.pWaitSemaphores    = &pPresenter->frameRenderedSemaphores[semaphoreIndex];
++    presentInfoKHR.pWaitSemaphores    = &pPresenter->frameRenderedSemaphores[imageIndex];
+     presentInfoKHR.swapchainCount     = 1;
+     presentInfoKHR.pSwapchains        = &pPresenter->realSwapchain;
+     presentInfoKHR.pImageIndices      = &imageIndex;
+@@ -980,7 +980,6 @@ DWORD WINAPI copyAndPresent_presenterThread(LPVOID pParam)
+                             SubmissionSemaphores toSignal;
+                             SubmissionSemaphores toWait;
+                             toWait.add(presenter->compositionSemaphore, frameInfo.presentIndex);  // composition to finish
+-                            toSignal.add(presenter->frameRenderedSemaphores[imageIndex]);  // frame ready for present. Not a timeline semaphore
+ 
+                             // no image was acquired, just skip everything and signal the appropriate semaphores
+ 
+@@ -1001,6 +1000,7 @@ DWORD WINAPI copyAndPresent_presenterThread(LPVOID pParam)
+ 
+                             if (res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR)
+                             {
++                                toSignal.add(presenter->frameRenderedSemaphores[imageIndex]);
+                                 toWait.add(imageAvailableSemaphore);  // swapchain image to be available
+ 
+                                 auto presentCommandList = presenter->commandPool.get(presenter->device, presenter->presentQueue, "presentCommandList");
+@@ -1051,7 +1051,7 @@ DWORD WINAPI copyAndPresent_presenterThread(LPVOID pParam)
+                                 waitForPerformanceCount(previousPresentQpc + frameInfo.presentQpcDelta);
+                                 QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&previousPresentQpc));
+ 
+-                                res = presentToSwapChain(presenter, imageIndex, imageIndex);
++                                res = presentToSwapChain(presenter, imageIndex);
+                                 // VK_SUBOPTIMAL_KHR & VK_ERROR_OUT_OF_DATE_KHR: the swapchain has been recreated
+                                 FFX_ASSERT_MESSAGE_FORMAT(res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR || res == VK_ERROR_OUT_OF_DATE_KHR,
+                                                           "presentToSwapChain failed with error %d",
+@@ -1123,7 +1123,6 @@ DWORD WINAPI composeAndPresent_presenterThread(LPVOID pParam)
+                         if (frameInfo.doPresent)
+                         {
+                             SubmissionSemaphores toSignal;
+-                            toSignal.add(presenter->frameRenderedSemaphores[0]);  // not a timeline semaphore
+ 
+                             // signal replacement buffer availability
+                             // this is the last present of this entry
+@@ -1148,6 +1147,7 @@ DWORD WINAPI composeAndPresent_presenterThread(LPVOID pParam)
+ 
+                             if (res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR)
+                             {
++                                toSignal.add(presenter->frameRenderedSemaphores[realSwapchainImageIndex]);
+                                 toWait.add(acquireSemaphore);
+ 
+                                 res = compositeSwapChainFrame(presenter,
+@@ -1481,12 +1481,7 @@ VkResult FrameInterpolationSwapChainVK::init(const VkSwapchainCreateInfoKHR* pCr
+     // create non-timeline semaphores
+     semaphoreCreateInfo.pNext = nullptr;
+ 
+-    // semaphores used for present to wait until rendering is over
+-    for (uint32_t i = 0; i < FFX_FRAME_INTERPOLATION_SWAP_CHAIN_MAX_BUFFER_COUNT; ++i)
+-    {
+-        res = createSemaphoreFormat(presentInfo.frameRenderedSemaphores[i], "AMD FSR FrameRenderedSemaphore %d", i);
+-        EXIT_ON_VKRESULT_NOT_SUCCESS(res);
+-    }
++    // Per-image present semaphores are allocated once, after querying the real image count.
+     for (uint32_t i = 0; i < FFX_FRAME_INTERPOLATION_SWAP_CHAIN_MAX_ACQUIRE_SEMAPHORE_COUNT; ++i)
+     {
+         res = createSemaphoreFormat(presentInfo.acquireSemaphores[i], "AMD FSR AcquireSemaphore %d", i);
+@@ -1727,6 +1722,11 @@ void FrameInterpolationSwapChainVK::destroySwapchain(VkDevice device, const VkAl
+     if (device == VK_NULL_HANDLE)
+         return;
+ 
++    // These SDK caches otherwise outlive the final proxy and leak into vkDestroyDevice.
++    // Presenter threads and their queues have already been drained above.
++    releaseUiCompositionForDevice(device, pAllocator);
++    releaseDebugPacingForDevice(device, pAllocator);
++
+     auto destroySemaphore = [device, pAllocator](VkSemaphore& semaphore) {
+         vkDestroySemaphore(device, semaphore, pAllocator);
+         semaphore = VK_NULL_HANDLE;
+@@ -2283,7 +2283,7 @@ VkResult FrameInterpolationSwapChainVK::queuePresentNonInterpolated(VkCommands*
+ 
+     pCommands->execute(semaphoresToWait, semaphoresToSignal);
+ 
+-    VkResult presentRes = presentToSwapChain(&presentInfo, imageIndex, imageIndex);
++    VkResult presentRes = presentToSwapChain(&presentInfo, imageIndex);
+     FFX_ASSERT_MESSAGE_FORMAT(presentRes == VK_SUCCESS || presentRes == VK_SUBOPTIMAL_KHR || presentRes == VK_ERROR_OUT_OF_DATE_KHR,
+                               "[queuePresentNonInterpolated] present failed with error %d",
+                               presentRes);
+@@ -2552,7 +2552,7 @@ VkResult FrameInterpolationSwapChainVK::presentNonInterpolatedWithUiCompositionO
+         FFX_ASSERT_MESSAGE_FORMAT(res == VK_SUCCESS, "[queuePresentNonInterpolated] queue family ownership transfer to present queue failed with error %d", res);
+     }
+ 
+-    VkResult presentRes = presentToSwapChain(&presentInfo, imageIndex, imageIndex);
++    VkResult presentRes = presentToSwapChain(&presentInfo, imageIndex);
+     FFX_ASSERT_MESSAGE_FORMAT(presentRes == VK_SUCCESS || presentRes == VK_SUBOPTIMAL_KHR || presentRes == VK_ERROR_OUT_OF_DATE_KHR,
+                               "[queuePresentNonInterpolated] present failed with error %d",
+                               presentRes);
+diff --git a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_DebugPacing.cpp b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_DebugPacing.cpp
+index 48af082..5c46e01 100644
+--- a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_DebugPacing.cpp
++++ b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_DebugPacing.cpp
+@@ -71,6 +71,16 @@ void releaseDebugPacingGpuResources(const VkAllocationCallbacks* pAllocator)
+     }
+ }
+ 
++void releaseDebugPacingForDevice(VkDevice device, const VkAllocationCallbacks* allocator)
++{
++    if (s_debugPacingDevice == VK_NULL_HANDLE || s_debugPacingDevice != device)
++        return;
++    releaseDebugPacingGpuResources(allocator);
++    s_debugPacingDevice = VK_NULL_HANDLE;
++    s_debugPacingAttachmentFormat = VK_FORMAT_UNDEFINED;
++    s_debugPacingFrameIndex = s_debugPacingRingIndex = 0;
++}
++
+ void DestroyDebugPacingPipeline(VkDevice device, const VkAllocationCallbacks* pAllocator)
+ {
+     vkDestroyRenderPass(device, s_debugPacingRenderPass, pAllocator);
+@@ -214,7 +224,7 @@ VkResult CreateDebugPacingPipeline(VkDevice device, VkFormat fmt, const VkAlloca
+         rasterizationStateCreateInfo.depthBiasConstantFactor                = 0.0f;
+         rasterizationStateCreateInfo.depthBiasClamp                         = 0.0f;
+         rasterizationStateCreateInfo.depthBiasSlopeFactor                   = 0.0f;
+-        rasterizationStateCreateInfo.lineWidth                              = 0.0f;
++        rasterizationStateCreateInfo.lineWidth                              = 1.0f;
+ 
+         VkPipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo = {};
+         depthStencilStateCreateInfo.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+diff --git a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_DebugPacing.h b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_DebugPacing.h
+index 3a6bdd7..74beb38 100644
+--- a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_DebugPacing.h
++++ b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_DebugPacing.h
+@@ -35,3 +35,4 @@ VkImageLayout getVKImageLayoutFromResourceState(FfxResourceStates state);
+ VkFormat ffxGetVkFormatFromSurfaceFormat(FfxSurfaceFormat fmt);
+ 
+ FFX_API FfxErrorCode ffxFrameInterpolationDebugPacing(const FfxPresentCallbackDescription* params, void* unusedUserCtx);
++void releaseDebugPacingForDevice(VkDevice device, const VkAllocationCallbacks* allocator);
+diff --git a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_UiComposition.cpp b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_UiComposition.cpp
+index eb88430..6dd2b39 100644
+--- a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_UiComposition.cpp
++++ b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_UiComposition.cpp
+@@ -55,7 +55,7 @@ void releaseUiBlitGpuResources(const VkAllocationCallbacks* pAllocator)
+ {
+     for (uint32_t i = 0; i < _countof(s_uiCompositionDescriptorSets); ++i)
+     {
+-        vkFreeDescriptorSets(s_uiCompositionDevice, s_uiCompositionDescriptorPool, 1, &s_uiCompositionDescriptorSets[i]);
++        // Destroying the pool below frees all sets, including partially initialized state.
+         s_uiCompositionDescriptorSets[i] = VK_NULL_HANDLE;
+     }
+ 
+@@ -88,6 +88,16 @@ void releaseUiBlitGpuResources(const VkAllocationCallbacks* pAllocator)
+     }
+ }
+ 
++void releaseUiCompositionForDevice(VkDevice device, const VkAllocationCallbacks* allocator)
++{
++    if (s_uiCompositionDevice == VK_NULL_HANDLE || s_uiCompositionDevice != device)
++        return;
++    releaseUiBlitGpuResources(allocator);
++    s_uiCompositionDevice = VK_NULL_HANDLE;
++    s_uiCompositionAttachmentFormat = VK_FORMAT_UNDEFINED;
++    s_uiCompositionDescriptorSetIndex = 0;
++}
++
+ void DestroyUiCompositionPipeline(VkDevice device, const VkAllocationCallbacks* pAllocator)
+ {
+     vkDestroyRenderPass(device, s_uiCompositionRenderPass, pAllocator);
+@@ -242,7 +252,7 @@ VkResult CreateUiCompositionPipeline(VkDevice device, VkFormat fmt, const VkAllo
+         rasterizationStateCreateInfo.depthBiasConstantFactor                = 0.0f;
+         rasterizationStateCreateInfo.depthBiasClamp                         = 0.0f;
+         rasterizationStateCreateInfo.depthBiasSlopeFactor                   = 0.0f;
+-        rasterizationStateCreateInfo.lineWidth                              = 0.0f;
++        rasterizationStateCreateInfo.lineWidth                              = 1.0f;
+ 
+         VkPipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo = {};
+         depthStencilStateCreateInfo.sType                                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+diff --git a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_UiComposition.h b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_UiComposition.h
+index 0aa8ea3..6881f0b 100644
+--- a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_UiComposition.h
++++ b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_UiComposition.h
+@@ -30,3 +30,4 @@ VkImageLayout getVKImageLayoutFromResourceState(FfxResourceStates state);
+ VkFormat ffxGetVkFormatFromSurfaceFormat(FfxSurfaceFormat fmt);
+ 
+ FFX_API FfxErrorCode ffxFrameInterpolationUiComposition(const FfxPresentCallbackDescription* params, void* unusedUserCtx);
++void releaseUiCompositionForDevice(VkDevice device, const VkAllocationCallbacks* allocator);

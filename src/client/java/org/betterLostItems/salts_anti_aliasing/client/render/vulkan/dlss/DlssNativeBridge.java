@@ -26,6 +26,9 @@ final class DlssNativeBridge {
     private DlssOptimalSettings cachedSettings;
     private String lastBridgePath = "";
     private String lastInterposerPath = "";
+    private String runtimeDescription = "DLSS runtime: not loaded";
+
+    String runtimeDescription() { return runtimeDescription; }
 
     DlssRuntimeStatus configure(DlssNativeConfiguration configuration, DlssVulkanDeviceInfo deviceInfo) {
         DlssRuntimeStatus validationStatus = configuration.validate();
@@ -36,7 +39,8 @@ final class DlssNativeBridge {
         // Verify the complete supported set before System.load can execute any NVIDIA code.
         if (!preInitialized) {
             try {
-                DlssRuntimeFiles.validate(Path.of(configuration.pluginPath()));
+                var runtime = DlssRuntimeFiles.validate(Path.of(configuration.pluginPath()));
+                runtimeDescription = runtime.release().description();
             } catch (java.io.IOException | RuntimeException exception) {
                 MetricsDiagnostics.warnOnce("dlss.invalid-runtime." + configuration.pluginPath() + exception.getMessage(),
                         "dlss.native", "runtime_files_invalid", "reason", exception.getMessage());
@@ -216,8 +220,16 @@ final class DlssNativeBridge {
 
         try {
             System.load(bridgePath);
-            if (abiVersionNative() != 4) {
-                throw new UnsatisfiedLinkError("DLSS bridge ABI 4 required; rebuild the native bridge for the corrected SR resource contract");
+            if (abiVersionNative() != 5) {
+                throw new UnsatisfiedLinkError("DLSS bridge ABI 5 required; rebuild the native bridge with Vulkan clear synchronization support");
+            }
+            if (!Boolean.getBoolean("salts.dlss.disableClearCompatibility")) {
+                try {
+                    if (!enableClearCompatibilityNative(DlssClearCompatibility.prepare(bridgePath).toString()))
+                        throw new java.io.IOException("Unable to register the process-local Vulkan layer");
+                } catch (java.io.IOException exception) {
+                    SaltsAntiAliasing.LOGGER.warn("DLSS clear synchronization compatibility could not be enabled", exception);
+                }
             }
             bridgeLoaded = true;
             lastBridgePath = bridgePath;
@@ -300,6 +312,12 @@ final class DlssNativeBridge {
     }
 
     private static native int abiVersionNative();
+    private static native boolean enableClearCompatibilityNative(String directory);
+    private static native long[] clearCompatibilityStatisticsNative();
+
+    long[] clearCompatibilityStatistics() {
+        return bridgeLoaded ? clearCompatibilityStatisticsNative() : new long[2];
+    }
     private static native int presentNative(long queue, long presentInfo, boolean after);
 
     private static native int preInitializeNative(

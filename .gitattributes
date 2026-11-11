@@ -9,3 +9,4 @@
 # Preserve the exact bytes of captured validation evidence.
 output/** -text -whitespace
 *.log -text -whitespace
+native/fsr_bridge/patches/*.patch -whitespace

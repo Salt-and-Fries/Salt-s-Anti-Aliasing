@@ -85,6 +85,10 @@ public final class DlssRuntime {
         return status;
     }
 
+    public synchronized String runtimeDescription() { return bridge.runtimeDescription(); }
+
+    public synchronized long[] clearCompatibilityStatistics() { return bridge.clearCompatibilityStatistics(); }
+
     public synchronized boolean hasConfiguredRuntime() {
         return !configuration.pluginPath().isBlank();
     }

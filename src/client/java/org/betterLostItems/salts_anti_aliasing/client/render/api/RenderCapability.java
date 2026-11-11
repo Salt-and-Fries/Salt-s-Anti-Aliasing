@@ -12,6 +12,7 @@ public enum RenderCapability {
     SPATIAL_UPSCALING,
     TEMPORAL_AA,
     VENDOR_UPSCALING,
+    XESS_UPSCALING,
     FSR_UPSCALING,
     FSR_FRAME_GENERATION
 }

@@ -1,0 +1,72 @@
+[
+  {
+    "label": "perf-off",
+    "frames": 1800,
+    "meanMs": 0.7133547777777778,
+    "p95Ms": 1.2326549999999998,
+    "p99Ms": 1.357362
+  },
+  {
+    "label": "perf-sgsr1_upscale-native",
+    "frames": 1800,
+    "meanMs": 1.2064721111111112,
+    "p95Ms": 1.6911749999999999,
+    "p99Ms": 1.884901
+  },
+  {
+    "label": "perf-sgsr1_upscale-quality",
+    "frames": 1800,
+    "meanMs": 0.8777935555555556,
+    "p95Ms": 1.4002199999999998,
+    "p99Ms": 1.537404
+  },
+  {
+    "label": "perf-sgsr1_upscale-balanced",
+    "frames": 1800,
+    "meanMs": 0.7997988333333335,
+    "p95Ms": 1.35734,
+    "p99Ms": 1.450024
+  },
+  {
+    "label": "perf-sgsr1_upscale-performance",
+    "frames": 1800,
+    "meanMs": 0.7468690555555555,
+    "p95Ms": 1.29592,
+    "p99Ms": 1.383435
+  },
+  {
+    "label": "perf-sgsr2_super_resolution-native",
+    "frames": 1800,
+    "meanMs": 1.0158090555555557,
+    "p95Ms": 1.54473,
+    "p99Ms": 1.646051
+  },
+  {
+    "label": "perf-sgsr2_super_resolution-quality",
+    "frames": 1800,
+    "meanMs": 0.8364591666666668,
+    "p95Ms": 1.349615,
+    "p99Ms": 1.45703
+  },
+  {
+    "label": "perf-sgsr2_super_resolution-balanced",
+    "frames": 1800,
+    "meanMs": 0.7586990555555556,
+    "p95Ms": 1.325915,
+    "p99Ms": 1.4277309999999999
+  },
+  {
+    "label": "perf-sgsr2_super_resolution-performance",
+    "frames": 1800,
+    "meanMs": 0.7489923888888887,
+    "p95Ms": 1.28824,
+    "p99Ms": 1.391978
+  },
+  {
+    "label": "perf-sgsr1-directional",
+    "frames": 1800,
+    "meanMs": 0.8903927777777777,
+    "p95Ms": 1.42201,
+    "p99Ms": 1.561302
+  }
+]

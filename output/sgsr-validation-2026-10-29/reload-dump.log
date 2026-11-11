@@ -1,0 +1,418 @@
+
+************* Path validation summary **************
+Response                         Time (ms)     Location
+Deferred                                       srv*G:\Codex Projects\Salts Anti Aliasing\build\runtime-stability-20261025\symbols*https://msdl.microsoft.com/download/symbols
+OK                                             G:\Codex Projects\Salts Anti Aliasing\build\runtime-stability-20261025
+No .natvis files found at C:\Windows\SYSTEM32\Visualizers.
+No .natvis files found at C:\Users\texca\AppData\Local\Dbg\Visualizers.
+
+Microsoft (R) Windows Debugger Version 10.0.26100.1 AMD64
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+
+Loading Dump File [C:\Users\texca\AppData\Local\CrashDumps\java.exe.33672.dmp]
+User Mini Dump File: Only registers, stack and portions of memory are available
+
+
+************* Path validation summary **************
+Response                         Time (ms)     Location
+Deferred                                       srv*G:\Codex Projects\Salts Anti Aliasing\build\runtime-stability-20261025\symbols*https://msdl.microsoft.com/download/symbols
+OK                                             G:\Codex Projects\Salts Anti Aliasing\build\runtime-stability-20261025
+Symbol search path is: srv*G:\Codex Projects\Salts Anti Aliasing\build\runtime-stability-20261025\symbols*https://msdl.microsoft.com/download/symbols;G:\Codex Projects\Salts Anti Aliasing\build\runtime-stability-20261025
+Executable search path is: 
+Windows 10 Version 26300 MP (20 procs) Free x64
+Product: WinNt, suite: SingleUserTS Personal
+Edition build lab: 26100.1.amd64fre.ge_release.240331-1435
+Debug session time: Thu Oct 29 19:31:24.000 2026 (UTC - 7:00)
+System Uptime: 0 days 6:27:01.801
+Process Uptime: 0 days 0:00:51.000
+................................................................
+................................................................
+.......................
+Loading unloaded module list
+..................
+Unable to add extension DLL: ntsdexts
+Unable to add extension DLL: uext
+Unable to add extension DLL: exts
+This dump file has an exception of interest stored in it.
+The stored exception information can be accessed via .ecxr.
+(8388.78dc): Access violation - code c0000005 (first/second chance not available)
+
++------------------------------------------------------------------------+
+| This target supports Hardware-enforced Stack Protection. A HW based    |
+| "Shadow Stack" may be available to assist in debugging and analysis.   |
+| See aka.ms/userhsp for more info.                                      |
+|                                                                        |
+| dps @ssp                                                               |
+|                                                                        |
++------------------------------------------------------------------------+
+
+For analysis of this file, run !analyze -v
+rax=0000bcbef5fa1d8c rbx=0000000000000000 rcx=0000000000000000
+rdx=000000f2ce3dfb68 rsi=000000f2ce3dfb68 rdi=000000f2ce3e38c0
+rip=00007fff5617b410 rsp=000000f2ce3dfae0 rbp=000000f2ce3dfc10
+ r8=000000f2ce3e1010  r9=000000f2ce3e1040 r10=000000000000000e
+r11=000000f2ce3e0fc0 r12=000000f2ce3e1040 r13=000000f2ce3e2440
+r14=0000027832d05000 r15=000000f2ce3e1010
+iopl=0         nv up ei pl nz na pe nc
+cs=0033  ss=002b  ds=002b  es=002b  fs=0053  gs=002b             efl=00010200
+jvm!GrowableArrayWithAllocator<char * __ptr64,GrowableArray<char * __ptr64> >::append+0x10:
+00007fff`5617b410 8b09            mov     ecx,dword ptr [rcx] ds:00000000`00000000=????????
+ExceptionAddress: 00007fff5617b410 (jvm!GrowableArrayWithAllocator<char * __ptr64,GrowableArray<char * __ptr64> >::append+0x0000000000000010)
+   ExceptionCode: c0000005 (Access violation)
+  ExceptionFlags: 00000008
+NumberParameters: 2
+   Parameter[0]: 0000000000000000
+   Parameter[1]: 0000000000000000
+Attempt to read from address 0000000000000000
+   0  Id: 8388.7170 Suspend: 0 Teb: 000000f2`c4d70000 Unfrozen
+   1  Id: 8388.8148 Suspend: 0 Teb: 000000f2`c4d72000 Unfrozen
+   2  Id: 8388.3598 Suspend: 0 Teb: 000000f2`c4d74000 Unfrozen
+   3  Id: 8388.32d8 Suspend: 0 Teb: 000000f2`c4d76000 Unfrozen
+   4  Id: 8388.2c60 Suspend: 0 Teb: 000000f2`c4d78000 Unfrozen "Render thread"
+   5  Id: 8388.840c Suspend: 0 Teb: 000000f2`c4d7a000 Unfrozen "GC Thread#0"
+   6  Id: 8388.e38 Suspend: 0 Teb: 000000f2`c4d7c000 Unfrozen "G1 Main Marker"
+   7  Id: 8388.7fe4 Suspend: 0 Teb: 000000f2`c4d7e000 Unfrozen "G1 Conc#0"
+   8  Id: 8388.4be4 Suspend: 0 Teb: 000000f2`c4d80000 Unfrozen "G1 Refine#0"
+   9  Id: 8388.2d14 Suspend: 0 Teb: 000000f2`c4d82000 Unfrozen "G1 Service"
+  10  Id: 8388.82e0 Suspend: 0 Teb: 000000f2`c4d8c000 Unfrozen "VM Periodic Task Thread"
+  11  Id: 8388.6b64 Suspend: 0 Teb: 000000f2`c4d8e000 Unfrozen "VM Thread"
+  12  Id: 8388.7118 Suspend: 0 Teb: 000000f2`c4d90000 Unfrozen "Reference Handler"
+  13  Id: 8388.6e40 Suspend: 0 Teb: 000000f2`c4d92000 Unfrozen "Finalizer"
+  14  Id: 8388.5034 Suspend: 0 Teb: 000000f2`c4d94000 Unfrozen "Signal Dispatcher"
+  15  Id: 8388.87b0 Suspend: 0 Teb: 000000f2`c4d96000 Unfrozen "Attach Listener"
+  16  Id: 8388.4018 Suspend: 0 Teb: 000000f2`c4d98000 Unfrozen "Service Thread"
+  17  Id: 8388.8530 Suspend: 0 Teb: 000000f2`c4d9a000 Unfrozen "Monitor Deflation Thread"
+  18  Id: 8388.75bc Suspend: 0 Teb: 000000f2`c4d9c000 Unfrozen "C2 CompilerThread0"
+  19  Id: 8388.336c Suspend: 0 Teb: 000000f2`c4d9e000 Unfrozen "C1 CompilerThread0"
+  20  Id: 8388.7d48 Suspend: 0 Teb: 000000f2`c4da4000 Unfrozen "Notification Thread"
+  21  Id: 8388.81a4 Suspend: 0 Teb: 000000f2`c4da6000 Unfrozen "Common-Cleaner"
+  22  Id: 8388.71e8 Suspend: 0 Teb: 000000f2`c4dae000 Unfrozen "GC Thread#1"
+  23  Id: 8388.78e8 Suspend: 0 Teb: 000000f2`c4db0000 Unfrozen "GC Thread#2"
+  24  Id: 8388.6b4c Suspend: 0 Teb: 000000f2`c4db2000 Unfrozen "GC Thread#3"
+  25  Id: 8388.8678 Suspend: 0 Teb: 000000f2`c4db4000 Unfrozen "GC Thread#4"
+  26  Id: 8388.5dfc Suspend: 0 Teb: 000000f2`c4db6000 Unfrozen "GC Thread#5"
+  27  Id: 8388.76f0 Suspend: 0 Teb: 000000f2`c4db8000 Unfrozen "GC Thread#6"
+  28  Id: 8388.4b28 Suspend: 0 Teb: 000000f2`c4dba000 Unfrozen "GC Thread#7"
+  29  Id: 8388.8244 Suspend: 0 Teb: 000000f2`c4dbc000 Unfrozen "GC Thread#8"
+  30  Id: 8388.7028 Suspend: 0 Teb: 000000f2`c4dbe000 Unfrozen "GC Thread#9"
+  31  Id: 8388.2350 Suspend: 0 Teb: 000000f2`c4dc0000 Unfrozen "GC Thread#10"
+  32  Id: 8388.7620 Suspend: 0 Teb: 000000f2`c4dc2000 Unfrozen "GC Thread#11"
+  33  Id: 8388.830c Suspend: 0 Teb: 000000f2`c4de2000 Unfrozen "G1 Conc#1"
+  34  Id: 8388.74e8 Suspend: 0 Teb: 000000f2`c4de4000 Unfrozen "G1 Conc#2"
+  35  Id: 8388.6984 Suspend: 0 Teb: 000000f2`c4de6000 Unfrozen "G1 Conc#3"
+  36  Id: 8388.6c18 Suspend: 0 Teb: 000000f2`c4dea000 Unfrozen "GC Thread#12"
+  37  Id: 8388.7e28 Suspend: 0 Teb: 000000f2`c4dec000 Unfrozen "GC Thread#13"
+  38  Id: 8388.78d4 Suspend: 0 Teb: 000000f2`c4dee000 Unfrozen "GC Thread#14"
+  39  Id: 8388.87bc Suspend: 0 Teb: 000000f2`c4df2000 Unfrozen "JNA Cleaner"
+  40  Id: 8388.8690 Suspend: 0 Teb: 000000f2`c4df4000 Unfrozen
+  41  Id: 8388.87e4 Suspend: 0 Teb: 000000f2`c4df6000 Unfrozen
+  42  Id: 8388.868 Suspend: 0 Teb: 000000f2`c4df8000 Unfrozen
+  43  Id: 8388.7bac Suspend: 0 Teb: 000000f2`c4c08000 Unfrozen "Timer hack thread"
+  44  Id: 8388.7484 Suspend: 0 Teb: 000000f2`c4c0a000 Unfrozen "Minecraft Services Discovery"
+  45  Id: 8388.4f8 Suspend: 0 Teb: 000000f2`c4c0c000 Unfrozen "Download-1"
+  46  Id: 8388.5eac Suspend: 0 Teb: 000000f2`c4c0e000 Unfrozen "Download-2"
+  47  Id: 8388.8484 Suspend: 0 Teb: 000000f2`c4c10000 Unfrozen
+  48  Id: 8388.85f0 Suspend: 0 Teb: 000000f2`c4c14000 Unfrozen "Download-3"
+  49  Id: 8388.3a7c Suspend: 0 Teb: 000000f2`c4c16000 Unfrozen "VirtualThread-unblocker"
+  50  Id: 8388.77bc Suspend: 0 Teb: 000000f2`c4c1a000 Unfrozen "Read-Poller"
+  51  Id: 8388.43b4 Suspend: 0 Teb: 000000f2`c4c1c000 Unfrozen "Read-Poller"
+  52  Id: 8388.8638 Suspend: 0 Teb: 000000f2`c4c1e000 Unfrozen "Write-Poller"
+  53  Id: 8388.7e40 Suspend: 0 Teb: 000000f2`c4c20000 Unfrozen "HttpClient-1-SelectorManager"
+  54  Id: 8388.85b8 Suspend: 0 Teb: 000000f2`c4c26000 Unfrozen "Download-4"
+  55  Id: 8388.7a10 Suspend: 0 Teb: 000000f2`c4c28000 Unfrozen "Download-5"
+  56  Id: 8388.7fd4 Suspend: 0 Teb: 000000f2`c4c32000 Unfrozen "Download-6"
+  57  Id: 8388.6b68 Suspend: 0 Teb: 000000f2`c4c34000 Unfrozen "Download-7"
+  58  Id: 8388.5744 Suspend: 0 Teb: 000000f2`c4c36000 Unfrozen "DeviceHotplugThread"
+  59  Id: 8388.bdc Suspend: 0 Teb: 000000f2`c4c3c000 Unfrozen
+  60  Id: 8388.3248 Suspend: 0 Teb: 000000f2`c4c3e000 Unfrozen
+  61  Id: 8388.6834 Suspend: 0 Teb: 000000f2`c4c40000 Unfrozen
+  62  Id: 8388.7980 Suspend: 0 Teb: 000000f2`c4c42000 Unfrozen
+  63  Id: 8388.83a0 Suspend: 0 Teb: 000000f2`c4c44000 Unfrozen
+  64  Id: 8388.8358 Suspend: 0 Teb: 000000f2`c4c50000 Unfrozen
+  65  Id: 8388.8208 Suspend: 0 Teb: 000000f2`c4c52000 Unfrozen
+  66  Id: 8388.81c8 Suspend: 0 Teb: 000000f2`c4c54000 Unfrozen
+  67  Id: 8388.655c Suspend: 0 Teb: 000000f2`c4c56000 Unfrozen
+  68  Id: 8388.7c0 Suspend: 0 Teb: 000000f2`c4c58000 Unfrozen
+  69  Id: 8388.8794 Suspend: 0 Teb: 000000f2`c4c5a000 Unfrozen
+  70  Id: 8388.76c4 Suspend: 0 Teb: 000000f2`c4c5c000 Unfrozen
+  71  Id: 8388.7d00 Suspend: 0 Teb: 000000f2`c4c5e000 Unfrozen
+  72  Id: 8388.6390 Suspend: 0 Teb: 000000f2`c4c60000 Unfrozen
+  73  Id: 8388.84dc Suspend: 0 Teb: 000000f2`c4c62000 Unfrozen
+  74  Id: 8388.7e8c Suspend: 0 Teb: 000000f2`c4c64000 Unfrozen
+  75  Id: 8388.6e20 Suspend: 0 Teb: 000000f2`c4c66000 Unfrozen
+  76  Id: 8388.7830 Suspend: 0 Teb: 000000f2`c4c68000 Unfrozen
+  77  Id: 8388.75a4 Suspend: 0 Teb: 000000f2`c4c6a000 Unfrozen
+  78  Id: 8388.4378 Suspend: 0 Teb: 000000f2`c4c6c000 Unfrozen
+  79  Id: 8388.2328 Suspend: 0 Teb: 000000f2`c4c6e000 Unfrozen
+  80  Id: 8388.6c88 Suspend: 0 Teb: 000000f2`c4c70000 Unfrozen
+  81  Id: 8388.ca8 Suspend: 0 Teb: 000000f2`c4c76000 Unfrozen
+  82  Id: 8388.1f00 Suspend: 0 Teb: 000000f2`c4c7c000 Unfrozen "Worker-Main-1"
+  83  Id: 8388.6e10 Suspend: 0 Teb: 000000f2`c4c80000 Unfrozen "Worker-Main-2"
+  84  Id: 8388.6c40 Suspend: 0 Teb: 000000f2`c4c82000 Unfrozen "Worker-Main-3"
+  85  Id: 8388.87b4 Suspend: 0 Teb: 000000f2`c4c84000 Unfrozen "Worker-Main-4"
+  86  Id: 8388.75d4 Suspend: 0 Teb: 000000f2`c4c86000 Unfrozen "Worker-Main-5"
+  87  Id: 8388.2070 Suspend: 0 Teb: 000000f2`c4c88000 Unfrozen "Worker-Main-6"
+  88  Id: 8388.368c Suspend: 0 Teb: 000000f2`c4c8a000 Unfrozen "Worker-Main-7"
+  89  Id: 8388.6eb4 Suspend: 0 Teb: 000000f2`c4c8c000 Unfrozen "Worker-Main-8"
+  90  Id: 8388.6b84 Suspend: 0 Teb: 000000f2`c4c8e000 Unfrozen "Worker-Main-9"
+  91  Id: 8388.2bc0 Suspend: 0 Teb: 000000f2`c4c90000 Unfrozen "Worker-Main-10"
+  92  Id: 8388.75a0 Suspend: 0 Teb: 000000f2`c4c92000 Unfrozen "Worker-Main-12"
+  93  Id: 8388.7e74 Suspend: 0 Teb: 000000f2`c4c94000 Unfrozen "Worker-Main-11"
+  94  Id: 8388.85e8 Suspend: 0 Teb: 000000f2`c4c96000 Unfrozen "Worker-Main-13"
+  95  Id: 8388.83d4 Suspend: 0 Teb: 000000f2`c4c98000 Unfrozen "Worker-Main-14"
+  96  Id: 8388.6f98 Suspend: 0 Teb: 000000f2`c4c9a000 Unfrozen "Worker-Main-15"
+  97  Id: 8388.7e3c Suspend: 0 Teb: 000000f2`c4c9c000 Unfrozen "Worker-Main-16"
+  98  Id: 8388.3c64 Suspend: 0 Teb: 000000f2`c4c9e000 Unfrozen "Worker-Main-17"
+  99  Id: 8388.7610 Suspend: 0 Teb: 000000f2`c4ca0000 Unfrozen "Worker-Main-18"
+ 100  Id: 8388.5938 Suspend: 0 Teb: 000000f2`c4ca2000 Unfrozen "Worker-Main-19"
+ 101  Id: 8388.3ff0 Suspend: 0 Teb: 000000f2`c4cae000 Unfrozen
+ 102  Id: 8388.74d4 Suspend: 0 Teb: 000000f2`c4cb2000 Unfrozen
+ 103  Id: 8388.8714 Suspend: 0 Teb: 000000f2`c4cbe000 Unfrozen
+ 104  Id: 8388.6924 Suspend: 0 Teb: 000000f2`c4cc0000 Unfrozen
+ 105  Id: 8388.68fc Suspend: 0 Teb: 000000f2`c4cc2000 Unfrozen "ForkJoinPool.commonPool-worker-1"
+ 106  Id: 8388.7a74 Suspend: 0 Teb: 000000f2`c4cd4000 Unfrozen "Server thread"
+ 107  Id: 8388.7638 Suspend: 0 Teb: 000000f2`c4cd8000 Unfrozen "IO-Worker-1"
+ 108  Id: 8388.5f78 Suspend: 0 Teb: 000000f2`c4cda000 Unfrozen "IO-Worker-2"
+ 109  Id: 8388.27e8 Suspend: 0 Teb: 000000f2`c4cdc000 Unfrozen "IO-Worker-3"
+ 110  Id: 8388.85c0 Suspend: 0 Teb: 000000f2`c4cde000 Unfrozen "Netty Local IO #0"
+ 111  Id: 8388.64ac Suspend: 0 Teb: 000000f2`c4ce0000 Unfrozen "Netty Local IO #1"
+ 112  Id: 8388.8470 Suspend: 0 Teb: 000000f2`c4ce2000 Unfrozen "Netty Local IO #2"
+ 113  Id: 8388.8344 Suspend: 0 Teb: 000000f2`c4cf0000 Unfrozen "IO-Worker-4"
+ 114  Id: 8388.8178 Suspend: 0 Teb: 000000f2`c4cf4000 Unfrozen "Sound engine"
+ 115  Id: 8388.7018 Suspend: 0 Teb: 000000f2`c4cf8000 Unfrozen "IO-Worker-5"
+ 116  Id: 8388.8158 Suspend: 0 Teb: 000000f2`c4cfa000 Unfrozen "SDLRawInput"
+ 117  Id: 8388.7970 Suspend: 0 Teb: 000000f2`c4cfc000 Unfrozen "IO-Worker-6"
+ 118  Id: 8388.7584 Suspend: 0 Teb: 000000f2`c4d36000 Unfrozen "C1 CompilerThread1"
+ 119  Id: 8388.6cf0 Suspend: 0 Teb: 000000f2`c4d38000 Unfrozen "C1 CompilerThread2"
+ 120  Id: 8388.722c Suspend: 0 Teb: 000000f2`c4d3a000 Unfrozen "C1 CompilerThread3"
+ 121  Id: 8388.8068 Suspend: 0 Teb: 000000f2`c4d3c000 Unfrozen "IO-Worker-7"
+ 122  Id: 8388.84f0 Suspend: 0 Teb: 000000f2`c4d3e000 Unfrozen "IO-Worker-8"
+ 123  Id: 8388.7180 Suspend: 0 Teb: 000000f2`c4d40000 Unfrozen "IO-Worker-9"
+ 124  Id: 8388.7054 Suspend: 0 Teb: 000000f2`c4d42000 Unfrozen "IO-Worker-10"
+ 125  Id: 8388.6088 Suspend: 0 Teb: 000000f2`c4d44000 Unfrozen "IO-Worker-11"
+ 126  Id: 8388.81e8 Suspend: 0 Teb: 000000f2`c4d46000 Unfrozen "IO-Worker-12"
+ 127  Id: 8388.770c Suspend: 0 Teb: 000000f2`c4d48000 Unfrozen "IO-Worker-13"
+ 128  Id: 8388.67ec Suspend: 0 Teb: 000000f2`c4d4a000 Unfrozen "IO-Worker-14"
+ 129  Id: 8388.6944 Suspend: 0 Teb: 000000f2`c4d4c000 Unfrozen "C2 CompilerThread1"
+ 130  Id: 8388.6684 Suspend: 0 Teb: 000000f2`c4d4e000 Unfrozen "C2 CompilerThread2"
+ 131  Id: 8388.7618 Suspend: 0 Teb: 000000f2`c4d50000 Unfrozen "C2 CompilerThread3"
+ 132  Id: 8388.1314 Suspend: 0 Teb: 000000f2`c4d52000 Unfrozen "C2 CompilerThread4"
+ 133  Id: 8388.4744 Suspend: 0 Teb: 000000f2`c4d54000 Unfrozen "C2 CompilerThread5"
+ 134  Id: 8388.7e50 Suspend: 0 Teb: 000000f2`c4d56000 Unfrozen "C2 CompilerThread6"
+ 135  Id: 8388.6678 Suspend: 0 Teb: 000000f2`c4d58000 Unfrozen "C2 CompilerThread7"
+ 136  Id: 8388.67e8 Suspend: 0 Teb: 000000f2`c4d5a000 Unfrozen "Salt's Shader Compiler-8"
+ 137  Id: 8388.30b4 Suspend: 0 Teb: 000000f2`c4d5c000 Unfrozen "Salt's Shader Compiler-9"
+ 138  Id: 8388.1bc8 Suspend: 0 Teb: 000000f2`c4d5e000 Unfrozen "Salt's Shader Compiler-10"
+ 139  Id: 8388.6880 Suspend: 0 Teb: 000000f2`c4d60000 Unfrozen "Salt's Shader Compiler-11"
+ 140  Id: 8388.34f8 Suspend: 0 Teb: 000000f2`c4d62000 Unfrozen "Salt's Shader Compiler-12"
+.141  Id: 8388.78dc Suspend: 0 Teb: 000000f2`c4d64000 Unfrozen "Salt's Shader Compiler-13"
+ 142  Id: 8388.7b58 Suspend: 0 Teb: 000000f2`c4d66000 Unfrozen "Salt's Shader Compiler-14"
+ 143  Id: 8388.7d14 Suspend: 0 Teb: 000000f2`c4d68000 Unfrozen "Salt's Shader Compiler-15"
+000000f2`ce3dfae0  ????????`????????
+000000f2`ce3dfae8  ????????`????????
+000000f2`ce3dfaf0  ????????`????????
+000000f2`ce3dfaf8  ????????`????????
+000000f2`ce3dfb00  ????????`????????
+000000f2`ce3dfb08  ????????`????????
+000000f2`ce3dfb10  ????????`????????
+000000f2`ce3dfb18  ????????`????????
+000000f2`ce3dfb20  ????????`????????
+000000f2`ce3dfb28  ????????`????????
+000000f2`ce3dfb30  ????????`????????
+000000f2`ce3dfb38  ????????`????????
+000000f2`ce3dfb40  ????????`????????
+000000f2`ce3dfb48  ????????`????????
+000000f2`ce3dfb50  ????????`????????
+000000f2`ce3dfb58  ????????`????????
+000000f2`ce3dfb60  ????????`????????
+000000f2`ce3dfb68  ????????`????????
+000000f2`ce3dfb70  ????????`????????
+000000f2`ce3dfb78  ????????`????????
+000000f2`ce3dfb80  ????????`????????
+000000f2`ce3dfb88  ????????`????????
+000000f2`ce3dfb90  ????????`????????
+000000f2`ce3dfb98  ????????`????????
+000000f2`ce3dfba0  ????????`????????
+000000f2`ce3dfba8  ????????`????????
+000000f2`ce3dfbb0  ????????`????????
+000000f2`ce3dfbb8  ????????`????????
+000000f2`ce3dfbc0  ????????`????????
+000000f2`ce3dfbc8  ????????`????????
+000000f2`ce3dfbd0  ????????`????????
+000000f2`ce3dfbd8  ????????`????????
+
+TEB f2c4d64000 stack base f2ce400000 stack limit f2ce3e4000, manual return 0
+00 000000f2`ce3dfaf8 00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : jvm!GrowableArrayWithAllocator<char * __ptr64,GrowableArray<char * __ptr64> >::append+0x10
+start             end                 module name
+00000278`6be00000 00000278`6bee0000   Windows_Devices   (deferred)             
+00007ff6`297a0000 00007ff6`297ae000   java_exe   (deferred)             
+00007ff8`0b9e0000 00007ff8`0ba29000   jna4597347197206825479   (deferred)             
+00007ff8`0d530000 00007ff8`0d5b6000   lwjgl      (deferred)             
+00007ff8`0dc90000 00007ff8`0de44000   AudioSes   (deferred)             
+00007ff8`0e160000 00007ff8`0e1bb000   dataexchange   (deferred)             
+00007ff8`11010000 00007ff8`11085000   oleacc     (deferred)             
+00007ff8`13fb0000 00007ff8`13feb000   dbgcore    (deferred)             
+00007ff8`19fd0000 00007ff8`19fec000   salts_fsr_bridge   (deferred)             
+00007ff8`1a0a0000 00007ff8`1a0fe000   lwjgl_opengl   (deferred)             
+00007ff8`1a340000 00007ff8`1a379000   rometadata   (deferred)             
+00007ff8`1b2a0000 00007ff8`1b3e6000   textinputframework   (deferred)             
+00007ff8`1c290000 00007ff8`1c2b7000   nlansp_c   (deferred)             
+00007ff8`1c9b0000 00007ff8`1c9c1000   perfos     (deferred)             
+00007ff8`1ca40000 00007ff8`1ca4d000   salts_xess_bridge   (deferred)             
+00007ff8`1ca50000 00007ff8`1ca59000   extnet     (deferred)             
+00007ff8`1ca60000 00007ff8`1ca69000   syslookup   (deferred)             
+00007ff8`1ca70000 00007ff8`1ca7e000   sunmscapi   (deferred)             
+00007ff8`1cb50000 00007ff8`1cb94000   lwjgl_vma   (deferred)             
+00007ff8`1d460000 00007ff8`1d473000   winrnr     (deferred)             
+00007ff8`1d4a0000 00007ff8`1d4b8000   NapiNSP    (deferred)             
+00007ff8`1d7d0000 00007ff8`1d7ed000   windows_staterepositorycore   (deferred)             
+00007ff8`1dd50000 00007ff8`1ddf5000   MpOAV      (deferred)             
+00007ff8`1dfd0000 00007ff8`1dfed000   amsi       (deferred)             
+00007ff8`20c30000 00007ff8`20c88000   pdh        (deferred)             
+00007ff8`21640000 00007ff8`21669000   srvcli     (deferred)             
+00007ff8`21670000 00007ff8`21935000   iertutil   (deferred)             
+00007ff8`21ab0000 00007ff8`21c90000   urlmon     (deferred)             
+00007ff8`239e0000 00007ff8`239e8000   wshunix    (deferred)             
+00007ff8`270d0000 00007ff8`27361000   comctl32   (deferred)             
+00007ff8`27f20000 00007ff8`27fe4000   mscms      (deferred)             
+00007ff8`28460000 00007ff8`284ef000   DispBroker   (deferred)             
+00007ff8`28c60000 00007ff8`291f5000   nvapi64    (deferred)             
+00007ff8`2ce00000 00007ff8`2ce1f000   java       (deferred)             
+00007ff8`2ce90000 00007ff8`2ce9c000   management_ext   (deferred)             
+00007ff8`2cea0000 00007ff8`2ceaa000   management   (deferred)             
+00007ff8`330b0000 00007ff8`330c2000   perfproc   (deferred)             
+00007ff8`33b70000 00007ff8`33dc0000   twinapi_appcore   (deferred)             
+00007ff8`34110000 00007ff8`34146000   winmm      (deferred)             
+00007ff8`34310000 00007ff8`34396000   FWPUCLNT   (deferred)             
+00007ff8`34b50000 00007ff8`34bea000   MMDevAPI   (deferred)             
+00007ff8`35460000 00007ff8`3a15f000   nvgpucomp64   (deferred)             
+00007ff8`3a4e0000 00007ff8`3a4f6000   wshbth     (deferred)             
+00007ff8`3b240000 00007ff8`3b3bb000   drvstore   (deferred)             
+00007ff8`3b3c0000 00007ff8`3b3fb000   cryptnet   (deferred)             
+00007ff8`3b480000 00007ff8`3b48b000   version    (deferred)             
+00007ff8`3b580000 00007ff8`3b58b000   rasadhlp   (deferred)             
+00007ff8`3bf30000 00007ff8`3c09a000   WinTypes   (deferred)             
+00007ff8`3c810000 00007ff8`3c86f000   directxdatabasehelper   (deferred)             
+00007ff8`3d100000 00007ff8`3d112000   pfclient   (deferred)             
+00007ff8`3d340000 00007ff8`3d7bf000   D3DCOMPILER_47   (deferred)             
+00007ff8`3e420000 00007ff8`3e44a000   wtsapi32   (deferred)             
+00007ff8`3e450000 00007ff8`3e4ef000   apphelp    (deferred)             
+00007ff8`3e530000 00007ff8`3e5da000   uxtheme    (deferred)             
+00007ff8`3e630000 00007ff8`3e65e000   dwmapi     (deferred)             
+00007ff8`3e780000 00007ff8`3e7ca000   DXCore     (deferred)             
+00007ff8`3ef50000 00007ff8`3f1bb000   DWrite     (deferred)             
+00007ff8`3f460000 00007ff8`3f474000   resourcepolicyclient   (deferred)             
+00007ff8`3f5e0000 00007ff8`3f82c000   dbghelp    (deferred)             
+00007ff8`3f840000 00007ff8`3f84b000   avrt       (deferred)             
+00007ff8`3f850000 00007ff8`3f993000   dxgi       (deferred)             
+00007ff8`3fe20000 00007ff8`406e0000   windows_storage   (deferred)             
+00007ff8`406f0000 00007ff8`406ff000   hid        (deferred)             
+00007ff8`40a00000 00007ff8`40a0d000   netutils   (deferred)             
+00007ff8`40a20000 00007ff8`40a53000   IPHLPAPI   (deferred)             
+00007ff8`40ab0000 00007ff8`40bfc000   dnsapi     (deferred)             
+00007ff8`40fe0000 00007ff8`41019000   rsaenh     (deferred)             
+00007ff8`41080000 00007ff8`4109b000   kernel_appcore   (deferred)             
+00007ff8`411b0000 00007ff8`411e6000   ntmarta    (deferred)             
+00007ff8`41340000 00007ff8`4138a000   sspicli    (deferred)             
+00007ff8`41430000 00007ff8`4143d000   dsparse    (deferred)             
+00007ff8`41650000 00007ff8`416bb000   mswsock    (deferred)             
+00007ff8`41710000 00007ff8`41744000   userenv    (deferred)             
+00007ff8`41960000 00007ff8`4197b000   cryptsp    (deferred)             
+00007ff8`41980000 00007ff8`4198c000   CRYPTBASE   (deferred)             
+00007ff8`41a40000 00007ff8`41ab0000   wldp       (deferred)             
+00007ff8`41ac0000 00007ff8`41b26000   winsta     (deferred)             
+00007ff8`41b30000 00007ff8`41b43000   msasn1     (deferred)             
+00007ff8`41bd0000 00007ff8`41c0f000   ntasn1     (deferred)             
+00007ff8`41c20000 00007ff8`41c50000   ncrypt     (deferred)             
+00007ff8`41d80000 00007ff8`41d95000   umpdc      (deferred)             
+00007ff8`41de0000 00007ff8`41e3e000   powrprof   (deferred)             
+00007ff8`42040000 00007ff8`4206f000   devobj     (deferred)             
+00007ff8`42080000 00007ff8`420d2000   cfgmgr32   (deferred)             
+00007ff8`422f0000 00007ff8`4231a000   bcrypt     (deferred)             
+00007ff8`42320000 00007ff8`42349000   profapi    (deferred)             
+00007ff8`42410000 00007ff8`42819000   KERNELBASE   (deferred)             
+00007ff8`42820000 00007ff8`428a3000   wintrust   (deferred)             
+00007ff8`428b0000 00007ff8`42953000   msvcp_win   (deferred)             
+00007ff8`42960000 00007ff8`42aac000   ucrtbase   (deferred)             
+00007ff8`42b80000 00007ff8`42ca9000   gdi32full   (deferred)             
+00007ff8`42cb0000 00007ff8`42d5c000   bcryptPrimitives   (deferred)             
+00007ff8`42d70000 00007ff8`42eee000   crypt32    (deferred)             
+00007ff8`42f00000 00007ff8`42f27000   win32u     (deferred)             
+00007ff8`43040000 00007ff8`437f0000   shell32    (deferred)             
+00007ff8`43800000 00007ff8`438bb000   advapi32   (deferred)             
+00007ff8`438c0000 00007ff8`438f1000   imm32      (deferred)             
+00007ff8`43900000 00007ff8`439a8000   sechost    (deferred)             
+00007ff8`439b0000 00007ff8`43e37000   setupapi   (deferred)             
+00007ff8`43e60000 00007ff8`43f58000   SHCore     (deferred)             
+00007ff8`43f60000 00007ff8`4402b000   kernel32   (deferred)             
+00007ff8`44030000 00007ff8`44109000   oleaut32   (deferred)             
+00007ff8`441a0000 00007ff8`44339000   ole32      (deferred)             
+00007ff8`44340000 00007ff8`443ef000   clbcatq    (deferred)             
+00007ff8`445f0000 00007ff8`44670000   ws2_32     (deferred)             
+00007ff8`44680000 00007ff8`44a25000   combase    (deferred)             
+00007ff8`44a30000 00007ff8`44ad9000   msvcrt     (deferred)             
+00007ff8`44ae0000 00007ff8`44b0b000   gdi32      (deferred)             
+00007ff8`44b10000 00007ff8`44b1a000   nsi        (deferred)             
+00007ff8`44b20000 00007ff8`44b40000   imagehlp   (deferred)             
+00007ff8`44b50000 00007ff8`44cab000   msctf      (deferred)             
+00007ff8`44cb0000 00007ff8`44d18000   shlwapi    (deferred)             
+00007ff8`44ef0000 00007ff8`44ef8000   psapi      (deferred)             
+00007ff8`44f00000 00007ff8`450de000   user32     (deferred)             
+00007ff8`450f0000 00007ff8`45208000   rpcrt4     (deferred)             
+00007ff8`45250000 00007ff8`454bc000   ntdll      (deferred)             
+00007fff`49d70000 00007fff`4a65a000   amd_fidelityfx_vk   (deferred)             
+00007fff`4a660000 00007fff`50301000   nvrtum64   (deferred)             
+00007fff`50310000 00007fff`51721000   VkLayer_khronos_validation   (deferred)             
+00007fff`51730000 00007fff`5616b000   libxess    (deferred)             
+00007fff`56170000 00007fff`5709f000   jvm        (pdb symbols)          g:\codex projects\salts anti aliasing\build\runtime-stability-20261025\jvm.dll.pdb
+00007fff`5c3a0000 00007fff`5c6f1000   D3D12Core   (deferred)             
+00007fff`5c700000 00007fff`5cb20000   OWClient   (deferred)             
+00007fff`5cb20000 00007fff`5cdf7000   OpenAL     (deferred)             
+00007fff`5ce00000 00007fff`5dac9000   shaderc    (deferred)             
+00007fff`5dc40000 00007fff`5ddb3000   sapi       (deferred)             
+00007fff`5ddc0000 00007fff`5dffb000   spirv_cross   (deferred)             
+00007fff`5e000000 00007fff`5e244000   freetype   (deferred)             
+00007fff`5e250000 00007fff`5e530000   SDL3       (deferred)             
+00007fff`6a850000 00007fff`6a869000   usp10      (deferred)             
+00007fff`7e950000 00007fff`81275000   nvoglv64   (deferred)             
+00007fff`99e60000 00007fff`99ee9000   msvcp140   (deferred)             
+00007fff`9d6d0000 00007fff`9d887000   nvppex     (deferred)             
+00007fff`cfb30000 00007fff`cfc77000   nvspcap64   (deferred)             
+00007fff`db0c0000 00007fff`db0d7000   jli        (deferred)             
+00007fff`db440000 00007fff`db45e000   VCRUNTIME140   (deferred)             
+00007fff`dba60000 00007fff`dbcd1000   jemalloc   (deferred)             
+00007fff`dcfc0000 00007fff`dd152000   vulkan_1   (deferred)             
+00007fff`ddcb0000 00007fff`ddcc0000   verify     (deferred)             
+00007fff`e5560000 00007fff`e5583000   D3D12      (deferred)             
+00007fff`ed2b0000 00007fff`ed2e8000   glu32      (deferred)             
+00007fff`ed2f0000 00007fff`ed3fc000   opengl32   (deferred)             
+00007fff`f0180000 00007fff`f018a000   jimage     (deferred)             
+00007fff`f01a0000 00007fff`f023a000   lwjgl_stb   (deferred)             
+00007fff`f1980000 00007fff`f19c6000   ow_graphics_hook64   (deferred)             
+00007fff`f1b00000 00007fff`f1b0c000   vcruntime140_1   (deferred)             
+00007fff`f1b40000 00007fff`f1b89000   ow_graphics_vulkan   (deferred)             
+00007fff`f2290000 00007fff`f22dd000   graphics_hook64   (deferred)             
+00007fff`f2360000 00007fff`f2377000   zip        (deferred)             
+00007fff`f5360000 00007fff`f5376000   nio        (deferred)             
+00007fff`f8080000 00007fff`f8092000   net        (deferred)             
+
+Unloaded modules:
+00007ff8`20c90000 00007ff8`20ca5000   wbemsvc.dll
+00007ff8`22600000 00007ff8`22612000   wbemprox.dll
+00007ff8`20f90000 00007ff8`21085000   fastprox.dll
+00007ff8`262b0000 00007ff8`26336000   wbemcomn.dll
+00007ff8`20c90000 00007ff8`20ca5000   wbemsvc.dll
+00007ff8`22600000 00007ff8`22612000   wbemprox.dll
+00007ff8`20f90000 00007ff8`21085000   fastprox.dll
+00007ff8`262b0000 00007ff8`26336000   wbemcomn.dll
+00007ff8`20c90000 00007ff8`20ca5000   wbemsvc.dll
+00007ff8`22600000 00007ff8`22612000   wbemprox.dll
+00007ff8`20f90000 00007ff8`21085000   fastprox.dll
+00007ff8`262b0000 00007ff8`26336000   wbemcomn.dll
+00007ff8`20c90000 00007ff8`20ca5000   wbemsvc.dll
+00007ff8`22600000 00007ff8`22612000   wbemprox.dll
+00007ff8`20f90000 00007ff8`21085000   fastprox.dll
+00007ff8`262b0000 00007ff8`26336000   wbemcomn.dll
+00007ff8`3f460000 00007ff8`3f474000   resourcepolicyclient.dll
+00007fff`50310000 00007fff`51721000   VkLayer_khronos_validation.dll

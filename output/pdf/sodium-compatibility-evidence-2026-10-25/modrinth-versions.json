@@ -1,0 +1,113 @@
+[
+  {
+    "game_versions": [
+      "26.3"
+    ],
+    "loaders": [
+      "fabric"
+    ],
+    "environment": "client_only",
+    "id": "g6ju16VJ",
+    "project_id": "AANobbMI",
+    "author_id": "TEZXhE2U",
+    "featured": false,
+    "name": "Sodium 0.9.3-beta.1 for Fabric 26.3",
+    "version_number": "mc26.3-0.9.3-beta.1-fabric",
+    "changelog": "Sodium 0.9.3-beta.1 implements a number of bug fixes and minor improvements.\n\n- Show macOS fullscreen menu visibility option on the Sodium options screen\n- Fix Fluid Culling For Non-Full Blocks With Unusual Shapes ([#3916](https://github.com/CaffeineMC/sodium/pull/3916))\n- Use SDL message box instead of TFD ([#3923](https://github.com/CaffeineMC/sodium/pull/3923))\n- Optimization for shelf mushroom models ([#3927](https://github.com/CaffeineMC/sodium/pull/3927))\n- Fix compatibility with Neoforge 26.3.0.65-beta and remove platform-specific LevelExtractorMixin ([#3948](https://github.com/CaffeineMC/sodium/pull/3948))\n- Source vanilla option defaults and ranges directly from vanilla options ([#3947](https://github.com/CaffeineMC/sodium/pull/3947))\n- Allow rendering buffer debug outside F3 Debug Screen ([#3943](https://github.com/CaffeineMC/sodium/pull/3943))\n- Make VideoSettingsScreen trigger onClose in keyPressed to fix interaction with Iris, for example ([#3938](https://github.com/CaffeineMC/sodium/pull/3938))",
+    "changelog_url": null,
+    "date_published": "2026-10-15T17:51:44.107526Z",
+    "downloads": 833980,
+    "version_type": "beta",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "rbdNchdD",
+        "hashes": {
+          "sha512": "884a1ef0ce0e69d565d41a1359070a8d4f8589a086b565540defdb4741985053077dfd0f2a56898ce60510720a9f95dd8ba220a9a6340b6e0cf5cb12352e2419",
+          "sha1": "1e6aec741b4134258ba1d7d458bae96a2e8e187e"
+        },
+        "url": "https://cdn.modrinth.com/data/AANobbMI/versions/g6ju16VJ/sodium-fabric-0.9.3-beta.1%2Bmc26.3.jar",
+        "filename": "sodium-fabric-0.9.3-beta.1+mc26.3.jar",
+        "primary": true,
+        "size": 1912496,
+        "file_type": null
+      }
+    ],
+    "dependencies": []
+  },
+  {
+    "game_versions": [
+      "26.3"
+    ],
+    "loaders": [
+      "fabric"
+    ],
+    "environment": "client_only",
+    "id": "v4PSXean",
+    "project_id": "AANobbMI",
+    "author_id": "TEZXhE2U",
+    "featured": false,
+    "name": "Sodium 0.9.3-alpha.1 for Fabric 26.3",
+    "version_number": "mc26.3-0.9.3-alpha.1-fabric",
+    "changelog": "Sodium 0.9.3-alpha.1 fixes graphical glitches on Intel iGPUs, fluid culling for unusual blocks, and adds the macOS fullscreen menu visibility option.\n\n- Fix graphical glitches on some Intel iGPUs\n- Show macOS fullscreen menu visibility option on the Video Settings screen\n- Fix Fluid Culling For Non-Full Blocks With Unusual Shapes ([#3916](https://github.com/CaffeineMC/sodium/pull/3916))",
+    "changelog_url": null,
+    "date_published": "2026-09-20T21:27:07.49428Z",
+    "downloads": 1422051,
+    "version_type": "alpha",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "s1o3kvDe",
+        "hashes": {
+          "sha1": "5d88caf6f3e182cd39d0fb0d2e7200c5e613f287",
+          "sha512": "8aa044fea0185855e2ca0971b4e3b3bc1ee4c616e3a7d6ca4d4b979fbb99340678c0bf6acd16be04095bc885b75b4caf95401486e91b65239385e98fab6d3542"
+        },
+        "url": "https://cdn.modrinth.com/data/AANobbMI/versions/v4PSXean/sodium-fabric-0.9.3-alpha.1%2Bmc26.3.jar",
+        "filename": "sodium-fabric-0.9.3-alpha.1+mc26.3.jar",
+        "primary": true,
+        "size": 1911459,
+        "file_type": null
+      }
+    ],
+    "dependencies": []
+  },
+  {
+    "game_versions": [
+      "26.3"
+    ],
+    "loaders": [
+      "fabric"
+    ],
+    "environment": "client_only",
+    "id": "bAZQdGpg",
+    "project_id": "AANobbMI",
+    "author_id": "TEZXhE2U",
+    "featured": false,
+    "name": "Sodium 0.9.2 for Fabric 26.3",
+    "version_number": "mc26.3-0.9.2-fabric",
+    "changelog": "Sodium 0.9.2 is a release for Minecraft 26.3. It's based on the recently released Sodium 0.9.2.\n\n- Port to 26.3 ([#3902](https://github.com/CaffeineMC/sodium/pull/3902))\n- Re-enable \"Fullscreen Resolution\" control on Linux ([#3843](https://github.com/CaffeineMC/sodium/pull/3843))\n- Fix a memory leak caused by recreating resources in the F3 display\n- Fix issues with falling blocks",
+    "changelog_url": null,
+    "date_published": "2026-09-15T15:57:23.369305Z",
+    "downloads": 5395904,
+    "version_type": "release",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "t9mEd45c",
+        "hashes": {
+          "sha1": "9acfe851e36f4fb27d7c5baa224e8bd4e0334283",
+          "sha512": "f3f260f204b8ce5e8777c2c73f537956755ec61f3817b0b78b5e5568e8aa40f14891f146475075109747665c7c88a45ca0ca9a8df3c68d79c58ecdaa8d8c4b93"
+        },
+        "url": "https://cdn.modrinth.com/data/AANobbMI/versions/bAZQdGpg/sodium-fabric-0.9.2%2Bmc26.3.jar",
+        "filename": "sodium-fabric-0.9.2+mc26.3.jar",
+        "primary": true,
+        "size": 1908068,
+        "file_type": null
+      }
+    ],
+    "dependencies": []
+  }
+]

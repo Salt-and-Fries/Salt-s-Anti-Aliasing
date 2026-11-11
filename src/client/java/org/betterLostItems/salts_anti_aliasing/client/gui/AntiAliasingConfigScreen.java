@@ -136,8 +136,15 @@ public final class AntiAliasingConfigScreen extends OptionsSubScreen {
                 Tooltip.create(
                         Component.translatable("options.salts_anti_aliasing.allocations.tooltip")));
         this.list.addBig(allocationButton);
+        if (advanced && displayedMode.usesXessQualityControl()) {
+            Button version = Button.builder(Component.literal(
+                    org.betterLostItems.salts_anti_aliasing.client.render.vulkan.xess.XessRuntime.instance().description()), b -> {})
+                    .width(this.list.getRowWidth()).build();
+            version.active = false;
+            this.list.addBig(version);
+        }
         if (advanced && displayedMode == AntiAliasingMode.DLSS_SUPER_RESOLUTION) {
-            Button version = Button.builder(Component.literal("DLSS runtime: 310.9.1 / Streamline 2.14.1"), b -> {})
+            Button version = Button.builder(Component.literal(DlssRuntime.instance().runtimeDescription()), b -> {})
                     .width(this.list.getRowWidth()).build();
             version.active = false;
             this.list.addBig(version);

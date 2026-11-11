@@ -1,0 +1,38 @@
+[
+  {
+    "mode": "SGSR2_SUPER_RESOLUTION",
+    "width": 1280,
+    "height": 720,
+    "meanMotionNdc": 0.002173055486341845,
+    "maximumMotionNdc": 0.004556521752651939,
+    "nonFinitePixels": 0,
+    "probe": "qa-motion-frame-pan-NATIVE-1793326671036.json"
+  },
+  {
+    "mode": "SGSR2_SUPER_RESOLUTION",
+    "width": 640,
+    "height": 360,
+    "meanMotionNdc": 0.0021729938180100323,
+    "maximumMotionNdc": 0.004551429833421306,
+    "nonFinitePixels": 0,
+    "probe": "qa-motion-frame-pan-PERFORMANCE-1793326677449.json"
+  },
+  {
+    "mode": "SGSR2_SUPER_RESOLUTION",
+    "width": 853,
+    "height": 480,
+    "meanMotionNdc": 0.002173576038612496,
+    "maximumMotionNdc": 0.00455531718987046,
+    "nonFinitePixels": 0,
+    "probe": "qa-motion-frame-pan-QUALITY-1793326674243.json"
+  },
+  {
+    "mode": "SGSR2_SUPER_RESOLUTION",
+    "width": 640,
+    "height": 360,
+    "meanMotionNdc": 0.00012097583133875834,
+    "maximumMotionNdc": 0.0004606246986806269,
+    "nonFinitePixels": 0,
+    "probe": "qa-motion-frame-translation-1793326680654.json"
+  }
+]

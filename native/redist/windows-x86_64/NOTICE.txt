@@ -3,3 +3,13 @@ Bundled AMD FidelityFX SDK Vulkan runtime for Salt's Anti Aliasing.
 The AMD FidelityFX SDK runtime is redistributed with its upstream MIT license in
 LICENSE-AMD-FidelityFX.txt. The JNI bridge DLL is built from this repository's
 native/fsr_bridge source against the same FidelityFX SDK API version.
+
+This runtime is rebuilt from FidelityFX SDK v1.1.4, commit
+c6efa6bf7f2027b3ec94f28578bb5965eabb9e55, with Salt's Vulkan correctness
+corrections in native/fsr_bridge/patches. UI composition and debug
+pacing use lineWidth=1.0 as required when wideLines is not enabled.
+Binary presentation semaphores are indexed by the acquired swapchain image
+and signaled only after a successful acquisition.
+Per-image semaphores are allocated once rather than overwritten and leaked.
+UI composition/debug caches are released after the proxy's work is drained.
+Reproduction instructions: native/fsr_bridge/Build-FidelityFxRuntime.ps1.

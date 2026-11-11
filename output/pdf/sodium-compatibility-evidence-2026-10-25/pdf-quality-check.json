@@ -1,0 +1,18 @@
+{
+  "pages": 25,
+  "words": 5931,
+  "links": 41,
+  "pageSizes": [
+    [
+      612.0,
+      792.0
+    ]
+  ],
+  "pdfSha256": "6355820b7a0d75d5661735dc50e5922fee8663608d71394857666be9b44f5116",
+  "allPagesRenderedAndVisuallyReviewed": true,
+  "productionSourceUnchanged": true,
+  "normalOptionsAndModConfigPreserved": true,
+  "sodiumValidationRunsClean": true,
+  "frameGenerationBaselineFailureDocumented": true,
+  "noRuntimeBinariesInEvidence": true
+}

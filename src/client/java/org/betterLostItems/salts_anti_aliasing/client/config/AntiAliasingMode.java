@@ -23,6 +23,9 @@ public enum AntiAliasingMode {
     NIS_SHARPEN("NIS Sharpen", false, false),
     NIS_UPSCALE("NIS Upscale", true, false),
     DLSS_SUPER_RESOLUTION("DLSS Super Resolution", true, true),
+    XESS_SUPER_RESOLUTION("Intel XeSS Super Resolution", true, true),
+    SGSR1_UPSCALE("SGSR 1 Upscale", true, false),
+    SGSR2_SUPER_RESOLUTION("SGSR 2 Super Resolution", true, true),
     FSR2_SUPER_RESOLUTION("FSR2 Super Resolution", true, true),
     FSR3_SUPER_RESOLUTION("FSR3 Super Resolution", true, true),
     FSR3_SUPER_RESOLUTION_FRAME_GENERATION("FSR3 Super Resolution + Frame Generation", true, true),
@@ -38,6 +41,9 @@ public enum AntiAliasingMode {
             SMAA,
             NIS_UPSCALE,
             DLSS_SUPER_RESOLUTION,
+            XESS_SUPER_RESOLUTION,
+            SGSR1_UPSCALE,
+            SGSR2_SUPER_RESOLUTION,
             FSR2_SUPER_RESOLUTION,
             FSR3_SUPER_RESOLUTION,
             FSR3_SUPER_RESOLUTION_FRAME_GENERATION,
@@ -110,7 +116,7 @@ public enum AntiAliasingMode {
      * @return whether this object requires the described render path
      */
     public boolean usesSpatialUpscaleQualityControl() {
-        return this == NIS_UPSCALE || this == FSR1_UPSCALE;
+        return this == NIS_UPSCALE || this == FSR1_UPSCALE || this == SGSR1_UPSCALE;
     }
 
     /**
@@ -120,6 +126,12 @@ public enum AntiAliasingMode {
     public boolean usesDlssQualityControl() {
         return this == DLSS_SUPER_RESOLUTION;
     }
+
+    public boolean usesSgsr1QualityControl() { return this == SGSR1_UPSCALE; }
+    public boolean usesSgsr2QualityControl() { return this == SGSR2_SUPER_RESOLUTION; }
+    public boolean usesSgsr() { return usesSgsr1QualityControl() || usesSgsr2QualityControl(); }
+
+    public boolean usesXessQualityControl() { return this == XESS_SUPER_RESOLUTION; }
 
     public boolean usesFsrQualityControl() {
         return this == FSR2_SUPER_RESOLUTION

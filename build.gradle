@@ -16,6 +16,10 @@ loom {
     runs {
         client {
             runDir "run/${project.minecraft_version}"
+            if (project.hasProperty('sodiumProfile')) {
+                runDir "run/${project.minecraft_version}/sodium-${project.property('sodiumProfile')}"
+                programArgs '--graphicsBackend', 'VULKAN'
+            }
             if (project.hasProperty('dlssRuntimeDirectory')) {
                 vmArg "-Dsalts.dlss.pluginPath=${project.file(project.property('dlssRuntimeDirectory')).absolutePath}"
             }
@@ -61,8 +65,45 @@ dependencies {
     compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     compileOnly "net.caffeinemc:sodium-fabric-api:${project.sodium_api_version}"
 
+    // Optional full renderer, deliberately absent from default runClient and public jars.
+    if (project.hasProperty('sodiumProfile')) {
+        def profile = project.property('sodiumProfile')
+        if (!(profile in ['stable', 'beta'])) throw new GradleException('sodiumProfile must be stable or beta')
+        runtimeOnly "maven.modrinth:sodium:${profile == 'stable' ? project.sodium_stable_runtime : project.sodium_beta_runtime}"
+    }
+
     testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.11.4"
+    testImplementation "net.caffeinemc:sodium-fabric-api:${project.sodium_api_version}"
+}
+
+repositories {
+    exclusiveContent {
+        forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
+        filter { includeGroup 'maven.modrinth' }
+    }
+}
+
+// Client adapters are tested with real off-heap vertex buffers without launching the game.
+sourceSets.test.compileClasspath += sourceSets.client.output
+sourceSets.test.runtimeClasspath += sourceSets.client.output
+tasks.named('compileTestJava') { dependsOn tasks.named('clientClasses') }
+
+if (project.hasProperty('sodiumProfile')) {
+    tasks.register('verifySodiumRuntime') {
+        doLast {
+            def profile = project.property('sodiumProfile')
+            def expected = profile == 'stable' ? project.sodium_stable_sha256 : project.sodium_beta_sha256
+            def artifact = configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.find {
+                it.moduleVersion.id.group == 'maven.modrinth' && it.name == 'sodium'
+            }
+            if (artifact == null) throw new GradleException('The full Sodium runtime is missing')
+            def actual = java.security.MessageDigest.getInstance('SHA-256').digest(artifact.file.bytes).encodeHex().toString()
+            if (actual != expected) throw new GradleException("Unexpected Sodium runtime checksum: ${actual}")
+            logger.lifecycle("Verified Sodium ${profile} runtime SHA-256 ${actual}")
+        }
+    }
+    tasks.named('runClient') { dependsOn tasks.named('verifySodiumRuntime') }
 }
 
 test {
@@ -160,8 +201,37 @@ tasks.register('verifyPublicJar') {
                 file ==~ /(?i)(nvngx_.*|sl\..*|NvLowLatencyVk)\.dll/
             }
             if (!forbidden.empty) throw new GradleException("NVIDIA runtime binaries cannot ship: ${forbidden}")
+            if (names.any { it.startsWith('net/caffeinemc/') || it ==~ /.*sodium.*\.jar/ })
+                throw new GradleException('Sodium must remain an optional external mod')
             if (!names.contains('assets/salts_anti_aliasing/native/dlss/windows-x86_64/salts_dlss_bridge.dll'))
                 throw new GradleException("The mod's DLSS bridge is missing")
+            def sgsrRoot = 'assets/salts_anti_aliasing/'
+            ['sgsr1_standard', 'sgsr1_edge', 'sgsr2_convert', 'sgsr2_upscale',
+             'sgsr2_entity_motion', 'sgsr2_particle_motion'].each { shader ->
+                if (!names.contains(sgsrRoot + 'shaders/post/' + shader + '.fsh'))
+                    throw new GradleException("Missing SGSR shader: ${shader}")
+            }
+            ['LICENSE-SGSR.txt', 'source-manifest.json'].each { file ->
+                if (!names.contains(sgsrRoot + 'licenses/sgsr/' + file))
+                    throw new GradleException("Missing SGSR provenance: ${file}")
+            }
+            def xessRoot = 'assets/salts_anti_aliasing/native/xess/windows-x86_64/'
+            def xessManifest = new Properties()
+            def manifestEntry = zip.getEntry(xessRoot + 'bundle.properties')
+            if (manifestEntry == null) throw new GradleException('The XeSS runtime manifest is missing')
+            zip.getInputStream(manifestEntry).withCloseable { xessManifest.load(it) }
+            ['salts_xess_bridge.dll', 'libxess.dll', 'LICENSE-Intel-XeSS.txt', 'third-party-programs.txt'].each { file ->
+                def entry = zip.getEntry(xessRoot + file)
+                if (entry == null) throw new GradleException("Missing XeSS bundle file: ${file}")
+                def digest = java.security.MessageDigest.getInstance('SHA-256')
+                zip.getInputStream(entry).withCloseable { input ->
+                    byte[] buffer = new byte[65536]
+                    int count
+                    while ((count = input.read(buffer)) != -1) digest.update(buffer, 0, count)
+                }
+                if (digest.digest().encodeHex().toString() != xessManifest.getProperty(file + '.sha256'))
+                    throw new GradleException("XeSS bundle checksum mismatch: ${file}")
+            }
         }
     }
 }

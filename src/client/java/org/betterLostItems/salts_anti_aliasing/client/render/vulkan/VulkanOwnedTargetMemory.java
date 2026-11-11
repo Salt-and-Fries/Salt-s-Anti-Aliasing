@@ -33,6 +33,8 @@ public final class VulkanOwnedTargetMemory {
                 + VulkanSceneMsaaController.instance().allocatedTargetBytes()
                 + VulkanSceneTemporalController.instance().allocatedTargetBytes()
                 + VulkanSceneDlssController.instance().allocatedTargetBytes()
+                + VulkanSceneXessController.instance().allocatedTargetBytes()
+                + VulkanSceneSgsrController.instance().allocatedTargetBytes()
                 + VulkanSceneFsrController.instance().allocatedTargetBytes();
     }
 }

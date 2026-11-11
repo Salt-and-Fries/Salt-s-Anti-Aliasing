@@ -21,6 +21,18 @@ Release builds use the FidelityFX SDK 1.1.4 headers (tag `v1.1.4`, commit
 `c6efa6bf7f2027b3ec94f28578bb5965eabb9e55`). SDK support defaults to `ON` so an
 accidental stub bridge cannot be mistaken for a working release binary.
 
+The bundled AMD runtime is rebuilt from that pinned source with
+`patches/fidelityfx-1.1.4-vulkan-correctness.patch`. This corrects the SDK's
+static line width, the presenter thread's binary-semaphore image indexing, and
+duplicate allocation of those semaphores during swapchain initialization.
+The patched proxy also frees the SDK's device-global UI/debug composition caches
+after draining presentation threads and queues, including direct exit with FG enabled.
+Rebuild it with `Build-FidelityFxRuntime.ps1 -SdkPath <checkout> -BuildDirectory <build>`
+using an installed Vulkan SDK (or supply `-VulkanIncludeDirectory` and
+`-VulkanImportLibrary`). Keep the patch, DLL and MIT notice together when updating.
+The shared device explicitly enables the FG storage-image read/write features;
+unsupported devices retain FSR upscaling and report frame generation unavailable.
+
 Runtime configuration can be supplied with either config JSON fields or these overrides. Explicit
 bridge/runtime overrides take precedence over the bundled DLLs:
 

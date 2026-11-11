@@ -76,6 +76,9 @@ SSAA
 SMAA
 NIS Upscale
 DLSS Super Resolution
+Intel XeSS Super Resolution
+SGSR 1 Upscale
+SGSR 2 Super Resolution
 FSR2 Super Resolution
 FSR3 Super Resolution
 FSR3 Super Resolution + Frame Generation
@@ -85,11 +88,82 @@ TAA
 
 Sharpening is an independent 0–100% control available with every mode, including Off, and defaults to 0%. The shared planner expresses each mode as conceptual passes and targets. The runtime requires Minecraft's Vulkan backend for every anti-aliasing mode; non-Vulkan sessions keep saved settings but block rendering and mode cycling until Minecraft is restarted on Vulkan.
 
+SGSR 1 and SGSR 2 use Qualcomm's BSD-licensed portable shaders and need no separate vendor runtime. SGSR 1 is spatial, with optional pre-AA and directional edges; SGSR 2 uses the official two-pass fragment temporal path. Both offer independent Native, Quality, Balanced and Performance settings. They run on RTX 3060 Ti; Snapdragon/Adreno qualification is pending external testing. See [SGSR setup](docs/sgsr-setup.md), [tester instructions](docs/sgsr-testing.md) and [validation results](docs/sgsr-validation.md).
+
 MSAA also exposes an optional alpha-to-coverage control, disabled by default. Enabling it smooths cutout texture edges but may make distant foliage fade or stipple.
 
 SSAA percentages are per axis. The 200% option renders at twice the output width and twice the output height, so it evaluates four source pixels for every output pixel: conventional 4x SSAA. The selectable range now extends to 800% per axis (64x as many scene pixels). Values above 400% display an extreme-performance warning because they may heavily impact frame rate and GPU memory usage or exceed the GPU's maximum texture size at high output resolutions.
 
 The optional **Cycle AA Mode** key binding is unbound by default so it cannot collide with shader-pack shortcuts (including Iris's `O` binding). It can be assigned under Minecraft's Controls screen; existing custom bindings remain intact. Existing installations that already saved the old `O` default should clear or reassign it once in Controls.
+
+## Sodium on Fabric 26.3
+
+The Sodium adapter targets **Sodium 0.9.2+mc26.3** and **0.9.3-beta.1+mc26.3** on
+Minecraft's **Vulkan** backend. Sodium's terrain batching, compressed vertices and
+chunk workers remain in charge of terrain. The mod applies AA at the shared world
+render boundary, preserves Sodium's classic/OIT pipeline layouts and formats,
+and recognizes Sodium terrain fragment sources when applying optional MIP bias.
+Entity motion capture preserves Sodium's bulk vertex-writing API; unfamiliar
+position encodings keep rendering but omit that mesh from temporal object matching.
+The capture budget also limits bulk position reads and rejects partial mesh histories.
+
+Default `runClient` remains a no-Sodium control. For isolated development profiles:
+
+```powershell
+.\gradlew.bat runClient -PsodiumProfile=stable
+.\gradlew.bat runClient -PsodiumProfile=beta
+```
+
+These opt-in profiles use the full pinned Sodium runtime, verify its SHA-256 before
+launch, select Vulkan, and keep their settings/worlds under
+`run/26.3/sodium-stable` or `run/26.3/sodium-beta`. They do not package Sodium in
+the release jar. Normal native feature requirements still apply: DLSS needs a
+supported RTX GPU and user-supplied runtime, and FSR3 frame generation needs the
+required Vulkan features and separate queues. An unavailable FG capability falls
+back to FSR3 upscaling through the existing mode-capability policy.
+
+OpenGL AA and Iris/shader-pack integration are separate renderer projects and are
+not claimed by this adapter. Other Sodium versions and GPU/driver combinations
+need their own qualification.
+
+Qualification on RTX 3060 Ti / NVIDIA 591.86 includes 55 stable-Sodium capture
+groups, 24 beta groups and a nine-case no-Sodium control, with actual generated
+frame readbacks. MIP changes were checked on a minified checker texture, not only
+by the slider label. These are short, controlled tests rather than all-hardware
+certification or performance benchmarks.
+
+The extended M/L model tests exposed internal image-clear synchronization hazards
+in both tested NVIDIA runtime sets: DLSS 310.9.1 / Streamline 2.14.1 and
+DLSS 310.9.16 / Streamline 2.14.16. The mod's bridge now registers a private,
+process-local Vulkan layer that adds the missing transfer destination stage/access
+to initial shader-use image transitions recorded inside DLSS evaluation. Clears
+are forwarded directly, including K/Auto's steady-state histogram clears; ordinary
+game/FSR barriers are unchanged. NVIDIA DLLs, model choices and
+temporal inputs are unchanged. The repair is visible to synchronization validation;
+it does not filter warning messages. Existing 2.14.1 installations receive it
+when updating the mod, without downloading another NVIDIA runtime.
+
+Native crash dumps traced the intermittent Windows/Java 25 startup/reload fault
+through Shaderc's Java include callback during asynchronous shader compilation.
+Windows/Java 25 pipeline-compilation jobs now use a separate bounded daemon pool
+with 4 MiB thread stacks and normal priority. The original asynchronous operation,
+compiler inputs and include resolver are preserved. OpenGL's deferred GPU finalization
+retains its original scheduling. Idle
+compiler threads expire after 30 seconds; regular frame rendering uses no extra
+task or wait. This applies in public jars and `runClient`, including Sodium,
+without launcher arguments or a global LWJGL callback-policy change.
+
+The earlier shared-arena experiment reproduced the original crash once full dumps
+were collected; it is not enabled by the mod or development profiles. The new
+compiler-pool change is a targeted compatibility measure for the observed path,
+not a general JVM repair. A smaller-stack dedicated-pool control also survived,
+so stack size has not been isolated as the sole contributing factor.
+
+The follow-up also corrects a Vulkan 1.2 descriptor-indexing declaration in
+FSR-only sessions. Promoted individual features remain enabled in the core struct;
+the redundant EXT declaration is removed so it does not require an unrelated
+umbrella feature bit. See `output/runtime-stability-fixes-2026-10-25/` for the
+follow-up validation evidence and remaining limits.
 
 ## Anti Aliasing Settings
 
@@ -142,9 +216,10 @@ The newest 4,096 diagnostic events are retained so a recurring failure cannot gr
 DLSS requires Windows x64, supported RTX hardware, Vulkan, and a user-downloaded NVIDIA runtime.
 The public jar includes the mod's JNI bridge; NVIDIA's runtime DLLs are excluded from every build.
 Open **Video Settings → Anti Aliasing Settings**, select **DLSS Super Resolution**, then use
-**Set up DLSS** below Advanced controls. Download Streamline **2.14.1**,
+**Set up DLSS** below Advanced controls. Download Streamline **2.14.16**,
 extract it, then connect `bin/x64/nvngx_dlss.dll` using the system file picker. The mod checks the
-five matching production DLLs and copies them into this Minecraft instance. Restart Minecraft
+five matching production DLLs and copies them into this Minecraft instance. Complete
+production sets from **2.14.1** remain supported; mixed releases are rejected. Restart Minecraft
 completely, then select DLSS Super Resolution. See [the setup guide](docs/dlss-setup.md).
 
 This same flow works with `./gradlew runClient`. Its settings live in `run/26.3`, separately from
@@ -366,3 +441,7 @@ Check latest.log for mixin or renderer errors
 - Keep this branch structurally synced with sibling jar branches.
 - Add automated smoke checks per jar family.
 - Keep common config and pass-planning behavior synchronized across branches.
+
+## Intel XeSS
+
+The Windows x64 jar includes Intel XeSS Super Resolution with Native Anti-Aliasing and all six upscaling presets. It uses Intel's unmodified cross-vendor Vulkan runtime and works on compatible NVIDIA/AMD GPUs, including RTX 3060 Ti. Choose it in the existing method dropdown; no separate runtime download is needed. See [XeSS setup and quality controls](docs/xess-setup.md).

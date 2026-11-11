@@ -307,6 +307,8 @@ public final class AntiAliasingModeDropdownOverlay extends AbstractWidget {
     }
 
     private Component modeTooltip(RenderRuntime runtime, AntiAliasingMode mode) {
+        if (mode.usesXessQualityControl() && !runtime.canConfigureMode(mode))
+            return Component.literal(runtime.modeUnavailableReason(mode));
         if (mode == AntiAliasingMode.DLSS_SUPER_RESOLUTION && !runtime.canConfigureMode(mode)) {
             return Component.translatable("options.salts_anti_aliasing.dlss_setup.tooltip");
         }

@@ -1,0 +1,376 @@
+[
+  {
+    "label": "vanilla-off",
+    "status": "Off - native scene",
+    "mode": "OFF",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-fxaa",
+    "status": "FXAA - 1280 x 720",
+    "mode": "FXAA",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-smaa",
+    "status": "SMAA - 1280 x 720",
+    "mode": "SMAA",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-msaa2",
+    "status": "MSAA - 1280 x 720",
+    "mode": "MSAA",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-msaa4",
+    "status": "MSAA - 1280 x 720",
+    "mode": "MSAA",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-msaa4-atoc",
+    "status": "MSAA - 1280 x 720",
+    "mode": "MSAA",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-msaa8",
+    "status": "MSAA - 1280 x 720",
+    "mode": "MSAA",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-ssaa200",
+    "status": "SSAA - 2560 x 1440",
+    "mode": "SSAA",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-ssaa400",
+    "status": "SSAA - 5120 x 2880",
+    "mode": "SSAA",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-nis",
+    "status": "NIS Upscale - 986 x 554",
+    "mode": "NIS_UPSCALE",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-fsr1",
+    "status": "FSR1 Upscale - 986 x 554",
+    "mode": "FSR1_UPSCALE",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-taa",
+    "status": "TAA - 1280 x 720",
+    "mode": "TAA",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 3096,
+        "movingVertices": 0,
+        "stableMeshes": 12,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-dlss",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 3096,
+        "movingVertices": 0,
+        "stableMeshes": 12,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 1,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-dlaa",
+    "status": "DLSS Super Resolution - 1280 x 720",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 3096,
+        "movingVertices": 0,
+        "stableMeshes": 12,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 1,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-dlss-mip",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 3096,
+        "movingVertices": 0,
+        "stableMeshes": 12,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 1,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-fsr2",
+    "status": "FSR2 Super Resolution - 853 x 480",
+    "mode": "FSR2_SUPER_RESOLUTION",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 3096,
+        "movingVertices": 0,
+        "stableMeshes": 12,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  },
+  {
+    "label": "vanilla-fsr3",
+    "status": "FSR3 Super Resolution - 853 x 480",
+    "mode": "FSR3_SUPER_RESOLUTION",
+    "probe": {
+      "installed": false,
+      "version": "absent",
+      "pipelines": [],
+      "geometryCoverage": {
+        "capturedVertices": 3096,
+        "movingVertices": 0,
+        "stableMeshes": 12,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0
+    }
+  }
+]

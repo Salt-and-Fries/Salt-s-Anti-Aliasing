@@ -1,0 +1,32 @@
+{
+  "native-off": {
+    "maeVsSsaa": 1.978177806712963,
+    "frameVariation": 0.0,
+    "edgeVariation": 0.0
+  },
+  "reference-ssaa4": {
+    "maeVsSsaa": 1.9350405092592594e-05,
+    "frameVariation": 1.9350405092592594e-05,
+    "edgeVariation": 0.0
+  },
+  "static-native_aa": {
+    "maeVsSsaa": 1.9310892891589508,
+    "frameVariation": 0.1727847989516468,
+    "edgeVariation": 0.24943844834174103
+  },
+  "static-quality": {
+    "maeVsSsaa": 2.864153826678241,
+    "frameVariation": 0.15216617594747023,
+    "edgeVariation": 0.20115161298805886
+  },
+  "static-ultra_performance": {
+    "maeVsSsaa": 4.390850453317901,
+    "frameVariation": 0.12675387083701753,
+    "edgeVariation": 0.14484513920213216
+  },
+  "dlaa-reference": {
+    "maeVsSsaa": 1.5660725308641974,
+    "frameVariation": 0.05300648224504739,
+    "edgeVariation": 0.08667079871149894
+  }
+}

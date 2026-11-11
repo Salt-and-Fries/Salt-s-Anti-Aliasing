@@ -1,0 +1,192 @@
+{
+  "release-stable": {
+    "completedCases": 55
+  },
+  "fixed-beta": {
+    "completedCases": 24
+  },
+  "shared-fresh-vanilla": {
+    "completedCases": 9
+  },
+  "fixed-stable-entity": {
+    "frames": 24,
+    "entityDrawVertices": [
+      576,
+      576
+    ],
+    "particleQuads": [
+      9,
+      14
+    ],
+    "coverage": {
+      "capturedVertices": 624,
+      "movingVertices": 384,
+      "stableMeshes": 3,
+      "newMeshes": 0,
+      "topologyChanges": 0,
+      "cappedMeshes": 0,
+      "unidentifiedMeshes": 0,
+      "vertexBudget": 1048576
+    }
+  },
+  "fixed-stable-particles": {
+    "frames": 24,
+    "entityDrawVertices": [
+      324,
+      324
+    ],
+    "particleQuads": [
+      288,
+      329
+    ],
+    "coverage": {
+      "capturedVertices": 624,
+      "movingVertices": 216,
+      "stableMeshes": 3,
+      "newMeshes": 0,
+      "topologyChanges": 0,
+      "cappedMeshes": 0,
+      "unidentifiedMeshes": 0,
+      "vertexBudget": 1048576
+    }
+  },
+  "fixed-stable-particles-oit": {
+    "frames": 24,
+    "entityDrawVertices": [
+      0,
+      0
+    ],
+    "particleQuads": [
+      274,
+      307
+    ],
+    "coverage": {
+      "capturedVertices": 408,
+      "movingVertices": 0,
+      "stableMeshes": 2,
+      "newMeshes": 0,
+      "topologyChanges": 0,
+      "cappedMeshes": 0,
+      "unidentifiedMeshes": 0,
+      "vertexBudget": 1048576
+    }
+  },
+  "checkerImageEvidence": {
+    "off": {
+      "meanLuma": 107.82925120863237,
+      "lumaStd": 63.904240799328484,
+      "meanAbsoluteDifferenceFromOff": 0.0
+    },
+    "negative": {
+      "meanLuma": 100.5290651166268,
+      "lumaStd": 61.92008704127046,
+      "meanAbsoluteDifferenceFromOff": 9.256971628289474
+    },
+    "positive": {
+      "meanLuma": 116.20966077302631,
+      "lumaStd": 64.63630220407111,
+      "meanAbsoluteDifferenceFromOff": 11.0519360546252
+    },
+    "auto": {
+      "meanLuma": 102.11495614035088,
+      "lumaStd": 62.44899230055053,
+      "meanAbsoluteDifferenceFromOff": 7.290942047946571
+    }
+  },
+  "presentedFrames-stable": {
+    "total": 48,
+    "generated": 24,
+    "rendered": 24,
+    "metadataRoles": [
+      "",
+      "input-hudless",
+      "input-present"
+    ]
+  },
+  "presentedFrames-beta": {
+    "total": 48,
+    "generated": 24,
+    "rendered": 24,
+    "metadataRoles": [
+      "",
+      "input-hudless",
+      "input-present"
+    ]
+  },
+  "betaSwordMaskAlignment": {
+    "pairs": 24,
+    "minIntersectionOverUnion": 0.9476344520824909,
+    "meanIntersectionOverUnion": 0.9728975313242625,
+    "note": "Generated vs rendered pair of the same SDK frame ID; green/cyan sword ROI; diagnostic alignment measure, not universal image-quality proof."
+  },
+  "launch-stable-release.log": {
+    "vuidReferences": 0,
+    "syncHazards": 2,
+    "writerFallback": false,
+    "leakedObjects": false,
+    "generatedOutputConfirmed": true,
+    "vulkan": true
+  },
+  "launch-beta-release.log": {
+    "vuidReferences": 0,
+    "syncHazards": 0,
+    "writerFallback": false,
+    "leakedObjects": false,
+    "generatedOutputConfirmed": true,
+    "vulkan": true
+  },
+  "launch-no-sodium-shared-fresh.log": {
+    "vuidReferences": 0,
+    "syncHazards": 4,
+    "writerFallback": false,
+    "leakedObjects": false,
+    "generatedOutputConfirmed": true,
+    "vulkan": true
+  },
+  "amd_fidelityfx_vk.dll": {
+    "sha256": "b2168fabc320223ced7f7d95d69bb4e64de9d11605eb3a46172efde64a2c6941",
+    "bytes": 9326080
+  },
+  "salts_fsr_bridge.dll": {
+    "sha256": "7895a21f73887342c47e1ef4308092b9c1e828987dd6450ca374d1a2dfe091bf",
+    "bytes": 97280
+  },
+  "salts-anti-aliasing-mc26.3-1.1.jar": {
+    "sha256": "07f5a78cc576d2888a5ef764b334fe900d81c454390b7a0970daa0bdd7750f34",
+    "bytes": 3430309
+  },
+  "normalConfigPreserved": true,
+  "normalOptionsPreserved": true,
+  "automatedTests": {
+    "tests": 150,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "scope": {
+    "minecraft": "26.3",
+    "sodiumStable": "0.9.2+mc26.3",
+    "sodiumBeta": "0.9.3-beta.1+mc26.3",
+    "gpu": "RTX 3060 Ti",
+    "driver": "591.86",
+    "java": "Microsoft 25.0.2",
+    "noSodiumControlArena": "shared",
+    "casesAre": "Short controlled capture groups; not all-hardware certification or uncapped performance benchmarks."
+  },
+  "remainingFindings": [
+    "NVIDIA-owned nv.ngx.dlss.resource image-clear WRITE_AFTER_WRITE hazards were observed in M/L initialization, with and without Sodium, using DLSS 310.9.1 / Streamline 2.14.1. K was clean in the sampled runs. These remain external-runtime findings, not fixed by the Sodium/AMD patch.",
+    "Exploratory default-auto-arena launches encountered three native jvm.dll 0xc0000005 failures at startup/reload. A fresh nine-case no-Sodium run using LWJGL shared upcall arenas completed successfully. Root cause is unproven; the supported shared policy is applied only to isolated development profiles. Invalid/stale-label retry results are excluded.",
+    "OpenGL AA, Iris/shader packs, other Sodium versions, and other GPU/driver combinations are outside the completed qualification."
+  ],
+  "references": [
+    "https://github.com/NVIDIA-RTX/Streamline/issues/84",
+    "https://github.com/LWJGL/lwjgl3/blob/master/doc/FFM.md"
+  ],
+  "publicJarChecks": {
+    "threeExpectedDlls": true,
+    "noNvidiaRuntime": true,
+    "noBundledSodium": true,
+    "noAuditHarness": true,
+    "nativeBytesMatchTestedBuild": true
+  }
+}

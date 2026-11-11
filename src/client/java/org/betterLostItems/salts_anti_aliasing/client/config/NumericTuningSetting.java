@@ -6,6 +6,8 @@ import java.util.function.ToDoubleFunction;
 
 /** Shared UI ranges and applicability for the fields consumed by the renderers. */
 public enum NumericTuningSetting {
+    SGSR1_EDGE_THRESHOLD(1.0/255.0, 32.0/255.0, 1.0/255.0, t -> t.sgsr1EdgeThreshold, (t,v) -> t.sgsr1EdgeThreshold=v),
+    SGSR1_EDGE_SHARPNESS(1, 2, .05, t -> t.sgsr1EdgeSharpness, (t,v) -> t.sgsr1EdgeSharpness=v),
     DLSS_PARTICLE_ALPHA_THRESHOLD(.1, 1, .05, t -> t.dlssParticleAlphaThreshold, (t, v) -> t.dlssParticleAlphaThreshold = v),
     MIP_BIAS(-3, 1, .25, t -> t.mipBias, (t, v) -> t.mipBias = v),
     MIP_BIAS_OFFSET(-1, 1, .25, t -> t.mipBiasOffset, (t, v) -> t.mipBiasOffset = v),
@@ -82,7 +84,8 @@ public enum NumericTuningSetting {
                                     TAA_VARIANCE_GAMMA)
                             : List.of(TAA_HISTORY_WEIGHT);
             // K/M/L do not support the legacy BiasCurrentColor input.
-            case DLSS_SUPER_RESOLUTION -> advanced ? List.of(DLSS_PARTICLE_ALPHA_THRESHOLD) : List.of();
+            case SGSR1_UPSCALE -> advanced ? List.of(SGSR1_EDGE_THRESHOLD, SGSR1_EDGE_SHARPNESS) : List.of();
+            case SGSR2_SUPER_RESOLUTION, XESS_SUPER_RESOLUTION, DLSS_SUPER_RESOLUTION -> advanced ? List.of(DLSS_PARTICLE_ALPHA_THRESHOLD) : List.of();
             case FSR2_SUPER_RESOLUTION,
                             FSR3_SUPER_RESOLUTION,
                             FSR3_SUPER_RESOLUTION_FRAME_GENERATION ->

@@ -1,0 +1,20 @@
+{
+  "commit": "d926f074bcb9d714e179f1ce0fcb9ee2eeb5074e",
+  "files": {
+    "sgsr/v1/README.md": "5bd4cc66a26f7dff765d78353b49622435562155621c4a4c0599703085e7f6c1",
+    "sgsr/v2/README.md": "10c79e9c2b5325aea87284aa264917808a4890693ac3d901596054b2bacc3600",
+    "sgsr/v2/include/glsl_2_pass_cs/sgsr2_convert.comp": "b8694884617bfe7bdbdd3ce24f639c03f0fb22869b9e0d293cbf67c5ce503de4",
+    "sgsr/v2/include/glsl_2_pass_cs/sgsr2_upscale.comp": "168b415d231cd9a6a1542c0c9894ac4efb621ec19505f95c7f71751def7e6253",
+    "sgsr/v2/include/glsl_2_pass_fs/sgsr2_convert.fs": "5504dd0764297816732a25fbdeaa9ab163610739354666b7df95cf16a89f7d23",
+    "sgsr/v2/include/glsl_2_pass_fs/sgsr2_upscale.fs": "13134b92549de6e61a34e8ca2dd4b66389a75a8b60a4525c2d6c4857fd9abf71",
+    "sgsr/v2/include/glsl_2_pass_fs/sgsr2_vertex.vs": "1d7def4ab038af7a9cc059d58205dd66b8068d8dce8535d6e8effacbf269617d",
+    "sgsr/v2/include/glsl_3_pass_cs/sgsr2_activate.comp": "39a80edd0b86c71188ddab19525263fbd75a404ba068fabfaeb9304bda8a88c1",
+    "sgsr/v2/include/glsl_3_pass_cs/sgsr2_convert.comp": "b7bc06b18f5b30697f2b57fd7067da886b7d75dc07b954fdc6a8da8c98159482",
+    "sgsr/v2/include/glsl_3_pass_cs/sgsr2_upscale.comp": "67e9dbd937fd773b8eef78a0aecc979600f966556f81c30c7348aabc2ffb1a6b",
+    "sgsr/v1/include/glsl/sgsr1_shader_mobile.frag": "93e8db987dc79f62e68805f968d63989e5d50daebe4d040e4c7104047ad49139",
+    "sgsr/v1/include/glsl/sgsr1_shader_mobile_edge_direction.frag": "0863ca68eaf10909ae5cf8455fb077497f80437580aa8e291aaca7529061934d",
+    "sgsr/v1/include/hlsl/sgsr1_mobile.h": "ada85dc193372b520b4c72b766b2eba57797384eda064b935b815655f080aa34",
+    "sgsr/v1/include/hlsl/sgsr1_shader_mobile.hlsl": "fcebc33d6727aa56375d0db2b2047f54f4349365a43d9fd896f546091006049f"
+  },
+  "repository": "https://github.com/SnapdragonGameStudios/snapdragon-gsr"
+}

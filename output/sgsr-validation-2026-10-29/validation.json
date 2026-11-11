@@ -1,0 +1,152 @@
+{
+  "jar": "salts-anti-aliasing-mc26.3-1.1-sgsr.jar",
+  "sha256": "c1e90ac8f796e24e8fc50554c7070c10679679744a1f44005c61382a5183ec90",
+  "bytes": 63207798,
+  "hardware": {
+    "gpu": "RTX 3060 Ti",
+    "driver": "591.86",
+    "os": "Windows x64",
+    "java": "25.0.2"
+  },
+  "target": {
+    "minecraft": "26.3",
+    "fabricLoader": "0.19.5",
+    "fabricApi": "0.162.0+26.3",
+    "java": 25,
+    "backend": "Vulkan"
+  },
+  "sgsrSourceCommit": "d926f074bcb9d714e179f1ce0fcb9ee2eeb5074e",
+  "sgsr2Variant": "2-pass-fragment",
+  "tests": {
+    "tests": 164,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "qualifiedLogs": {
+    "launch02.log": {
+      "sha256": "325a0c5d13bf4d2234ef12ef44c9a8d7d41e428e6e242c3d2a828fe4fe36665d",
+      "vulkanValidationEnabled": true,
+      "validationVuidCount": 0
+    },
+    "launch03.log": {
+      "sha256": "7d7df594271f2091cd3f7eaafbfbbbadc1e63dfcd3897e34747cd15201bd794a",
+      "vulkanValidationEnabled": true,
+      "validationVuidCount": 0
+    },
+    "launch07.log": {
+      "sha256": "f1e8591bcaf7f07562d7d94568524984c075ac4b9680f05634d694bd98e5cf5f",
+      "vulkanValidationEnabled": false,
+      "validationVuidCount": 0
+    },
+    "launch08.log": {
+      "sha256": "d5ee17ad1b89770235664fba2a250e8d89d10223596b29bc2314202aee7626ee",
+      "vulkanValidationEnabled": true,
+      "validationVuidCount": 0
+    }
+  },
+  "performance": [
+    {
+      "label": "normal-perf-off",
+      "frames": 1800,
+      "meanMs": 0.7557797222222221,
+      "p95Ms": 1.260865,
+      "p99Ms": 1.4574909999999999
+    },
+    {
+      "label": "normal-perf-sgsr1_upscale-native",
+      "frames": 1800,
+      "meanMs": 1.1748945555555554,
+      "p95Ms": 1.650825,
+      "p99Ms": 1.799684
+    },
+    {
+      "label": "normal-perf-sgsr1_upscale-quality",
+      "frames": 1800,
+      "meanMs": 0.8710629999999999,
+      "p95Ms": 1.3959499999999998,
+      "p99Ms": 1.5942969999999999
+    },
+    {
+      "label": "normal-perf-sgsr1_upscale-balanced",
+      "frames": 1800,
+      "meanMs": 0.7872144444444443,
+      "p95Ms": 1.3273149999999998,
+      "p99Ms": 1.410655
+    },
+    {
+      "label": "normal-perf-sgsr1_upscale-performance",
+      "frames": 1800,
+      "meanMs": 0.7381533888888889,
+      "p95Ms": 1.2938749999999999,
+      "p99Ms": 1.387626
+    },
+    {
+      "label": "normal-perf-sgsr2_super_resolution-native",
+      "frames": 1800,
+      "meanMs": 0.9812055000000001,
+      "p95Ms": 1.4969799999999998,
+      "p99Ms": 1.575924
+    },
+    {
+      "label": "normal-perf-sgsr2_super_resolution-quality",
+      "frames": 1800,
+      "meanMs": 0.7876078888888889,
+      "p95Ms": 1.3258050000000001,
+      "p99Ms": 1.4158389999999998
+    },
+    {
+      "label": "normal-perf-sgsr2_super_resolution-balanced",
+      "frames": 1800,
+      "meanMs": 0.7317418333333333,
+      "p95Ms": 1.288325,
+      "p99Ms": 1.3949829999999999
+    },
+    {
+      "label": "normal-perf-sgsr2_super_resolution-performance",
+      "frames": 1800,
+      "meanMs": 0.6987949444444445,
+      "p95Ms": 1.254305,
+      "p99Ms": 1.346111
+    },
+    {
+      "label": "normal-perf-sgsr1-directional",
+      "frames": 1800,
+      "meanMs": 0.8870784444444444,
+      "p95Ms": 1.407605,
+      "p99Ms": 1.517527
+    }
+  ],
+  "soaks": [
+    {
+      "mode": "SGSR2_SUPER_RESOLUTION",
+      "frames": 60000,
+      "elapsedSeconds": 62.6357362,
+      "meanMs": 1.0439289366666666,
+      "p99Ms": 1.9222160000000033,
+      "maximumMs": 17.0778,
+      "framesAbove50Ms": 0
+    },
+    {
+      "mode": "SGSR1_UPSCALE",
+      "frames": 30000,
+      "elapsedSeconds": 26.0286138,
+      "meanMs": 0.8676204599999999,
+      "p99Ms": 1.6079039999999996,
+      "maximumMs": 6.2137,
+      "framesAbove50Ms": 0
+    }
+  ],
+  "worldUnload": {
+    "hasWorld": false,
+    "handAaBytes": 0,
+    "ownedTargetBytes": 0
+  },
+  "ordinaryReloadsConfirmed": 3,
+  "limitations": [
+    "Snapdragon/Adreno and ARM runtime untested; external feedback pending",
+    "One aggressive continuous-screenshot/resize/reload test with an experimental JVM override crashed in a native Java 25 shader compiler thread; exact cause unresolved; subsequent three ordinary reloads without override passed",
+    "Standard SDR renderer qualified; arbitrary shader packs/HDR/other drivers unqualified",
+    "Record Metrics adds synchronous snapshot overhead; final timing runs used default recording off"
+  ]
+}

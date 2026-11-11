@@ -1,0 +1,1044 @@
+[06:55:21] [main/INFO]: Loading Minecraft 26.3 with Fabric Loader 0.19.5
+[06:55:21] [main/INFO]: Mappings not present!
+[06:55:21] [main/INFO]: Loading 54 mods:
+	- fabric-api 0.162.0+26.3
+	   |-- fabric-advancement-api-v1 1.0.0+38c7a2d55d
+	   |-- fabric-api-base 2.0.6+fcdff87f5d
+	   |-- fabric-api-lookup-api-v1 2.0.24+3434d6d95d
+	   |-- fabric-biome-api-v1 20.1.0+c6aa69a85d
+	   |-- fabric-block-api-v1 3.1.0+0ae6f9115d
+	   |-- fabric-block-getter-api-v2 2.0.9+3434d6d95d
+	   |-- fabric-command-api-v2 3.1.2+fcdff87f5d
+	   |-- fabric-content-registries-v0 15.0.4+74ed1ea55d
+	   |-- fabric-convention-tags-v2 4.10.3+6b5b47fd5d
+	   |-- fabric-crash-report-info-v1 1.0.7+fcdff87f5d
+	   |-- fabric-creative-tab-api-v1 5.0.21+fcdff87f5d
+	   |-- fabric-data-attachment-api-v1 2.2.31+b9b88df45d
+	   |-- fabric-data-generation-api-v1 27.3.0+5be2453c5d
+	   |-- fabric-debug-api-v1 1.0.4+3434d6d95d
+	   |-- fabric-dimensions-v1 5.1.19+47f74c985d
+	   |-- fabric-entity-events-v1 6.0.4+3434d6d95d
+	   |-- fabric-events-interaction-v0 5.3.7+b9b88df45d
+	   |-- fabric-game-rule-api-v1 4.0.10+3434d6d95d
+	   |-- fabric-item-api-v1 14.7.0+cf6bc2db5d
+	   |-- fabric-key-mapping-api-v1 2.0.8+3434d6d95d
+	   |-- fabric-lifecycle-events-v1 4.1.9+ffef5f675d
+	   |-- fabric-loot-api-v3 4.0.8+4068fd645d
+	   |-- fabric-menu-api-v1 2.0.28+ed66f0a35d
+	   |-- fabric-message-api-v1 7.0.10+3434d6d95d
+	   |-- fabric-model-loading-api-v1 8.0.35+fcdff87f5d
+	   |-- fabric-networking-api-v1 6.3.9+b9b88df45d
+	   |-- fabric-object-builder-api-v1 24.1.10+3434d6d95d
+	   |-- fabric-particles-v1 5.0.25+3434d6d95d
+	   |-- fabric-permission-api-v1 1.0.8+fcdff87f5d
+	   |-- fabric-recipe-api-v1 10.0.9+b9b88df45d
+	   |-- fabric-registry-sync-v0 8.0.2+1ca9f6365d
+	   |-- fabric-renderer-api-v1 17.0.15+79385d0b5d
+	   |-- fabric-renderer-indigo 9.1.23+b9d63e335d
+	   |-- fabric-rendering-fluids-v1 6.0.6+3434d6d95d
+	   |-- fabric-rendering-v1 27.0.14+901a437c5d
+	   |-- fabric-resource-conditions-api-v1 6.2.0+0d124ae85d
+	   |-- fabric-resource-loader-v0 3.3.26+4fc5413f5d
+	   |-- fabric-resource-loader-v1 3.0.4+ba0d6c0d5d
+	   |-- fabric-screen-api-v1 5.2.4+48607d035d
+	   |-- fabric-serialization-api-v1 2.0.7+74ed1ea55d
+	   |-- fabric-sound-api-v1 2.0.7+3434d6d95d
+	   |-- fabric-tag-api-v1 2.1.10+fcdff87f5d
+	   |-- fabric-transfer-api-v1 8.0.25+fcdff87f5d
+	   \-- fabric-transitive-access-wideners-v1 8.1.16+52268a0e5d
+	- fabricloader 0.19.5
+	   \-- mixinextras 0.5.5
+	- java 25
+	- minecraft 26.3
+	- modmenu 21.0.0
+	   \-- placeholder-api 3.2.0+26.3
+	- salts_anti_aliasing 1.1
+	- salts_audit_harness 1.0
+	- sodium 0.9.3-beta.1+mc26.3
+[06:55:21] [main/INFO]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/C:/Users/texca/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.17.4+mixin.0.8.7/5f66cc9f59b8efaa942155a3d5a30599bf6640dd/sponge-mixin-0.17.4+mixin.0.8.7.jar Service=Knot/Fabric Env=CLIENT
+[06:55:21] [main/INFO]: Loaded configuration file for Sodium: 37 options available, 0 override(s) found
+[06:55:22] [main/INFO]: Searching for graphics cards...
+[06:55:22] [main/INFO]: Found graphics adapter: AdapterInfo{vendor=NVIDIA, description='NVIDIA GeForce RTX 3060 Ti', adapterType=0x0000031B, openglIcdFilePath='C:\Windows\System32\DriverStore\FileRepository\nvmdi.inf_amd64_210156e74c27f99d\nvoglv64.dll', openglIcdVersion=32.0.15.9186}
+[06:55:22] [main/WARN]: Sodium has applied one or more workarounds to prevent crashes or other issues on your system: [NVIDIA_THREADED_OPTIMIZATIONS_BROKEN]
+[06:55:22] [main/WARN]: This is not necessarily an issue, but it may result in certain features or optimizations being disabled. You can sometimes fix these issues by upgrading your graphics driver.
+[06:55:22] [main/INFO]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.5).
+[06:55:23] [Datafixer Bootstrap #0/INFO]: 307 Datafixer optimizations took 220 milliseconds
+[06:55:23] [main/ERROR]: Unable to locate English counter names in registry Perflib 009. Counters may need to be rebuilt: 
+com.sun.jna.platform.win32.Win32Exception: The parameter is incorrect.
+	at knot//com.sun.jna.platform.win32.Advapi32Util.registryGetStringArray(Advapi32Util.java:921)
+	at knot//com.sun.jna.platform.win32.Advapi32Util.registryGetStringArray(Advapi32Util.java:898)
+	at knot//oshi.driver.windows.registry.HkeyPerformanceDataUtil.mapCounterIndicesFromRegistry(HkeyPerformanceDataUtil.java:274)
+	at knot//oshi.driver.windows.registry.HkeyPerformanceDataUtil.<clinit>(HkeyPerformanceDataUtil.java:51)
+	at knot//oshi.driver.windows.registry.ProcessPerformanceData.buildProcessMapFromRegistry(ProcessPerformanceData.java:45)
+	at knot//oshi.software.os.windows.WindowsOperatingSystem.queryProcessMapFromRegistry(WindowsOperatingSystem.java:328)
+	at knot//oshi.util.Memoizer$1.get(Memoizer.java:65)
+	at knot//oshi.software.os.windows.WindowsOperatingSystem.processMapToList(WindowsOperatingSystem.java:298)
+	at knot//oshi.software.os.windows.WindowsOperatingSystem.getProcess(WindowsOperatingSystem.java:292)
+	at knot//oshi.software.os.OperatingSystem.getCurrentProcess(OperatingSystem.java:246)
+	at knot//net.minecraft.SystemReport.lambda$putSoftware$0(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.putSoftware(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.lambda$new$7(SystemReport.java:68)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.<init>(SystemReport.java:68)
+	at knot//net.minecraft.CrashReport.<init>(CrashReport.java:35)
+	at knot//net.minecraft.CrashReport.preload(CrashReport.java:252)
+	at knot//net.minecraft.client.main.Main.main(Main.java:172)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+[06:55:23] [main/WARN]: Unable to locate English counter names in registry Perflib 009. Assuming English counters. Error 0x80070057. See https://support.microsoft.com/en-us/help/300956/how-to-manually-rebuild-performance-counter-library-values
+[06:55:23] [main/WARN]: Failed to get system info for Process Loads
+java.lang.NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getUserTime()" because "process" is null
+	at knot//net.minecraft.SystemReport.lambda$putProcessDetails$0(SystemReport.java:190)
+	at knot//net.minecraft.SystemReport.setDetail(SystemReport.java:96)
+	at knot//net.minecraft.SystemReport.putProcessDetails(SystemReport.java:189)
+	at knot//net.minecraft.SystemReport.lambda$putSoftware$0(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.putSoftware(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.lambda$new$7(SystemReport.java:68)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.<init>(SystemReport.java:68)
+	at knot//net.minecraft.CrashReport.<init>(CrashReport.java:35)
+	at knot//net.minecraft.CrashReport.preload(CrashReport.java:252)
+	at knot//net.minecraft.client.main.Main.main(Main.java:172)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+[06:55:23] [main/WARN]: Failed to get system info for Process Virtual Size (MiB)
+java.lang.NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getVirtualSize()" because "process" is null
+	at knot//net.minecraft.SystemReport.lambda$putProcessDetails$1(SystemReport.java:202)
+	at knot//net.minecraft.SystemReport.setDetail(SystemReport.java:96)
+	at knot//net.minecraft.SystemReport.putProcessDetails(SystemReport.java:202)
+	at knot//net.minecraft.SystemReport.lambda$putSoftware$0(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.putSoftware(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.lambda$new$7(SystemReport.java:68)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.<init>(SystemReport.java:68)
+	at knot//net.minecraft.CrashReport.<init>(CrashReport.java:35)
+	at knot//net.minecraft.CrashReport.preload(CrashReport.java:252)
+	at knot//net.minecraft.client.main.Main.main(Main.java:172)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+[06:55:23] [main/WARN]: Failed to get system info for Process Resident Size (MiB)
+java.lang.NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getResidentSetSize()" because "process" is null
+	at knot//net.minecraft.SystemReport.lambda$putProcessDetails$2(SystemReport.java:203)
+	at knot//net.minecraft.SystemReport.setDetail(SystemReport.java:96)
+	at knot//net.minecraft.SystemReport.putProcessDetails(SystemReport.java:203)
+	at knot//net.minecraft.SystemReport.lambda$putSoftware$0(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.putSoftware(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.lambda$new$7(SystemReport.java:68)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.<init>(SystemReport.java:68)
+	at knot//net.minecraft.CrashReport.<init>(CrashReport.java:35)
+	at knot//net.minecraft.CrashReport.preload(CrashReport.java:252)
+	at knot//net.minecraft.client.main.Main.main(Main.java:172)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+[06:55:26] [main/INFO]: Completely ignored arguments: [--userType, msa]
+[06:55:27] [Render thread/INFO]: Environment: Environment[discoveryUrl=https://discovery.minecraftservices.com/minecraft/client, name=PROD]
+[06:55:27] [Render thread/INFO]: Setting user: ReleaseTester
+[06:55:27] [Render thread/INFO]: Initializing Salt's Anti Aliasing foundation
+[06:55:27] [Render thread/INFO]: [Indigo] Different rendering plugin detected; not applying Indigo.
+[06:55:27] [Render thread/INFO]: Checking mod updates...
+[06:55:27] [Render thread/INFO]: Performance metrics recording enabled -> G:\Codex Projects\Salts Anti Aliasing\run\sodium-compat-fixes-20261025\logs\salts_anti_aliasing_metrics_latest.json
+[06:55:27] [ModMenu/Update Checker/Fabric Loader/INFO]: Update available for 'fabricloader@0.19.5'
+[06:55:27] [Download-2/ERROR]: Failed to fetch user properties
+com.mojang.authlib.exceptions.InvalidCredentialsException: Status: 401
+	at knot//com.mojang.authlib.exceptions.MinecraftClientHttpException.toAuthenticationException(MinecraftClientHttpException.java:70)
+	at knot//com.mojang.authlib.services.MinecraftServicesUserApiService.fetchProperties(MinecraftServicesUserApiService.java:168)
+	at knot//net.minecraft.client.Minecraft.lambda$new$1(Minecraft.java:451)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1789)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: MinecraftClientHttpException[type=HTTP_ERROR, status=401, response=ErrorResponse[path=/player/attributes, error=null, errorMessage=null, details=null]]
+	at knot//com.mojang.authlib.minecraft.client.MinecraftClient.buildHttpException(MinecraftClient.java:170)
+	at knot//com.mojang.authlib.minecraft.client.MinecraftClient.readServiceResponse(MinecraftClient.java:147)
+	at knot//com.mojang.authlib.minecraft.client.MinecraftClient.getWithEtag(MinecraftClient.java:81)
+	at knot//com.mojang.authlib.minecraft.client.MinecraftClient.get(MinecraftClient.java:65)
+	at knot//com.mojang.authlib.services.MinecraftServicesUserApiService.fetchProperties(MinecraftServicesUserApiService.java:118)
+	... 5 more
+[06:55:27] [Download-3/INFO]: Update available for 'fabric-api@0.162.0+26.3', (-> 0.165.0+26.3)
+[06:55:28] [Render thread/INFO]: DLSS runtime status: Vulkan device information is not available yet
+[06:55:28] [Render thread/INFO]: AMD FSR runtime status: Vulkan device information is not available yet
+[06:55:28] [Render thread/INFO]: Configured Vulkan backend with passes [] and 2 targets
+[06:55:28] [Render thread/INFO]: Client foundation initialized with Vulkan -> []
+[06:55:28] [Render thread/INFO]: Backend library: LWJGL version 3.4.3-snapshot
+[06:55:28] [Render thread/INFO]: SDL [SYSTEM]: App name: Minecraft
+[06:55:28] [Render thread/INFO]: SDL [SYSTEM]: App version: 26.3
+[06:55:28] [Render thread/INFO]: SDL [SYSTEM]: App ID: com.mojang.minecraft
+[06:55:28] [Render thread/INFO]: SDL [SYSTEM]: SDL revision: SDL-3.4.14-62f10da
+[06:55:29] [Render thread/INFO]: Enabling optional FeatureSet [AMD Buffer Marker]
+[06:55:29] [Render thread/INFO]: Enabling optional FeatureSet [EXT MultiDraw]
+[06:55:29] [Render thread/INFO]: Optional FeatureSet [NV Diagnostic Checkpoint] supported but device condition failed and will not be enabled
+[06:55:29] [Render thread/INFO]: Enabling optional FeatureSet [Calibrated Timestamps]
+[06:55:29] [Render thread/INFO]: Enabling optional FeatureSet [Wireframe]
+[06:55:29] [Render thread/INFO]: DLSS runtime status: DLSS is ready
+[06:55:29] [Render thread/INFO]: Reserved private FidelityFX queues: async compute family 2, present family 0, image acquire family 3
+[06:55:29] [Render thread/INFO]: AMD FSR runtime status: AMD FSR upscaling and frame generation are ready
+[06:55:30] [Render thread/INFO]: Using graphics backend Vulkan, using drivers: 1.4.325 NVIDIA 591.86
+[06:55:30] [Render thread/INFO]: Using graphics device: NVIDIA GeForce RTX 3060 Ti (NVIDIA)
+[06:55:30] [Render thread/INFO]: Using graphics device extensions: VK_KHR_external_memory_capabilities (I), VK_KHR_external_semaphore_capabilities (I), VK_KHR_dynamic_rendering (D), VK_EXT_calibrated_timestamps (D), VK_KHR_synchronization2 (D), VK_EXT_multi_draw (D), VK_AMD_buffer_marker (D), VK_EXT_vertex_attribute_divisor (D), VK_KHR_win32_surface (I), VK_KHR_swapchain (D), VK_KHR_surface (I), VK_KHR_push_descriptor (D), VK_KHR_get_physical_device_properties2 (I), VK_EXT_debug_utils (I)
+[06:55:30] [Render thread/INFO]: Created window using SDL video driver: windows
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::putFloat has been called by net.caffeinemc.mods.sodium.api.memory.MemoryIntrinsics (file:/G:/Codex%20Projects/Salts%20Anti%20Aliasing/run/sodium-compat-fixes-20261025/mods/sodium-fabric-0.9.3-beta.1+mc26.3.jar)
+WARNING: Please consider reporting this to the maintainers of class net.caffeinemc.mods.sodium.api.memory.MemoryIntrinsics
+WARNING: sun.misc.Unsafe::putFloat will be removed in a future release
+[06:55:30] [Download-1/INFO]: Could not authorize you against Realms server: java.lang.RuntimeException: Failed to parse into SignedJWT: 0
+[06:55:30] [Download-1/ERROR]: Failed to fetch Realms feature flags
+com.mojang.realmsclient.exception.RealmsServiceException: Realms authentication error with message 'java.lang.RuntimeException: Failed to parse into SignedJWT: 0'
+	at knot//com.mojang.realmsclient.client.RealmsClient.execute(RealmsClient.java:625)
+	at knot//com.mojang.realmsclient.client.RealmsClient.fetchFeatureFlags(RealmsClient.java:204)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1789)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+[06:55:30] [Render thread/INFO]: Reloading ResourceManager: vanilla, vanilla, fabric-advancement-api-v1, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-command-api-v2, fabric-content-registries-v0, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, modmenu, placeholder-api, salts_anti_aliasing, sodium
+[06:55:30] [Worker-Main-19/INFO]: Found unifont_pua-17.0.01.hex, loading
+[06:55:30] [Worker-Main-17/INFO]: Found unifont_all_no_pua-17.0.01.hex, loading
+[06:55:30] [Worker-Main-2/INFO]: Found unifont_jp_patch-17.0.01.hex, loading
+[06:55:31] [Render thread/INFO]: Configured Vulkan backend with passes [] and 2 targets
+[06:55:31] [Render thread/INFO]: [STDOUT]: AUDIT armed initial-1792936520610 id=1792936520610
+[06:55:31] [Download-1/INFO]: Could not authorize you against Realms server: java.lang.RuntimeException: Failed to parse into SignedJWT: 0
+[06:55:31] [Download-1/ERROR]: Couldn't connect to realms
+com.mojang.realmsclient.exception.RealmsServiceException: Realms authentication error with message 'java.lang.RuntimeException: Failed to parse into SignedJWT: 0'
+	at knot//com.mojang.realmsclient.client.RealmsClient.execute(RealmsClient.java:625)
+	at knot//com.mojang.realmsclient.client.RealmsClient.clientCompatible(RealmsClient.java:354)
+	at knot//com.mojang.realmsclient.RealmsAvailability.lambda$check$0(RealmsAvailability.java:48)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1789)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+[06:55:31] [Render thread/INFO]: OpenAL initialized on device OpenAL Soft on Speakers (Razer BlackShark V2 Pro)
+[06:55:31] [Render thread/INFO]: Sound engine started
+[06:55:31] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[06:55:31] [Render thread/INFO]: Created: 256x128x0 minecraft:textures/atlas/celestials.png-atlas
+[06:55:31] [Render thread/INFO]: Created: 128x128x0 minecraft:textures/atlas/decorated_pot.png-atlas
+[06:55:31] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[06:55:31] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/shield_patterns.png-atlas
+[06:55:31] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/banner_patterns.png-atlas
+[06:55:31] [Render thread/INFO]: Created: 2048x2048x4 minecraft:textures/atlas/blocks.png-atlas
+[06:55:32] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/items.png-atlas
+[06:55:32] [Render thread/INFO]: Created: 1024x1024x0 minecraft:textures/atlas/gui.png-atlas
+[06:55:32] [Render thread/INFO]: Created: 128x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[06:55:32] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/chest.png-atlas
+[06:55:32] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/shulker_boxes.png-atlas
+[06:55:33] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-off id=1792936531382
+[06:55:34] [Worker-Main-16/INFO]: Loaded 1866 advancements
+[06:55:34] [Render thread/INFO]: Applied 0 biome modifications to 0 of 67 new biomes in 1.295 ms
+[06:55:34] [Server thread/INFO]: Starting integrated minecraft server version 26.3
+[06:55:34] [Server thread/INFO]: Generating keypair
+[06:55:34] [Server thread/INFO]: Loading 0 persistent chunks...
+[06:55:34] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[06:55:36] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[06:55:36] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[06:55:36] [Server thread/INFO]: Loading 49 chunks for player spawn...
+[06:55:36] [Server thread/INFO]: Preparing spawn area: 16%
+[06:55:36] [Server thread/INFO]: Preparing spawn area: 16%
+[06:55:36] [Server thread/INFO]: Preparing spawn area: 16%
+[06:55:36] [Server thread/INFO]: Preparing spawn area: 37%
+[06:55:37] [Server thread/INFO]: Preparing spawn area: 100%
+[06:55:37] [Server thread/INFO]: Time elapsed: 2138 ms
+[06:55:37] [Server thread/INFO]: ReleaseTester[local:E:862d6aea] logged in with entity id 35 at (0.5, 101.0, -1.5)
+[06:55:37] [Server thread/INFO]: System chat: ReleaseTester joined the game
+[06:55:37] [Server thread/INFO]: Changing view distance to 12, from 10
+[06:55:37] [Server thread/INFO]: Changing simulation distance to 12, from 0
+[06:55:37] [Render thread/INFO]: Started 10 worker threads
+[06:55:37] [Render thread/INFO]: Loaded 60 advancements
+[06:55:37] [Render thread/INFO]: Stopping worker threads
+[06:55:37] [Render thread/INFO]: Started 10 worker threads
+[06:55:37] [Render thread/WARN]: Requested post effect does not exist: minecraft:end_of_frame
+[06:55:37] [Render thread/INFO]: Resizing Dynamic Transforms UBO, capacity limit of 2 reached during a single frame. New capacity will be 4.
+[06:55:37] [Render thread/INFO]: Configured Vulkan backend with passes [] and 2 targets
+[06:55:37] [Render thread/INFO]: Configured Vulkan backend with passes [] and 2 targets
+[06:55:37] [Render thread/INFO]: QA request 1792936531382 applied: {"id":1792936531382,"mode":"OFF","sharpness":0,"improvedTransparency":false,"particleTest":false,"handSwing":false,"sweep":false,"commands":["tick freeze","tp @a 100.5 102 107.5 0 0"],"yaw":0,"pitch":0,"tuning":{"mipBiasMode":"OFF"}}
+[06:55:37] [Render thread/INFO]: Stopping worker threads
+[06:55:37] [Render thread/INFO]: Started 10 worker threads
+[06:55:37] [Server thread/INFO]: System chat: The game is frozen
+[06:55:37] [Server thread/INFO]: System chat: Teleported ReleaseTester to 100.500000, 102.000000, 107.500000
+[06:55:37] [Render thread/INFO]: Resizing Dynamic Transforms UBO, capacity limit of 4 reached during a single frame. New capacity will be 8.
+[06:55:39] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-off-000.png: Saved screenshot as fixed-beta-off-000.png
+[06:55:39] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-off-001.png: Saved screenshot as fixed-beta-off-001.png
+[06:55:39] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-off
+[06:55:39] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-off-002.png: Saved screenshot as fixed-beta-off-002.png
+[06:55:39] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-off-003.png: Saved screenshot as fixed-beta-off-003.png
+[06:55:39] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-off-004.png: Saved screenshot as fixed-beta-off-004.png
+[06:55:39] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-off-005.png: Saved screenshot as fixed-beta-off-005.png
+[06:55:39] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-off-006.png: Saved screenshot as fixed-beta-off-006.png
+[06:55:39] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-off-007.png: Saved screenshot as fixed-beta-off-007.png
+[06:55:39] [Render thread/INFO]: QA request 1792936539855 applied: {"id":1792936539855,"msaa":"X4"}
+[06:55:40] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-msaa4 id=1792936539855
+[06:55:42] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-msaa4-000.png: Saved screenshot as fixed-beta-msaa4-000.png
+[06:55:42] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-msaa4-001.png: Saved screenshot as fixed-beta-msaa4-001.png
+[06:55:42] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-msaa4-002.png: Saved screenshot as fixed-beta-msaa4-002.png
+[06:55:42] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-msaa4
+[06:55:42] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-msaa4-003.png: Saved screenshot as fixed-beta-msaa4-003.png
+[06:55:42] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-msaa4-004.png: Saved screenshot as fixed-beta-msaa4-004.png
+[06:55:42] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-msaa4-005.png: Saved screenshot as fixed-beta-msaa4-005.png
+[06:55:42] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-msaa4-006.png: Saved screenshot as fixed-beta-msaa4-006.png
+[06:55:42] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-msaa4-007.png: Saved screenshot as fixed-beta-msaa4-007.png
+[06:55:43] [Render thread/INFO]: Configured Vulkan backend with passes [ssaa_resolve] and 3 targets
+[06:55:43] [Render thread/INFO]: Configured Vulkan backend with passes [ssaa_resolve] and 3 targets
+[06:55:43] [Render thread/INFO]: QA request 1792936542762 applied: {"id":1792936542762,"mode":"SSAA","ssaa":"X200"}
+[06:55:43] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-ssaa200 id=1792936542762
+[06:55:45] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-ssaa200-000.png: Saved screenshot as fixed-beta-ssaa200-000.png
+[06:55:45] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-ssaa200-001.png: Saved screenshot as fixed-beta-ssaa200-001.png
+[06:55:45] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-ssaa200
+[06:55:45] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-ssaa200-002.png: Saved screenshot as fixed-beta-ssaa200-002.png
+[06:55:45] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-ssaa200-003.png: Saved screenshot as fixed-beta-ssaa200-003.png
+[06:55:45] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-ssaa200-004.png: Saved screenshot as fixed-beta-ssaa200-004.png
+[06:55:45] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-ssaa200-005.png: Saved screenshot as fixed-beta-ssaa200-005.png
+[06:55:45] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-ssaa200-006.png: Saved screenshot as fixed-beta-ssaa200-006.png
+[06:55:45] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-ssaa200-007.png: Saved screenshot as fixed-beta-ssaa200-007.png
+[06:55:45] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:55:45] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:55:45] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:55:45] [Render thread/INFO]: QA request 1792936545670 applied: {"id":1792936545670,"mode":"DLSS_SUPER_RESOLUTION","dlssQuality":"QUALITY","tuning":{"dlssModel":"K"}}
+[06:55:46] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-dlss id=1792936545670
+[06:55:48] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-000.png: Saved screenshot as fixed-beta-dlss-000.png
+[06:55:48] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-dlss
+[06:55:48] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-001.png: Saved screenshot as fixed-beta-dlss-001.png
+[06:55:48] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-002.png: Saved screenshot as fixed-beta-dlss-002.png
+[06:55:48] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-003.png: Saved screenshot as fixed-beta-dlss-003.png
+[06:55:48] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-004.png: Saved screenshot as fixed-beta-dlss-004.png
+[06:55:48] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-005.png: Saved screenshot as fixed-beta-dlss-005.png
+[06:55:48] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-006.png: Saved screenshot as fixed-beta-dlss-006.png
+[06:55:48] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-007.png: Saved screenshot as fixed-beta-dlss-007.png
+[06:55:48] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:55:48] [Render thread/INFO]: QA request 1792936548576 applied: {"id":1792936548576,"dlssQuality":"DLAA"}
+[06:55:49] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-dlss-dlaa id=1792936548576
+[06:55:51] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-dlaa-000.png: Saved screenshot as fixed-beta-dlss-dlaa-000.png
+[06:55:51] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-dlaa-001.png: Saved screenshot as fixed-beta-dlss-dlaa-001.png
+[06:55:51] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-dlss-dlaa
+[06:55:51] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-dlaa-002.png: Saved screenshot as fixed-beta-dlss-dlaa-002.png
+[06:55:51] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-dlaa-003.png: Saved screenshot as fixed-beta-dlss-dlaa-003.png
+[06:55:51] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-dlaa-004.png: Saved screenshot as fixed-beta-dlss-dlaa-004.png
+[06:55:51] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-dlaa-005.png: Saved screenshot as fixed-beta-dlss-dlaa-005.png
+[06:55:51] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-dlaa-006.png: Saved screenshot as fixed-beta-dlss-dlaa-006.png
+[06:55:51] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-dlaa-007.png: Saved screenshot as fixed-beta-dlss-dlaa-007.png
+[06:55:51] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:55:51] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:55:51] [Render thread/INFO]: QA request 1792936551482 applied: {"id":1792936551482,"dlssQuality":"QUALITY","tuning":{"dlssModel":"K"}}
+[06:55:52] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-model-k id=1792936551482
+[06:55:54] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-model-k-000.png: Saved screenshot as fixed-beta-model-k-000.png
+[06:55:54] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-model-k
+[06:55:54] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-model-k-001.png: Saved screenshot as fixed-beta-model-k-001.png
+[06:55:54] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-model-k-002.png: Saved screenshot as fixed-beta-model-k-002.png
+[06:55:54] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-model-k-003.png: Saved screenshot as fixed-beta-model-k-003.png
+[06:55:54] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-model-k-004.png: Saved screenshot as fixed-beta-model-k-004.png
+[06:55:54] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-model-k-005.png: Saved screenshot as fixed-beta-model-k-005.png
+[06:55:54] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-model-k-006.png: Saved screenshot as fixed-beta-model-k-006.png
+[06:55:54] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-model-k-007.png: Saved screenshot as fixed-beta-model-k-007.png
+[06:55:54] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[06:55:54] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[06:55:54] [Render thread/INFO]: QA request 1792936554389 applied: {"id":1792936554389,"mode":"FSR2_SUPER_RESOLUTION","fsrQuality":"QUALITY"}
+[06:55:55] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-fsr2_super_resolution-quality id=1792936554389
+[06:55:57] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr2_super_resolution-quality-000.png: Saved screenshot as fixed-beta-fsr2_super_resolution-quality-000.png
+[06:55:57] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-fsr2_super_resolution-quality
+[06:55:57] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr2_super_resolution-quality-001.png: Saved screenshot as fixed-beta-fsr2_super_resolution-quality-001.png
+[06:55:57] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr2_super_resolution-quality-002.png: Saved screenshot as fixed-beta-fsr2_super_resolution-quality-002.png
+[06:55:57] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr2_super_resolution-quality-003.png: Saved screenshot as fixed-beta-fsr2_super_resolution-quality-003.png
+[06:55:57] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr2_super_resolution-quality-004.png: Saved screenshot as fixed-beta-fsr2_super_resolution-quality-004.png
+[06:55:57] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr2_super_resolution-quality-005.png: Saved screenshot as fixed-beta-fsr2_super_resolution-quality-005.png
+[06:55:57] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr2_super_resolution-quality-006.png: Saved screenshot as fixed-beta-fsr2_super_resolution-quality-006.png
+[06:55:57] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr2_super_resolution-quality-007.png: Saved screenshot as fixed-beta-fsr2_super_resolution-quality-007.png
+[06:55:57] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[06:55:57] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[06:55:57] [Render thread/INFO]: QA request 1792936557295 applied: {"id":1792936557295,"mode":"FSR3_SUPER_RESOLUTION","fsrQuality":"QUALITY"}
+[06:55:58] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-fsr3_super_resolution-quality id=1792936557295
+[06:56:00] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr3_super_resolution-quality-000.png: Saved screenshot as fixed-beta-fsr3_super_resolution-quality-000.png
+[06:56:00] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-fsr3_super_resolution-quality
+[06:56:00] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr3_super_resolution-quality-001.png: Saved screenshot as fixed-beta-fsr3_super_resolution-quality-001.png
+[06:56:00] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr3_super_resolution-quality-002.png: Saved screenshot as fixed-beta-fsr3_super_resolution-quality-002.png
+[06:56:00] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr3_super_resolution-quality-003.png: Saved screenshot as fixed-beta-fsr3_super_resolution-quality-003.png
+[06:56:00] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr3_super_resolution-quality-004.png: Saved screenshot as fixed-beta-fsr3_super_resolution-quality-004.png
+[06:56:00] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr3_super_resolution-quality-005.png: Saved screenshot as fixed-beta-fsr3_super_resolution-quality-005.png
+[06:56:00] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr3_super_resolution-quality-006.png: Saved screenshot as fixed-beta-fsr3_super_resolution-quality-006.png
+[06:56:00] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fsr3_super_resolution-quality-007.png: Saved screenshot as fixed-beta-fsr3_super_resolution-quality-007.png
+[06:56:00] [Render thread/INFO]: Configured Vulkan backend with passes [msaa_scene_resolve] and 2 targets
+[06:56:00] [Render thread/INFO]: Configured Vulkan backend with passes [msaa_scene_resolve] and 2 targets
+[06:56:00] [Render thread/INFO]: Configured Vulkan backend with passes [msaa_scene_resolve] and 2 targets
+[06:56:00] [Render thread/INFO]: Configured Vulkan backend with passes [msaa_scene_resolve] and 2 targets
+[06:56:00] [Render thread/INFO]: QA request 1792936560202 applied: {"id":1792936560202,"mode":"MSAA","improvedTransparency":true,"msaa":"X4","dlssQuality":"QUALITY","fsrQuality":"QUALITY","tuning":{"mipBiasMode":"CUSTOM","mipBias":-2}}
+[06:56:00] [Render thread/INFO]: Stopping worker threads
+[06:56:00] [Render thread/INFO]: Started 10 worker threads
+[06:56:01] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-oit-msaa id=1792936560202
+[06:56:02] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-msaa-000.png: Saved screenshot as fixed-beta-oit-msaa-000.png
+[06:56:02] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-msaa-001.png: Saved screenshot as fixed-beta-oit-msaa-001.png
+[06:56:02] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-msaa-002.png: Saved screenshot as fixed-beta-oit-msaa-002.png
+[06:56:02] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-msaa-003.png: Saved screenshot as fixed-beta-oit-msaa-003.png
+[06:56:02] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-oit-msaa
+[06:56:02] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-msaa-004.png: Saved screenshot as fixed-beta-oit-msaa-004.png
+[06:56:02] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-msaa-005.png: Saved screenshot as fixed-beta-oit-msaa-005.png
+[06:56:02] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-msaa-006.png: Saved screenshot as fixed-beta-oit-msaa-006.png
+[06:56:02] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-msaa-007.png: Saved screenshot as fixed-beta-oit-msaa-007.png
+[06:56:03] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:56:03] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:56:03] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:56:03] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:56:03] [Render thread/INFO]: QA request 1792936563109 applied: {"id":1792936563109,"mode":"DLSS_SUPER_RESOLUTION","improvedTransparency":true,"msaa":"X4","dlssQuality":"QUALITY","fsrQuality":"QUALITY","tuning":{"mipBiasMode":"CUSTOM","mipBias":-2}}
+[06:56:04] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-oit-dlss_super_resolution id=1792936563109
+[06:56:05] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-dlss_super_resolution-000.png: Saved screenshot as fixed-beta-oit-dlss_super_resolution-000.png
+[06:56:05] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-oit-dlss_super_resolution
+[06:56:05] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-dlss_super_resolution-001.png: Saved screenshot as fixed-beta-oit-dlss_super_resolution-001.png
+[06:56:05] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-dlss_super_resolution-002.png: Saved screenshot as fixed-beta-oit-dlss_super_resolution-002.png
+[06:56:05] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-dlss_super_resolution-003.png: Saved screenshot as fixed-beta-oit-dlss_super_resolution-003.png
+[06:56:05] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-dlss_super_resolution-004.png: Saved screenshot as fixed-beta-oit-dlss_super_resolution-004.png
+[06:56:05] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-dlss_super_resolution-005.png: Saved screenshot as fixed-beta-oit-dlss_super_resolution-005.png
+[06:56:05] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-dlss_super_resolution-006.png: Saved screenshot as fixed-beta-oit-dlss_super_resolution-006.png
+[06:56:05] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-dlss_super_resolution-007.png: Saved screenshot as fixed-beta-oit-dlss_super_resolution-007.png
+[06:56:06] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[06:56:06] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[06:56:06] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[06:56:06] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[06:56:06] [Render thread/INFO]: QA request 1792936566017 applied: {"id":1792936566017,"mode":"FSR3_SUPER_RESOLUTION","improvedTransparency":true,"msaa":"X4","dlssQuality":"QUALITY","fsrQuality":"QUALITY","tuning":{"mipBiasMode":"CUSTOM","mipBias":-2}}
+[06:56:07] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-oit-fsr3_super_resolution id=1792936566017
+[06:56:08] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-fsr3_super_resolution-000.png: Saved screenshot as fixed-beta-oit-fsr3_super_resolution-000.png
+[06:56:08] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-oit-fsr3_super_resolution
+[06:56:08] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-fsr3_super_resolution-001.png: Saved screenshot as fixed-beta-oit-fsr3_super_resolution-001.png
+[06:56:08] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-fsr3_super_resolution-002.png: Saved screenshot as fixed-beta-oit-fsr3_super_resolution-002.png
+[06:56:08] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-fsr3_super_resolution-003.png: Saved screenshot as fixed-beta-oit-fsr3_super_resolution-003.png
+[06:56:08] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-fsr3_super_resolution-004.png: Saved screenshot as fixed-beta-oit-fsr3_super_resolution-004.png
+[06:56:08] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-fsr3_super_resolution-005.png: Saved screenshot as fixed-beta-oit-fsr3_super_resolution-005.png
+[06:56:08] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-fsr3_super_resolution-006.png: Saved screenshot as fixed-beta-oit-fsr3_super_resolution-006.png
+[06:56:08] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-oit-fsr3_super_resolution-007.png: Saved screenshot as fixed-beta-oit-fsr3_super_resolution-007.png
+[06:56:09] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:56:09] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:56:09] [Render thread/INFO]: QA request 1792936568925 applied: {"id":1792936568925,"mode":"DLSS_SUPER_RESOLUTION","improvedTransparency":false,"tuning":{"mipBiasMode":"CUSTOM","mipBias":-2}}
+[06:56:09] [Render thread/INFO]: Stopping worker threads
+[06:56:09] [Render thread/INFO]: Started 10 worker threads
+[06:56:09] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-mip-classic id=1792936568925
+[06:56:11] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-classic-000.png: Saved screenshot as fixed-beta-mip-classic-000.png
+[06:56:11] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-mip-classic
+[06:56:11] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-classic-001.png: Saved screenshot as fixed-beta-mip-classic-001.png
+[06:56:11] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-classic-002.png: Saved screenshot as fixed-beta-mip-classic-002.png
+[06:56:11] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-classic-003.png: Saved screenshot as fixed-beta-mip-classic-003.png
+[06:56:11] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-classic-004.png: Saved screenshot as fixed-beta-mip-classic-004.png
+[06:56:11] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-classic-005.png: Saved screenshot as fixed-beta-mip-classic-005.png
+[06:56:11] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-classic-006.png: Saved screenshot as fixed-beta-mip-classic-006.png
+[06:56:11] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-classic-007.png: Saved screenshot as fixed-beta-mip-classic-007.png
+[06:56:12] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:56:12] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:56:12] [Render thread/INFO]: QA request 1792936571833 applied: {"id":1792936571833,"mode":"DLSS_SUPER_RESOLUTION","improvedTransparency":true,"tuning":{"mipBiasMode":"CUSTOM","mipBias":-2}}
+[06:56:12] [Render thread/INFO]: Stopping worker threads
+[06:56:12] [Render thread/INFO]: Started 10 worker threads
+[06:56:12] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-mip-oit id=1792936571833
+[06:56:14] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-oit-000.png: Saved screenshot as fixed-beta-mip-oit-000.png
+[06:56:14] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-mip-oit
+[06:56:14] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-oit-001.png: Saved screenshot as fixed-beta-mip-oit-001.png
+[06:56:14] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-oit-002.png: Saved screenshot as fixed-beta-mip-oit-002.png
+[06:56:14] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-oit-003.png: Saved screenshot as fixed-beta-mip-oit-003.png
+[06:56:14] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-oit-004.png: Saved screenshot as fixed-beta-mip-oit-004.png
+[06:56:14] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-oit-005.png: Saved screenshot as fixed-beta-mip-oit-005.png
+[06:56:14] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-oit-006.png: Saved screenshot as fixed-beta-mip-oit-006.png
+[06:56:14] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-mip-oit-007.png: Saved screenshot as fixed-beta-mip-oit-007.png
+[06:56:14] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[06:56:14] [Render thread/INFO]: QA request 1792936574742 applied: {"id":1792936574742,"fixture":true,"mode":"DLSS_SUPER_RESOLUTION","entityMotion":true,"entityMotionY":101,"improvedTransparency":false,"commands":["tick unfreeze","tp @a 0 101 -2 0 0"],"yaw":0,"pitch":0}
+[06:56:14] [Server thread/INFO]: System chat: The game is running normally
+[06:56:14] [Server thread/INFO]: System chat: Teleported ReleaseTester to 0.500000, 101.000000, -1.500000
+[06:56:14] [Render thread/INFO]: Stopping worker threads
+[06:56:14] [Server thread/INFO]: System chat: Teleported Pig to 0.000000, 101.000000, 5.500000
+[06:56:14] [Render thread/INFO]: Started 10 worker threads
+[06:56:14] [Server thread/INFO]: System chat: Teleported Pig to -0.562144, 101.000000, 5.500000
+[06:56:15] [Server thread/INFO]: System chat: Teleported Pig to -1.104374, 101.000000, 5.500000
+[06:56:15] [Server thread/INFO]: System chat: Teleported Pig to -1.607480, 101.000000, 5.500000
+[06:56:15] [Server thread/INFO]: System chat: Teleported Pig to -2.053641, 101.000000, 5.500000
+[06:56:15] [Server thread/INFO]: System chat: Teleported Pig to -2.427051, 101.000000, 5.500000
+[06:56:15] [Server thread/INFO]: System chat: Teleported Pig to -2.714481, 101.000000, 5.500000
+[06:56:15] [Server thread/INFO]: System chat: Teleported Pig to -2.905749, 101.000000, 5.500000
+[06:56:15] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-entity id=1792936574742
+[06:56:15] [Server thread/INFO]: System chat: Teleported Pig to -2.994080, 101.000000, 5.500000
+[06:56:16] [Server thread/INFO]: System chat: Teleported Pig to -2.976344, 101.000000, 5.500000
+[06:56:16] [Server thread/INFO]: System chat: Teleported Pig to -2.853170, 101.000000, 5.500000
+[06:56:16] [Server thread/INFO]: System chat: Teleported Pig to -2.628920, 101.000000, 5.500000
+[06:56:16] [Server thread/INFO]: System chat: Teleported Pig to -2.311540, 101.000000, 5.500000
+[06:56:16] [Server thread/INFO]: System chat: Teleported Pig to -1.912272, 101.000000, 5.500000
+[06:56:16] [Server thread/INFO]: System chat: Teleported Pig to -1.445261, 101.000000, 5.500000
+[06:56:16] [Server thread/INFO]: System chat: Teleported Pig to -0.927051, 101.000000, 5.500000
+[06:56:17] [Server thread/INFO]: System chat: Teleported Pig to -0.376000, 101.000000, 5.500000
+[06:56:17] [Server thread/INFO]: System chat: Teleported Pig to 0.188372, 101.000000, 5.500000
+[06:56:17] [Server thread/INFO]: System chat: Teleported Pig to 0.746070, 101.000000, 5.500000
+[06:56:17] [Server thread/INFO]: System chat: Teleported Pig to 1.277338, 101.000000, 5.500000
+[06:56:17] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-001.png: Saved screenshot as fixed-beta-entity-001.png
+[06:56:17] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-000.png: Saved screenshot as fixed-beta-entity-000.png
+[06:56:17] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-002.png: Saved screenshot as fixed-beta-entity-002.png
+[06:56:17] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-003.png: Saved screenshot as fixed-beta-entity-003.png
+[06:56:17] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-004.png: Saved screenshot as fixed-beta-entity-004.png
+[06:56:17] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-005.png: Saved screenshot as fixed-beta-entity-005.png
+[06:56:17] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-006.png: Saved screenshot as fixed-beta-entity-006.png
+[06:56:17] [Server thread/INFO]: System chat: Teleported Pig to 1.763356, 101.000000, 5.500000
+[06:56:17] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-007.png: Saved screenshot as fixed-beta-entity-007.png
+[06:56:17] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-008.png: Saved screenshot as fixed-beta-entity-008.png
+[06:56:17] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-009.png: Saved screenshot as fixed-beta-entity-009.png
+[06:56:17] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-010.png: Saved screenshot as fixed-beta-entity-010.png
+[06:56:17] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-011.png: Saved screenshot as fixed-beta-entity-011.png
+[06:56:17] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-013.png: Saved screenshot as fixed-beta-entity-013.png
+[06:56:17] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-012.png: Saved screenshot as fixed-beta-entity-012.png
+[06:56:17] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-014.png: Saved screenshot as fixed-beta-entity-014.png
+[06:56:17] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-015.png: Saved screenshot as fixed-beta-entity-015.png
+[06:56:17] [Server thread/INFO]: System chat: Teleported Pig to 2.186906, 101.000000, 5.500000
+[06:56:17] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-016.png: Saved screenshot as fixed-beta-entity-016.png
+[06:56:17] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-017.png: Saved screenshot as fixed-beta-entity-017.png
+[06:56:17] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-entity
+[06:56:17] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-018.png: Saved screenshot as fixed-beta-entity-018.png
+[06:56:17] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-019.png: Saved screenshot as fixed-beta-entity-019.png
+[06:56:17] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-020.png: Saved screenshot as fixed-beta-entity-020.png
+[06:56:18] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-021.png: Saved screenshot as fixed-beta-entity-021.png
+[06:56:18] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-022.png: Saved screenshot as fixed-beta-entity-022.png
+[06:56:18] [Server thread/INFO]: System chat: Teleported Pig to 2.532984, 101.000000, 5.500000
+[06:56:18] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-entity-023.png: Saved screenshot as fixed-beta-entity-023.png
+[06:56:18] [Server thread/INFO]: System chat: Teleported Pig to 2.789329, 101.000000, 5.500000
+[06:56:18] [Render thread/INFO]: QA request 1792936578150 applied: {"id":1792936578150,"entityMotion":false,"particleTest":true,"particleKind":"flame","particleZ":5}
+[06:56:18] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:18] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:18] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:18] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:18] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:18] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:18] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:19] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:19] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-particles id=1792936578150
+[06:56:19] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:19] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:19] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:19] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:19] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:19] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:19] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:19] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:19] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:20] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:20] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:20] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:20] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:20] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:20] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:20] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:20] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:20] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-000.png: Saved screenshot as fixed-beta-particles-000.png
+[06:56:20] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:20] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-001.png: Saved screenshot as fixed-beta-particles-001.png
+[06:56:20] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-002.png: Saved screenshot as fixed-beta-particles-002.png
+[06:56:20] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-003.png: Saved screenshot as fixed-beta-particles-003.png
+[06:56:20] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-004.png: Saved screenshot as fixed-beta-particles-004.png
+[06:56:20] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-005.png: Saved screenshot as fixed-beta-particles-005.png
+[06:56:20] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:20] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-006.png: Saved screenshot as fixed-beta-particles-006.png
+[06:56:20] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-007.png: Saved screenshot as fixed-beta-particles-007.png
+[06:56:20] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-008.png: Saved screenshot as fixed-beta-particles-008.png
+[06:56:21] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-009.png: Saved screenshot as fixed-beta-particles-009.png
+[06:56:21] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-010.png: Saved screenshot as fixed-beta-particles-010.png
+[06:56:21] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-011.png: Saved screenshot as fixed-beta-particles-011.png
+[06:56:21] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:21] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-012.png: Saved screenshot as fixed-beta-particles-012.png
+[06:56:21] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-014.png: Saved screenshot as fixed-beta-particles-014.png
+[06:56:21] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-015.png: Saved screenshot as fixed-beta-particles-015.png
+[06:56:21] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-013.png: Saved screenshot as fixed-beta-particles-013.png
+[06:56:21] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-016.png: Saved screenshot as fixed-beta-particles-016.png
+[06:56:21] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-particles
+[06:56:21] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:21] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-018.png: Saved screenshot as fixed-beta-particles-018.png
+[06:56:21] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-017.png: Saved screenshot as fixed-beta-particles-017.png
+[06:56:21] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-019.png: Saved screenshot as fixed-beta-particles-019.png
+[06:56:21] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-020.png: Saved screenshot as fixed-beta-particles-020.png
+[06:56:21] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-021.png: Saved screenshot as fixed-beta-particles-021.png
+[06:56:21] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-022.png: Saved screenshot as fixed-beta-particles-022.png
+[06:56:21] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:21] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-023.png: Saved screenshot as fixed-beta-particles-023.png
+[06:56:21] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:21] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:21] [Render thread/INFO]: QA request 1792936581358 applied: {"id":1792936581358,"improvedTransparency":true}
+[06:56:21] [Render thread/INFO]: Stopping worker threads
+[06:56:21] [Render thread/INFO]: Started 10 worker threads
+[06:56:21] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:21] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:21] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:21] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:21] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:22] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:22] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:22] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:22] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-particles-oit id=1792936581358
+[06:56:22] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:22] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:22] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:22] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:22] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:22] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:22] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:23] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:23] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:23] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:23] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:23] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:23] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:23] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:23] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:23] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:23] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:24] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-000.png: Saved screenshot as fixed-beta-particles-oit-000.png
+[06:56:24] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:24] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:24] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:24] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:24] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:24] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-001.png: Saved screenshot as fixed-beta-particles-oit-001.png
+[06:56:24] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-002.png: Saved screenshot as fixed-beta-particles-oit-002.png
+[06:56:24] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:24] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-003.png: Saved screenshot as fixed-beta-particles-oit-003.png
+[06:56:24] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-004.png: Saved screenshot as fixed-beta-particles-oit-004.png
+[06:56:24] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-005.png: Saved screenshot as fixed-beta-particles-oit-005.png
+[06:56:24] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-006.png: Saved screenshot as fixed-beta-particles-oit-006.png
+[06:56:24] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:24] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-007.png: Saved screenshot as fixed-beta-particles-oit-007.png
+[06:56:24] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-008.png: Saved screenshot as fixed-beta-particles-oit-008.png
+[06:56:24] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-009.png: Saved screenshot as fixed-beta-particles-oit-009.png
+[06:56:24] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-010.png: Saved screenshot as fixed-beta-particles-oit-010.png
+[06:56:24] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:24] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-011.png: Saved screenshot as fixed-beta-particles-oit-011.png
+[06:56:24] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-012.png: Saved screenshot as fixed-beta-particles-oit-012.png
+[06:56:24] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-015.png: Saved screenshot as fixed-beta-particles-oit-015.png
+[06:56:24] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-014.png: Saved screenshot as fixed-beta-particles-oit-014.png
+[06:56:24] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-particles-oit
+[06:56:24] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:24] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-016.png: Saved screenshot as fixed-beta-particles-oit-016.png
+[06:56:24] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-017.png: Saved screenshot as fixed-beta-particles-oit-017.png
+[06:56:24] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-013.png: Saved screenshot as fixed-beta-particles-oit-013.png
+[06:56:24] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-018.png: Saved screenshot as fixed-beta-particles-oit-018.png
+[06:56:24] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-019.png: Saved screenshot as fixed-beta-particles-oit-019.png
+[06:56:24] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-020.png: Saved screenshot as fixed-beta-particles-oit-020.png
+[06:56:24] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-021.png: Saved screenshot as fixed-beta-particles-oit-021.png
+[06:56:24] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:56:25] [Render thread/INFO]: Reloading ResourceManager: vanilla, vanilla, fabric-advancement-api-v1, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-command-api-v2, fabric-content-registries-v0, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, modmenu, placeholder-api, salts_anti_aliasing, sodium
+[06:56:25] [Render thread/INFO]: QA request 1792936584930 applied: {"id":1792936584930,"particleTest":false,"reload":true}
+[06:56:25] [Worker-Main-17/INFO]: Found unifont_pua-17.0.01.hex, loading
+[06:56:25] [Worker-Main-8/INFO]: Found unifont_all_no_pua-17.0.01.hex, loading
+[06:56:25] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-023.png: Saved screenshot as fixed-beta-particles-oit-023.png
+[06:56:25] [Server thread/INFO]: Saving and pausing game...
+[06:56:25] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-particles-oit-022.png: Saved screenshot as fixed-beta-particles-oit-022.png
+[06:56:25] [Worker-Main-17/INFO]: Found unifont_jp_patch-17.0.01.hex, loading
+[06:56:25] [Render thread/INFO]: OpenAL initialized on device OpenAL Soft on Speakers (Razer BlackShark V2 Pro)
+[06:56:25] [Render thread/INFO]: Sound engine started
+[06:56:25] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[06:56:25] [Render thread/INFO]: Created: 256x128x0 minecraft:textures/atlas/celestials.png-atlas
+[06:56:25] [Render thread/INFO]: Created: 128x128x0 minecraft:textures/atlas/decorated_pot.png-atlas
+[06:56:25] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[06:56:26] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/shield_patterns.png-atlas
+[06:56:26] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/banner_patterns.png-atlas
+[06:56:26] [Render thread/INFO]: Created: 2048x2048x4 minecraft:textures/atlas/blocks.png-atlas
+[06:56:26] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[06:56:26] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[06:56:26] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[06:56:26] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/items.png-atlas
+[06:56:26] [Render thread/INFO]: Created: 1024x1024x0 minecraft:textures/atlas/gui.png-atlas
+[06:56:26] [Render thread/INFO]: Created: 128x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[06:56:26] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/chest.png-atlas
+[06:56:26] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/shulker_boxes.png-atlas
+[06:56:27] [Render thread/INFO]: QA resource reload completed
+[06:56:27] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-dlss-reload id=1792936584930
+[06:56:27] [Render thread/INFO]: Stopping worker threads
+[06:56:27] [Render thread/INFO]: Started 10 worker threads
+[06:56:27] [Render thread/WARN]: Requested post effect does not exist: minecraft:end_of_frame
+[06:56:34] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-dlss-reload
+[06:56:34] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-reload-000.png: Saved screenshot as fixed-beta-dlss-reload-000.png
+[06:56:34] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-reload-001.png: Saved screenshot as fixed-beta-dlss-reload-001.png
+[06:56:34] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-reload-002.png: Saved screenshot as fixed-beta-dlss-reload-002.png
+[06:56:34] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-reload-003.png: Saved screenshot as fixed-beta-dlss-reload-003.png
+[06:56:34] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-reload-004.png: Saved screenshot as fixed-beta-dlss-reload-004.png
+[06:56:34] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-reload-005.png: Saved screenshot as fixed-beta-dlss-reload-005.png
+[06:56:34] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-reload-007.png: Saved screenshot as fixed-beta-dlss-reload-007.png
+[06:56:34] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-dlss-reload-006.png: Saved screenshot as fixed-beta-dlss-reload-006.png
+[06:56:34] [Render thread/INFO]: QA request 1792936594786 applied: {"id":1792936594786,"particleTest":false}
+[06:56:35] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-sodium-menu id=1792936594786
+[06:56:35] [Server thread/INFO]: Saving and pausing game...
+[06:56:36] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[06:56:36] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[06:56:36] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[06:56:36] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-sodium-menu
+[06:56:36] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-sodium-menu-000.png: Saved screenshot as fixed-beta-sodium-menu-000.png
+[06:58:32] [Render thread/INFO]: Configured Vulkan backend with passes [fsr3_super_resolution_frame_generation] and 8 targets
+[06:58:32] [Render thread/INFO]: QA request 1792936712675 applied: {"id":1792936712675,"mode":"FSR3_SUPER_RESOLUTION_FRAME_GENERATION","particleTest":true,"handSwing":true,"sweep":true,"amplitude":5,"perspective":"FIRST_PERSON","commands":["tick unfreeze","item replace entity @a weapon.mainhand with minecraft:diamond_sword","tp @a 0 101 -2 0 0"],"yaw":0,"pitch":0}
+[06:58:32] [Server thread/INFO]: System chat: The game is running normally
+[06:58:32] [Server thread/INFO]: System chat: Replaced 1 slot(s) on ReleaseTester with [Diamond Sword]
+[06:58:32] [Server thread/INFO]: System chat: Teleported ReleaseTester to 0.500000, 101.000000, -1.500000
+[06:58:32] [Render thread/INFO]: AMD FSR3 frame-generation swapchain is active
+[06:58:33] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:33] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:33] [Render thread/INFO]: AMD FSR3 frame generation confirmed: 4 display presents from 3 rendered game frames
+[06:58:33] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:33] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:33] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:33] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:33] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:33] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:33] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-fg id=1792936712675
+[06:58:33] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:33] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:33] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:34] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:34] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:34] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:34] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:34] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:34] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:34] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:34] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:34] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:34] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:35] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:35] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:35] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:35] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:35] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:35] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:35] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:35] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:35] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:35] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:36] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:36] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:36] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:36] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:36] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:36] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:36] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:36] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:36] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:36] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:37] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:37] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:37] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:37] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:37] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:37] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:37] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:37] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:37] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:37] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:38] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:38] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:38] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:38] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:38] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:38] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:38] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:38] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:38] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:38] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:39] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:39] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:39] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:39] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:39] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:39] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:39] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:39] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:39] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:39] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:40] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:40] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:40] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:40] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:40] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:40] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:40] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:40] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:40] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:40] [IO-Worker-14/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-000.png: Saved screenshot as fixed-beta-fg-000.png
+[06:58:40] [IO-Worker-15/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-001.png: Saved screenshot as fixed-beta-fg-001.png
+[06:58:40] [IO-Worker-16/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-002.png: Saved screenshot as fixed-beta-fg-002.png
+[06:58:40] [IO-Worker-17/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-003.png: Saved screenshot as fixed-beta-fg-003.png
+[06:58:40] [IO-Worker-18/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-004.png: Saved screenshot as fixed-beta-fg-004.png
+[06:58:40] [IO-Worker-19/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-005.png: Saved screenshot as fixed-beta-fg-005.png
+[06:58:40] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:40] [IO-Worker-20/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-006.png: Saved screenshot as fixed-beta-fg-006.png
+[06:58:40] [IO-Worker-14/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-007.png: Saved screenshot as fixed-beta-fg-007.png
+[06:58:40] [IO-Worker-15/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-008.png: Saved screenshot as fixed-beta-fg-008.png
+[06:58:40] [IO-Worker-16/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-009.png: Saved screenshot as fixed-beta-fg-009.png
+[06:58:41] [IO-Worker-17/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-010.png: Saved screenshot as fixed-beta-fg-010.png
+[06:58:41] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:41] [IO-Worker-18/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-011.png: Saved screenshot as fixed-beta-fg-011.png
+[06:58:41] [IO-Worker-19/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-012.png: Saved screenshot as fixed-beta-fg-012.png
+[06:58:41] [IO-Worker-20/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-013.png: Saved screenshot as fixed-beta-fg-013.png
+[06:58:41] [IO-Worker-14/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-014.png: Saved screenshot as fixed-beta-fg-014.png
+[06:58:41] [IO-Worker-15/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-015.png: Saved screenshot as fixed-beta-fg-015.png
+[06:58:41] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-fg
+[06:58:41] [IO-Worker-16/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-016.png: Saved screenshot as fixed-beta-fg-016.png
+[06:58:41] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:41] [IO-Worker-17/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-017.png: Saved screenshot as fixed-beta-fg-017.png
+[06:58:41] [IO-Worker-18/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-018.png: Saved screenshot as fixed-beta-fg-018.png
+[06:58:41] [IO-Worker-21/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-019.png: Saved screenshot as fixed-beta-fg-019.png
+[06:58:41] [IO-Worker-19/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-020.png: Saved screenshot as fixed-beta-fg-020.png
+[06:58:41] [IO-Worker-14/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-021.png: Saved screenshot as fixed-beta-fg-021.png
+[06:58:41] [IO-Worker-15/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-022.png: Saved screenshot as fixed-beta-fg-022.png
+[06:58:41] [IO-Worker-16/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-023.png: Saved screenshot as fixed-beta-fg-023.png
+[06:58:41] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:41] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:41] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-fg-odd-resize id=1792936721291
+[06:58:41] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:50] [Render thread/WARN]: Couldn't acquire next surface texture with config Optional[Configuration[width=1371, height=771, presentMode=IMMEDIATE]]
+com.mojang.renderpearl.api.device.SurfaceException: com.mojang.renderpearl.api.device.SurfaceException: Failed to present image, swapchain out of date
+	at knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.acquireNextTexture(VulkanGpuSurface.java:257)
+	at knot//com.mojang.renderpearl.frontend.FrontendGpuSurface.acquireNextTexture(FrontendGpuSurface.java:71)
+	at knot//net.minecraft.client.Minecraft.renderFrame(Minecraft.java:1330)
+	at knot//net.minecraft.client.Minecraft.runTick(Minecraft.java:1274)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:967)
+	at knot//net.minecraft.client.main.Main.main(Main.java:292)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+Caused by: com.mojang.renderpearl.api.device.SurfaceException: Failed to present image, swapchain out of date
+	at knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.present(VulkanGpuSurface.java:420)
+	at knot//com.mojang.renderpearl.frontend.FrontendGpuSurface.present(FrontendGpuSurface.java:113)
+	at knot//net.minecraft.client.Minecraft.renderFrame(Minecraft.java:1402)
+	... 6 more
+[06:58:50] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:50] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:50] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:50] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:50] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:50] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:50] [Render thread/INFO]: AMD FSR3 frame generation confirmed: 4 display presents from 3 rendered game frames
+[06:58:50] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:50] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:50] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:50] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:51] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:51] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:51] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:51] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:51] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:51] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:51] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:51] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:51] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:51] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:52] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:52] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:52] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:52] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:52] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:52] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:52] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:52] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:52] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:52] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:53] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:53] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:53] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:53] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:53] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:53] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:53] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:53] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:53] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:53] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:54] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:54] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:54] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:54] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:54] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:54] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:54] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-fg-odd-resize
+[06:58:54] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:54] [IO-Worker-15/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-odd-resize-000.png: Saved screenshot as fixed-beta-fg-odd-resize-000.png
+[06:58:54] [IO-Worker-16/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-odd-resize-001.png: Saved screenshot as fixed-beta-fg-odd-resize-001.png
+[06:58:54] [IO-Worker-14/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-odd-resize-002.png: Saved screenshot as fixed-beta-fg-odd-resize-002.png
+[06:58:54] [IO-Worker-19/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-odd-resize-003.png: Saved screenshot as fixed-beta-fg-odd-resize-003.png
+[06:58:54] [IO-Worker-21/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-odd-resize-004.png: Saved screenshot as fixed-beta-fg-odd-resize-004.png
+[06:58:54] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:54] [IO-Worker-18/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-odd-resize-005.png: Saved screenshot as fixed-beta-fg-odd-resize-005.png
+[06:58:54] [IO-Worker-17/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-odd-resize-006.png: Saved screenshot as fixed-beta-fg-odd-resize-006.png
+[06:58:54] [IO-Worker-20/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-odd-resize-007.png: Saved screenshot as fixed-beta-fg-odd-resize-007.png
+[06:58:54] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:54] [Render thread/INFO]: Reloading ResourceManager: vanilla, vanilla, fabric-advancement-api-v1, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-command-api-v2, fabric-content-registries-v0, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, modmenu, placeholder-api, salts_anti_aliasing, sodium
+[06:58:54] [Render thread/INFO]: QA request 1792936734811 applied: {"id":1792936734811,"reload":true}
+[06:58:54] [Worker-Main-32/INFO]: Found unifont_pua-17.0.01.hex, loading
+[06:58:54] [Worker-Main-26/INFO]: Found unifont_all_no_pua-17.0.01.hex, loading
+[06:58:54] [Worker-Main-27/INFO]: Found unifont_jp_patch-17.0.01.hex, loading
+[06:58:54] [Server thread/INFO]: Saving and pausing game...
+[06:58:55] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[06:58:55] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[06:58:55] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[06:58:55] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:55] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:55] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:55] [Render thread/INFO]: OpenAL initialized on device OpenAL Soft on Speakers (Razer BlackShark V2 Pro)
+[06:58:55] [Render thread/INFO]: Sound engine started
+[06:58:55] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[06:58:55] [Render thread/INFO]: Created: 256x128x0 minecraft:textures/atlas/celestials.png-atlas
+[06:58:55] [Render thread/INFO]: Created: 128x128x0 minecraft:textures/atlas/decorated_pot.png-atlas
+[06:58:55] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[06:58:55] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/shield_patterns.png-atlas
+[06:58:55] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/banner_patterns.png-atlas
+[06:58:55] [Render thread/INFO]: Created: 2048x2048x4 minecraft:textures/atlas/blocks.png-atlas
+[06:58:55] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/items.png-atlas
+[06:58:55] [Render thread/INFO]: Created: 1024x1024x0 minecraft:textures/atlas/gui.png-atlas
+[06:58:55] [Render thread/INFO]: Created: 128x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[06:58:55] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/chest.png-atlas
+[06:58:55] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/shulker_boxes.png-atlas
+[06:58:56] [Render thread/INFO]: QA resource reload completed
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-fg-reload id=1792936734811
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Render thread/INFO]: Stopping worker threads
+[06:58:56] [Render thread/INFO]: Started 10 worker threads
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Render thread/WARN]: Requested post effect does not exist: minecraft:end_of_frame
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:56] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:57] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:57] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:57] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:57] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:57] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:57] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:57] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:57] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:57] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:57] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:58] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:58] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:58] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:58] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:58] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:58] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:58] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:58] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:58] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:58] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:59] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:59] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:59] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:59] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:59] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:59] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:59] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:59] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:59] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:58:59] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:00] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:00] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:00] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:00] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:00] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:00] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:00] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:00] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:00] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:00] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:01] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:01] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:01] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:01] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:01] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:01] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:01] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:01] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:01] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:01] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:02] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:02] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:02] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:02] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:02] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-fg-reload
+[06:59:02] [IO-Worker-19/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-reload-000.png: Saved screenshot as fixed-beta-fg-reload-000.png
+[06:59:02] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:02] [IO-Worker-15/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-reload-001.png: Saved screenshot as fixed-beta-fg-reload-001.png
+[06:59:02] [IO-Worker-18/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-reload-002.png: Saved screenshot as fixed-beta-fg-reload-002.png
+[06:59:02] [IO-Worker-16/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-reload-003.png: Saved screenshot as fixed-beta-fg-reload-003.png
+[06:59:02] [IO-Worker-14/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-reload-004.png: Saved screenshot as fixed-beta-fg-reload-004.png
+[06:59:02] [IO-Worker-20/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-reload-005.png: Saved screenshot as fixed-beta-fg-reload-005.png
+[06:59:02] [IO-Worker-17/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-reload-006.png: Saved screenshot as fixed-beta-fg-reload-006.png
+[06:59:02] [IO-Worker-22/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-reload-007.png: Saved screenshot as fixed-beta-fg-reload-007.png
+[06:59:02] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:02] [Render thread/INFO]: QA request 1792936742525 applied: {"id":1792936742525,"flushPresented":true}
+[06:59:02] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:02] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:02] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:03] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:03] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:03] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:03] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:03] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:03] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-fg-flush id=1792936742525
+[06:59:03] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:03] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:03] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:03] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:03] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:04] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:04] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:04] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:04] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:04] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:04] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:04] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:04] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:04] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:04] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:04] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:05] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-fg-flush
+[06:59:05] [Server thread/INFO]: System chat: Displaying particle minecraft:flame
+[06:59:05] [IO-Worker-22/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-flush-000.png: Saved screenshot as fixed-beta-fg-flush-000.png
+[06:59:05] [IO-Worker-17/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-flush-001.png: Saved screenshot as fixed-beta-fg-flush-001.png
+[06:59:05] [IO-Worker-20/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-flush-002.png: Saved screenshot as fixed-beta-fg-flush-002.png
+[06:59:05] [IO-Worker-14/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-flush-003.png: Saved screenshot as fixed-beta-fg-flush-003.png
+[06:59:05] [IO-Worker-16/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-flush-004.png: Saved screenshot as fixed-beta-fg-flush-004.png
+[06:59:05] [IO-Worker-18/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-flush-005.png: Saved screenshot as fixed-beta-fg-flush-005.png
+[06:59:05] [Render thread/INFO]: Configured Vulkan backend with passes [] and 2 targets
+[06:59:05] [Render thread/INFO]: QA request 1792936745136 applied: {"id":1792936745136,"mode":"OFF","particleTest":false,"handSwing":false,"sweep":false}
+[06:59:05] [IO-Worker-15/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-flush-006.png: Saved screenshot as fixed-beta-fg-flush-006.png
+[06:59:05] [IO-Worker-19/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-flush-007.png: Saved screenshot as fixed-beta-fg-flush-007.png
+[06:59:05] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-fg-off id=1792936745136
+[06:59:07] [IO-Worker-19/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-off-000.png: Saved screenshot as fixed-beta-fg-off-000.png
+[06:59:07] [IO-Worker-15/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-off-001.png: Saved screenshot as fixed-beta-fg-off-001.png
+[06:59:07] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-fg-off
+[06:59:07] [IO-Worker-18/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-off-002.png: Saved screenshot as fixed-beta-fg-off-002.png
+[06:59:07] [IO-Worker-16/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-off-003.png: Saved screenshot as fixed-beta-fg-off-003.png
+[06:59:07] [IO-Worker-14/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-off-004.png: Saved screenshot as fixed-beta-fg-off-004.png
+[06:59:07] [IO-Worker-19/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-off-005.png: Saved screenshot as fixed-beta-fg-off-005.png
+[06:59:07] [IO-Worker-15/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-off-006.png: Saved screenshot as fixed-beta-fg-off-006.png
+[06:59:07] [IO-Worker-18/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-off-007.png: Saved screenshot as fixed-beta-fg-off-007.png
+[06:59:08] [Render thread/INFO]: Configured Vulkan backend with passes [fsr3_super_resolution_frame_generation] and 8 targets
+[06:59:08] [Render thread/INFO]: QA request 1792936748044 applied: {"id":1792936748044,"mode":"FSR3_SUPER_RESOLUTION_FRAME_GENERATION"}
+[06:59:08] [Render thread/INFO]: AMD FSR3 frame-generation swapchain is active
+[06:59:08] [Render thread/INFO]: AMD FSR3 frame generation confirmed: 4 display presents from 3 rendered game frames
+[06:59:08] [Render thread/INFO]: [STDOUT]: AUDIT armed fixed-beta-fg-back id=1792936748044
+[06:59:12] [Render thread/INFO]: [STDOUT]: AUDIT complete fixed-beta-fg-back
+[06:59:12] [IO-Worker-18/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-back-000.png: Saved screenshot as fixed-beta-fg-back-000.png
+[06:59:12] [IO-Worker-15/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-back-001.png: Saved screenshot as fixed-beta-fg-back-001.png
+[06:59:12] [IO-Worker-19/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-back-002.png: Saved screenshot as fixed-beta-fg-back-002.png
+[06:59:12] [IO-Worker-14/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-back-003.png: Saved screenshot as fixed-beta-fg-back-003.png
+[06:59:12] [IO-Worker-16/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-back-004.png: Saved screenshot as fixed-beta-fg-back-004.png
+[06:59:12] [IO-Worker-20/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-back-005.png: Saved screenshot as fixed-beta-fg-back-005.png
+[06:59:12] [IO-Worker-17/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-back-006.png: Saved screenshot as fixed-beta-fg-back-006.png
+[06:59:12] [IO-Worker-18/INFO]: [STDOUT]: AUDIT screenshot fixed-beta-fg-back-007.png: Saved screenshot as fixed-beta-fg-back-007.png
+[06:59:12] [Render thread/INFO]: Stopping!
+[06:59:12] [Server thread/INFO]: Stopping server
+[06:59:12] [Server thread/INFO]: Saving players
+[06:59:12] [Server thread/INFO]: ReleaseTester lost connection: Disconnected
+[06:59:12] [Server thread/INFO]: System chat: ReleaseTester left the game
+[06:59:12] [Server thread/INFO]: Stopping singleplayer server as player logged out
+[06:59:12] [Server thread/INFO]: Saving worlds
+[06:59:13] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[06:59:13] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[06:59:13] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[06:59:15] [Render thread/INFO]: Stopping worker threads
+[06:59:15] [Render thread/INFO]: Saved performance metrics report to G:\Codex Projects\Salts Anti Aliasing\run\sodium-compat-fixes-20261025\logs\salts_anti_aliasing_metrics_2026-10-25_06-55-27.json
+File 'G:\Codex Projects\Salts Anti Aliasing\run\26.3\salts_anti_aliasing\native\dlss\runtime\e0a745ad6ede2b9f7201e2a8be6a5af7b40eb1e3356eee17f16e14da149c2011/sl.common.dll' is signed by NVIDIA and the signature was verified.
+File 'G:\Codex Projects\Salts Anti Aliasing\run\26.3\salts_anti_aliasing\native\dlss\runtime\e0a745ad6ede2b9f7201e2a8be6a5af7b40eb1e3356eee17f16e14da149c2011/sl.dlss.dll' is signed by NVIDIA and the signature was verified.
+File 'G:\Codex Projects\Salts Anti Aliasing\run\26.3\salts_anti_aliasing\native\dlss\runtime\e0a745ad6ede2b9f7201e2a8be6a5af7b40eb1e3356eee17f16e14da149c2011/NvLowLatencyVk.dll' is signed by NVIDIA and the signature was verified.

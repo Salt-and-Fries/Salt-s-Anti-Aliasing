@@ -65,6 +65,11 @@ final class VulkanMotionVectorRenderer {
             "FsrMotionConfig"
     );
 
+    private static final VulkanMotionVectorRenderer XESS = new VulkanMotionVectorRenderer(
+            "Salt's XeSS Motion Vectors", Identifier.parse("salts_anti_aliasing:pipeline/xess_motion_vectors_rg16f"),
+            Identifier.parse("salts_anti_aliasing:post/fsr_motion_vectors"), "FsrMotionConfig");
+    static VulkanMotionVectorRenderer xess() { return XESS; }
+
     private final String label;
     private final Identifier pipelineId;
     private final Identifier fragmentShaderId;
@@ -89,7 +94,7 @@ final class VulkanMotionVectorRenderer {
         return DLSS;
     }
 
-    static void releaseAll() { DLSS.release(); FSR.release(); }
+    static void releaseAll() { DLSS.release(); FSR.release(); XESS.release(); }
     private void release() {
         if (samplerInfoBuffer != null) samplerInfoBuffer.close();
         if (motionConfigBuffer != null) motionConfigBuffer.close();

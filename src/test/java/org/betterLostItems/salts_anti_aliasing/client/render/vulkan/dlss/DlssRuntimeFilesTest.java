@@ -148,4 +148,39 @@ final class DlssRuntimeFilesTest {
         Files.write(path, data);
         assertThrows(IOException.class, () -> DlssRuntimeFiles.checkWindowsX64Dll(path));
     }
+
+    @Test
+    void identifiesEitherCompleteReleaseAndPreservesLegacyCacheIdentity() throws Exception {
+        Path folder = root.resolve("download");
+        var legacy = fixture(folder);
+        var modern = new HashMap<>(legacy);
+        byte[] updated = dll(88);
+        modern.put("nvngx_dlss.dll", DlssBridgeResolver.hash(new ByteArrayInputStream(updated)));
+        var releases = List.of(new DlssRuntimeFiles.Release("new", "new-model", modern),
+                new DlssRuntimeFiles.Release("old", "old-model", legacy));
+        var oldSet = DlssRuntimeFiles.validate(folder, releases);
+        assertEquals("old", oldSet.release().streamlineVersion());
+        assertEquals(DlssRuntimeFiles.validate(folder, legacy).identity(), oldSet.identity());
+        Files.write(folder.resolve("nvngx_dlss.dll"), updated);
+        var newSet = DlssRuntimeFiles.validate(folder, releases);
+        assertEquals("new", newSet.release().streamlineVersion());
+        assertNotEquals(oldSet.identity(), newSet.identity());
+    }
+
+    @Test
+    void rejectsAMixtureOfIndividuallyApprovedDlls() throws Exception {
+        Path folder = root.resolve("download");
+        var legacy = fixture(folder);
+        var modern = new HashMap<>(legacy);
+        for (String name : List.of("nvngx_dlss.dll", "sl.common.dll")) {
+            byte[] bytes = dll(name.length() + 80);
+            modern.put(name, DlssBridgeResolver.hash(new ByteArrayInputStream(bytes)));
+        }
+        // Only one of the two changed DLLs has been replaced.
+        Files.write(folder.resolve("nvngx_dlss.dll"), dll("nvngx_dlss.dll".length() + 80));
+        var releases = List.of(new DlssRuntimeFiles.Release("new", "new", modern),
+                new DlssRuntimeFiles.Release("old", "old", legacy));
+        assertTrue(assertThrows(IOException.class, () -> DlssRuntimeFiles.validate(folder, releases))
+                .getMessage().contains("do not mix DLL versions"));
+    }
 }

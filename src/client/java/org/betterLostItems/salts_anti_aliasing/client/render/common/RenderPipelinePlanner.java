@@ -187,6 +187,46 @@ public final class RenderPipelinePlanner {
                         false
                 );
             }
+            case SGSR1_UPSCALE -> currentColor = addPass(passes, targets, "sgsr1_upscale",
+                    EnumSet.of(RenderCapability.INTERNAL_RESOLUTION, RenderCapability.SPATIAL_UPSCALING),
+                    List.of("scene_color"), "sgsr1_color", RenderTargetType.INTERMEDIATE_COLOR, TextureFormat.RGBA16F,
+                    RenderTargetSizing.OUTPUT, 1.0f, false);
+            case SGSR2_SUPER_RESOLUTION -> {
+                targets.put("history_color",target("history_color",RenderTargetType.HISTORY_COLOR,TextureFormat.RGBA16F,
+                        RenderTargetSizing.OUTPUT,1.0f,true));
+                targets.put("sgsr2_velocity",target("sgsr2_velocity",RenderTargetType.MOTION_VECTOR,TextureFormat.RGBA16F,
+                        RenderTargetSizing.INTERNAL,sceneScale,false));
+                targets.put("sgsr2_motion_depth",target("sgsr2_motion_depth",RenderTargetType.AUXILIARY,TextureFormat.RGBA16F,
+                        RenderTargetSizing.INTERNAL,sceneScale,false));
+                passes.add(new RenderPassSpec("sgsr2_convert",EnumSet.of(RenderCapability.TEMPORAL_AA),
+                        List.of("scene_depth","sgsr2_velocity"),List.of("sgsr2_motion_depth")));
+                currentColor=addPass(passes, targets, "sgsr2_upscale",
+                        EnumSet.of(RenderCapability.INTERNAL_RESOLUTION, RenderCapability.SPATIAL_UPSCALING,RenderCapability.TEMPORAL_AA),
+                        List.of("scene_color","sgsr2_motion_depth","history_color"),"sgsr2_color",
+                        RenderTargetType.INTERMEDIATE_COLOR,TextureFormat.RGBA16F,RenderTargetSizing.OUTPUT,1.0f,true);
+            }
+            case XESS_SUPER_RESOLUTION -> {
+                targets.put("motion_vectors", target("motion_vectors", RenderTargetType.MOTION_VECTOR, TextureFormat.RG16F,
+                        RenderTargetSizing.INTERNAL, sceneScale, true));
+                currentColor = addPass(
+                        passes,
+                        targets,
+                        "xess_super_resolution",
+                        EnumSet.of(
+                                RenderCapability.INTERNAL_RESOLUTION,
+                                RenderCapability.SPATIAL_UPSCALING,
+                                RenderCapability.TEMPORAL_AA,
+                                RenderCapability.XESS_UPSCALING
+                        ),
+                        List.of("scene_color", "scene_depth", "motion_vectors", "history_color"),
+                        "xess_upscaled_color",
+                        RenderTargetType.INTERMEDIATE_COLOR,
+                        TextureFormat.RGBA16F,
+                        RenderTargetSizing.OUTPUT,
+                        1.0f,
+                        false
+                );
+            }
             case FSR2_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION, FSR3_SUPER_RESOLUTION_FRAME_GENERATION -> {
                 targets.put("motion_vectors", target("motion_vectors", RenderTargetType.MOTION_VECTOR, TextureFormat.RG16F,
                         RenderTargetSizing.INTERNAL, sceneScale, true));

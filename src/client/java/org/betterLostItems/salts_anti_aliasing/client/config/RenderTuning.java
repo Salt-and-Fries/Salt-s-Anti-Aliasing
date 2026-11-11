@@ -2,6 +2,9 @@ package org.betterLostItems.salts_anti_aliasing.client.config;
 
 /** Persisted, bounded tuning. Only settings consumed by the selected method are shown in the UI. */
 public final class RenderTuning implements Cloneable {
+    public float sgsr1EdgeThreshold = 8.0f / 255.0f;
+    public float sgsr1EdgeSharpness = 2.0f;
+    public boolean sgsr1EdgeDirection = false;
     public DlssModelPreset dlssModel = DlssModelPreset.AUTO;
     public DlssColorInput dlssColorInput = DlssColorInput.AUTO;
     public float dlssParticleAlphaThreshold = .5f;
@@ -106,6 +109,8 @@ public final class RenderTuning implements Cloneable {
     }
 
     public void sanitize() {
+        sgsr1EdgeThreshold = finite(sgsr1EdgeThreshold, 1.0f/255.0f, 32.0f/255.0f, 8.0f/255.0f);
+        sgsr1EdgeSharpness = finite(sgsr1EdgeSharpness, 1, 2, 2);
         if (dlssColorInput == null) dlssColorInput = DlssColorInput.AUTO;
         if (motionVertexBudget == null) motionVertexBudget = MotionVertexBudget.VERTICES_1M;
         dlssParticleAlphaThreshold = finite(dlssParticleAlphaThreshold, .1f, 1, .5f);

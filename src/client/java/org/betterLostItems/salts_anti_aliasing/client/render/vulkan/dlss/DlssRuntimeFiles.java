@@ -11,10 +11,11 @@ import java.util.stream.Collectors;
 
 /** Validates and privately imports a known-compatible NVIDIA runtime without executing it. */
 public final class DlssRuntimeFiles {
-    public static final String SUPPORTED_VERSION = "2.14.1";
+    public static final String SUPPORTED_VERSION = "2.14.16";
+    public static final String SUPPORTED_VERSIONS = "2.14.16 or 2.14.1";
     public static final String DOWNLOAD_URL =
-            "https://github.com/NVIDIA-RTX/Streamline/releases/tag/v2.14.1";
-    private static final Map<String, String> HASHES =
+            "https://github.com/NVIDIA-RTX/Streamline/releases/tag/v2.14.16";
+    private static final Map<String, String> LEGACY_HASHES =
             Map.of(
                     "nvngx_dlss.dll",
                             "3975567b8943c53acce397f2b72380092f84f162d00b0d2c7d08a1025c563983",
@@ -26,6 +27,14 @@ public final class DlssRuntimeFiles {
                             "73bf52c0cfaa5900a8f3f4a91306e4625e7cca696dfb305aae44c9f97b582e1f",
                     "NvLowLatencyVk.dll",
                             "2a77dc3e1c724b7eea5755be0ae7423752e79a2459fae72181a9f00e3507e5d6");
+    private static final List<Release> RELEASES = List.of(
+            new Release("2.14.16", "310.9.16", Map.of(
+                    "nvngx_dlss.dll", "d00b5b0ab29c3ca101b70c3a5ecb3a01b7ef33766a3383a28a18623083e6123e",
+                    "sl.interposer.dll", "b1d7395aebd7b9722841d64dcf7433680020b6a8e421f851c16d5ba0c2182edf",
+                    "sl.common.dll", "38eea3b4209afc455636ea372b5933d65fcc13becec6c84d101dcfc4d8648f75",
+                    "sl.dlss.dll", "18871eea87c90345da97d8109faa81ea7d5840e8d99b51b55b0e46cfa177f84e",
+                    "NvLowLatencyVk.dll", "2a77dc3e1c724b7eea5755be0ae7423752e79a2459fae72181a9f00e3507e5d6")),
+            new Release("2.14.1", "310.9.1", LEGACY_HASHES));
     private static final long MAX_FILE_BYTES = 160L * 1024 * 1024;
 
     private DlssRuntimeFiles() {}
@@ -34,16 +43,27 @@ public final class DlssRuntimeFiles {
         return DlssBridgeResolver.supportedPlatform();
     }
 
-    public record Validated(Path directory, String identity) {}
+    /** A whole production set: mixing individually approved DLLs from different releases is invalid. */
+    public record Release(String streamlineVersion, String dlssVersion, Map<String, String> hashes) {
+        public Release { hashes = Map.copyOf(hashes); }
+        public String description() { return "DLSS " + dlssVersion + " / Streamline " + streamlineVersion; }
+    }
+
+    public record Validated(Path directory, String identity, Release release) {}
 
     public static Validated validate(Path selection) throws IOException {
-        return validate(selection, HASHES);
+        return validate(selection, RELEASES);
     }
 
     static Validated validate(Path selection, Map<String, String> expected) throws IOException {
+        return validate(selection, List.of(new Release("test", "test", expected)));
+    }
+
+    static Validated validate(Path selection, List<Release> releases) throws IOException {
         Path directory = locate(selection);
+        Set<String> names = releases.getFirst().hashes().keySet();
         var missing =
-                expected.keySet().stream()
+                names.stream()
                         .sorted()
                         .filter(name -> !Files.isRegularFile(directory.resolve(name)))
                         .toList();
@@ -52,25 +72,23 @@ public final class DlssRuntimeFiles {
                     "Missing required DLSS files: "
                             + String.join(", ", missing)
                             + ". Select the extracted Streamline "
-                            + SUPPORTED_VERSION
+                            + SUPPORTED_VERSIONS
                             + " bin/x64 folder.");
-        for (var entry : expected.entrySet()) {
-            Path file = directory.resolve(entry.getKey());
+        Map<String, String> actual = new HashMap<>();
+        for (String name : names) {
+            Path file = directory.resolve(name);
             checkWindowsX64Dll(file);
             try (InputStream input = Files.newInputStream(file)) {
-                if (!entry.getValue().equals(DlssBridgeResolver.hash(input)))
-                    throw new IOException(
-                            "Unsupported or modified file: "
-                                    + entry.getKey()
-                                    + ". Use the unmodified production files from Streamline "
-                                    + SUPPORTED_VERSION
-                                    + ".");
+                actual.put(name, DlssBridgeResolver.hash(input));
             } catch (NoSuchAlgorithmException impossible) {
                 throw new AssertionError(impossible);
             }
         }
+        Release release = releases.stream().filter(r -> r.hashes().equals(actual)).findFirst()
+                .orElseThrow(() -> new IOException("Unsupported or modified DLSS runtime set. Use all unmodified production files from the same Streamline "
+                        + SUPPORTED_VERSIONS + " release; do not mix DLL versions."));
         String canonical =
-                expected.entrySet().stream()
+                release.hashes().entrySet().stream()
                         .sorted(Map.Entry.comparingByKey())
                         .map(e -> e.getKey() + "=" + e.getValue())
                         .collect(Collectors.joining("\n"));
@@ -78,7 +96,7 @@ public final class DlssRuntimeFiles {
             return new Validated(
                     directory,
                     DlssBridgeResolver.hash(
-                            new ByteArrayInputStream(canonical.getBytes(StandardCharsets.UTF_8))));
+                            new ByteArrayInputStream(canonical.getBytes(StandardCharsets.UTF_8))), release);
         } catch (NoSuchAlgorithmException impossible) {
             throw new AssertionError(impossible);
         }
@@ -126,19 +144,22 @@ public final class DlssRuntimeFiles {
     }
 
     public static Path install(Path selection, Path gameDirectory) throws IOException {
-        return install(selection, gameDirectory, HASHES);
+        return install(validate(selection), gameDirectory);
     }
 
     static Path install(Path selection, Path gameDirectory, Map<String, String> expected)
             throws IOException {
-        Validated validated = validate(selection, expected);
+        return install(validate(selection, expected), gameDirectory);
+    }
+
+    private static Path install(Validated validated, Path gameDirectory) throws IOException {
         Path target =
                 gameDirectory
                         .toAbsolutePath()
                         .resolve("salts_anti_aliasing/native/dlss/runtime")
                         .resolve(validated.identity());
         Files.createDirectories(target);
-        for (var entry : expected.entrySet()) {
+        for (var entry : validated.release().hashes().entrySet()) {
             Path source = validated.directory().resolve(entry.getKey());
             try {
                 DlssBridgeResolver.install(

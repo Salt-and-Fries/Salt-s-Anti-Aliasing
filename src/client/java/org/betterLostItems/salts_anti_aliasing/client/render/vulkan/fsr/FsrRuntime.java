@@ -33,6 +33,7 @@ public final class FsrRuntime {
     private boolean frameGenerationSurfaceReconfigurationRequested;
     private VulkanNativeDeviceInfo currentDeviceInfo;
     private long recoveryGeneration;
+    private boolean frameGenerationDeviceFeaturesAvailable;
     private final FrameGenerationPresentTracker frameGenerationPresentTracker =
             new FrameGenerationPresentTracker();
 
@@ -108,10 +109,18 @@ public final class FsrRuntime {
     }
 
     public synchronized FsrRuntimeStatus status() {
+        if (!frameGenerationDeviceFeaturesAvailable && status.upscalingReady()) {
+            return FsrRuntimeStatus.FRAME_GENERATION_DEVICE_FEATURES_UNAVAILABLE;
+        }
         if (frameGenerationSwapchainRejected && status.frameGenerationReady()) {
             return FsrRuntimeStatus.FRAME_GENERATION_SWAPCHAIN_UNAVAILABLE;
         }
         return status;
+    }
+
+    /** Recorded from queried AND enabled features before creating the shared Vulkan device. */
+    public synchronized void setFrameGenerationDeviceFeaturesAvailable(boolean available) {
+        frameGenerationDeviceFeaturesAvailable = available;
     }
 
     public synchronized boolean isUpscalingReady() {
@@ -227,7 +236,7 @@ public final class FsrRuntime {
             VkAllocationCallbacks allocator,
             LongBuffer outSwapchain
     ) {
-        if (!frameGenerationSwapchainRequested || !status.frameGenerationReady() || frameGenerationSwapchainRejected) {
+        if (!frameGenerationSwapchainRequested || !status().frameGenerationReady() || frameGenerationSwapchainRejected) {
             MetricsDiagnostics.infoOnce(
                     "fsr.swapchain.passthrough." + frameGenerationSwapchainRequested + "."
                             + status + "." + frameGenerationSwapchainRejected,
@@ -451,7 +460,7 @@ public final class FsrRuntime {
     }
 
     private void refresh(VulkanNativeDeviceInfo deviceInfo) {
-        FsrRuntimeStatus previousStatus = status;
+        FsrRuntimeStatus previousStatus = status();
         status = bridge.configure(configuration, deviceInfo);
         if (bridge.consumeSurfaceReconfigurationRequested()) {
             frameGenerationSurfaceReconfigurationRequested = true;
@@ -462,14 +471,15 @@ public final class FsrRuntime {
                     "deviceInfo", deviceInfo
             );
         }
-        if (status != previousStatus) {
-            SaltsAntiAliasing.LOGGER.info("AMD FSR runtime status: {}", status.message());
+        FsrRuntimeStatus effectiveStatus = status();
+        if (effectiveStatus != previousStatus) {
+            SaltsAntiAliasing.LOGGER.info("AMD FSR runtime status: {}", effectiveStatus.message());
             MetricsDiagnostics.info(
                     "fsr.runtime",
                     "status_changed",
                     "previousStatus", previousStatus,
-                    "currentStatus", status,
-                    "message", status.message(),
+                    "currentStatus", effectiveStatus,
+                    "message", effectiveStatus.message(),
                     "deviceInfo", deviceInfo,
                     "configuration", configuration,
                     "frameGenerationRequested", frameGenerationSwapchainRequested,

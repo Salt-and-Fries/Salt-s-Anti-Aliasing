@@ -1,0 +1,207 @@
+[
+  {
+    "id": "S1",
+    "title": "Stable release / 26.3 scope",
+    "url": "https://github.com/CaffeineMC/sodium/releases/tag/mc26.3-0.9.2"
+  },
+  {
+    "id": "S2",
+    "title": "Beta release and upstream changes",
+    "url": "https://github.com/CaffeineMC/sodium/releases/tag/mc26.3-0.9.3-beta.1"
+  },
+  {
+    "id": "S3",
+    "title": "Official runtime version metadata",
+    "url": "https://api.modrinth.com/v2/project/AANobbMI/version?game_versions=%5B%2226.3%22%5D&loaders=%5B%22fabric%22%5D"
+  },
+  {
+    "id": "S4",
+    "title": "World renderer replacement hook",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/mixin/core/render/world/LevelRendererMixin.java"
+  },
+  {
+    "id": "S5",
+    "title": "Terrain pass reuse / SodiumChunkSection",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/util/SodiumChunkSection.java"
+  },
+  {
+    "id": "S6",
+    "title": "SodiumWorldRenderer",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/render/SodiumWorldRenderer.java"
+  },
+  {
+    "id": "S7",
+    "title": "Chunk worker scheduling",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/render/chunk/compile/executor/ChunkBuilder.java"
+  },
+  {
+    "id": "S8",
+    "title": "RenderSectionManager",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/render/chunk/RenderSectionManager.java"
+  },
+  {
+    "id": "S9",
+    "title": "Region layout and resource ownership",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/render/chunk/region/RenderRegion.java"
+  },
+  {
+    "id": "S10",
+    "title": "Compact terrain vertex format",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/render/chunk/vertex/format/impl/CompactChunkVertex.java"
+  },
+  {
+    "id": "S11",
+    "title": "DefaultChunkRenderer and pipeline binding",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/render/chunk/DefaultChunkRenderer.java"
+  },
+  {
+    "id": "S12",
+    "title": "Backend selection",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/gpu/device/backend/DrawBackend.java"
+  },
+  {
+    "id": "S13",
+    "title": "Vulkan draw context",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/gpu/device/context/VKDrawContext.java"
+  },
+  {
+    "id": "S14",
+    "title": "Projection capture / globals upload",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/mixin/core/render/world/GameRendererMixin.java"
+  },
+  {
+    "id": "S14b",
+    "title": "UniformBufferManager",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/render/chunk/UniformBufferManager.java"
+  },
+  {
+    "id": "S15",
+    "title": "Terrain pipeline construction",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/render/chunk/ShaderChunkRenderer.java"
+  },
+  {
+    "id": "S16",
+    "title": "Terrain fragment sampling",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/resources/assets/sodium/shaders/blocks/block_layer_opaque.fsh"
+  },
+  {
+    "id": "S17",
+    "title": "Terrain vertex shader",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/resources/assets/sodium/shaders/blocks/block_layer_opaque.vsh"
+  },
+  {
+    "id": "S18",
+    "title": "Optimized cuboid emission hook",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/mixin/features/render/entity/CubeMixin.java"
+  },
+  {
+    "id": "S19",
+    "title": "Vertex-writer conversion and fallback",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/render/vertex/VertexConsumerUtils.java"
+  },
+  {
+    "id": "S20",
+    "title": "Public VertexBufferWriter API",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/api/java/net/caffeinemc/mods/sodium/api/vertex/buffer/VertexBufferWriter.java"
+  },
+  {
+    "id": "S21",
+    "title": "Chunk fade / fog behavior",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/resources/assets/sodium/shaders/include/fog.glsl"
+  },
+  {
+    "id": "S22",
+    "title": "Optimized billboard emission",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/mixin/features/render/particle/QuadParticleRenderStateMixin.java"
+  },
+  {
+    "id": "S23",
+    "title": "Configuration entrypoint registration",
+    "url": "https://github.com/CaffeineMC/sodium/blob/03198cb36ab831c99694403d18e4cf4a1726df72/common/src/main/java/net/caffeinemc/mods/sodium/client/config/ConfigManager.java"
+  },
+  {
+    "id": "M1",
+    "title": "Build dependencies and runtime scope",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/build.gradle"
+  },
+  {
+    "id": "M2",
+    "title": "Scene target, projection and hand hooks",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/mixin/client/GameRendererMixin.java"
+  },
+  {
+    "id": "M3",
+    "title": "World post-effect coordination",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/common/RenderRuntime.java"
+  },
+  {
+    "id": "M4",
+    "title": "Frontend pipeline variant selection",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/mixin/client/FrontendRenderPassMixin.java"
+  },
+  {
+    "id": "M5",
+    "title": "MSAA pipeline metadata and state",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanMsaaPipelineVariants.java"
+  },
+  {
+    "id": "M6",
+    "title": "MSAA scene/depth lifecycle",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanSceneMsaaController.java"
+  },
+  {
+    "id": "M7",
+    "title": "Current terrain MIP source selector",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanTextureDetail.java"
+  },
+  {
+    "id": "M8",
+    "title": "Texture sampling patch policy",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/main/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/TextureDetailShaderPatch.java"
+  },
+  {
+    "id": "M9",
+    "title": "Current object capture wrapper",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/EntityMotionGeometry.java"
+  },
+  {
+    "id": "M10",
+    "title": "SSAA/spatial upscale target handling",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanSceneScaleController.java"
+  },
+  {
+    "id": "M11",
+    "title": "Temporal matrices, jitter and resets",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanSceneTemporalController.java"
+  },
+  {
+    "id": "M12",
+    "title": "DLSS scene/native boundary",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanSceneDlssController.java"
+  },
+  {
+    "id": "M13",
+    "title": "Opaque/OIT capture hooks",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/mixin/client/LevelRendererMixin.java"
+  },
+  {
+    "id": "M13b",
+    "title": "FSR scene/native boundary",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/VulkanSceneFsrController.java"
+  },
+  {
+    "id": "M14",
+    "title": "Device feature negotiation",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/mixin/client/VulkanBackendMixin.java"
+  },
+  {
+    "id": "M14b",
+    "title": "FG surface/presentation integration",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/mixin/client/VulkanGpuSurfaceMixin.java"
+  },
+  {
+    "id": "M15",
+    "title": "Existing Sodium configuration adapter",
+    "url": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/blob/21b0de753ee11ad936159042887bba12538e7b5b/src/client/java/org/betterLostItems/salts_anti_aliasing/client/compat/sodium/SaltsAntiAliasingSodiumConfig.java"
+  }
+]

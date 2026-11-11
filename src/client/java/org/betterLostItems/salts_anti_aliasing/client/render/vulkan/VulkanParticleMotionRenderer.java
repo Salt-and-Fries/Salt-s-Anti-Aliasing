@@ -17,6 +17,7 @@ import java.util.*;
 /** Alpha-tested, nearest-visible particle velocity over the normal world/geometry field. */
 public final class VulkanParticleMotionRenderer {
     private static RenderPipeline pipeline;
+    private static final Map<Boolean,RenderPipeline> PIPELINES=new HashMap<>();
     private static GpuBuffer vertices, config;
     private static java.nio.ByteBuffer staging;
     private static int lastQuads;
@@ -43,7 +44,7 @@ public final class VulkanParticleMotionRenderer {
             lastQuads++;
         });
         if (groups.isEmpty()) return;
-        ensurePipeline();
+        ensurePipeline(motion.getColorTexture().getFormat()==GpuFormat.RGBA16_FLOAT);
         var encoder = RenderSystem.getDevice().createCommandEncoder();
         encoder.clearDepthTexture(motion.getDepthTexture(), 0.0);
         try (var stack = MemoryStack.stackPush()) {
@@ -91,12 +92,13 @@ public final class VulkanParticleMotionRenderer {
         }
     }
 
-    private static void ensurePipeline() {
+    private static void ensurePipeline(boolean sgsr) {
+        pipeline=PIPELINES.get(sgsr);
         if (pipeline != null) return;
         pipeline = RenderPipeline.builder()
-                .withLocation(Identifier.parse("salts_anti_aliasing:pipeline/particle_motion"))
+                .withLocation(Identifier.parse("salts_anti_aliasing:pipeline/particle_motion"+(sgsr?"_sgsr":"")))
                 .withVertexShader(Identifier.parse("salts_anti_aliasing:post/particle_motion"))
-                .withFragmentShader(Identifier.parse("salts_anti_aliasing:post/particle_motion"))
+                .withFragmentShader(Identifier.parse("salts_anti_aliasing:post/"+(sgsr?"sgsr2_particle_motion":"particle_motion")))
                 .withVertexBinding(0, VertexFormat.builder(0)
                         .addAttribute("Position", GpuFormat.RGB32_FLOAT)
                         .addAttribute("PreviousPosition", GpuFormat.RGB32_FLOAT)
@@ -107,10 +109,11 @@ public final class VulkanParticleMotionRenderer {
                         .withUniform("ParticleMotionConfig", UniformType.UNIFORM_BUFFER)
                         .withUniform("SceneDepthSampler", UniformType.COMBINED_IMAGE_SAMPLER)
                         .withUniform("ParticleAtlas", UniformType.COMBINED_IMAGE_SAMPLER).build())
-                .withColorTargetState(new ColorTargetState(Optional.empty(), GpuFormat.RG16_FLOAT,
+                .withColorTargetState(new ColorTargetState(Optional.empty(), sgsr?GpuFormat.RGBA16_FLOAT:GpuFormat.RG16_FLOAT,
                         ColorTargetState.WRITE_RED | ColorTargetState.WRITE_GREEN))
                 .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN, true))
                 .withCull(false).withPrimitiveTopology(PrimitiveTopology.TRIANGLES).build();
+        PIPELINES.put(sgsr,pipeline);
     }
 
     static void release() {

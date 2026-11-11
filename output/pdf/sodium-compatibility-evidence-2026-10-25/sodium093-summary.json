@@ -1,0 +1,848 @@
+[
+  {
+    "label": "sodium093-off",
+    "status": "Off - native scene",
+    "mode": "OFF",
+    "probe": {
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "pipelines": [
+        {
+          "pipeline": "sodium:pipeline/solid_terrain",
+          "target": "1280x720:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/cutout_terrain",
+          "target": "1280x720:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/translucent_terrain",
+          "target": "1280x720:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        }
+      ],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0,
+      "aaProjection": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "jitterX": 0.0,
+      "jitterY": 0.0,
+      "sodiumProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ]
+    }
+  },
+  {
+    "label": "sodium093-msaa4",
+    "status": "MSAA - 1280 x 720",
+    "mode": "MSAA",
+    "probe": {
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "pipelines": [
+        {
+          "pipeline": "sodium:pipeline/solid_terrain_salts_msaa_4x_binary",
+          "target": "1280x720:RGBA8_UNORM",
+          "attachmentSamples": 4,
+          "nativePipelineSamples": 4,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/cutout_terrain_salts_msaa_4x_binary",
+          "target": "1280x720:RGBA8_UNORM",
+          "attachmentSamples": 4,
+          "nativePipelineSamples": 4,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/translucent_terrain_salts_msaa_4x_binary",
+          "target": "1280x720:RGBA8_UNORM",
+          "attachmentSamples": 4,
+          "nativePipelineSamples": 4,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        }
+      ],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0,
+      "aaProjection": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "jitterX": 0.0,
+      "jitterY": 0.0,
+      "sodiumProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ]
+    }
+  },
+  {
+    "label": "sodium093-ssaa200",
+    "status": "SSAA - 2560 x 1440",
+    "mode": "SSAA",
+    "probe": {
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "pipelines": [
+        {
+          "pipeline": "sodium:pipeline/solid_terrain",
+          "target": "2560x1440:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/cutout_terrain",
+          "target": "2560x1440:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/translucent_terrain",
+          "target": "2560x1440:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        }
+      ],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0,
+      "aaProjection": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "jitterX": 0.0,
+      "jitterY": 0.0,
+      "sodiumProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ]
+    }
+  },
+  {
+    "label": "sodium093-dlss",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "probe": {
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "pipelines": [
+        {
+          "pipeline": "sodium:pipeline/solid_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/cutout_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/translucent_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        }
+      ],
+      "geometryCoverage": {
+        "capturedVertices": 2520,
+        "movingVertices": 0,
+        "stableMeshes": 10,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0,
+      "aaProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ],
+      "jitterX": 0.1875,
+      "jitterY": -0.018518507,
+      "sodiumProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        -0.00043962486,
+        -7.716045e-05,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ]
+    }
+  },
+  {
+    "label": "sodium093-dlss-mip",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "probe": {
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "pipelines": [
+        {
+          "pipeline": "sodium:pipeline/solid_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/cutout_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/translucent_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        }
+      ],
+      "geometryCoverage": {
+        "capturedVertices": 2520,
+        "movingVertices": 0,
+        "stableMeshes": 10,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0,
+      "aaProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ],
+      "jitterX": 0.4375,
+      "jitterY": -0.24074075,
+      "sodiumProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        -0.0010257913,
+        -0.0010030865,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ]
+    }
+  },
+  {
+    "label": "sodium093-fsr3",
+    "status": "FSR3 Super Resolution - 853 x 480",
+    "mode": "FSR3_SUPER_RESOLUTION",
+    "probe": {
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "pipelines": [
+        {
+          "pipeline": "sodium:pipeline/solid_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/cutout_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/translucent_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        }
+      ],
+      "geometryCoverage": {
+        "capturedVertices": 2520,
+        "movingVertices": 0,
+        "stableMeshes": 10,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0,
+      "aaProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ],
+      "jitterX": -0.4375,
+      "jitterY": 0.3888889,
+      "sodiumProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        0.0010257913,
+        0.0016203704,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ]
+    }
+  },
+  {
+    "label": "sodium093-oit-dlss",
+    "status": "DLSS Super Resolution - 853 x 480",
+    "mode": "DLSS_SUPER_RESOLUTION",
+    "probe": {
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "pipelines": [
+        {
+          "pipeline": "sodium:pipeline/solid_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/cutout_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "minecraft:pipeline/oit_depth_bounds_sodium_terrain",
+          "target": "853x480:RGBA32_FLOAT",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "minecraft:pipeline/oit_transmittance_sodium_terrain",
+          "target": "853x480:RGBA16_FLOAT",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "minecraft:pipeline/oit_accumulate_sodium_terrain",
+          "target": "853x480:RGBA16_FLOAT",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        }
+      ],
+      "geometryCoverage": {
+        "capturedVertices": 2520,
+        "movingVertices": 0,
+        "stableMeshes": 10,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0,
+      "aaProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ],
+      "jitterX": 0.03125,
+      "jitterY": 0.4259259,
+      "sodiumProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        -7.327081e-05,
+        0.0017746913,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ]
+    }
+  },
+  {
+    "label": "sodium093-oit-msaa",
+    "status": "MSAA - 1280 x 720",
+    "mode": "MSAA",
+    "probe": {
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "pipelines": [
+        {
+          "pipeline": "sodium:pipeline/solid_terrain_salts_msaa_4x_binary",
+          "target": "1280x720:RGBA8_UNORM",
+          "attachmentSamples": 4,
+          "nativePipelineSamples": 4,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/cutout_terrain_salts_msaa_4x_binary",
+          "target": "1280x720:RGBA8_UNORM",
+          "attachmentSamples": 4,
+          "nativePipelineSamples": 4,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "minecraft:pipeline/oit_depth_bounds_sodium_terrain",
+          "target": "1280x720:RGBA32_FLOAT",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "minecraft:pipeline/oit_transmittance_sodium_terrain",
+          "target": "1280x720:RGBA16_FLOAT",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "minecraft:pipeline/oit_accumulate_sodium_terrain",
+          "target": "1280x720:RGBA16_FLOAT",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        }
+      ],
+      "geometryCoverage": {
+        "capturedVertices": 0,
+        "movingVertices": 0,
+        "stableMeshes": 0,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0,
+      "aaProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ],
+      "jitterX": 0.0,
+      "jitterY": 0.0,
+      "sodiumProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ]
+    }
+  },
+  {
+    "label": "sodium093-oit-fsr3",
+    "status": "FSR3 Super Resolution - 853 x 480",
+    "mode": "FSR3_SUPER_RESOLUTION",
+    "probe": {
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "pipelines": [
+        {
+          "pipeline": "sodium:pipeline/solid_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "sodium:pipeline/cutout_terrain",
+          "target": "853x480:RGBA8_UNORM",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "minecraft:pipeline/oit_depth_bounds_sodium_terrain",
+          "target": "853x480:RGBA32_FLOAT",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "minecraft:pipeline/oit_transmittance_sodium_terrain",
+          "target": "853x480:RGBA16_FLOAT",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        },
+        {
+          "pipeline": "minecraft:pipeline/oit_accumulate_sodium_terrain",
+          "target": "853x480:RGBA16_FLOAT",
+          "attachmentSamples": 1,
+          "nativePipelineSamples": 1,
+          "alphaToCoverage": false,
+          "mipBiasDefine": "absent",
+          "bindCount": 108
+        }
+      ],
+      "geometryCoverage": {
+        "capturedVertices": 2520,
+        "movingVertices": 0,
+        "stableMeshes": 10,
+        "newMeshes": 0,
+        "topologyChanges": 0,
+        "cappedMeshes": 0,
+        "unidentifiedMeshes": 0,
+        "vertexBudget": 1048576
+      },
+      "particleQuads": 0,
+      "activeMipQuarterSteps": 0,
+      "aaProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ],
+      "jitterX": 0.0625,
+      "jitterY": -0.46296296,
+      "sodiumProjection": [
+        0.70715946,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.2571725,
+        0.0,
+        0.0,
+        -0.00014654161,
+        -0.0019290124,
+        2.441466e-05,
+        -1.0,
+        0.0,
+        0.0,
+        0.050001223,
+        0.0
+      ]
+    }
+  }
+]

@@ -15,10 +15,13 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
 
 /** Depth-validated geometry velocities overlay the camera motion field. */
 final class VulkanEntityMotionRenderer {
     private static RenderPipeline pipeline;
+    private static final Map<Boolean,RenderPipeline> PIPELINES=new HashMap<>();
     private static GpuBuffer vertexBuffer, configBuffer;
     private static ByteBuffer staging;
     private static int lastVertexCount;
@@ -84,15 +87,17 @@ final class VulkanEntityMotionRenderer {
         RenderSystem.getDevice()
                 .createCommandEncoder()
                 .writeToBuffer(vertexBuffer.slice(0, staging.remaining()), staging);
+        boolean sgsr=motion.getColorTexture().getFormat()==GpuFormat.RGBA16_FLOAT;
+        pipeline=PIPELINES.get(sgsr);
         if (pipeline == null) {
             pipeline =
                     RenderPipeline.builder()
                             .withLocation(
-                                    Identifier.parse("salts_anti_aliasing:pipeline/entity_motion"))
+                                    Identifier.parse("salts_anti_aliasing:pipeline/entity_motion"+(sgsr?"_sgsr":"")))
                             .withVertexShader(
                                     Identifier.parse("salts_anti_aliasing:post/entity_motion"))
                             .withFragmentShader(
-                                    Identifier.parse("salts_anti_aliasing:post/entity_motion"))
+                                    Identifier.parse("salts_anti_aliasing:post/"+(sgsr?"sgsr2_entity_motion":"entity_motion")))
                             .withVertexBinding(
                                     0,
                                     VertexFormat.builder(0)
@@ -111,13 +116,14 @@ final class VulkanEntityMotionRenderer {
                             .withColorTargetState(
                                     new ColorTargetState(
                                             Optional.empty(),
-                                            GpuFormat.RG16_FLOAT,
+                                            sgsr?GpuFormat.RGBA16_FLOAT:GpuFormat.RG16_FLOAT,
                                             ColorTargetState.WRITE_RED
                                                     | ColorTargetState.WRITE_GREEN))
                             .withCull(false)
                             .withPrimitiveTopology(PrimitiveTopology.TRIANGLES)
                             .build();
         }
+        PIPELINES.put(sgsr,pipeline);
         try (var stack = MemoryStack.stackPush()) {
             var data = stack.malloc(160);
             for (float v : temporal.currentViewProjectionArray()) data.putFloat(v);

@@ -1,0 +1,13 @@
+{
+  "label": "baseline-makeup-ultra-fast-shaders-aa-off-1792963256404",
+  "backend": "opengl",
+  "pack": "makeup-ultra-fast-shaders",
+  "overrides": {
+    "AA_TYPE": "0"
+  },
+  "startUtc": 1792963256.4079862,
+  "jarSha256": "42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed",
+  "pid": 37792,
+  "exitCode": 0,
+  "endUtc": 1792963297.1086197
+}

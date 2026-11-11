@@ -9,6 +9,21 @@ import org.lwjgl.util.shaderc.Shaderc;
 
 final class TextureDetailShaderTest {
     @Test
+    void recognizesTerrainSourcesInsteadOfPipelineNamespaces() {
+        assertTrue(TextureDetailShaderPatch.supportsTerrainShader("sodium:blocks/block_layer_opaque"));
+        assertTrue(TextureDetailShaderPatch.supportsTerrainShader("minecraft:core/terrain"));
+        assertFalse(TextureDetailShaderPatch.supportsTerrainShader("minecraft:core/rendertype_entity_solid"));
+        assertFalse(TextureDetailShaderPatch.supportsTerrainShader("minecraft:pipeline/oit_accumulate_sodium_terrain"));
+        assertFalse(TextureDetailShaderPatch.supportsTerrainShader("sodium:unknown"));
+    }
+
+    @Test
+    void patchIsIdempotentForNestedSourceWrappers() {
+        String once = TextureDetailShaderPatch.patch("#version 460 core\nvoid main() {}\n");
+        assertEquals(once, TextureDetailShaderPatch.patch(once));
+    }
+
+    @Test
     void automaticBiasUsesTheTrueRenderRatioAndBoundsTheVariants() {
         assertEquals(-6, TextureDetailShaderPatch.quarterSteps(true, 0, .5f, 640, 1280));
         assertEquals(-2, TextureDetailShaderPatch.quarterSteps(true, 0, .5f, 640, 1280, false));

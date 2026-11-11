@@ -769,8 +769,13 @@ VkResult create_frame_generation_swapchain(
         return VK_ERROR_INITIALIZATION_FAILED;
     }
 
+    // Publish a proxy only after both native contexts and all required entry points exist.
+    *out_swapchain = VK_NULL_HANDLE;
+
     if (g_frame_generation_swapchain_context == nullptr) {
-        VkSwapchainKHR swapchain = create_info->oldSwapchain;
+        // The SDK consumes/destroys its input oldSwapchain. RenderPearl owns that lifetime,
+        // including fallback after initialization failure, so never transfer the old handle.
+        VkSwapchainKHR swapchain = VK_NULL_HANDLE;
         ffxCreateContextDescFrameGenerationSwapChainVK create_desc{};
         create_desc.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_FGSWAPCHAIN_VK;
         create_desc.physicalDevice = g_vk_physical_device;
@@ -778,6 +783,7 @@ VkResult create_frame_generation_swapchain(
         create_desc.swapchain = &swapchain;
         create_desc.allocator = const_cast<VkAllocationCallbacks*>(allocator);
         create_desc.createInfo = *create_info;
+        create_desc.createInfo.oldSwapchain = VK_NULL_HANDLE;
         create_desc.gameQueue = queue_info(g_vk_graphics_queue, g_vk_graphics_queue_family);
         create_desc.asyncComputeQueue = queue_info(
                 g_vk_frame_generation_async_compute_queue,
@@ -796,7 +802,6 @@ VkResult create_frame_generation_swapchain(
         }
 
         g_frame_generation_swapchain = swapchain;
-        *out_swapchain = swapchain;
 
         ffxQueryDescSwapchainReplacementFunctionsVK replacement_query{};
         replacement_query.header.type = FFX_API_QUERY_DESC_TYPE_FGSWAPCHAIN_FUNCTIONS_VK;
@@ -816,16 +821,19 @@ VkResult create_frame_generation_swapchain(
         if (g_swapchain_replacement_functions.pOutCreateSwapchainFFXAPI == nullptr) {
             return VK_ERROR_FEATURE_NOT_PRESENT;
         }
+        VkSwapchainKHR swapchain = VK_NULL_HANDLE;
+        VkSwapchainCreateInfoKHR independent_create_info = *create_info;
+        independent_create_info.oldSwapchain = VK_NULL_HANDLE;
         VkResult result = g_swapchain_replacement_functions.pOutCreateSwapchainFFXAPI(
                 device,
-                create_info,
+                &independent_create_info,
                 allocator,
-                out_swapchain,
+                &swapchain,
                 g_frame_generation_swapchain_context);
         if (result != VK_SUCCESS) {
             return result;
         }
-        g_frame_generation_swapchain = *out_swapchain;
+        g_frame_generation_swapchain = swapchain;
     }
 
     g_frame_generation_swapchain_width = std::max(1u, create_info->imageExtent.width);
@@ -842,6 +850,7 @@ VkResult create_frame_generation_swapchain(
         return VK_ERROR_FEATURE_NOT_PRESENT;
     }
 
+    *out_swapchain = g_frame_generation_swapchain;
     return VK_SUCCESS;
 }
 

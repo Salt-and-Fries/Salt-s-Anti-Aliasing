@@ -1,0 +1,1022 @@
+[05:23:06] [main/INFO]: Loading Minecraft 26.3 with Fabric Loader 0.19.5
+[05:23:06] [main/INFO]: Mappings not present!
+[05:23:06] [main/INFO]: Loading 53 mods:
+	- fabric-api 0.162.0+26.3
+	   |-- fabric-advancement-api-v1 1.0.0+38c7a2d55d
+	   |-- fabric-api-base 2.0.6+fcdff87f5d
+	   |-- fabric-api-lookup-api-v1 2.0.24+3434d6d95d
+	   |-- fabric-biome-api-v1 20.1.0+c6aa69a85d
+	   |-- fabric-block-api-v1 3.1.0+0ae6f9115d
+	   |-- fabric-block-getter-api-v2 2.0.9+3434d6d95d
+	   |-- fabric-command-api-v2 3.1.2+fcdff87f5d
+	   |-- fabric-content-registries-v0 15.0.4+74ed1ea55d
+	   |-- fabric-convention-tags-v2 4.10.3+6b5b47fd5d
+	   |-- fabric-crash-report-info-v1 1.0.7+fcdff87f5d
+	   |-- fabric-creative-tab-api-v1 5.0.21+fcdff87f5d
+	   |-- fabric-data-attachment-api-v1 2.2.31+b9b88df45d
+	   |-- fabric-data-generation-api-v1 27.3.0+5be2453c5d
+	   |-- fabric-debug-api-v1 1.0.4+3434d6d95d
+	   |-- fabric-dimensions-v1 5.1.19+47f74c985d
+	   |-- fabric-entity-events-v1 6.0.4+3434d6d95d
+	   |-- fabric-events-interaction-v0 5.3.7+b9b88df45d
+	   |-- fabric-game-rule-api-v1 4.0.10+3434d6d95d
+	   |-- fabric-item-api-v1 14.7.0+cf6bc2db5d
+	   |-- fabric-key-mapping-api-v1 2.0.8+3434d6d95d
+	   |-- fabric-lifecycle-events-v1 4.1.9+ffef5f675d
+	   |-- fabric-loot-api-v3 4.0.8+4068fd645d
+	   |-- fabric-menu-api-v1 2.0.28+ed66f0a35d
+	   |-- fabric-message-api-v1 7.0.10+3434d6d95d
+	   |-- fabric-model-loading-api-v1 8.0.35+fcdff87f5d
+	   |-- fabric-networking-api-v1 6.3.9+b9b88df45d
+	   |-- fabric-object-builder-api-v1 24.1.10+3434d6d95d
+	   |-- fabric-particles-v1 5.0.25+3434d6d95d
+	   |-- fabric-permission-api-v1 1.0.8+fcdff87f5d
+	   |-- fabric-recipe-api-v1 10.0.9+b9b88df45d
+	   |-- fabric-registry-sync-v0 8.0.2+1ca9f6365d
+	   |-- fabric-renderer-api-v1 17.0.15+79385d0b5d
+	   |-- fabric-renderer-indigo 9.1.23+b9d63e335d
+	   |-- fabric-rendering-fluids-v1 6.0.6+3434d6d95d
+	   |-- fabric-rendering-v1 27.0.14+901a437c5d
+	   |-- fabric-resource-conditions-api-v1 6.2.0+0d124ae85d
+	   |-- fabric-resource-loader-v0 3.3.26+4fc5413f5d
+	   |-- fabric-resource-loader-v1 3.0.4+ba0d6c0d5d
+	   |-- fabric-screen-api-v1 5.2.4+48607d035d
+	   |-- fabric-serialization-api-v1 2.0.7+74ed1ea55d
+	   |-- fabric-sound-api-v1 2.0.7+3434d6d95d
+	   |-- fabric-tag-api-v1 2.1.10+fcdff87f5d
+	   |-- fabric-transfer-api-v1 8.0.25+fcdff87f5d
+	   \-- fabric-transitive-access-wideners-v1 8.1.16+52268a0e5d
+	- fabricloader 0.19.5
+	   \-- mixinextras 0.5.5
+	- java 25
+	- minecraft 26.3
+	- modmenu 21.0.0
+	   \-- placeholder-api 3.2.0+26.3
+	- salts_anti_aliasing 1.1
+	- salts_audit_harness 1.0
+[05:23:06] [main/INFO]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/C:/Users/texca/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.17.4+mixin.0.8.7/5f66cc9f59b8efaa942155a3d5a30599bf6640dd/sponge-mixin-0.17.4+mixin.0.8.7.jar Service=Knot/Fabric Env=CLIENT
+[05:23:07] [main/INFO]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.5).
+[05:23:08] [Datafixer Bootstrap #0/INFO]: 307 Datafixer optimizations took 208 milliseconds
+[05:23:08] [main/ERROR]: Unable to locate English counter names in registry Perflib 009. Counters may need to be rebuilt: 
+com.sun.jna.platform.win32.Win32Exception: The parameter is incorrect.
+	at knot//com.sun.jna.platform.win32.Advapi32Util.registryGetStringArray(Advapi32Util.java:921)
+	at knot//com.sun.jna.platform.win32.Advapi32Util.registryGetStringArray(Advapi32Util.java:898)
+	at knot//oshi.driver.windows.registry.HkeyPerformanceDataUtil.mapCounterIndicesFromRegistry(HkeyPerformanceDataUtil.java:274)
+	at knot//oshi.driver.windows.registry.HkeyPerformanceDataUtil.<clinit>(HkeyPerformanceDataUtil.java:51)
+	at knot//oshi.driver.windows.registry.ProcessPerformanceData.buildProcessMapFromRegistry(ProcessPerformanceData.java:45)
+	at knot//oshi.software.os.windows.WindowsOperatingSystem.queryProcessMapFromRegistry(WindowsOperatingSystem.java:328)
+	at knot//oshi.util.Memoizer$1.get(Memoizer.java:65)
+	at knot//oshi.software.os.windows.WindowsOperatingSystem.processMapToList(WindowsOperatingSystem.java:298)
+	at knot//oshi.software.os.windows.WindowsOperatingSystem.getProcess(WindowsOperatingSystem.java:292)
+	at knot//oshi.software.os.OperatingSystem.getCurrentProcess(OperatingSystem.java:246)
+	at knot//net.minecraft.SystemReport.lambda$putSoftware$0(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.putSoftware(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.lambda$new$7(SystemReport.java:68)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.<init>(SystemReport.java:68)
+	at knot//net.minecraft.CrashReport.<init>(CrashReport.java:35)
+	at knot//net.minecraft.CrashReport.preload(CrashReport.java:252)
+	at knot//net.minecraft.client.main.Main.main(Main.java:172)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+[05:23:08] [main/WARN]: Unable to locate English counter names in registry Perflib 009. Assuming English counters. Error 0x80070057. See https://support.microsoft.com/en-us/help/300956/how-to-manually-rebuild-performance-counter-library-values
+[05:23:08] [main/WARN]: Failed to get system info for Process Loads
+java.lang.NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getUserTime()" because "process" is null
+	at knot//net.minecraft.SystemReport.lambda$putProcessDetails$0(SystemReport.java:190)
+	at knot//net.minecraft.SystemReport.setDetail(SystemReport.java:96)
+	at knot//net.minecraft.SystemReport.putProcessDetails(SystemReport.java:189)
+	at knot//net.minecraft.SystemReport.lambda$putSoftware$0(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.putSoftware(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.lambda$new$7(SystemReport.java:68)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.<init>(SystemReport.java:68)
+	at knot//net.minecraft.CrashReport.<init>(CrashReport.java:35)
+	at knot//net.minecraft.CrashReport.preload(CrashReport.java:252)
+	at knot//net.minecraft.client.main.Main.main(Main.java:172)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+[05:23:08] [main/WARN]: Failed to get system info for Process Virtual Size (MiB)
+java.lang.NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getVirtualSize()" because "process" is null
+	at knot//net.minecraft.SystemReport.lambda$putProcessDetails$1(SystemReport.java:202)
+	at knot//net.minecraft.SystemReport.setDetail(SystemReport.java:96)
+	at knot//net.minecraft.SystemReport.putProcessDetails(SystemReport.java:202)
+	at knot//net.minecraft.SystemReport.lambda$putSoftware$0(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.putSoftware(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.lambda$new$7(SystemReport.java:68)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.<init>(SystemReport.java:68)
+	at knot//net.minecraft.CrashReport.<init>(CrashReport.java:35)
+	at knot//net.minecraft.CrashReport.preload(CrashReport.java:252)
+	at knot//net.minecraft.client.main.Main.main(Main.java:172)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+[05:23:08] [main/WARN]: Failed to get system info for Process Resident Size (MiB)
+java.lang.NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getResidentSetSize()" because "process" is null
+	at knot//net.minecraft.SystemReport.lambda$putProcessDetails$2(SystemReport.java:203)
+	at knot//net.minecraft.SystemReport.setDetail(SystemReport.java:96)
+	at knot//net.minecraft.SystemReport.putProcessDetails(SystemReport.java:203)
+	at knot//net.minecraft.SystemReport.lambda$putSoftware$0(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.putSoftware(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.lambda$new$7(SystemReport.java:68)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.<init>(SystemReport.java:68)
+	at knot//net.minecraft.CrashReport.<init>(CrashReport.java:35)
+	at knot//net.minecraft.CrashReport.preload(CrashReport.java:252)
+	at knot//net.minecraft.client.main.Main.main(Main.java:172)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+[05:23:11] [main/INFO]: Completely ignored arguments: [--userType, msa]
+[05:23:11] [Render thread/INFO]: Environment: Environment[discoveryUrl=https://discovery.minecraftservices.com/minecraft/client, name=PROD]
+[05:23:11] [Render thread/INFO]: Setting user: ReleaseTester
+[05:23:11] [Render thread/INFO]: Initializing Salt's Anti Aliasing foundation
+[05:23:11] [Render thread/INFO]: [Indigo] Registering Indigo renderer!
+[05:23:11] [Render thread/INFO]: Checking mod updates...
+[05:23:11] [Render thread/INFO]: Performance metrics recording enabled -> G:\Codex Projects\Salts Anti Aliasing\run\sodium-compat-audit-20261025\logs\salts_anti_aliasing_metrics_latest.json
+[05:23:11] [ModMenu/Update Checker/Fabric Loader/INFO]: Update available for 'fabricloader@0.19.5'
+[05:23:11] [Download-2/ERROR]: Failed to fetch user properties
+com.mojang.authlib.exceptions.InvalidCredentialsException: Status: 401
+	at knot//com.mojang.authlib.exceptions.MinecraftClientHttpException.toAuthenticationException(MinecraftClientHttpException.java:70)
+	at knot//com.mojang.authlib.services.MinecraftServicesUserApiService.fetchProperties(MinecraftServicesUserApiService.java:168)
+	at knot//net.minecraft.client.Minecraft.lambda$new$1(Minecraft.java:451)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1789)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: MinecraftClientHttpException[type=HTTP_ERROR, status=401, response=ErrorResponse[path=/player/attributes, error=null, errorMessage=null, details=null]]
+	at knot//com.mojang.authlib.minecraft.client.MinecraftClient.buildHttpException(MinecraftClient.java:170)
+	at knot//com.mojang.authlib.minecraft.client.MinecraftClient.readServiceResponse(MinecraftClient.java:147)
+	at knot//com.mojang.authlib.minecraft.client.MinecraftClient.getWithEtag(MinecraftClient.java:81)
+	at knot//com.mojang.authlib.minecraft.client.MinecraftClient.get(MinecraftClient.java:65)
+	at knot//com.mojang.authlib.services.MinecraftServicesUserApiService.fetchProperties(MinecraftServicesUserApiService.java:118)
+	... 5 more
+[05:23:11] [Download-3/INFO]: Update available for 'fabric-api@0.162.0+26.3', (-> 0.165.0+26.3)
+[05:23:12] [Render thread/INFO]: DLSS runtime status: Vulkan device information is not available yet
+[05:23:13] [Render thread/INFO]: AMD FSR runtime status: Vulkan device information is not available yet
+[05:23:13] [Render thread/INFO]: Configured Vulkan backend with passes [] and 2 targets
+[05:23:13] [Render thread/INFO]: Client foundation initialized with Vulkan -> []
+[05:23:13] [Render thread/INFO]: Backend library: LWJGL version 3.4.3-snapshot
+[05:23:13] [Render thread/INFO]: SDL [SYSTEM]: App name: Minecraft
+[05:23:13] [Render thread/INFO]: SDL [SYSTEM]: App version: 26.3
+[05:23:13] [Render thread/INFO]: SDL [SYSTEM]: App ID: com.mojang.minecraft
+[05:23:13] [Render thread/INFO]: SDL [SYSTEM]: SDL revision: SDL-3.4.14-62f10da
+[05:23:13] [Render thread/INFO]: Enabling optional FeatureSet [EXT MultiDraw]
+[05:23:13] [Render thread/INFO]: Enabling optional FeatureSet [AMD Buffer Marker]
+[05:23:13] [Render thread/INFO]: Enabling optional FeatureSet [Wireframe]
+[05:23:13] [Render thread/INFO]: Enabling optional FeatureSet [Calibrated Timestamps]
+[05:23:13] [Render thread/INFO]: Optional FeatureSet [NV Diagnostic Checkpoint] supported but device condition failed and will not be enabled
+[05:23:14] [Render thread/INFO]: DLSS runtime status: DLSS is ready
+[05:23:14] [Render thread/INFO]: Reserved private FidelityFX queues: async compute family 2, present family 0, image acquire family 3
+[05:23:14] [Render thread/INFO]: AMD FSR runtime status: AMD FSR upscaling and frame generation are ready
+[05:23:14] [Render thread/INFO]: Using graphics backend Vulkan, using drivers: 1.4.325 NVIDIA 591.86
+[05:23:14] [Render thread/INFO]: Using graphics device: NVIDIA GeForce RTX 3060 Ti (NVIDIA)
+[05:23:14] [Render thread/INFO]: Using graphics device extensions: VK_KHR_external_memory_capabilities (I), VK_KHR_external_semaphore_capabilities (I), VK_KHR_dynamic_rendering (D), VK_EXT_calibrated_timestamps (D), VK_KHR_synchronization2 (D), VK_EXT_multi_draw (D), VK_AMD_buffer_marker (D), VK_EXT_vertex_attribute_divisor (D), VK_KHR_win32_surface (I), VK_KHR_swapchain (D), VK_KHR_surface (I), VK_KHR_push_descriptor (D), VK_KHR_get_physical_device_properties2 (I), VK_EXT_debug_utils (I)
+[05:23:14] [Render thread/INFO]: Created window using SDL video driver: windows
+[05:23:14] [Download-3/INFO]: Could not authorize you against Realms server: java.lang.RuntimeException: Failed to parse into SignedJWT: 0
+[05:23:14] [Download-3/ERROR]: Failed to fetch Realms feature flags
+com.mojang.realmsclient.exception.RealmsServiceException: Realms authentication error with message 'java.lang.RuntimeException: Failed to parse into SignedJWT: 0'
+	at knot//com.mojang.realmsclient.client.RealmsClient.execute(RealmsClient.java:625)
+	at knot//com.mojang.realmsclient.client.RealmsClient.fetchFeatureFlags(RealmsClient.java:204)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1789)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+[05:23:14] [Render thread/INFO]: Reloading ResourceManager: vanilla, vanilla, fabric-advancement-api-v1, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-command-api-v2, fabric-content-registries-v0, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, modmenu, placeholder-api, salts_anti_aliasing
+[05:23:14] [Worker-Main-16/INFO]: Found unifont_pua-17.0.01.hex, loading
+[05:23:14] [Worker-Main-18/INFO]: Found unifont_all_no_pua-17.0.01.hex, loading
+[05:23:15] [Worker-Main-8/INFO]: Found unifont_jp_patch-17.0.01.hex, loading
+[05:23:15] [Render thread/INFO]: Configured Vulkan backend with passes [] and 2 targets
+[05:23:15] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-off-initial id=1
+[05:23:15] [Download-3/INFO]: Could not authorize you against Realms server: java.lang.RuntimeException: Failed to parse into SignedJWT: 0
+[05:23:15] [Download-3/ERROR]: Couldn't connect to realms
+com.mojang.realmsclient.exception.RealmsServiceException: Realms authentication error with message 'java.lang.RuntimeException: Failed to parse into SignedJWT: 0'
+	at knot//com.mojang.realmsclient.client.RealmsClient.execute(RealmsClient.java:625)
+	at knot//com.mojang.realmsclient.client.RealmsClient.clientCompatible(RealmsClient.java:354)
+	at knot//com.mojang.realmsclient.RealmsAvailability.lambda$check$0(RealmsAvailability.java:48)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1789)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1090)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+[05:23:16] [Render thread/INFO]: OpenAL initialized on device OpenAL Soft on Speakers (Razer BlackShark V2 Pro)
+[05:23:16] [Render thread/INFO]: Sound engine started
+[05:23:16] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[05:23:16] [Render thread/INFO]: Created: 256x128x0 minecraft:textures/atlas/celestials.png-atlas
+[05:23:16] [Render thread/INFO]: Created: 128x128x0 minecraft:textures/atlas/decorated_pot.png-atlas
+[05:23:16] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[05:23:16] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/shield_patterns.png-atlas
+[05:23:16] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/banner_patterns.png-atlas
+[05:23:16] [Render thread/INFO]: Created: 2048x2048x4 minecraft:textures/atlas/blocks.png-atlas
+[05:23:16] [Render thread/INFO]: Created: 1024x512x0 minecraft:textures/atlas/items.png-atlas
+[05:23:16] [Render thread/INFO]: Created: 1024x1024x0 minecraft:textures/atlas/gui.png-atlas
+[05:23:16] [Render thread/INFO]: Created: 128x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[05:23:16] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/chest.png-atlas
+[05:23:16] [Render thread/INFO]: Created: 512x512x0 minecraft:textures/atlas/shulker_boxes.png-atlas
+[05:23:17] [Worker-Main-11/INFO]: Loaded 1866 advancements
+[05:23:18] [Render thread/INFO]: Applied 0 biome modifications to 0 of 67 new biomes in 835.7 μs
+[05:23:18] [Server thread/INFO]: Starting integrated minecraft server version 26.3
+[05:23:18] [Server thread/INFO]: Generating keypair
+[05:23:18] [Server thread/INFO]: Loading 0 persistent chunks...
+[05:23:18] [Server thread/INFO]: Preparing spawn area: 16%
+[05:23:18] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[05:23:18] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[05:23:18] [Server thread/INFO]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[05:23:19] [Server thread/INFO]: Loading 49 chunks for player spawn...
+[05:23:19] [Server thread/INFO]: Preparing spawn area: 16%
+[05:23:19] [Server thread/INFO]: Preparing spawn area: 16%
+[05:23:19] [Server thread/INFO]: Time elapsed: 1355 ms
+[05:23:19] [Server thread/INFO]: ReleaseTester[local:E:78bab8fa] logged in with entity id 50 at (0.5, 101.0, -1.5)
+[05:23:19] [Server thread/INFO]: System chat: ReleaseTester joined the game
+[05:23:19] [Server thread/INFO]: Changing view distance to 12, from 10
+[05:23:19] [Server thread/INFO]: Changing simulation distance to 12, from 0
+[05:23:19] [Render thread/INFO]: Loaded 60 advancements
+[05:23:20] [Render thread/WARN]: Requested post effect does not exist: minecraft:end_of_frame
+[05:23:20] [Render thread/INFO]: Resizing Dynamic Transforms UBO, capacity limit of 2 reached during a single frame. New capacity will be 4.
+[05:23:20] [Render thread/INFO]: Configured Vulkan backend with passes [] and 2 targets
+[05:23:20] [Render thread/INFO]: QA request 1 applied: {"id":1,"mode":"OFF","particleTest":false,"commands":["tp @a 100.5 102 107.5 0 0","weather clear","time set noon"],"yaw":0,"pitch":0}
+[05:23:20] [Render thread/INFO]: Resizing Dynamic Transforms UBO, capacity limit of 4 reached during a single frame. New capacity will be 8.
+[05:23:20] [Server thread/INFO]: System chat: Teleported ReleaseTester to 100.500000, 102.000000, 107.500000
+[05:23:20] [Server thread/INFO]: System chat: Set the weather to clear
+[05:23:20] [Server thread/INFO]: System chat: Clock minecraft:overworld is already at time marker minecraft:noon
+[05:23:20] [Render thread/INFO]: Resizing Chunk Sections Command Buffer, capacity limit of 2 reached during a single frame. New capacity will be 4.
+[05:23:20] [Render thread/INFO]: Resizing Chunk Sections Command Buffer, capacity limit of 4 reached during a single frame. New capacity will be 16.
+[05:23:20] [Render thread/INFO]: Resizing Chunk Sections Instanced, capacity limit of 2 reached during a single frame. New capacity will be 8.
+[05:23:20] [Render thread/INFO]: Resizing Chunk Sections Command Buffer, capacity limit of 16 reached during a single frame. New capacity will be 32.
+[05:23:20] [Render thread/INFO]: Resizing Chunk Sections Instanced, capacity limit of 8 reached during a single frame. New capacity will be 16.
+[05:23:20] [Render thread/INFO]: Resizing Chunk Sections Command Buffer, capacity limit of 32 reached during a single frame. New capacity will be 64.
+[05:23:20] [Render thread/INFO]: Resizing Chunk Sections Instanced, capacity limit of 16 reached during a single frame. New capacity will be 32.
+[05:23:20] [Render thread/INFO]: Resizing Chunk Sections Command Buffer, capacity limit of 64 reached during a single frame. New capacity will be 128.
+[05:23:20] [Render thread/INFO]: Resizing Chunk Sections Instanced, capacity limit of 32 reached during a single frame. New capacity will be 64.
+[05:23:20] [Render thread/INFO]: Resizing Chunk Sections Instanced, capacity limit of 64 reached during a single frame. New capacity will be 128.
+[05:23:20] [Render thread/INFO]: Resizing Chunk Sections Command Buffer, capacity limit of 128 reached during a single frame. New capacity will be 256.
+[05:23:21] [Render thread/INFO]: Resizing Chunk Sections Command Buffer, capacity limit of 256 reached during a single frame. New capacity will be 512.
+[05:23:21] [Render thread/INFO]: Resizing Chunk Sections Instanced, capacity limit of 128 reached during a single frame. New capacity will be 256.
+[05:23:23] [Render thread/INFO]: Resizing Chunk Sections Command Buffer, capacity limit of 512 reached during a single frame. New capacity will be 1024.
+[05:23:23] [Render thread/INFO]: Resizing Chunk Sections Instanced, capacity limit of 256 reached during a single frame. New capacity will be 512.
+[05:23:24] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-off-initial
+[05:23:24] [IO-Worker-4/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-initial-003.png: Saved screenshot as vanilla-off-initial-003.png
+[05:23:24] [IO-Worker-1/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-initial-002.png: Saved screenshot as vanilla-off-initial-002.png
+[05:23:24] [IO-Worker-3/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-initial-001.png: Saved screenshot as vanilla-off-initial-001.png
+[05:23:24] [IO-Worker-2/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-initial-000.png: Saved screenshot as vanilla-off-initial-000.png
+[05:23:24] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-initial-005.png: Saved screenshot as vanilla-off-initial-005.png
+[05:23:24] [IO-Worker-6/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-initial-004.png: Saved screenshot as vanilla-off-initial-004.png
+[05:24:52] [Render thread/INFO]: Configured Vulkan backend with passes [] and 2 targets
+[05:24:52] [Render thread/INFO]: QA request 1792931091908 applied: {"id":1792931091908,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"OFF","improvedTransparency":false,"commands":["tick freeze","tp @a 100.5 102 107.5 0 0","time set noon","weather clear"],"yaw":0,"pitch":0}
+[05:24:52] [Server thread/INFO]: System chat: The game is frozen
+[05:24:52] [Server thread/INFO]: System chat: Teleported ReleaseTester to 100.500000, 102.000000, 107.500000
+[05:24:52] [Server thread/INFO]: System chat: Clock minecraft:overworld is already at time marker minecraft:noon
+[05:24:52] [Server thread/INFO]: System chat: Set the weather to clear
+[05:24:52] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-off id=1792931091908
+[05:24:54] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-000.png: Saved screenshot as vanilla-off-000.png
+[05:24:54] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-001.png: Saved screenshot as vanilla-off-001.png
+[05:24:54] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-off
+[05:24:54] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-002.png: Saved screenshot as vanilla-off-002.png
+[05:24:54] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-003.png: Saved screenshot as vanilla-off-003.png
+[05:24:54] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-004.png: Saved screenshot as vanilla-off-004.png
+[05:24:54] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-005.png: Saved screenshot as vanilla-off-005.png
+[05:24:54] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-006.png: Saved screenshot as vanilla-off-006.png
+[05:24:54] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-off-007.png: Saved screenshot as vanilla-off-007.png
+[05:24:54] [Render thread/INFO]: Configured Vulkan backend with passes [fxaa_resolve] and 3 targets
+[05:24:54] [Render thread/INFO]: QA request 1792931094816 applied: {"id":1792931094816,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"FXAA"}
+[05:24:55] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-fxaa id=1792931094816
+[05:24:57] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-fxaa-000.png: Saved screenshot as vanilla-fxaa-000.png
+[05:24:57] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-fxaa-001.png: Saved screenshot as vanilla-fxaa-001.png
+[05:24:57] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-fxaa
+[05:24:57] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-fxaa-002.png: Saved screenshot as vanilla-fxaa-002.png
+[05:24:57] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-fxaa-003.png: Saved screenshot as vanilla-fxaa-003.png
+[05:24:57] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-fxaa-004.png: Saved screenshot as vanilla-fxaa-004.png
+[05:24:57] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-fxaa-005.png: Saved screenshot as vanilla-fxaa-005.png
+[05:24:57] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-fxaa-006.png: Saved screenshot as vanilla-fxaa-006.png
+[05:24:57] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-fxaa-007.png: Saved screenshot as vanilla-fxaa-007.png
+[05:24:57] [Render thread/INFO]: Configured Vulkan backend with passes [smaa_edge_detect, smaa_weight_blend, smaa_neighborhood_blend] and 5 targets
+[05:24:57] [Render thread/INFO]: QA request 1792931097723 applied: {"id":1792931097723,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"SMAA"}
+[05:24:58] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-smaa id=1792931097723
+[05:25:00] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-smaa-000.png: Saved screenshot as vanilla-smaa-000.png
+[05:25:00] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-smaa-001.png: Saved screenshot as vanilla-smaa-001.png
+[05:25:00] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-smaa
+[05:25:00] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-smaa-002.png: Saved screenshot as vanilla-smaa-002.png
+[05:25:00] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-smaa-003.png: Saved screenshot as vanilla-smaa-003.png
+[05:25:00] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-smaa-004.png: Saved screenshot as vanilla-smaa-004.png
+[05:25:00] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-smaa-005.png: Saved screenshot as vanilla-smaa-005.png
+[05:25:00] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-smaa-006.png: Saved screenshot as vanilla-smaa-006.png
+[05:25:00] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-smaa-007.png: Saved screenshot as vanilla-smaa-007.png
+[05:25:00] [Render thread/INFO]: Configured Vulkan backend with passes [msaa_scene_resolve] and 2 targets
+[05:25:00] [Render thread/INFO]: QA request 1792931100629 applied: {"id":1792931100629,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"MSAA","msaa":"X2","atoc":false}
+[05:25:01] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-msaa2 id=1792931100629
+[05:25:03] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa2-000.png: Saved screenshot as vanilla-msaa2-000.png
+[05:25:03] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa2-001.png: Saved screenshot as vanilla-msaa2-001.png
+[05:25:03] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-msaa2
+[05:25:03] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa2-002.png: Saved screenshot as vanilla-msaa2-002.png
+[05:25:03] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa2-003.png: Saved screenshot as vanilla-msaa2-003.png
+[05:25:03] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa2-004.png: Saved screenshot as vanilla-msaa2-004.png
+[05:25:03] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa2-005.png: Saved screenshot as vanilla-msaa2-005.png
+[05:25:03] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa2-006.png: Saved screenshot as vanilla-msaa2-006.png
+[05:25:03] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa2-007.png: Saved screenshot as vanilla-msaa2-007.png
+[05:25:03] [Render thread/INFO]: Configured Vulkan backend with passes [msaa_scene_resolve] and 2 targets
+[05:25:03] [Render thread/INFO]: QA request 1792931103538 applied: {"id":1792931103538,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"MSAA","msaa":"X4"}
+[05:25:04] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-msaa4 id=1792931103538
+[05:25:06] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-000.png: Saved screenshot as vanilla-msaa4-000.png
+[05:25:06] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-001.png: Saved screenshot as vanilla-msaa4-001.png
+[05:25:06] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-msaa4
+[05:25:06] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-002.png: Saved screenshot as vanilla-msaa4-002.png
+[05:25:06] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-003.png: Saved screenshot as vanilla-msaa4-003.png
+[05:25:06] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-004.png: Saved screenshot as vanilla-msaa4-004.png
+[05:25:06] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-005.png: Saved screenshot as vanilla-msaa4-005.png
+[05:25:06] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-006.png: Saved screenshot as vanilla-msaa4-006.png
+[05:25:06] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-007.png: Saved screenshot as vanilla-msaa4-007.png
+[05:25:06] [Render thread/INFO]: QA request 1792931106443 applied: {"id":1792931106443,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"atoc":true}
+[05:25:07] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-msaa4-atoc id=1792931106443
+[05:25:09] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-atoc-000.png: Saved screenshot as vanilla-msaa4-atoc-000.png
+[05:25:09] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-atoc-001.png: Saved screenshot as vanilla-msaa4-atoc-001.png
+[05:25:09] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-msaa4-atoc
+[05:25:09] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-atoc-002.png: Saved screenshot as vanilla-msaa4-atoc-002.png
+[05:25:09] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-atoc-003.png: Saved screenshot as vanilla-msaa4-atoc-003.png
+[05:25:09] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-atoc-004.png: Saved screenshot as vanilla-msaa4-atoc-004.png
+[05:25:09] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-atoc-005.png: Saved screenshot as vanilla-msaa4-atoc-005.png
+[05:25:09] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-atoc-006.png: Saved screenshot as vanilla-msaa4-atoc-006.png
+[05:25:09] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa4-atoc-007.png: Saved screenshot as vanilla-msaa4-atoc-007.png
+[05:25:09] [Render thread/INFO]: QA request 1792931109348 applied: {"id":1792931109348,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"msaa":"X8","atoc":false}
+[05:25:10] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-msaa8 id=1792931109348
+[05:25:12] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa8-000.png: Saved screenshot as vanilla-msaa8-000.png
+[05:25:12] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa8-001.png: Saved screenshot as vanilla-msaa8-001.png
+[05:25:12] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-msaa8
+[05:25:12] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa8-002.png: Saved screenshot as vanilla-msaa8-002.png
+[05:25:12] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa8-003.png: Saved screenshot as vanilla-msaa8-003.png
+[05:25:12] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa8-004.png: Saved screenshot as vanilla-msaa8-004.png
+[05:25:12] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa8-005.png: Saved screenshot as vanilla-msaa8-005.png
+[05:25:12] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa8-006.png: Saved screenshot as vanilla-msaa8-006.png
+[05:25:12] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-msaa8-007.png: Saved screenshot as vanilla-msaa8-007.png
+[05:25:12] [Render thread/INFO]: Configured Vulkan backend with passes [ssaa_resolve] and 3 targets
+[05:25:12] [Render thread/INFO]: Configured Vulkan backend with passes [ssaa_resolve] and 3 targets
+[05:25:12] [Render thread/INFO]: QA request 1792931112256 applied: {"id":1792931112256,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"SSAA","ssaa":"X200"}
+[05:25:13] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-ssaa200 id=1792931112256
+[05:25:14] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa200-000.png: Saved screenshot as vanilla-ssaa200-000.png
+[05:25:14] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa200-001.png: Saved screenshot as vanilla-ssaa200-001.png
+[05:25:14] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-ssaa200
+[05:25:14] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa200-002.png: Saved screenshot as vanilla-ssaa200-002.png
+[05:25:14] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa200-003.png: Saved screenshot as vanilla-ssaa200-003.png
+[05:25:14] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa200-004.png: Saved screenshot as vanilla-ssaa200-004.png
+[05:25:14] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa200-005.png: Saved screenshot as vanilla-ssaa200-005.png
+[05:25:14] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa200-006.png: Saved screenshot as vanilla-ssaa200-006.png
+[05:25:14] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa200-007.png: Saved screenshot as vanilla-ssaa200-007.png
+[05:25:15] [Render thread/INFO]: Configured Vulkan backend with passes [ssaa_resolve] and 3 targets
+[05:25:15] [Render thread/INFO]: QA request 1792931115163 applied: {"id":1792931115163,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"ssaa":"X400"}
+[05:25:16] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-ssaa400 id=1792931115163
+[05:25:17] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa400-000.png: Saved screenshot as vanilla-ssaa400-000.png
+[05:25:17] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa400-001.png: Saved screenshot as vanilla-ssaa400-001.png
+[05:25:17] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-ssaa400
+[05:25:17] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa400-002.png: Saved screenshot as vanilla-ssaa400-002.png
+[05:25:17] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa400-003.png: Saved screenshot as vanilla-ssaa400-003.png
+[05:25:17] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa400-004.png: Saved screenshot as vanilla-ssaa400-004.png
+[05:25:17] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa400-005.png: Saved screenshot as vanilla-ssaa400-005.png
+[05:25:17] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa400-006.png: Saved screenshot as vanilla-ssaa400-006.png
+[05:25:17] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-ssaa400-007.png: Saved screenshot as vanilla-ssaa400-007.png
+[05:25:18] [Render thread/INFO]: Configured Vulkan backend with passes [nis_upscale] and 3 targets
+[05:25:18] [Render thread/INFO]: Configured Vulkan backend with passes [nis_upscale] and 3 targets
+[05:25:18] [Render thread/INFO]: QA request 1792931118071 applied: {"id":1792931118071,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"NIS_UPSCALE","spatialQuality":"QUALITY"}
+[05:25:19] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-nis id=1792931118071
+[05:25:21] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-nis
+[05:25:21] [IO-Worker-11/INFO]: [STDOUT]: AUDIT screenshot vanilla-nis-001.png: Saved screenshot as vanilla-nis-001.png
+[05:25:21] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-nis-000.png: Saved screenshot as vanilla-nis-000.png
+[05:25:21] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-nis-002.png: Saved screenshot as vanilla-nis-002.png
+[05:25:21] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-nis-003.png: Saved screenshot as vanilla-nis-003.png
+[05:25:21] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-nis-004.png: Saved screenshot as vanilla-nis-004.png
+[05:25:21] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-nis-005.png: Saved screenshot as vanilla-nis-005.png
+[05:25:21] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot vanilla-nis-006.png: Saved screenshot as vanilla-nis-006.png
+[05:25:21] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot vanilla-nis-007.png: Saved screenshot as vanilla-nis-007.png
+[05:25:21] [Render thread/INFO]: Configured Vulkan backend with passes [fsr1_easu] and 3 targets
+[05:25:21] [Render thread/INFO]: QA request 1792931121803 applied: {"id":1792931121803,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"FSR1_UPSCALE"}
+[05:25:22] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-fsr1 id=1792931121803
+[05:25:24] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr1-000.png: Saved screenshot as vanilla-fsr1-000.png
+[05:25:24] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-fsr1
+[05:25:24] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr1-001.png: Saved screenshot as vanilla-fsr1-001.png
+[05:25:24] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr1-002.png: Saved screenshot as vanilla-fsr1-002.png
+[05:25:24] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr1-003.png: Saved screenshot as vanilla-fsr1-003.png
+[05:25:24] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr1-004.png: Saved screenshot as vanilla-fsr1-004.png
+[05:25:24] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr1-005.png: Saved screenshot as vanilla-fsr1-005.png
+[05:25:24] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr1-006.png: Saved screenshot as vanilla-fsr1-006.png
+[05:25:24] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr1-007.png: Saved screenshot as vanilla-fsr1-007.png
+[05:25:24] [Render thread/INFO]: Configured Vulkan backend with passes [taa_resolve] and 4 targets
+[05:25:24] [Render thread/INFO]: QA request 1792931124711 applied: {"id":1792931124711,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"TAA"}
+[05:25:25] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-taa id=1792931124711
+[05:25:28] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-taa-000.png: Saved screenshot as vanilla-taa-000.png
+[05:25:28] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-taa
+[05:25:28] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot vanilla-taa-001.png: Saved screenshot as vanilla-taa-001.png
+[05:25:28] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-taa-002.png: Saved screenshot as vanilla-taa-002.png
+[05:25:28] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-taa-003.png: Saved screenshot as vanilla-taa-003.png
+[05:25:28] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-taa-004.png: Saved screenshot as vanilla-taa-004.png
+[05:25:28] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-taa-005.png: Saved screenshot as vanilla-taa-005.png
+[05:25:28] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-taa-006.png: Saved screenshot as vanilla-taa-006.png
+[05:25:28] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot vanilla-taa-007.png: Saved screenshot as vanilla-taa-007.png
+[05:25:28] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[05:25:28] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[05:25:28] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[05:25:28] [Render thread/INFO]: QA request 1792931128522 applied: {"id":1792931128522,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"DLSS_SUPER_RESOLUTION","dlssQuality":"QUALITY","tuning":{"dlssModel":"K","mipBiasMode":"OFF"}}
+[05:25:29] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-dlss id=1792931128522
+[05:25:31] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-dlss
+[05:25:31] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-000.png: Saved screenshot as vanilla-dlss-000.png
+[05:25:31] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-001.png: Saved screenshot as vanilla-dlss-001.png
+[05:25:31] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-002.png: Saved screenshot as vanilla-dlss-002.png
+[05:25:31] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-003.png: Saved screenshot as vanilla-dlss-003.png
+[05:25:31] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-004.png: Saved screenshot as vanilla-dlss-004.png
+[05:25:31] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-005.png: Saved screenshot as vanilla-dlss-005.png
+[05:25:31] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-006.png: Saved screenshot as vanilla-dlss-006.png
+[05:25:31] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-007.png: Saved screenshot as vanilla-dlss-007.png
+[05:25:31] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[05:25:31] [Render thread/INFO]: QA request 1792931131432 applied: {"id":1792931131432,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"dlssQuality":"DLAA"}
+[05:25:32] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-dlaa id=1792931131432
+[05:25:34] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlaa-000.png: Saved screenshot as vanilla-dlaa-000.png
+[05:25:34] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-dlaa
+[05:25:34] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlaa-001.png: Saved screenshot as vanilla-dlaa-001.png
+[05:25:34] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlaa-002.png: Saved screenshot as vanilla-dlaa-002.png
+[05:25:34] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlaa-003.png: Saved screenshot as vanilla-dlaa-003.png
+[05:25:34] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlaa-004.png: Saved screenshot as vanilla-dlaa-004.png
+[05:25:34] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlaa-005.png: Saved screenshot as vanilla-dlaa-005.png
+[05:25:34] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlaa-006.png: Saved screenshot as vanilla-dlaa-006.png
+[05:25:34] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlaa-007.png: Saved screenshot as vanilla-dlaa-007.png
+[05:25:34] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[05:25:34] [Render thread/INFO]: Configured Vulkan backend with passes [dlss_super_resolution] and 5 targets
+[05:25:34] [Render thread/INFO]: QA request 1792931134339 applied: {"id":1792931134339,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"dlssQuality":"QUALITY","tuning":{"mipBiasMode":"CUSTOM","mipBias":-2}}
+[05:25:35] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-dlss-mip id=1792931134339
+[05:25:36] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-mip-000.png: Saved screenshot as vanilla-dlss-mip-000.png
+[05:25:36] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-dlss-mip
+[05:25:37] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-mip-001.png: Saved screenshot as vanilla-dlss-mip-001.png
+[05:25:37] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-mip-002.png: Saved screenshot as vanilla-dlss-mip-002.png
+[05:25:37] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-mip-003.png: Saved screenshot as vanilla-dlss-mip-003.png
+[05:25:37] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-mip-004.png: Saved screenshot as vanilla-dlss-mip-004.png
+[05:25:37] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-mip-005.png: Saved screenshot as vanilla-dlss-mip-005.png
+[05:25:37] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-mip-006.png: Saved screenshot as vanilla-dlss-mip-006.png
+[05:25:37] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-dlss-mip-007.png: Saved screenshot as vanilla-dlss-mip-007.png
+[05:25:37] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[05:25:37] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[05:25:37] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[05:25:37] [Render thread/INFO]: QA request 1792931137192 applied: {"id":1792931137192,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"FSR2_SUPER_RESOLUTION","fsrQuality":"QUALITY","tuning":{"mipBiasMode":"OFF"}}
+[05:25:38] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-fsr2 id=1792931137192
+[05:25:39] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-fsr2
+[05:25:39] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr2-000.png: Saved screenshot as vanilla-fsr2-000.png
+[05:25:40] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr2-001.png: Saved screenshot as vanilla-fsr2-001.png
+[05:25:40] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr2-002.png: Saved screenshot as vanilla-fsr2-002.png
+[05:25:40] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr2-003.png: Saved screenshot as vanilla-fsr2-003.png
+[05:25:40] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr2-004.png: Saved screenshot as vanilla-fsr2-004.png
+[05:25:40] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr2-005.png: Saved screenshot as vanilla-fsr2-005.png
+[05:25:40] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr2-006.png: Saved screenshot as vanilla-fsr2-006.png
+[05:25:40] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr2-007.png: Saved screenshot as vanilla-fsr2-007.png
+[05:25:40] [Render thread/INFO]: Configured Vulkan backend with passes [fsr_super_resolution] and 8 targets
+[05:25:40] [Render thread/INFO]: QA request 1792931140099 applied: {"id":1792931140099,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"FSR3_SUPER_RESOLUTION"}
+[05:25:40] [Render thread/INFO]: [STDOUT]: AUDIT armed vanilla-fsr3 id=1792931140099
+[05:25:42] [Render thread/INFO]: [STDOUT]: AUDIT complete vanilla-fsr3
+[05:25:42] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr3-000.png: Saved screenshot as vanilla-fsr3-000.png
+[05:25:42] [IO-Worker-13/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr3-001.png: Saved screenshot as vanilla-fsr3-001.png
+[05:25:42] [IO-Worker-9/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr3-002.png: Saved screenshot as vanilla-fsr3-002.png
+[05:25:42] [IO-Worker-10/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr3-003.png: Saved screenshot as vanilla-fsr3-003.png
+[05:25:42] [IO-Worker-8/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr3-004.png: Saved screenshot as vanilla-fsr3-004.png
+[05:25:42] [IO-Worker-7/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr3-005.png: Saved screenshot as vanilla-fsr3-005.png
+[05:25:42] [IO-Worker-12/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr3-006.png: Saved screenshot as vanilla-fsr3-006.png
+[05:25:42] [IO-Worker-5/INFO]: [STDOUT]: AUDIT screenshot vanilla-fsr3-007.png: Saved screenshot as vanilla-fsr3-007.png
+[05:25:43] [Render thread/INFO]: Configured Vulkan backend with passes [fsr3_super_resolution_frame_generation] and 8 targets
+[05:25:43] [Render thread/INFO]: QA request 1792931143008 applied: {"id":1792931143008,"particleTest":false,"handSwing":false,"sweep":false,"sharpness":0,"mode":"FSR3_SUPER_RESOLUTION_FRAME_GENERATION"}
+[05:25:43] [Render thread/ERROR]: vkCreateShaderModule(): SPIR-V Capability StorageImageReadWithoutFormat was declared, but one of the following requirements must be met (VkPhysicalDeviceFeatures::shaderStorageImageReadWithoutFormat OR VK_VERSION_1_3 OR VK_KHR_format_feature_flags2).
+The Vulkan spec states: If pCode is a pointer to SPIR-V code, and pCode declares any of the capabilities listed in the SPIR-V Environment appendix, one of the corresponding requirements must be satisfied (https://docs.vulkan.org/spec/latest/chapters/shaders.html#VUID-VkShaderModuleCreateInfo-pCode-08740)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrNativeBridge.createFrameGenerationSwapchainNative(Native Method)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrNativeBridge.createFrameGenerationSwapchain(FsrNativeBridge.java:252)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRuntime.createFrameGenerationSwapchain(FsrRuntime.java:262)
+	knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.redirect$bfi000$salts_anti_aliasing$saltsAntiAliasing$createFrameGenerationSwapchain(VulkanGpuSurface.java:568)
+	knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.configure(VulkanGpuSurface.java:207)
+[05:25:43] [Render thread/INFO]: AMD FSR3 frame-generation swapchain is active
+[05:25:43] [Render thread/ERROR]: vkCmdBindPipeline(): pipeline is VK_NULL_HANDLE.
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrNativeBridge.presentFrameGenerationSwapchainNative(Native Method)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrNativeBridge.presentFrameGenerationSwapchain(FsrNativeBridge.java:308)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRuntime.presentFrameGenerationSwapchain(FsrRuntime.java:358)
+	knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.redirect$bfi000$salts_anti_aliasing$saltsAntiAliasing$presentFrameGenerationSwapchain(VulkanGpuSurface.java:637)
+	knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.present(VulkanGpuSurface.java:416)
+[05:25:43] [Render thread/ERROR]: vkCmdDispatch(): The VkPipeline 0x71340000007134 (created with VkPipelineLayout 0x71320000007132) statically uses descriptor set 0, but set 0 is not compatible with the VkPipelineLayout 0x71600000007160 bound with vkCmdBindDescriptorSets
+Set 0 VkDescriptorSetLayoutBindingFlagsCreateInfo::bindingCount 8 doesn't match 18
+The Vulkan spec states: If a bound shader , or data graph pipeline, was created with a pipeline layout and statically uses a set n, a descriptor set must have been bound to n at the same pipeline bind point, with layouts compatible for set n with the layout(s) used to create the shader, as described in Pipeline Layout Compatibility (https://docs.vulkan.org/spec/latest/chapters/dispatch.html#VUID-vkCmdDispatch-None-08600)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrNativeBridge.presentFrameGenerationSwapchainNative(Native Method)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrNativeBridge.presentFrameGenerationSwapchain(FsrNativeBridge.java:308)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRuntime.presentFrameGenerationSwapchain(FsrRuntime.java:358)
+	knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.redirect$bfi000$salts_anti_aliasing$saltsAntiAliasing$presentFrameGenerationSwapchain(VulkanGpuSurface.java:637)
+	knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.present(VulkanGpuSurface.java:416)
+[05:25:43] [Thread-1/ERROR]: vkCreateGraphicsPipelines(): pCreateInfos[0].pRasterizationState->lineWidth is 0.000000, but the line width state is static (pCreateInfos[0].pDynamicState->pDynamicStates does not contain VK_DYNAMIC_STATE_LINE_WIDTH) and wideLines feature was not enabled.
+The Vulkan spec states: If the pipeline requires pre-rasterization shader state, and the wideLines feature is not enabled, and no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_LINE_WIDTH, the lineWidth member of pRasterizationState must be 1.0 (https://docs.vulkan.org/spec/latest/chapters/pipelines.html#VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-00749)
+
+[05:25:43] [Thread-1/ERROR]: vkCreateGraphicsPipelines(): pCreateInfos[0].pRasterizationState->lineWidth is 0.000000, but the line width state is static (pCreateInfos[0].pDynamicState->pDynamicStates does not contain VK_DYNAMIC_STATE_LINE_WIDTH) and wideLines feature was not enabled.
+The Vulkan spec states: If the pipeline requires pre-rasterization shader state, and the wideLines feature is not enabled, and no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_LINE_WIDTH, the lineWidth member of pRasterizationState must be 1.0 (https://docs.vulkan.org/spec/latest/chapters/pipelines.html#VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-00749)
+
+[05:25:43] [Thread-1/ERROR]: vkQueueSubmit(): pSubmits[0].pSignalSemaphores[0] (VkSemaphore 0x6dbe0000006dbe[AMD swapchain image semaphore 0]) is being signaled by VkQueue 0x1e0433a2e00[AMD FSR PresentQueue], but it may still be in use by VkSwapchainKHR 0x6dba0000006dba.
+Most recently acquired image indices: [0], 1.
+(Brackets mark the last use of VkSemaphore 0x6dbe0000006dbe[AMD swapchain image semaphore 0] in a presentation operation.)
+Swapchain image 0 was presented but was not re-acquired, so VkSemaphore 0x6dbe0000006dbe[AMD swapchain image semaphore 0] may still be in use and cannot be safely reused with image index 1.
+Hint: See https://docs.vulkan.org/guide/latest/swapchain_semaphore_reuse.html for details on swapchain semaphore reuse. Examples of possible approaches:
+   a) Use a separate semaphore per swapchain image. Index these semaphores using the index of the acquired image.
+   b) Consider the VK_KHR_swapchain_maintenance1 extension. It allows using a VkFence with the presentation operation.
+The Vulkan spec states: Each binary semaphore element of the pSignalSemaphores member of any element of pSubmits must be unsignaled when the semaphore signal operation it defines is executed on the device (https://docs.vulkan.org/spec/latest/chapters/cmdbuffers.html#VUID-vkQueueSubmit-pSignalSemaphores-00067)
+
+[05:25:43] [Thread-1/ERROR]: vkQueuePresentKHR(): pPresentInfo->pWaitSemaphores[0] queue (VkQueue 0x1e0433a2e00[AMD FSR PresentQueue]) is waiting on semaphore (VkSemaphore 0x6dbe0000006dbe[AMD swapchain image semaphore 0]) that has no way to be signaled.
+The Vulkan spec states: All elements of the pWaitSemaphores member of pPresentInfo must reference a semaphore signal operation that has been submitted for execution and any semaphore signal operations on which it depends must have also been submitted for execution (https://docs.vulkan.org/spec/latest/chapters/VK_KHR_surface/wsi.html#VUID-vkQueuePresentKHR-pWaitSemaphores-03268)
+
+[05:25:43] [Thread-1/ERROR]: vkQueuePresentKHR(): pPresentInfo->pImageIndices[0] was acquired with a semaphore VkSemaphore 0x6db30000006db3[AMD FSR AcquireSemaphore 1] that has not since been waited on
+
+[05:25:43] [Render thread/ERROR]: vkCmdBindPipeline(): pipeline is VK_NULL_HANDLE.
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrNativeBridge.presentFrameGenerationSwapchainNative(Native Method)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrNativeBridge.presentFrameGenerationSwapchain(FsrNativeBridge.java:308)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRuntime.presentFrameGenerationSwapchain(FsrRuntime.java:358)
+	knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.redirect$bfi000$salts_anti_aliasing$saltsAntiAliasing$presentFrameGenerationSwapchain(VulkanGpuSurface.java:637)
+	knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.present(VulkanGpuSurface.java:416)
+[05:25:43] [Render thread/ERROR]: vkCmdDispatch(): The VkPipeline 0x71340000007134 (created with VkPipelineLayout 0x71320000007132) statically uses descriptor set 0, but set 0 is not compatible with the VkPipelineLayout 0x71600000007160 bound with vkCmdBindDescriptorSets
+Set 0 VkDescriptorSetLayoutBindingFlagsCreateInfo::bindingCount 8 doesn't match 18
+The Vulkan spec states: If a bound shader , or data graph pipeline, was created with a pipeline layout and statically uses a set n, a descriptor set must have been bound to n at the same pipeline bind point, with layouts compatible for set n with the layout(s) used to create the shader, as described in Pipeline Layout Compatibility (https://docs.vulkan.org/spec/latest/chapters/dispatch.html#VUID-vkCmdDispatch-None-08600)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrNativeBridge.presentFrameGenerationSwapchainNative(Native Method)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrNativeBridge.presentFrameGenerationSwapchain(FsrNativeBridge.java:308)
+	knot//org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRuntime.presentFrameGenerationSwapchain(FsrRuntime.java:358)
+	knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.redirect$bfi000$salts_anti_aliasing$saltsAntiAliasing$presentFrameGenerationSwapchain(VulkanGpuSurface.java:637)
+	knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.present(VulkanGpuSurface.java:416)
+[05:25:43] [Thread-1/ERROR]: vkCreateGraphicsPipelines(): pCreateInfos[0].pRasterizationState->lineWidth is 0.000000, but the line width state is static (pCreateInfos[0].pDynamicState->pDynamicStates does not contain VK_DYNAMIC_STATE_LINE_WIDTH) and wideLines feature was not enabled.
+The Vulkan spec states: If the pipeline requires pre-rasterization shader state, and the wideLines feature is not enabled, and no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_LINE_WIDTH, the lineWidth member of pRasterizationState must be 1.0 (https://docs.vulkan.org/spec/latest/chapters/pipelines.html#VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-00749)
+
+[05:25:43] [Thread-1/ERROR]: vkCreateGraphicsPipelines(): pCreateInfos[0].pRasterizationState->lineWidth is 0.000000, but the line width state is static (pCreateInfos[0].pDynamicState->pDynamicStates does not contain VK_DYNAMIC_STATE_LINE_WIDTH) and wideLines feature was not enabled.
+The Vulkan spec states: If the pipeline requires pre-rasterization shader state, and the wideLines feature is not enabled, and no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_LINE_WIDTH, the lineWidth member of pRasterizationState must be 1.0 (https://docs.vulkan.org/spec/latest/chapters/pipelines.html#VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-00749)
+
+[05:25:43] [Thread-1/ERROR]: vkQueueSubmit(): pSubmits[0].pSignalSemaphores[0] (VkSemaphore 0x6dbe0000006dbe[AMD swapchain image semaphore 0]) is being signaled by VkQueue 0x1e0433a2e00[AMD FSR PresentQueue], but it may still be in use by VkSwapchainKHR 0x6dba0000006dba.
+Most recently acquired image indices: 0, 1, [0], 2.
+(Brackets mark the last use of VkSemaphore 0x6dbe0000006dbe[AMD swapchain image semaphore 0] in a presentation operation.)
+Swapchain image 0 was presented but was not re-acquired, so VkSemaphore 0x6dbe0000006dbe[AMD swapchain image semaphore 0] may still be in use and cannot be safely reused with image index 2.
+Hint: See https://docs.vulkan.org/guide/latest/swapchain_semaphore_reuse.html for details on swapchain semaphore reuse. Examples of possible approaches:
+   a) Use a separate semaphore per swapchain image. Index these semaphores using the index of the acquired image.
+   b) Consider the VK_KHR_swapchain_maintenance1 extension. It allows using a VkFence with the presentation operation.
+The Vulkan spec states: Each binary semaphore element of the pSignalSemaphores member of any element of pSubmits must be unsignaled when the semaphore signal operation it defines is executed on the device (https://docs.vulkan.org/spec/latest/chapters/cmdbuffers.html#VUID-vkQueueSubmit-pSignalSemaphores-00067)
+
+[05:25:43] [Thread-1/ERROR]: vkQueuePresentKHR(): pPresentInfo->pWaitSemaphores[0] queue (VkQueue 0x1e0433a2e00[AMD FSR PresentQueue]) is waiting on semaphore (VkSemaphore 0x6dbe0000006dbe[AMD swapchain image semaphore 0]) that has no way to be signaled.
+The Vulkan spec states: All elements of the pWaitSemaphores member of pPresentInfo must reference a semaphore signal operation that has been submitted for execution and any semaphore signal operations on which it depends must have also been submitted for execution (https://docs.vulkan.org/spec/latest/chapters/VK_KHR_surface/wsi.html#VUID-vkQueuePresentKHR-pWaitSemaphores-03268)
+
+[05:25:43] [Thread-1/ERROR]: vkQueuePresentKHR(): pPresentInfo->pImageIndices[0] was acquired with a semaphore VkSemaphore 0x6db50000006db5[AMD FSR AcquireSemaphore 3] that has not since been waited on
+
+[05:25:43] [Render thread/WARN]: Failed to get system info for Process Loads
+java.lang.NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getUserTime()" because "process" is null
+	at knot//net.minecraft.SystemReport.lambda$putProcessDetails$0(SystemReport.java:190)
+	at knot//net.minecraft.SystemReport.setDetail(SystemReport.java:96)
+	at knot//net.minecraft.SystemReport.putProcessDetails(SystemReport.java:189)
+	at knot//net.minecraft.SystemReport.lambda$putSoftware$0(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.putSoftware(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.lambda$new$7(SystemReport.java:68)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.<init>(SystemReport.java:68)
+	at knot//net.minecraft.CrashReport.<init>(CrashReport.java:35)
+	at knot//net.minecraft.CrashReport.forThrowable(CrashReport.java:244)
+	at knot//net.minecraft.client.Minecraft.runTick(Minecraft.java:1276)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:967)
+	at knot//net.minecraft.client.main.Main.main(Main.java:292)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+[05:25:43] [Render thread/WARN]: Failed to get system info for Process Virtual Size (MiB)
+java.lang.NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getVirtualSize()" because "process" is null
+	at knot//net.minecraft.SystemReport.lambda$putProcessDetails$1(SystemReport.java:202)
+	at knot//net.minecraft.SystemReport.setDetail(SystemReport.java:96)
+	at knot//net.minecraft.SystemReport.putProcessDetails(SystemReport.java:202)
+	at knot//net.minecraft.SystemReport.lambda$putSoftware$0(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.putSoftware(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.lambda$new$7(SystemReport.java:68)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.<init>(SystemReport.java:68)
+	at knot//net.minecraft.CrashReport.<init>(CrashReport.java:35)
+	at knot//net.minecraft.CrashReport.forThrowable(CrashReport.java:244)
+	at knot//net.minecraft.client.Minecraft.runTick(Minecraft.java:1276)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:967)
+	at knot//net.minecraft.client.main.Main.main(Main.java:292)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+[05:25:43] [Render thread/WARN]: Failed to get system info for Process Resident Size (MiB)
+java.lang.NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getResidentSetSize()" because "process" is null
+	at knot//net.minecraft.SystemReport.lambda$putProcessDetails$2(SystemReport.java:203)
+	at knot//net.minecraft.SystemReport.setDetail(SystemReport.java:96)
+	at knot//net.minecraft.SystemReport.putProcessDetails(SystemReport.java:203)
+	at knot//net.minecraft.SystemReport.lambda$putSoftware$0(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.putSoftware(SystemReport.java:116)
+	at knot//net.minecraft.SystemReport.lambda$new$7(SystemReport.java:68)
+	at knot//net.minecraft.SystemReport.ignoreErrors(SystemReport.java:121)
+	at knot//net.minecraft.SystemReport.<init>(SystemReport.java:68)
+	at knot//net.minecraft.CrashReport.<init>(CrashReport.java:35)
+	at knot//net.minecraft.CrashReport.forThrowable(CrashReport.java:244)
+	at knot//net.minecraft.client.Minecraft.runTick(Minecraft.java:1276)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:967)
+	at knot//net.minecraft.client.main.Main.main(Main.java:292)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+[05:25:43] [Render thread/ERROR]: Reported exception thrown!
+net.minecraft.ReportedException: Render Frame
+	at knot//net.minecraft.client.Minecraft.runTick(Minecraft.java:1280)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:967)
+	at knot//net.minecraft.client.main.Main.main(Main.java:292)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+Caused by: java.lang.IllegalStateException: 0xc4650b07: Failed to present image
+	at knot//com.mojang.renderpearl.backend.vulkan.VulkanUtils.crashIfFailure(VulkanUtils.java:39)
+	at knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.present(VulkanGpuSurface.java:425)
+	at knot//com.mojang.renderpearl.frontend.FrontendGpuSurface.present(FrontendGpuSurface.java:113)
+	at knot//net.minecraft.client.Minecraft.renderFrame(Minecraft.java:1402)
+	at knot//net.minecraft.client.Minecraft.runTick(Minecraft.java:1274)
+	... 5 more
+---- Minecraft Crash Report ----
+// Daisy, daisy...
+
+Time: 2026-10-25 05:25:43
+Description: Render Frame
+
+java.lang.IllegalStateException: 0xc4650b07: Failed to present image
+	at knot//com.mojang.renderpearl.backend.vulkan.VulkanUtils.crashIfFailure(VulkanUtils.java:39)
+	at knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.present(VulkanGpuSurface.java:425)
+	at knot//com.mojang.renderpearl.frontend.FrontendGpuSurface.present(FrontendGpuSurface.java:113)
+	at knot//net.minecraft.client.Minecraft.renderFrame(Minecraft.java:1402)
+	at knot//net.minecraft.client.Minecraft.runTick(Minecraft.java:1274)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:967)
+	at knot//net.minecraft.client.main.Main.main(Main.java:292)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- Head --
+Thread: Render thread
+Stacktrace:
+	at knot//com.mojang.renderpearl.backend.vulkan.VulkanUtils.crashIfFailure(VulkanUtils.java:39)
+	at knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.present(VulkanGpuSurface.java:425)
+	at knot//com.mojang.renderpearl.frontend.FrontendGpuSurface.present(FrontendGpuSurface.java:113)
+
+-- Render Frame Details --
+Details:
+	Modules: 
+		ADVAPI32.dll:Advanced Windows 32 Base API:10.0.26100.3624 (WinBuild.160101.0800):Microsoft Corporation
+		AUDIOSES.DLL:Audio Session:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		AVRT.dll:Multimedia Realtime Runtime:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		CFGMGR32.dll:Configuration Manager DLL:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		COMCTL32.dll:User Experience Controls Library:6.10 (WinBuild.160101.0800):Microsoft Corporation
+		CRYPT32.dll:Crypto API32:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		CRYPTBASE.dll:Base cryptographic API DLL:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		CRYPTSP.dll:Cryptographic Service Provider API:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		D3D12Core.dll:Direct3D 12 Core Runtime:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		D3DCOMPILER_47.dll:Direct3D HLSL Compiler:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		D3DSCache.dll:Microsoft (R) D3D Shader Caching Library:10.0.26100.8117 (WinBuild.160101.0800):Microsoft Corporation
+		DBGHELP.DLL:Windows Image Helper:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		DNSAPI.dll:DNS Client API DLL:10.0.26100.9278 (WinBuild.160101.0800):Microsoft Corporation
+		DSPARSE.dll:Active Directory Domain Services API:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		DWrite.dll:Microsoft DirectX Typography Services:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		DispBroker.dll:Display Broker API:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		GDI32.dll:GDI Client DLL:10.0.26100.8328 (WinBuild.160101.0800):Microsoft Corporation
+		GLU32.dll:OpenGL Utility Library DLL:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		IMM32.DLL:Multi-User Windows IMM32 API Client DLL:10.0.26100.9278 (WinBuild.160101.0800):Microsoft Corporation
+		IPHLPAPI.DLL:IP Helper API:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		KERNEL32.DLL:Windows NT BASE API Client DLL:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		KERNELBASE.dll:Windows NT BASE API Client DLL:10.0.26100.9278 (WinBuild.160101.0800):Microsoft Corporation
+		MMDevApi.dll:MMDevice API:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		MSCTF.dll:MSCTF Server DLL:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		Microsoft.Internal.WarpPal.dll
+		MpOav.dll:IOfficeAntiVirus Module:4.18.26090.9 (4df2f7dd1ad7282fa3437667daf210904670b7f3):Microsoft Corporation
+		NSI.dll:NSI User-mode interface DLL:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		NTASN1.dll:Microsoft ASN.1 API:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		NvLowLatencyVk.dll
+		NvMemMapStoragex.dll
+		NvTelemetryAPI64.dll:NVIDIA Telemetry API:19.5.6.0:NVIDIA Corporation
+		NvTelemetryBridge64.dll:NVIDIA Telemetry Bridge:19.5.6.0:NVIDIA Corporation
+		OLEAUT32.dll:OLEAUT32.DLL:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		Oleacc.dll:Active Accessibility Core Component:7.2.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		OpenAL.dll:Main implementation library:1.25.2:
+		POWRPROF.dll:Power Profile Helper DLL:10.0.26100.8117 (WinBuild.160101.0800):Microsoft Corporation
+		PSAPI.DLL:Process Status Helper:10.0.26100.8521 (WinBuild.160101.0800):Microsoft Corporation
+		Pdh.dll:Windows Performance Data Helper DLL:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		RPCRT4.dll:Remote Procedure Call Runtime:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		SDL3.dll:SDL:3, 4, 14, 0:
+		SETUPAPI.dll:Windows Setup API:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		SHCORE.dll:SHCORE:10.0.26100.8117 (WinBuild.160101.0800):Microsoft Corporation
+		SHELL32.dll:Windows Shell Common Dll:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		SspiCli.dll:Security Support Provider Interface:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		UMPDC.dll:User Mode Power Dependency Coordinator:10.0.26100.8972 (WinBuild.160101.0800):Microsoft Corporation
+		USER32.dll:Multi-User Windows USER API Client DLL:10.0.26100.8117 (WinBuild.160101.0800):Microsoft Corporation
+		USERENV.dll:Userenv:10.0.26100.7920 (WinBuild.160101.0800):Microsoft Corporation
+		USP10.dll:Uniscribe Unicode script processor:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		VCRUNTIME140.dll:Microsoft� C Runtime Library:14.44.35208.0:Microsoft Corporation
+		VERSION.dll:Version Checking and File Installation Libraries:10.0.26100.1150 (WinBuild.160101.0800):Microsoft Corporation
+		VkLayer_khronos_validation.dll
+		WINMM.dll:MCI API DLL:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		WINNSI.DLL:Network Store Information RPC interface:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		WINSTA.dll:Winstation Library:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		WS2_32.dll:Windows Socket 2.0 32-Bit DLL:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		WinTypes.dll:Windows Base Types DLL:10.0.26100.7705 (WinBuild.160101.0800):Microsoft Corporation
+		Wtsapi32.dll:Windows Remote Desktop Session Host Server SDK APIs:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		_nvngx.dll:NGX Runtime Library:32.0.15.9186:NVIDIA Corporation
+		amd_fidelityfx_vk.dll:VK AMD FidelityFX Library:1.0.1.41314:Advanced Micro Devices, Inc.
+		amsi.dll:Anti-Malware Scan Interface:10.0.26100.7309 (WinBuild.160101.0800):Microsoft Corporation
+		apphelp.dll:Application Compatibility Client Library:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		bcrypt.dll:Windows Cryptographic Primitives Library:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		bcryptPrimitives.dll:Windows Cryptographic Primitives Library:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		clbcatq.dll:COM+ Configuration Catalog:2001.12.10941.16384 (WinBuild.160101.0800):Microsoft Corporation
+		combase.dll:Microsoft COM for Windows:10.0.26100.7705 (WinBuild.160101.0800):Microsoft Corporation
+		cryptnet.dll:Crypto Network Related API:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		d3d12.dll:Direct3D 12 Runtime:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		dataexchange.dll:Data exchange:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		dbgcore.DLL:Windows Core Debugging Helpers:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		dcomp.dll:Microsoft DirectComposition Library:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		devobj.dll:Device Information Set DLL:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		directxdatabasehelper.dll:DirectXDatabaseHelper:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		drvstore.dll:Driver Store API:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		dwmapi.dll:Microsoft Desktop Window Manager API:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		dxcore.dll:DXCore:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		dxgi.dll:DirectX Graphics Infrastructure:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		extnet.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+		fastprox.dll:WMI Custom Marshaller:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		freetype.dll:Font Rendering Library:2.14.3:The FreeType Project
+		fwpuclnt.dll:FWP/IPsec User-Mode API:10.0.26100.3915 (WinBuild.160101.0800):Microsoft Corporation
+		gdi32full.dll:GDI Client DLL:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		gpapi.dll:Group Policy Client API:10.0.26100.8521 (WinBuild.160101.0800):Microsoft Corporation
+		graphics-hook64.dll:OBS Graphics Hook:1.8.7.0:OBS Project
+		hid.dll:Hid User Library:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		iertutil.dll:Run time utility for Internet Explorer:11.00.26100.8117 (WinBuild.160101.0800):Microsoft Corporation
+		imagehlp.dll:Windows NT Image Helper:10.0.26100.4202 (WinBuild.160101.0800):Microsoft Corporation
+		java.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+		java.exe:OpenJDK Platform binary:25.0.2.0:Microsoft
+		jemalloc.dll
+		jimage.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+		jli.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+		jna1442990429010642228.dll:JNA native library:7.0.2:Java(TM) Native Access (JNA)
+		jvm.dll:OpenJDK 64-Bit server VM:25.0.2.0:Microsoft
+		kernel.appcore.dll:AppModel API Host:10.0.26100.9278 (WinBuild.160101.0800):Microsoft Corporation
+		lwjgl.dll
+		lwjgl_opengl.dll
+		lwjgl_stb.dll
+		lwjgl_vma.dll
+		management.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+		management_ext.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+		msasn1.dll:ASN.1 Runtime APIs:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		mscms.dll:Microsoft Color Matching System DLL:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		msvcp140.dll:Microsoft� C Runtime Library:14.44.35208.0:Microsoft Corporation
+		msvcp_win.dll:Microsoft� C Runtime Library:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		msvcrt.dll:Windows NT CRT DLL:7.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		mswsock.dll:Microsoft Windows Sockets 2.0 Service Provider:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		napinsp.dll:E-mail Naming Shim Provider:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		ncrypt.dll:Windows NCrypt Router:10.0.26100.1591 (WinBuild.160101.0800):Microsoft Corporation
+		net.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+		netutils.dll:Net Win32 API Helpers DLL:10.0.26100.1882 (WinBuild.160101.0800):Microsoft Corporation
+		nio.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+		nlansp_c.dll:NLA Namespace Service Provider DLL:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		ntdll.dll:NT Layer DLL:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		ntmarta.dll:Windows NT MARTA provider:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		nvapi64.dll:NVIDIA NVAPI Library, Version 591.86 :32.0.15.9186:NVIDIA Corporation
+		nvcuda64.dll:NVIDIA CUDA Driver, Version 591.86 :32.0.15.9186:NVIDIA Corporation
+		nvdxgdmal64.dll
+		nvgpucomp64.dll:NVIDIA GPU Compiler Driver, Version 591.86 :32.0.15.9186:NVIDIA Corporation
+		nvldumdx.dll:NVIDIA Driver Loader, Version 591.86 :32.0.15.9186:NVIDIA Corporation
+		nvngx_dlss.dll:NVIDIA DLSS - DVS PRODUCTION:310,9,1,0:NVIDIA
+		nvoglv64.dll:NVIDIA Compatible OpenGL ICD:32.0.15.9186:NVIDIA Corporation
+		nvppex.dll:NVIDIA Driver, Version 591.86 :32.0.15.9186:NVIDIA Corporation
+		nvrtum64.dll:NVIDIA Driver, Version 591.86 :32.0.15.9186:NVIDIA Corporation
+		nvspcap64.dll:NVIDIA Game Proxy\x008\x16\x01FileVersion\x00\x001:11.0.6.383\x00\x008\x16\x01Produc:NVIDIA Corporation\x00\x00L$\x01FileDescriptio
+		nvwgf2umx.dll:NVIDIA D3D10 Driver, Version 591.86 :32.0.15.9186:NVIDIA Corporation
+		ole32.dll:Microsoft OLE for Windows:10.0.26100.6725 (WinBuild.160101.0800):Microsoft Corporation
+		opengl32.dll:OpenGL Client DLL:10.0.26100.9278 (WinBuild.160101.0800):Microsoft Corporation
+		ow-graphics-hook64.dll:Overwolf Graphics Hook:1.0.1.0:Overwolf
+		ow-graphics-vulkan.dll:Overlay:2.2.250.1:Overwolf LTD
+		owclient.dll:Overlay:2.2.311.2:Overwolf LTD
+		perfos.dll:Windows System Performance Objects DLL:10.0.26100.7705 (WinBuild.160101.0800):Microsoft Corporation
+		perfproc.dll:Windows System Process Performance Objects DLL:10.0.26100.7705 (WinBuild.160101.0800):Microsoft Corporation
+		pfclient.dll:SysMain Client:10.0.26100.4202 (WinBuild.160101.0800):Microsoft Corporation
+		profapi.dll:User Profile Basic API:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		rasadhlp.dll:Remote Access AutoDial Helper:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		resourcepolicyclient.dll:Resource Policy Client:10.0.26100.8115 (WinBuild.160101.0800):Microsoft Corporation
+		rometadata.dll:Microsoft MetaData Library:4.8.9221.0 built by: NET481REL1LAST_25H2:Microsoft Corporation
+		rsaenh.dll:Microsoft Enhanced Cryptographic Provider:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		salts_dlss_bridge.dll
+		salts_fsr_bridge.dll
+		sapi.dll:Speech API:5.3.29131.00 (WinBuild.160101.0800):Microsoft Corporation
+		sechost.dll:Host for SCM/SDDL/LSA Lookup APIs:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		shaderc.dll
+		shlwapi.dll:Shell Light-weight Utility Library:10.0.26100.8117 (WinBuild.160101.0800):Microsoft Corporation
+		sl.common.dll:SL.COMMON PLUGIN - PRODUCTION:2,14,1,0:NVIDIA
+		sl.dlss.dll:SL.DLSS PLUGIN - PRODUCTION:2,14,1,0:NVIDIA
+		sl.interposer.dll:SL.INTERPOSER MODULE - PRODUCTION:2,14,1,0:NVIDIA
+		spirv-cross.dll
+		srvcli.dll:Server Service Client DLL:10.0.26100.1150 (WinBuild.160101.0800):Microsoft Corporation
+		sunmscapi.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+		syslookup.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+		textinputframework.dll:"TextInputFramework.DYNLINK":10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		twinapi.appcore.dll:twinapi.appcore:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		ucrtbase.dll:Microsoft� C Runtime Library:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		uiautomationcore.dll:Microsoft UI Automation Core:7.2.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		urlmon.dll:OLE32 Extensions for Win32:11.00.26100.8117 (WinBuild.160101.0800):Microsoft Corporation
+		uxtheme.dll:Microsoft UxTheme Library:10.0.26100.7019 (WinBuild.160101.0800):Microsoft Corporation
+		vcruntime140_1.dll:Microsoft� C Runtime Library:14.44.35208.0:Microsoft Corporation
+		verify.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+		vulkan-1.dll:Vulkan Loader:1.4.321.0:
+		wbemcomn.dll:WMI:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		wbemprox.dll:WMI:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		wbemsvc.dll:WMI:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		win32u.dll:Win32u:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		windows.staterepositorycore.dll:Windows StateRepository API Core:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		windows.storage.dll:Microsoft WinRT Storage API:10.0.26100.9278 (WinBuild.160101.0800):Microsoft Corporation
+		winrnr.dll:LDAP RnR Provider DLL:10.0.26100.9278 (WinBuild.160101.0800):Microsoft Corporation
+		wintrust.dll:Microsoft Trust Verification APIs:10.0.26100.9711 (WinBuild.160101.0800):Microsoft Corporation
+		wldp.dll:Windows Lockdown Policy:10.0.26100.8521 (WinBuild.160101.0800):Microsoft Corporation
+		wshbth.dll:Windows Sockets Helper DLL:10.0.26100.9549 (WinBuild.160101.0800):Microsoft Corporation
+		wshunix.dll:AF_UNIX Winsock2 Helper DLL:10.0.26100.1 (WinBuild.160101.0800):Microsoft Corporation
+		zip.dll:OpenJDK Platform binary:25.0.2.0:Microsoft
+	Post effects: [minecraft:end_of_frame]
+Stacktrace:
+	at knot//net.minecraft.client.Minecraft.runTick(Minecraft.java:1274)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:967)
+	at knot//net.minecraft.client.main.Main.main(Main.java:292)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+
+-- Uptime --
+Details:
+	JVM uptime: 158.227s
+	Wall uptime: 152.516s
+	High-res time: 150.585s
+	Client ticks: 2907 ticks / 145.350s
+Stacktrace:
+	at knot//net.minecraft.client.Minecraft.fillReport(Minecraft.java:2540)
+	at knot//net.minecraft.client.Minecraft.emergencySaveAndCrash(Minecraft.java:1011)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:988)
+	at knot//net.minecraft.client.main.Main.main(Main.java:292)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+
+-- Window --
+Details:
+	Error section: Render
+
+-- Affected level --
+Details:
+	All players: 1 total; LocalPlayer{name=ReleaseTester, id=50, pos=(100.5, 102.0, 107.5), mode=CREATIVE, permission=owner}
+	Chunk stats: 961, 637
+	Level dimension: minecraft:overworld
+	Level time: 213334 game time, 54000 day time
+	Level spawn location: World: (0,72,-32), Section: (at 0,8,0 in 0,4,-2; chunk contains blocks 0,-64,-32 to 15,319,-17), Region: (0,-1; contains chunks 0,-32 to 31,-1, blocks 0,-64,-512 to 511,319,-1)
+	Server brand: fabric
+	Server type: Integrated singleplayer server
+	Tracked entity count: 82
+	Client weather: Raining: false, thundering: false
+
+-- Last reload --
+Details:
+	Reload number: 1
+	Reload reason: initial
+	Finished: Yes
+	Packs: vanilla, vanilla, fabric-advancement-api-v1, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-command-api-v2, fabric-content-registries-v0, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, modmenu, placeholder-api, salts_anti_aliasing
+
+-- System Details --
+Details:
+	Minecraft Version: 26.3
+	Minecraft Version ID: 26.3
+	Operating System: Windows 11 (amd64) version 10.0
+	Java Version: 25.0.2, Microsoft
+	Java VM Version: OpenJDK 64-Bit Server VM (mixed mode, sharing), Microsoft
+	Memory: 299305656 bytes (285 MiB) / 939524096 bytes (896 MiB) up to 3221225472 bytes (3072 MiB)
+	Memory (heap): init: 510MiB, used: 608MiB, committed: 896MiB, max: 3072MiB
+	Memory (non-heap): init: 007MiB, used: 239MiB, committed: 257MiB, max: 000MiB
+	CPUs: 20
+	Processor Vendor: GenuineIntel
+	Processor Name: 12th Gen Intel(R) Core(TM) i7-12700KF
+	Identifier: Intel64 Family 6 Model 151 Stepping 2
+	Microarchitecture: Alder Lake
+	Frequency (GHz): 3.61
+	Number of physical packages: 1
+	Number of physical CPUs: 12
+	Number of logical CPUs: 20
+	Graphics card #0 name: NVIDIA GeForce RTX 3060 Ti
+	Graphics card #0 vendor: NVIDIA
+	Graphics card #0 VRAM (MiB): 8192.00
+	Graphics card #0 deviceId: VideoController1
+	Graphics card #0 versionInfo: 32.0.15.9186
+	Memory slot #0 capacity (MiB): 16384.00
+	Memory slot #0 clockSpeed (GHz): 3.60
+	Memory slot #0 type: DDR4
+	Memory slot #1 capacity (MiB): 16384.00
+	Memory slot #1 clockSpeed (GHz): 3.60
+	Memory slot #1 type: DDR4
+	Virtual memory max (MiB): 35824.95
+	Virtual memory used (MiB): 25345.11
+	Swap memory total (MiB): 3200.00
+	Swap memory used (MiB): 42.20
+	Space in storage for jna.tmpdir (MiB): <path not set>
+	Space in storage for org.lwjgl.system.SharedLibraryExtractPath (MiB): <path not set>
+	Space in storage for io.netty.native.workdir (MiB): <path not set>
+	Space in storage for java.io.tmpdir (MiB): available: 894511.19, total: 1906500.25
+	Space in storage for workdir (MiB): available: 4101737.25, total: 7630868.00
+	Operating System Version: Microsoft Windows 11 (Home) build 26300
+	Process Elevated: false
+	Process Loads: ~~ERROR~~ NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getUserTime()" because "process" is null
+	Process Virtual Size (MiB): ~~ERROR~~ NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getVirtualSize()" because "process" is null
+	Process Resident Size (MiB): ~~ERROR~~ NullPointerException: Cannot invoke "oshi.software.os.OSProcess.getResidentSetSize()" because "process" is null
+	JVM Flags: 1 total; -Xmx3G
+	Debug Flags: 0 total; 
+	Fabric Mods: 
+		fabric-api: Fabric API 0.162.0+26.3
+			fabric-advancement-api-v1: Fabric Advancement API (v1) 1.0.0+38c7a2d55d
+			fabric-api-base: Fabric API Base 2.0.6+fcdff87f5d
+			fabric-api-lookup-api-v1: Fabric API Lookup API (v1) 2.0.24+3434d6d95d
+			fabric-biome-api-v1: Fabric Biome API (v1) 20.1.0+c6aa69a85d
+			fabric-block-api-v1: Fabric Block API (v1) 3.1.0+0ae6f9115d
+			fabric-block-getter-api-v2: Fabric BlockGetter API (v2) 2.0.9+3434d6d95d
+			fabric-command-api-v2: Fabric Command API (v2) 3.1.2+fcdff87f5d
+			fabric-content-registries-v0: Fabric Content Registries (v0) 15.0.4+74ed1ea55d
+			fabric-convention-tags-v2: Fabric Convention Tags (v2) 4.10.3+6b5b47fd5d
+			fabric-crash-report-info-v1: Fabric Crash Report Info (v1) 1.0.7+fcdff87f5d
+			fabric-creative-tab-api-v1: Fabric Creative Tab API (v1) 5.0.21+fcdff87f5d
+			fabric-data-attachment-api-v1: Fabric Data Attachment API (v1) 2.2.31+b9b88df45d
+			fabric-data-generation-api-v1: Fabric Data Generation API (v1) 27.3.0+5be2453c5d
+			fabric-debug-api-v1: Fabric Debug API (v1) 1.0.4+3434d6d95d
+			fabric-dimensions-v1: Fabric Dimensions API (v1) 5.1.19+47f74c985d
+			fabric-entity-events-v1: Fabric Entity Events (v1) 6.0.4+3434d6d95d
+			fabric-events-interaction-v0: Fabric Events Interaction (v0) 5.3.7+b9b88df45d
+			fabric-game-rule-api-v1: Fabric Game Rule API (v1) 4.0.10+3434d6d95d
+			fabric-item-api-v1: Fabric Item API (v1) 14.7.0+cf6bc2db5d
+			fabric-key-mapping-api-v1: Fabric Key Mapping API (v1) 2.0.8+3434d6d95d
+			fabric-lifecycle-events-v1: Fabric Lifecycle Events (v1) 4.1.9+ffef5f675d
+			fabric-loot-api-v3: Fabric Loot API (v3) 4.0.8+4068fd645d
+			fabric-menu-api-v1: Fabric Menu API (v1) 2.0.28+ed66f0a35d
+			fabric-message-api-v1: Fabric Message API (v1) 7.0.10+3434d6d95d
+			fabric-model-loading-api-v1: Fabric Model Loading API (v1) 8.0.35+fcdff87f5d
+			fabric-networking-api-v1: Fabric Networking API (v1) 6.3.9+b9b88df45d
+			fabric-object-builder-api-v1: Fabric Object Builder API (v1) 24.1.10+3434d6d95d
+			fabric-particles-v1: Fabric Particles (v1) 5.0.25+3434d6d95d
+			fabric-permission-api-v1: Fabric Permission API (v1) 1.0.8+fcdff87f5d
+			fabric-recipe-api-v1: Fabric Recipe API (v1) 10.0.9+b9b88df45d
+			fabric-registry-sync-v0: Fabric Registry Sync (v0) 8.0.2+1ca9f6365d
+			fabric-renderer-api-v1: Fabric Renderer API (v1) 17.0.15+79385d0b5d
+			fabric-renderer-indigo: Fabric Renderer - Indigo 9.1.23+b9d63e335d
+			fabric-rendering-fluids-v1: Fabric Rendering Fluids (v1) 6.0.6+3434d6d95d
+			fabric-rendering-v1: Fabric Rendering (v1) 27.0.14+901a437c5d
+			fabric-resource-conditions-api-v1: Fabric Resource Conditions API (v1) 6.2.0+0d124ae85d
+			fabric-resource-loader-v0: Fabric Resource Loader (v0) 3.3.26+4fc5413f5d
+			fabric-resource-loader-v1: Fabric Resource Loader (v1) 3.0.4+ba0d6c0d5d
+			fabric-screen-api-v1: Fabric Screen API (v1) 5.2.4+48607d035d
+			fabric-serialization-api-v1: Fabric Serialization API (v1) 2.0.7+74ed1ea55d
+			fabric-sound-api-v1: Fabric Sound API (v1) 2.0.7+3434d6d95d
+			fabric-tag-api-v1: Fabric Tag API (v1) 2.1.10+fcdff87f5d
+			fabric-transfer-api-v1: Fabric Transfer API (v1) 8.0.25+fcdff87f5d
+			fabric-transitive-access-wideners-v1: Fabric Transitive Access Wideners (v1) 8.1.16+52268a0e5d
+		fabricloader: Fabric Loader 0.19.5
+			mixinextras: MixinExtras 0.5.5
+		java: OpenJDK 64-Bit Server VM 25
+		minecraft: Minecraft 26.3
+		modmenu: Mod Menu 21.0.0
+			placeholder-api: Placeholder API 3.2.0+26.3
+		salts_anti_aliasing: Salt's Anti Aliasing 1.1
+		salts_audit_harness: salts_audit_harness 1.0
+	Launched Version: 26.3
+	Launcher name: release-qa
+	Backend library: LWJGL version 3.4.3-snapshot
+	Window size: 1280x720
+	Surface Info: acquired, IMMEDIATE, 1280 x 720
+	SDL Platform: Windows
+	Graphics Device: NVIDIA GeForce RTX 3060 Ti
+	Graphics Backend: Vulkan
+	Graphics Vendor: NVIDIA
+	Graphics Drivers: 1.4.325 NVIDIA 591.86
+	Graphics Device Extensions: VK_KHR_external_memory_capabilities (I), VK_KHR_external_semaphore_capabilities (I), VK_KHR_dynamic_rendering (D), VK_EXT_calibrated_timestamps (D), VK_KHR_synchronization2 (D), VK_EXT_multi_draw (D), VK_AMD_buffer_marker (D), VK_EXT_vertex_attribute_divisor (D), VK_KHR_win32_surface (I), VK_KHR_swapchain (D), VK_KHR_surface (I), VK_KHR_push_descriptor (D), VK_KHR_get_physical_device_properties2 (I), VK_EXT_debug_utils (I)
+	Graphics Device Type: DISCRETE
+	Graphics Device Features: DeviceFeatures[wireframeFillMode=true, shaderDrawParameters=true, multiDrawDirectInterleaved=true, multiDrawDirectSeparate=false, multiDrawIndirect=true, drawIndirect=true, nonZeroFirstInstance=true, persistentMapping=true]
+	GL debug messages: 
+	Is Modded: Definitely; Client brand changed to 'fabric'
+	Universe: 400921fb54442d18
+	Type: Client
+	Transparency: regular
+	Render Distance: 12/12 chunks
+	Narrator config: OFF
+	Narrator status: true
+	Resource Packs: vanilla, fabric-advancement-api-v1, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-command-api-v2, fabric-content-registries-v0, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, modmenu, placeholder-api, salts_anti_aliasing
+	Sound Cache: 225836 bytes in 2 buffers
+	Current Language: en_us
+	Locale: en_US
+	System encoding: Cp1252
+	File encoding: UTF-8
+	CPU: 20x 12th Gen Intel(R) Core(TM) i7-12700KF
+	Server Running: true
+	Player Count: 1 / 8; [ServerPlayer['ReleaseTester'/50, l='ServerLevel[New World]', x=100.50, y=102.00, z=107.50]]
+	Active Data Packs: vanilla, fabric-convention-tags-v2
+	Available Data Packs: fabric-convention-tags-v2, minecart_improvements, redstone_experiments, trade_rebalance, vanilla
+	Enabled Feature Flags: minecraft:vanilla
+	World Generation: Stable
+	World Seed: 7671178995584240970
+	Suppressed Exceptions: ~~NONE~~
+	Type: Integrated Server
+	Is Modded: Definitely; Client brand changed to 'fabric'; Server brand changed to 'fabric'
+	Launched Version: 26.3
+#@!@# Game crashed! Crash report saved to: #@!@# G:\Codex Projects\Salts Anti Aliasing\run\sodium-compat-audit-20261025\crash-reports\crash-2026-10-25_05.25.43-client.txt

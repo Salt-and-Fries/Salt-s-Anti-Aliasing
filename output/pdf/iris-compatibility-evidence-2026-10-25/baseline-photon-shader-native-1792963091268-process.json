@@ -1,0 +1,11 @@
+{
+  "label": "baseline-photon-shader-native-1792963091268",
+  "backend": "opengl",
+  "pack": "photon-shader",
+  "overrides": {},
+  "startUtc": 1792963091.270789,
+  "jarSha256": "42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed",
+  "pid": 32676,
+  "exitCode": 0,
+  "endUtc": 1792963143.574975
+}

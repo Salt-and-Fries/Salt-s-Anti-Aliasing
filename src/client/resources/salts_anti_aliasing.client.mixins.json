@@ -16,6 +16,7 @@
     "MinecraftMixin",
     "PostChainAccessor",
     "PostPassAccessor",
+    "PipelineBuilderMixin",
     "RenderTargetMixin",
     "RenderPipelineAccessor",
     "SkyRendererMixin",

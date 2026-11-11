@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Salt's Shader Compiler-0",
+    "reservedStackBytes": 4194304,
+    "committedTailBytes": 143360
+  },
+  {
+    "name": "Salt's Shader Compiler-1",
+    "reservedStackBytes": 4194304,
+    "committedTailBytes": 139264
+  },
+  {
+    "name": "Salt's Shader Compiler-2",
+    "reservedStackBytes": 4194304,
+    "committedTailBytes": 139264
+  },
+  {
+    "name": "Salt's Shader Compiler-3",
+    "reservedStackBytes": 4194304,
+    "committedTailBytes": 139264
+  },
+  {
+    "name": "Salt's Shader Compiler-4",
+    "reservedStackBytes": 4194304,
+    "committedTailBytes": 139264
+  },
+  {
+    "name": "Salt's Shader Compiler-5",
+    "reservedStackBytes": 4194304,
+    "committedTailBytes": 139264
+  },
+  {
+    "name": "Salt's Shader Compiler-6",
+    "reservedStackBytes": 4194304,
+    "committedTailBytes": 139264
+  },
+  {
+    "name": "Salt's Shader Compiler-7",
+    "reservedStackBytes": 4194304,
+    "committedTailBytes": 139264
+  }
+]

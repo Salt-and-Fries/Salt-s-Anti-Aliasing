@@ -113,6 +113,8 @@ public final class AntiAliasingVideoSettingsSection {
             case SSAA -> List.of(ControlKind.SHARPNESS, ControlKind.SSAA_SCALE);
             case NIS_UPSCALE, FSR1_UPSCALE ->
                     List.of(ControlKind.SHARPNESS, ControlKind.SPATIAL_UPSCALE_QUALITY);
+            case SGSR1_UPSCALE, SGSR2_SUPER_RESOLUTION -> List.of(ControlKind.SHARPNESS,ControlKind.SGSR_QUALITY);
+            case XESS_SUPER_RESOLUTION -> List.of(ControlKind.SHARPNESS, ControlKind.XESS_QUALITY);
             case DLSS_SUPER_RESOLUTION -> List.of(ControlKind.SHARPNESS, ControlKind.DLSS_QUALITY);
             case FSR2_SUPER_RESOLUTION,
                             FSR3_SUPER_RESOLUTION,
@@ -129,6 +131,8 @@ public final class AntiAliasingVideoSettingsSection {
             case MSAA_ALPHA_TO_COVERAGE -> MsaaAlphaToCoverageButton.create(runtime);
             case SSAA_SCALE -> new SsaaScaleSliderWidget(runtime);
             case SPATIAL_UPSCALE_QUALITY -> new SpatialUpscaleQualitySliderWidget(runtime);
+            case SGSR_QUALITY -> new SgsrQualitySliderWidget(runtime);
+            case XESS_QUALITY -> new XessQualitySliderWidget(runtime);
             case DLSS_QUALITY -> new DlssQualitySliderWidget(runtime);
             case FSR_QUALITY -> new FsrQualitySliderWidget(runtime);
         };
@@ -155,6 +159,8 @@ public final class AntiAliasingVideoSettingsSection {
         SSAA_SCALE,
         SPATIAL_UPSCALE_QUALITY,
         DLSS_QUALITY,
+        XESS_QUALITY,
+        SGSR_QUALITY,
         FSR_QUALITY
     }
 }

@@ -1,4 +1,29 @@
-# Changelog
+# Changelog## Unreleased — SGSR 1 and SGSR 2- Add Qualcomm SGSR 1 spatial upscaling and the SGSR 2 two-pass fragment temporal path, with separate Native, Quality, Balanced and Performance settings.- Preserve reference filter math, linear color, encoded object motion, 32-phase jitter and history resets; adapt Minecraft reverse-Z depth and define border sampling.- Add SGSR 1 pre-AA, directional edges and edge controls, native HUD/hand handling, motion diagnostics, allocation accounting and failure/retry behavior.- Bundle BSD notices and pinned source provenance; provide a reproducible shader importer and Vulkan compilation tests. Validate on RTX 3060 Ti and provide an Adreno test handoff.
+
+## Unreleased — Intel XeSS
+
+- Add Intel XeSS Super Resolution, Native Anti-Aliasing and all official quality presets with a bundled, checksum-verified Windows x64 runtime and license notices.
+- Integrate runtime-queried Vulkan requirements and input sizing, linear SDR color, reversed depth, camera/object/particle motion, temporal history resets, explicit resource barriers and native-resolution HUD/hand handling.
+- Merge promoted Vulkan 1.3 features safely with Minecraft, DLSS and FSR; show unsupported/fallback status and preserve saved settings.
+- Add integration contract tests and validate presets, motion, transparency, resize, reload and runtime transitions on RTX 3060 Ti.
+
+## Unreleased — Minecraft 26.3 / Sodium and native runtime compatibility
+
+- Repair DLSS M/L private-image clear synchronization with a process-local Vulkan layer in the mod's own bridge. Correct initial transitions' destination transfer scope inside DLSS evaluation, preserve model choices/inputs and avoid new GPU commands or changes to ordinary game/FSR barriers.
+- Accept complete user-downloaded Streamline 2.14.16 / DLSS 310.9.16 runtime sets alongside existing 2.14.1 / 310.9.1 sets. Reject mixed releases, preserve old cache identities and show the detected runtime version in advanced settings. Continue excluding NVIDIA DLLs from public builds.
+- Isolate asynchronous Windows/Java 25 pipeline compilation in a bounded pool with larger stacks after native dumps traced the startup/reload fault through Shaderc's Java include callback. Preserve inputs/futures and deferred GPU-finalization scheduling; expire idle threads. The shared-arena experiment did not prevent the fault and is not enabled globally or in development profiles.
+- Correct promoted descriptor-indexing feature declarations for FSR-only Vulkan 1.2 sessions. Keep requested individual bits and omit the redundant extension declaration that required an additional umbrella bit.
+- Add native clear-layer dispatch/scope/lifetime tests and regression coverage for complete runtime-set selection, mixed DLL rejection, loader manifest types, promoted Vulkan features and nested/erroring shader compilation futures.
+
+- Apply optional terrain MIP bias to Sodium's terrain fragment shader, including OIT pipelines whose pipeline locations use the Minecraft namespace. Preserve the original layouts, compressed vertex bindings, push constants, render state and float attachment formats.
+- Preserve Sodium's bulk vertex-writing API during entity motion capture. Read actual float-position offsets/strides before the delegate can overwrite its input, bound capture work by the motion budget, and reject partial/unknown geometry histories safely.
+- Keep the Sodium adapter optional at class-loading time; retain the scalar capture path when Sodium is absent.
+- Query and enable FidelityFX's required unformatted storage-image read/write features before device creation, and keep unsupported frame generation out of the capability list while retaining upscaling.
+- Rebuild the bundled MIT-licensed FidelityFX Vulkan runtime with corrections for static line width, per-image presentation semaphores, failed-acquire signaling, duplicate semaphore allocation and UI/debug cache cleanup after presentation drains.
+- Publish the native FG proxy handle only after initialization succeeds, and preserve RenderPearl's ownership of an old swapchain during failure/fallback.
+- Add checksum-verified stable/beta Sodium development profiles with isolated settings and worlds. Keep Sodium and NVIDIA runtime DLLs out of public jars.
+- Add native-buffer, shader-selection/idempotence and optional-class-loading regression tests. Validate actual scene pipelines, motion inputs, checker-texture LOD changes, generated frames, settings navigation, reload/resize/mode changes and direct exit.
+- Preserve the original Sodium audit evidence and document the follow-up native-runtime repairs and remaining JVM uncertainty separately; see README qualification notes and `output/runtime-stability-fixes-2026-10-25/`.
 
 ## 1.1 — Minecraft 26.2
 

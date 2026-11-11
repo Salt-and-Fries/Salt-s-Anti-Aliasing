@@ -455,7 +455,8 @@ public final class VulkanSceneDlssController {
     }
 
     private void destroyResources() {
-        VulkanParticleMotionRenderer.release();
+        // Shared with XeSS: an inactive DLSS controller must not retire its buffers every frame.
+        if (sceneTarget != null) VulkanParticleMotionRenderer.release();
         resetHistoryPending = true;
         if (outputTarget != null) {
             outputTarget.destroyBuffers();

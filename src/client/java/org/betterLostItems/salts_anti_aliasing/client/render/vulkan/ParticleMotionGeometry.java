@@ -23,8 +23,9 @@ public final class ParticleMotionGeometry {
 
     public static void beginExtraction() {
         var runtime = SaltsAntiAliasingClient.runtimeOrNull();
-        boolean next = runtime != null && runtime.activeMode() == AntiAliasingMode.DLSS_SUPER_RESOLUTION
-                && runtime.dlssRuntimeStatus().ready() && runtime.canUseAntiAliasing()
+        boolean next = runtime != null && (runtime.activeMode() == AntiAliasingMode.DLSS_SUPER_RESOLUTION
+                && runtime.dlssRuntimeStatus().ready() || runtime.activeMode().usesXessQualityControl()
+                && org.betterLostItems.salts_anti_aliasing.client.render.vulkan.xess.XessRuntime.instance().isReady() || runtime.activeMode().usesSgsr2QualityControl()) && runtime.canUseAntiAliasing()
                 && runtime.configSnapshot().tuning.entityMotion;
         Object nextLevel = Minecraft.getInstance().level;
         previous = current;

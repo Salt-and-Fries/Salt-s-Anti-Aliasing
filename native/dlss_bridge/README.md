@@ -22,14 +22,48 @@ Copy-Item build/dlss_bridge/Release/salts_dlss_bridge.dll native/redist/dlss/win
 .\gradlew.bat build
 ```
 
-The Java code requires bridge ABI 4 and rejects older DLLs. The bridge uses manual Vulkan
+The Java code requires bridge ABI 5 and rejects older DLLs. The bridge uses manual Vulkan
 integration, queries device requirements before device creation, tags reverse-Z depth and pixel
 motion vectors, and invokes Streamline's common presentation hooks each frame.
 
-ABI 4 removes the unsupported modern-model bias-current-color mask, chains explicit Vulkan
+The ABI 4 resource contract removes the unsupported modern-model bias-current-color mask, chains explicit Vulkan
 subresource ranges (including depth aspect), initializes pinhole metadata, and passes the
 source color encoding to the settings query. It exposes the SDK's estimated feature VRAM
 separately from the mod's own textures. Java and the bundled bridge must be updated together.
+
+ABI 5 adds a process-local Vulkan clear-compatibility layer in this project's bridge DLL.
+After validating the user runtime, Java writes a private layer manifest and native code
+prepends its directory/name to the process's layer environment while preserving existing
+paths and layers. No registry, launcher or machine-wide setting is changed. The loader's
+standard interface forwards all unrelated commands. During DLSS evaluation only,
+the adapter extends the destination stage/access to TRANSFER / transfer-write on
+initial UNDEFINED-to-GENERAL image transitions that were prepared only for shader
+accesses. Source scopes, layouts, ownership and subresource ranges are preserved.
+This covers M/L's private-image clear hazard inside the evaluation command stream;
+external before/after barriers cannot cover that gap. No extra GPU command is inserted.
+Already covered transitions and K/Auto's ordinary per-frame clears are forwarded directly.
+
+The layer is placed before validation so validation observes the inserted dependency.
+It does not suppress errors, change resource layouts/ranges, alter image inputs, disable
+models or modify NVIDIA DLLs. The native counter reports created devices and corrected
+initial transitions. `-Dsalts.dlss.disableClearCompatibility=true` disables registration for
+controlled diagnostics; overriding layer discovery/activation can also prevent the repair.
+Current qualification is limited to the two exact production runtime sets below.
+
+The bridge is built against **2.14.1 headers/import library** to retain compatibility with
+existing installations. Runtime validation accepts complete production **2.14.1 / 310.9.1**
+and **2.14.16 / 310.9.16** sets, preserves their distinct cache identities, and rejects
+cross-release mixtures. The public artifact still contains no NVIDIA runtime DLLs.
+
+Native dispatch, destination-scope, nested-scope, thread-isolation and destruction tests:
+
+```powershell
+cmake -S native/dlss_bridge -B build/dlss_bridge -DSALTS_DLSS_BUILD_TESTS=ON
+cmake --build build/dlss_bridge --config Release
+ctest --test-dir build/dlss_bridge -C Release --output-on-failure
+```
+
+Use the SDK/header settings from the initial configure command when creating a new build directory.
 
 The settings query includes a stable model-preset argument. Auto requests NVIDIA's
 default; K/M/L populate every SR and DLAA preset field. DLAA uses `eDLAA` with native input
@@ -67,5 +101,8 @@ Licenses.
 Official references:
 
 - https://github.com/NVIDIA-RTX/Streamline/releases/tag/v2.14.1
+- https://github.com/NVIDIA-RTX/Streamline/releases/tag/v2.14.16
+- https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderLayerInterface.md
+- https://docs.vulkan.org/refpages/latest/refpages/source/vkCmdPipelineBarrier.html
 - https://github.com/NVIDIA-RTX/Streamline/blob/main/docs/ProgrammingGuide.md
 - https://github.com/NVIDIA/DLSS/blob/main/doc/DLSS_Programming_Guide_Release.pdf

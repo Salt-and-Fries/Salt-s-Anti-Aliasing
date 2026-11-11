@@ -1,0 +1,125 @@
+{
+  "date": "2026-10-29",
+  "timezone": "America/Phoenix",
+  "hardware": "NVIDIA GeForce RTX 3060 Ti",
+  "driver": "591.86",
+  "minecraft": "26.3",
+  "java": "25.0.2",
+  "sodium": "0.9.2+mc26.3",
+  "sdk": {
+    "version": "2.0.2",
+    "commit": "de0fb9c1c510661c571164e1418ceca8101dab69",
+    "runtimeSha256": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7"
+  },
+  "package": {
+    "file": "salts-anti-aliasing-mc26.3-1.1.jar",
+    "sha256": "171561f511c17963b36d0bcdb7b60a822293d3fee0a0f6d6bf688c812bb78ff9",
+    "sizeBytes": 63176466
+  },
+  "tests": {
+    "tests": 158,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "qualification": {
+    "launch03.log": {
+      "vulkanVuidCount": 0,
+      "xessEvaluationFailureCount": 0,
+      "cleanShutdown": true
+    },
+    "launch04.log": {
+      "vulkanVuidCount": 0,
+      "xessEvaluationFailureCount": 0,
+      "cleanShutdown": true
+    },
+    "launch06.log": {
+      "vulkanVuidCount": 0,
+      "xessEvaluationFailureCount": 0,
+      "cleanShutdown": true
+    },
+    "launch11.log": {
+      "vulkanVuidCount": 0,
+      "xessEvaluationFailureCount": 0,
+      "cleanShutdown": true
+    }
+  },
+  "steady1080p": {
+    "native_aa": {
+      "samples": 1800,
+      "meanMs": 2.990917166666667,
+      "p95Ms": 3.31128,
+      "p99Ms": 3.5700309999999997,
+      "meanFps": 334.3456017922707
+    },
+    "quality": {
+      "samples": 1800,
+      "meanMs": 2.685470222222222,
+      "p95Ms": 3.0231299999999997,
+      "p99Ms": 3.3036269999999996,
+      "meanFps": 372.37426493320106
+    },
+    "performance": {
+      "samples": 1800,
+      "meanMs": 2.5296007222222223,
+      "p95Ms": 2.908315,
+      "p99Ms": 3.1155869999999997,
+      "meanFps": 395.3193052228071
+    }
+  },
+  "uiSelectionPassed": true,
+  "injectedFailureRecovered": true,
+  "fallbackJitter": [
+    0,
+    0
+  ],
+  "regression": [
+    {
+      "label": "qualified2-dlss-m",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "status": "DLSS Super Resolution - 1920 x 1080"
+    },
+    {
+      "label": "qualified2-dlss-l",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "status": "DLSS Super Resolution - 1280 x 720"
+    },
+    {
+      "label": "qualified2-fsr3-fg",
+      "mode": "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+      "status": "FSR3 Super Resolution + Frame Generation - 1280 x 720"
+    },
+    {
+      "label": "qualified2-xess-native",
+      "mode": "XESS_SUPER_RESOLUTION",
+      "status": "Intel XeSS Super Resolution - 1920 x 1080"
+    },
+    {
+      "label": "qualified2-xess-quality",
+      "mode": "XESS_SUPER_RESOLUTION",
+      "status": "Intel XeSS Super Resolution - 1130 x 636"
+    }
+  ],
+  "sourceHashes": {
+    "native/xess_bridge/Build-XessRuntime.ps1": "8f515a2c6df418df50559d36a81492b38c93339e27a747c39f791d8515073850",
+    "native/xess_bridge/CMakeLists.txt": "ee3cd745c120152d6dc0b7dae5aabc057c3f68e78c35395f9b675393c2b57510",
+    "native/xess_bridge/README.md": "c3b3221b81d4abb04f96430565d6419e703f4dc8a72cfd417c9741263f5bb63c",
+    "native/xess_bridge/src/salts_xess_bridge.cpp": "eda3ac329e6027b9ddcad8b4c9834ce0813a8a332713ccd46f41f6b1af19feac",
+    "native/xess_bridge/include/xess/LICENSE.txt": "178e07a2833bc600e8e494c31d71f0059a34ea668cb951cfc539a646e10c8b99",
+    "native/xess_bridge/include/xess/xess.h": "d6f09f2dfa7050c09c679fbada2281cef421cdb14a51afd94efd9ac366d71677",
+    "native/xess_bridge/include/xess/xess_vk.h": "60d677e15444d92af78c6751c0d1e94deac27d92640894495ed82030bd7c2e72",
+    "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/xess/XessDeviceRequirements.java": "6ecb71579a70a0e5c4621d0c60c0be6d3447cc1cc03ed6c112ac060d1bc8bbfc",
+    "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/xess/XessNativeBridge.java": "0ed9285f0a94676715abd6ef44f5fc4def89f52fd586168c9f2ff8abb050aa97",
+    "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/xess/XessOptimalSettings.java": "41288423189c658457f470796914605724229686eac75b1e7e90f12eb22395aa",
+    "src/client/java/org/betterLostItems/salts_anti_aliasing/client/render/vulkan/xess/XessRuntime.java": "f005b5f27142b57d363e4cba90cb417a9df7975273d8b59c0c6159f355e9fb40"
+  },
+  "limits": [
+    "One Windows x64 GPU/driver tested; other GPUs and drivers are not certified.",
+    "Performance is for the frozen natural test scene without shader packs, with metrics and the disposable QA harness.",
+    "Low input resolutions retain the expected loss of fine detail from Intel cross-vendor XeSS reconstruction.",
+    "Resource reload/window resize produced recoverable Minecraft out-of-date-swapchain warnings.",
+    "The fault-injection error is intentional; offline Realms/auth and host counter warnings are unrelated to XeSS.",
+    "Initial development attempts found and then fixed Vulkan API-version and Streamline privateData requirements.",
+    "An initial UI harness attempt used obsolete key/button constants; corrected SDL input selected XeSS successfully."
+  ]
+}

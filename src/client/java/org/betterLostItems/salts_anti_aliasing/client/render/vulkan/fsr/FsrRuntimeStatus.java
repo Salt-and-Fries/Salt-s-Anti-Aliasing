@@ -12,6 +12,8 @@ public enum FsrRuntimeStatus {
     INITIALIZATION_FAILED("AMD FidelityFX initialization failed", false, false),
     UNSUPPORTED("AMD FSR is not supported by this GPU, driver, or FidelityFX runtime", false, false),
     UPSCALING_READY("AMD FSR upscaling is ready", true, false),
+    FRAME_GENERATION_DEVICE_FEATURES_UNAVAILABLE(
+            "AMD FSR upscaling is ready; frame generation requires unavailable storage-image features", true, false),
     FRAME_GENERATION_SWAPCHAIN_UNAVAILABLE(
             "AMD FSR upscaling is ready; FSR3 frame-generation swapchain is unavailable",
             true,

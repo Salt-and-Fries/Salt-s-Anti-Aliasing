@@ -35,7 +35,7 @@ public final class VulkanHandAaController {
 
     private static boolean enabled(AntiAliasingConfig config) {
         var mode = config.mode;
-        return config.tuning.upscalerHandAa.samples() > 1 && (mode.usesDlssQualityControl()
+        return config.tuning.upscalerHandAa.samples() > 1 && ((mode.usesDlssQualityControl() || mode.usesXessQualityControl() || mode.usesSgsr2QualityControl())
                 || mode.usesFsrQualityControl() || mode.usesSpatialUpscaleQualityControl());
     }
 

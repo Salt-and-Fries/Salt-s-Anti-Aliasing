@@ -8,6 +8,7 @@ public final class VulkanPassResources {
     private VulkanPassResources() {}
     public static void release(VulkanDevice device) {
         VK12.vkDeviceWaitIdle(device.vkDevice());
+        VulkanSceneSgsrController.instance().release();
         VulkanParticleMotionRenderer.release();
         VulkanEntityMotionRenderer.release();
         VulkanMotionVectorRenderer.releaseAll();

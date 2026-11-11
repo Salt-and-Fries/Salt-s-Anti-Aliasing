@@ -1,0 +1,12 @@
+[
+  {
+    "gameFrames": 0,
+    "displayPresentCounter": 0,
+    "applicationPresentIntervalMs": 0.0
+  },
+  {
+    "gameFrames": 120,
+    "displayPresentCounter": 240,
+    "applicationPresentIntervalMs": 16.7913
+  }
+]

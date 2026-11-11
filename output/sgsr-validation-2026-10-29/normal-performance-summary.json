@@ -1,0 +1,72 @@
+[
+  {
+    "label": "normal-perf-off",
+    "frames": 1800,
+    "meanMs": 0.7557797222222221,
+    "p95Ms": 1.260865,
+    "p99Ms": 1.4574909999999999
+  },
+  {
+    "label": "normal-perf-sgsr1_upscale-native",
+    "frames": 1800,
+    "meanMs": 1.1748945555555554,
+    "p95Ms": 1.650825,
+    "p99Ms": 1.799684
+  },
+  {
+    "label": "normal-perf-sgsr1_upscale-quality",
+    "frames": 1800,
+    "meanMs": 0.8710629999999999,
+    "p95Ms": 1.3959499999999998,
+    "p99Ms": 1.5942969999999999
+  },
+  {
+    "label": "normal-perf-sgsr1_upscale-balanced",
+    "frames": 1800,
+    "meanMs": 0.7872144444444443,
+    "p95Ms": 1.3273149999999998,
+    "p99Ms": 1.410655
+  },
+  {
+    "label": "normal-perf-sgsr1_upscale-performance",
+    "frames": 1800,
+    "meanMs": 0.7381533888888889,
+    "p95Ms": 1.2938749999999999,
+    "p99Ms": 1.387626
+  },
+  {
+    "label": "normal-perf-sgsr2_super_resolution-native",
+    "frames": 1800,
+    "meanMs": 0.9812055000000001,
+    "p95Ms": 1.4969799999999998,
+    "p99Ms": 1.575924
+  },
+  {
+    "label": "normal-perf-sgsr2_super_resolution-quality",
+    "frames": 1800,
+    "meanMs": 0.7876078888888889,
+    "p95Ms": 1.3258050000000001,
+    "p99Ms": 1.4158389999999998
+  },
+  {
+    "label": "normal-perf-sgsr2_super_resolution-balanced",
+    "frames": 1800,
+    "meanMs": 0.7317418333333333,
+    "p95Ms": 1.288325,
+    "p99Ms": 1.3949829999999999
+  },
+  {
+    "label": "normal-perf-sgsr2_super_resolution-performance",
+    "frames": 1800,
+    "meanMs": 0.6987949444444445,
+    "p95Ms": 1.254305,
+    "p99Ms": 1.346111
+  },
+  {
+    "label": "normal-perf-sgsr1-directional",
+    "frames": 1800,
+    "meanMs": 0.8870784444444444,
+    "p95Ms": 1.407605,
+    "p99Ms": 1.517527
+  }
+]

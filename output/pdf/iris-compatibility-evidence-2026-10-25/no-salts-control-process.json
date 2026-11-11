@@ -1,0 +1,12 @@
+{
+  "pid": 32028,
+  "startUtc": 1792963530.7364254,
+  "mods": [
+    "fabric-api-0.162.0+26.3.jar",
+    "iris-fabric-1.11.7+mc26.3.jar",
+    "no-salts-iris-control.jar",
+    "sodium-fabric-0.9.2+mc26.3.jar"
+  ],
+  "exitCode": 0,
+  "endUtc": 1792963555.3061433
+}

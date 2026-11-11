@@ -1,0 +1,530 @@
+{
+  "s92-camera-yaw": {
+    "frames": 24,
+    "samples": 125747,
+    "p95InputPixelError": 0.001080938797405794,
+    "p99InputPixelError": 0.0018233607786650814,
+    "maxProjectionDifference": 1.0000000003410059e-10
+  },
+  "s92-camera-pitch": {
+    "frames": 24,
+    "samples": 128050,
+    "p95InputPixelError": 0.0004697322117936199,
+    "p99InputPixelError": 0.000500144569160544,
+    "maxProjectionDifference": 1.0000000003410059e-10
+  },
+  "s92-camera-strafe": {
+    "frames": 24,
+    "samples": 125990,
+    "p95InputPixelError": 0.0006834803232705415,
+    "p99InputPixelError": 0.0009363919597639168,
+    "maxProjectionDifference": 1.0000000003410059e-10
+  },
+  "s92-entity-motion": {
+    "frames": 24,
+    "minEntityDrawVertices": 252,
+    "maxEntityDrawVertices": 252,
+    "minParticleQuads": 38,
+    "maxParticleQuads": 46,
+    "roiNonzeroMin": 705,
+    "roiNonzeroMax": 1079
+  },
+  "s92-particles": {
+    "frames": 24,
+    "minEntityDrawVertices": 0,
+    "maxEntityDrawVertices": 0,
+    "minParticleQuads": 277,
+    "maxParticleQuads": 313,
+    "roiNonzeroMin": 6683,
+    "roiNonzeroMax": 7837
+  },
+  "s92-particles-oit": {
+    "frames": 24,
+    "minEntityDrawVertices": 0,
+    "maxEntityDrawVertices": 0,
+    "minParticleQuads": 262,
+    "maxParticleQuads": 304,
+    "roiNonzeroMin": 6706,
+    "roiNonzeroMax": 8036
+  },
+  "captures": {
+    "s92-camera-pitch": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 24
+    },
+    "s92-camera-strafe": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 24
+    },
+    "s92-camera-yaw": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 24
+    },
+    "s92-dynamic-initial": {
+      "status": "Off - native scene",
+      "mode": "OFF",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 4
+    },
+    "s92-entity-motion": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 24
+    },
+    "s92-glass-oit-dlss_super_resolution": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 12
+    },
+    "s92-glass-oit-fsr3_super_resolution": {
+      "status": "FSR3 Super Resolution - 853 x 480",
+      "mode": "FSR3_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 12
+    },
+    "s92-glass-oit-msaa": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 12
+    },
+    "s92-linear-target": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 6
+    },
+    "s92-menu-linked": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 1
+    },
+    "s92-particles-oit": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 24
+    },
+    "s92-particles": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 48
+    },
+    "s92-reload": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 6
+    },
+    "s92-sdr-target": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 6
+    },
+    "s92-sodium-menu": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 1
+    },
+    "sodium092-dlaa": {
+      "status": "DLSS Super Resolution - 1280 x 720",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-dlss-mip": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-dlss": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 16
+    },
+    "sodium092-fsr1": {
+      "status": "FSR1 Upscale - 986 x 554",
+      "mode": "FSR1_UPSCALE",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-fsr2": {
+      "status": "FSR2 Super Resolution - 853 x 480",
+      "mode": "FSR2_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-fsr3": {
+      "status": "FSR3 Super Resolution - 853 x 480",
+      "mode": "FSR3_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-fxaa": {
+      "status": "FXAA - 1280 x 720",
+      "mode": "FXAA",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-initial": {
+      "status": "Off - native scene",
+      "mode": "OFF",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 4
+    },
+    "sodium092-msaa2": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-msaa4-atoc": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-msaa4": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 16
+    },
+    "sodium092-msaa8": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-nis": {
+      "status": "NIS Upscale - 986 x 554",
+      "mode": "NIS_UPSCALE",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-off": {
+      "status": "Off - native scene",
+      "mode": "OFF",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-oit-dlss": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-oit-fsr3": {
+      "status": "FSR3 Super Resolution - 853 x 480",
+      "mode": "FSR3_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-oit-msaa": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-smaa": {
+      "status": "SMAA - 1280 x 720",
+      "mode": "SMAA",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-ssaa200": {
+      "status": "SSAA - 2560 x 1440",
+      "mode": "SSAA",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-ssaa400": {
+      "status": "SSAA - 5120 x 2880",
+      "mode": "SSAA",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium092-taa": {
+      "status": "TAA - 1280 x 720",
+      "mode": "TAA",
+      "installed": true,
+      "version": "0.9.2+mc26.3",
+      "screenshots": 8
+    },
+    "sodium093-dlss-mip": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "screenshots": 8
+    },
+    "sodium093-dlss": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "screenshots": 16
+    },
+    "sodium093-fsr3": {
+      "status": "FSR3 Super Resolution - 853 x 480",
+      "mode": "FSR3_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "screenshots": 8
+    },
+    "sodium093-initial": {
+      "status": "Off - native scene",
+      "mode": "OFF",
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "screenshots": 4
+    },
+    "sodium093-msaa4": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "screenshots": 8
+    },
+    "sodium093-off": {
+      "status": "Off - native scene",
+      "mode": "OFF",
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "screenshots": 8
+    },
+    "sodium093-oit-dlss": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "screenshots": 8
+    },
+    "sodium093-oit-fsr3": {
+      "status": "FSR3 Super Resolution - 853 x 480",
+      "mode": "FSR3_SUPER_RESOLUTION",
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "screenshots": 8
+    },
+    "sodium093-oit-msaa": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "screenshots": 8
+    },
+    "sodium093-ssaa200": {
+      "status": "SSAA - 2560 x 1440",
+      "mode": "SSAA",
+      "installed": true,
+      "version": "0.9.3-beta.1+mc26.3",
+      "screenshots": 8
+    },
+    "vanilla-dlaa": {
+      "status": "DLSS Super Resolution - 1280 x 720",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-dlss-mip": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-dlss": {
+      "status": "DLSS Super Resolution - 853 x 480",
+      "mode": "DLSS_SUPER_RESOLUTION",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 16
+    },
+    "vanilla-fsr1": {
+      "status": "FSR1 Upscale - 986 x 554",
+      "mode": "FSR1_UPSCALE",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-fsr2": {
+      "status": "FSR2 Super Resolution - 853 x 480",
+      "mode": "FSR2_SUPER_RESOLUTION",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-fsr3": {
+      "status": "FSR3 Super Resolution - 853 x 480",
+      "mode": "FSR3_SUPER_RESOLUTION",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-fxaa": {
+      "status": "FXAA - 1280 x 720",
+      "mode": "FXAA",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-msaa2": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-msaa4-atoc": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-msaa4": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 16
+    },
+    "vanilla-msaa8": {
+      "status": "MSAA - 1280 x 720",
+      "mode": "MSAA",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-nis": {
+      "status": "NIS Upscale - 986 x 554",
+      "mode": "NIS_UPSCALE",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-off-initial": {
+      "status": "Off - native scene",
+      "mode": "OFF",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 6
+    },
+    "vanilla-off": {
+      "status": "Off - native scene",
+      "mode": "OFF",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 14
+    },
+    "vanilla-smaa": {
+      "status": "SMAA - 1280 x 720",
+      "mode": "SMAA",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-ssaa200": {
+      "status": "SSAA - 2560 x 1440",
+      "mode": "SSAA",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-ssaa400": {
+      "status": "SSAA - 5120 x 2880",
+      "mode": "SSAA",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    },
+    "vanilla-taa": {
+      "status": "TAA - 1280 x 720",
+      "mode": "TAA",
+      "installed": false,
+      "version": "absent",
+      "screenshots": 8
+    }
+  },
+  "validation": {
+    "vanilla": {
+      "vuidReferences": 11,
+      "syncHazards": 0,
+      "vertexWriterWarning": false,
+      "hasSodium": false
+    },
+    "sodium092": {
+      "vuidReferences": 0,
+      "syncHazards": 0,
+      "vertexWriterWarning": true,
+      "hasSodium": true
+    },
+    "dynamic": {
+      "vuidReferences": 0,
+      "syncHazards": 0,
+      "vertexWriterWarning": true,
+      "hasSodium": true
+    },
+    "sodium093": {
+      "vuidReferences": 0,
+      "syncHazards": 0,
+      "vertexWriterWarning": true,
+      "hasSodium": true
+    }
+  },
+  "normalConfigPreserved": true,
+  "normalOptionsPreserved": true,
+  "modCommit": "21b0de753ee11ad936159042887bba12538e7b5b",
+  "modJarSha256": "67f3bde273b7cd5b244c21798671df278d4e55023b0f72dcbb438ab631347377"
+}

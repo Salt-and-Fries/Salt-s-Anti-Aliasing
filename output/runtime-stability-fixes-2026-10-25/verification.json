@@ -1,0 +1,224 @@
+{
+  "date": "2026-10-25",
+  "platform": "Windows x64 / RTX 3060 Ti / NVIDIA 591.86 / Microsoft Java 25.0.2+10 / Minecraft 26.3",
+  "publicJar": "G:\\Codex Projects\\Salts Anti Aliasing\\build\\libs\\salts-anti-aliasing-mc26.3-1.1.jar",
+  "jarSha256": "42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed",
+  "jarBytes": 3450416,
+  "bundledDllSha256": {
+    "salts_dlss_bridge.dll": "f597bfd46408cc92fae929515830810349ee9758b1c84f1b483817474459fbf9",
+    "amd_fidelityfx_vk.dll": "b2168fabc320223ced7f7d95d69bb4e64de9d11605eb3a46172efde64a2c6941",
+    "salts_fsr_bridge.dll": "7895a21f73887342c47e1ef4308092b9c1e828987dd6450ca374d1a2dfe091bf"
+  },
+  "automated": {
+    "tests": 154,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "nativeTests": 1,
+  "qualifiedFunctionalCaptureGroups": 116,
+  "diagnosticCaptureGroups": 16,
+  "additionalNoDlssCaptureGroups": 36,
+  "groups": [
+    {
+      "role": "final-stable",
+      "cases": 32,
+      "exitCode": 0,
+      "reportedClearHazards": 0,
+      "reportedVUIDs": 0,
+      "diagnosticControl": false,
+      "jarSha256": "42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed",
+      "sourceSummary": "stable-1792959777041-1792959777568-summary.json",
+      "steadyStateCorrections": [
+        {
+          "label": "stable-1792959777041-1792959777568-0-dlss-K-steady",
+          "before": 27,
+          "after": 27,
+          "delta": 0
+        },
+        {
+          "label": "stable-1792959777041-1792959777568-0-dlss-AUTO-steady",
+          "before": 31,
+          "after": 31,
+          "delta": 0
+        },
+        {
+          "label": "stable-1792959777041-1792959777568-1-dlss-K-steady",
+          "before": 79,
+          "after": 79,
+          "delta": 0
+        },
+        {
+          "label": "stable-1792959777041-1792959777568-1-dlss-AUTO-steady",
+          "before": 83,
+          "after": 83,
+          "delta": 0
+        }
+      ]
+    },
+    {
+      "role": "final-beta",
+      "cases": 16,
+      "exitCode": 0,
+      "reportedClearHazards": 0,
+      "reportedVUIDs": 0,
+      "diagnosticControl": false,
+      "jarSha256": "42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed",
+      "sourceSummary": "beta-1792959777041-1792959906242-summary.json",
+      "steadyStateCorrections": [
+        {
+          "label": "beta-1792959777041-1792959906242-0-dlss-K-steady",
+          "before": 27,
+          "after": 27,
+          "delta": 0
+        },
+        {
+          "label": "beta-1792959777041-1792959906242-0-dlss-AUTO-steady",
+          "before": 31,
+          "after": 31,
+          "delta": 0
+        }
+      ]
+    },
+    {
+      "role": "final-legacy",
+      "cases": 16,
+      "exitCode": 0,
+      "reportedClearHazards": 0,
+      "reportedVUIDs": 0,
+      "diagnosticControl": false,
+      "jarSha256": "42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed",
+      "sourceSummary": "legacy-1792959777041-1792959978643-summary.json",
+      "steadyStateCorrections": [
+        {
+          "label": "legacy-1792959777041-1792959978643-0-dlss-K-steady",
+          "before": 27,
+          "after": 27,
+          "delta": 0
+        },
+        {
+          "label": "legacy-1792959777041-1792959978643-0-dlss-AUTO-steady",
+          "before": 31,
+          "after": 31,
+          "delta": 0
+        }
+      ]
+    },
+    {
+      "role": "final-control-disabled",
+      "cases": 16,
+      "exitCode": 0,
+      "reportedClearHazards": 6,
+      "reportedVUIDs": 0,
+      "diagnosticControl": true,
+      "jarSha256": "42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed",
+      "sourceSummary": "control-disabled-1792959777041-1792960050169-summary.json",
+      "steadyStateCorrections": [
+        {
+          "label": "control-disabled-1792959777041-1792960050169-0-dlss-K-steady",
+          "before": 0,
+          "after": 0,
+          "delta": 0
+        },
+        {
+          "label": "control-disabled-1792959777041-1792960050169-0-dlss-AUTO-steady",
+          "before": 0,
+          "after": 0,
+          "delta": 0
+        }
+      ]
+    },
+    {
+      "role": "private-import-1080p",
+      "cases": 24,
+      "exitCode": 0,
+      "reportedClearHazards": 0,
+      "reportedVUIDs": 0,
+      "diagnosticControl": false,
+      "jarSha256": "42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed",
+      "sourceSummary": "private-presets-1792960321425-summary.json"
+    },
+    {
+      "role": "gradle-runClient",
+      "cases": 9,
+      "exitCode": 0,
+      "reportedClearHazards": 0,
+      "reportedVUIDs": 0,
+      "diagnosticControl": false,
+      "jarSha256": null,
+      "sourceSummary": "gradle-dev-1792960420167-summary.json"
+    },
+    {
+      "role": "final-smoke-opengl-none",
+      "cases": 1,
+      "exitCode": 0,
+      "reportedClearHazards": 0,
+      "reportedVUIDs": 0,
+      "diagnosticControl": false,
+      "jarSha256": "42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed",
+      "sourceSummary": "final-opengl-none-1792961176971-summary.json"
+    },
+    {
+      "role": "final-smoke-vulkan-legacy",
+      "cases": 10,
+      "exitCode": 0,
+      "reportedClearHazards": 0,
+      "reportedVUIDs": 0,
+      "diagnosticControl": false,
+      "jarSha256": "42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed",
+      "sourceSummary": "final-vulkan-legacy-1792961176971-summary.json"
+    },
+    {
+      "role": "final-smoke-vulkan-none",
+      "cases": 8,
+      "exitCode": 0,
+      "reportedClearHazards": 0,
+      "reportedVUIDs": 0,
+      "diagnosticControl": false,
+      "jarSha256": "42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed",
+      "sourceSummary": "final-vulkan-none-1792961176971-summary.json"
+    }
+  ],
+  "additionalNoDlssControls": [
+    {
+      "role": "no-dlss-resumed",
+      "cases": 18,
+      "exitCode": 0,
+      "reportedClearHazards": 0,
+      "reportedVUIDs": 0,
+      "diagnosticControl": false,
+      "jarSha256": null,
+      "sourceSummary": "larger-stack-resumed-1792959046240-summary.json"
+    },
+    {
+      "role": "sodium-only-stable",
+      "cases": 9,
+      "exitCode": 0,
+      "reportedClearHazards": 0,
+      "reportedVUIDs": 0,
+      "diagnosticControl": false,
+      "jarSha256": "c1f94120b39ab077e7716a0602a4cd7e5f33c23c7def0b76e8d9ed7b91d423b2",
+      "sourceSummary": "sodium-only-stable-1792959155414-1792959487057-summary.json"
+    },
+    {
+      "role": "sodium-only-beta",
+      "cases": 9,
+      "exitCode": 0,
+      "reportedClearHazards": 0,
+      "reportedVUIDs": 0,
+      "diagnosticControl": false,
+      "jarSha256": "d6f59f0630902b6e9b3a472e856632e82f251eed63aa7c594bae8e44edb17119",
+      "sourceSummary": "sodium-only-beta-1792959155414-1792959530851-summary.json"
+    }
+  ],
+  "normalSettingsUnchanged": {
+    "config": true,
+    "options": true
+  },
+  "limitations": [
+    "One GPU/driver/OS; short controlled captures at 720p and 1080p; not an all-hardware or AAA image-quality certification.",
+    "Compiler isolation and 4 MiB stacks avoid the observed callback path in qualified runs. A 1 MiB dedicated-pool control also passed 18 cases; stack size alone is not established as the sole cause.",
+    "Exploratory tests also observed one heap-corruption exit and an Overwolf-hook crash at invalid device creation. Do not claim every third-party/native-runtime fault permanently eliminated.",
+    "A custom Vulkan loader/layer disable override can prevent the compatibility adapter from activating; only exact complete approved NVIDIA runtime sets are accepted."
+  ]
+}

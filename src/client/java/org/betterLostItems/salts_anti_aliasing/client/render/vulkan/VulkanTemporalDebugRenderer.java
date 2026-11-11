@@ -24,6 +24,10 @@ final class VulkanTemporalDebugRenderer {
     }
 
     static void render(RenderTarget source, RenderTarget output, boolean motion) {
+        render(source,output,motion,1,1);
+    }
+
+    static void render(RenderTarget source, RenderTarget output, boolean motion, float scaleX, float scaleY) {
         if (source == null || source.getColorTextureView() == null) return;
         if (pipeline == null)
             pipeline =
@@ -51,6 +55,7 @@ final class VulkanTemporalDebugRenderer {
         try (var stack = MemoryStack.stackPush()) {
             var data = stack.calloc(16);
             data.putFloat(0, motion ? 1 : 0);
+            data.putFloat(8,scaleX).putFloat(12,scaleY);
             if (config == null)
                 config =
                         RenderSystem.getDevice()

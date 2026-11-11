@@ -126,6 +126,7 @@ public final class VulkanNativeDeviceRegistry {
                 );
             }
             FsrRuntime.instance().onVulkanDeviceReady(latest);
+            org.betterLostItems.salts_anti_aliasing.client.render.vulkan.xess.XessRuntime.instance().onVulkanDeviceReady(latest);
             RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
             if (runtime != null) {
                 runtime.requestPipelineRebuildWhenBackendReady();

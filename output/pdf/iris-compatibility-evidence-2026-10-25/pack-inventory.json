@@ -1,0 +1,1696 @@
+[
+  {
+    "slug": "complementary-reimagined",
+    "title": "Complementary Shaders - Reimagined",
+    "version": "r5.9.3",
+    "versionId": "Bqen1mJX",
+    "published": "2026-09-15T06:35:41.918796Z",
+    "gameVersions": [
+      "1.7.10",
+      "1.8",
+      "1.8.1",
+      "1.8.2",
+      "1.8.3",
+      "1.8.4",
+      "1.8.5",
+      "1.8.6",
+      "1.8.7",
+      "1.8.8",
+      "1.8.9",
+      "1.9",
+      "1.9.1",
+      "1.9.2",
+      "1.9.3",
+      "1.9.4",
+      "1.10",
+      "1.10.1",
+      "1.10.2",
+      "1.11",
+      "1.11.1",
+      "1.11.2",
+      "1.12",
+      "1.12.1",
+      "1.12.2",
+      "1.13",
+      "1.13.1",
+      "1.13.2",
+      "1.14",
+      "1.14.1",
+      "1.14.2",
+      "1.14.3",
+      "1.14.4",
+      "1.15",
+      "1.15.1",
+      "1.15.2",
+      "1.16",
+      "1.16.1",
+      "1.16.2",
+      "1.16.3",
+      "1.16.4",
+      "1.16.5",
+      "1.17",
+      "1.17.1",
+      "1.18",
+      "1.18.1",
+      "1.18.2",
+      "1.19",
+      "1.19.1",
+      "1.19.2",
+      "1.19.3",
+      "1.19.4",
+      "1.20",
+      "1.20.1",
+      "1.20.2",
+      "1.20.3",
+      "1.20.4",
+      "1.20.5",
+      "1.20.6",
+      "1.21",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.9",
+      "1.21.10",
+      "1.21.11",
+      "26.1",
+      "26.1.1",
+      "26.1.2",
+      "26.2",
+      "26.3"
+    ],
+    "loaders": [
+      "iris",
+      "optifine"
+    ],
+    "license": {
+      "id": "LicenseRef-Custom",
+      "name": "",
+      "url": "https://github.com/ComplementaryDevelopment/ComplementaryReimagined/blob/main/License.txt"
+    },
+    "source": "https://github.com/ComplementaryDevelopment/ComplementaryReimagined",
+    "download": "https://cdn.modrinth.com/data/HVnmMxH1/versions/Bqen1mJX/ComplementaryReimagined_r5.9.3.zip",
+    "archive": "build\\iris-research-20261025\\packs\\complementary-reimagined\\ComplementaryReimagined_r5.9.3.zip",
+    "sha512": "45304b1d7862afdb2177b7e6226fc9c6737911d17a4ad46cc9c519ca4deb935f05072cd337cd8b19a15bb8062b57b54eceec7bdee4cd572d94858e2946d37d85",
+    "bytes": 553397,
+    "aaOptions": [
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 265,
+        "optionKey": "FXAA_DEFINE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 266,
+        "optionKey": "FXAA_DEFINE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 701,
+        "optionKey": "TAA_DEFINE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 702,
+        "optionKey": "TAA_DEFINE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 707,
+        "optionKey": "TAA_SMOOTHING"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 708,
+        "optionKey": "TAA_SMOOTHING"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 713,
+        "optionKey": "TAA_JITTER"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 714,
+        "optionKey": "TAA_JITTER"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 720,
+        "optionKey": "TAA_MOVEMENT_IMPROVEMENT_FILTER"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 721,
+        "optionKey": "TAA_MOVEMENT_IMPROVEMENT_FILTER"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 725,
+        "optionKey": "FXAA_STRENGTH"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 726,
+        "optionKey": "FXAA_STRENGTH"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 729,
+        "optionKey": "FXAA_TAA_INTERACTION"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 730,
+        "optionKey": "FXAA_TAA_INTERACTION"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 21,
+        "optionKey": "FXAA_DEFINE",
+        "declaration": "#define FXAA_DEFINE 1"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 147,
+        "optionKey": "IMAGE_SHARPENING",
+        "declaration": "#define IMAGE_SHARPENING 5"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 157,
+        "optionKey": "TAA_DEFINE",
+        "declaration": "#define TAA_DEFINE -1"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 158,
+        "optionKey": "TAA_SMOOTHING",
+        "declaration": "#define TAA_SMOOTHING 3"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 159,
+        "optionKey": "TAA_JITTER",
+        "declaration": "#define TAA_JITTER 1"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 160,
+        "optionKey": "TAA_MOVEMENT_IMPROVEMENT_FILTER",
+        "declaration": "#define TAA_MOVEMENT_IMPROVEMENT_FILTER 1"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 161,
+        "optionKey": "FXAA_TAA_INTERACTION",
+        "declaration": "#define FXAA_TAA_INTERACTION 10"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 162,
+        "optionKey": "FXAA_STRENGTH",
+        "declaration": "#define FXAA_STRENGTH 75"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 525,
+        "optionKey": "TAA",
+        "declaration": "#define TAA"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 549,
+        "optionKey": "TAA",
+        "declaration": "#define TAA"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 566,
+        "optionKey": "ENTITY_TAA_NOISY_CLOUD_FIX",
+        "declaration": "#define ENTITY_TAA_NOISY_CLOUD_FIX"
+      },
+      {
+        "file": "shaders\\lib\\antialiasing\\fxaa.glsl",
+        "line": 164,
+        "optionKey": "FXAA_STRENGTH_SKIP",
+        "declaration": "#define FXAA_STRENGTH_SKIP 1.0 - FXAA_STRENGTH * 0.01"
+      }
+    ]
+  },
+  {
+    "slug": "complementary-unbound",
+    "title": "Complementary Shaders - Unbound",
+    "version": "r5.9.3",
+    "versionId": "B1kyfoUZ",
+    "published": "2026-09-15T06:36:17.528689Z",
+    "gameVersions": [
+      "1.7.10",
+      "1.8",
+      "1.8.1",
+      "1.8.2",
+      "1.8.3",
+      "1.8.4",
+      "1.8.5",
+      "1.8.6",
+      "1.8.7",
+      "1.8.8",
+      "1.8.9",
+      "1.9",
+      "1.9.1",
+      "1.9.2",
+      "1.9.3",
+      "1.9.4",
+      "1.10",
+      "1.10.1",
+      "1.10.2",
+      "1.11",
+      "1.11.1",
+      "1.11.2",
+      "1.12",
+      "1.12.1",
+      "1.12.2",
+      "1.13",
+      "1.13.1",
+      "1.13.2",
+      "1.14",
+      "1.14.1",
+      "1.14.2",
+      "1.14.3",
+      "1.14.4",
+      "1.15",
+      "1.15.1",
+      "1.15.2",
+      "1.16",
+      "1.16.1",
+      "1.16.2",
+      "1.16.3",
+      "1.16.4",
+      "1.16.5",
+      "1.17",
+      "1.17.1",
+      "1.18",
+      "1.18.1",
+      "1.18.2",
+      "1.19",
+      "1.19.1",
+      "1.19.2",
+      "1.19.3",
+      "1.19.4",
+      "1.20",
+      "1.20.1",
+      "1.20.2",
+      "1.20.3",
+      "1.20.4",
+      "1.20.5",
+      "1.20.6",
+      "1.21",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.9",
+      "1.21.10",
+      "1.21.11",
+      "26.1",
+      "26.1.1",
+      "26.1.2",
+      "26.2",
+      "26.3"
+    ],
+    "loaders": [
+      "iris",
+      "optifine"
+    ],
+    "license": {
+      "id": "LicenseRef-Custom",
+      "name": "",
+      "url": "https://github.com/ComplementaryDevelopment/ComplementaryShadersV4/blob/main/License.txt"
+    },
+    "source": "https://github.com/ComplementaryDevelopment/ComplementaryReimagined",
+    "download": "https://cdn.modrinth.com/data/R6NEzAwj/versions/B1kyfoUZ/ComplementaryUnbound_r5.9.3.zip",
+    "archive": "build\\iris-research-20261025\\packs\\complementary-unbound\\ComplementaryUnbound_r5.9.3.zip",
+    "sha512": "a085d1d8cda67cd17a2b414eeba48bbd809da069f269bab46246235ec8fe714a275013c70d0504527b0987d810deddddba4564332414ab3b3bd7435932ff808c",
+    "bytes": 553400,
+    "aaOptions": [
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 265,
+        "optionKey": "FXAA_DEFINE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 266,
+        "optionKey": "FXAA_DEFINE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 701,
+        "optionKey": "TAA_DEFINE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 702,
+        "optionKey": "TAA_DEFINE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 707,
+        "optionKey": "TAA_SMOOTHING"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 708,
+        "optionKey": "TAA_SMOOTHING"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 713,
+        "optionKey": "TAA_JITTER"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 714,
+        "optionKey": "TAA_JITTER"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 720,
+        "optionKey": "TAA_MOVEMENT_IMPROVEMENT_FILTER"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 721,
+        "optionKey": "TAA_MOVEMENT_IMPROVEMENT_FILTER"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 725,
+        "optionKey": "FXAA_STRENGTH"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 726,
+        "optionKey": "FXAA_STRENGTH"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 729,
+        "optionKey": "FXAA_TAA_INTERACTION"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 730,
+        "optionKey": "FXAA_TAA_INTERACTION"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 21,
+        "optionKey": "FXAA_DEFINE",
+        "declaration": "#define FXAA_DEFINE 1"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 147,
+        "optionKey": "IMAGE_SHARPENING",
+        "declaration": "#define IMAGE_SHARPENING 5"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 157,
+        "optionKey": "TAA_DEFINE",
+        "declaration": "#define TAA_DEFINE -1"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 158,
+        "optionKey": "TAA_SMOOTHING",
+        "declaration": "#define TAA_SMOOTHING 3"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 159,
+        "optionKey": "TAA_JITTER",
+        "declaration": "#define TAA_JITTER 1"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 160,
+        "optionKey": "TAA_MOVEMENT_IMPROVEMENT_FILTER",
+        "declaration": "#define TAA_MOVEMENT_IMPROVEMENT_FILTER 1"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 161,
+        "optionKey": "FXAA_TAA_INTERACTION",
+        "declaration": "#define FXAA_TAA_INTERACTION 10"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 162,
+        "optionKey": "FXAA_STRENGTH",
+        "declaration": "#define FXAA_STRENGTH 75"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 525,
+        "optionKey": "TAA",
+        "declaration": "#define TAA"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 549,
+        "optionKey": "TAA",
+        "declaration": "#define TAA"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 566,
+        "optionKey": "ENTITY_TAA_NOISY_CLOUD_FIX",
+        "declaration": "#define ENTITY_TAA_NOISY_CLOUD_FIX"
+      },
+      {
+        "file": "shaders\\lib\\antialiasing\\fxaa.glsl",
+        "line": 164,
+        "optionKey": "FXAA_STRENGTH_SKIP",
+        "declaration": "#define FXAA_STRENGTH_SKIP 1.0 - FXAA_STRENGTH * 0.01"
+      }
+    ]
+  },
+  {
+    "slug": "bsl-shaders",
+    "title": "BSL Shaders",
+    "version": "10.1.8",
+    "versionId": "Y68yiql9",
+    "published": "2026-09-21T12:25:21.321877Z",
+    "gameVersions": [
+      "1.7.10",
+      "1.8",
+      "1.8.1",
+      "1.8.2",
+      "1.8.3",
+      "1.8.4",
+      "1.8.5",
+      "1.8.6",
+      "1.8.7",
+      "1.8.8",
+      "1.8.9",
+      "1.9",
+      "1.9.1",
+      "1.9.2",
+      "1.9.3",
+      "1.9.4",
+      "1.10",
+      "1.10.1",
+      "1.10.2",
+      "1.11",
+      "1.11.1",
+      "1.11.2",
+      "1.12",
+      "1.12.1",
+      "1.12.2",
+      "1.13",
+      "1.13.1",
+      "1.13.2",
+      "1.14",
+      "1.14.1",
+      "1.14.2",
+      "1.14.3",
+      "1.14.4",
+      "1.15",
+      "1.15.1",
+      "1.15.2",
+      "1.16",
+      "1.16.1",
+      "1.16.2",
+      "1.16.3",
+      "1.16.4",
+      "1.16.5",
+      "1.17",
+      "1.17.1",
+      "1.18",
+      "1.18.1",
+      "1.18.2",
+      "1.19",
+      "1.19.1",
+      "1.19.2",
+      "1.19.3",
+      "1.19.4",
+      "1.20",
+      "1.20.1",
+      "1.20.2",
+      "1.20.3",
+      "1.20.4",
+      "1.20.5",
+      "1.20.6",
+      "1.21",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.9",
+      "1.21.10",
+      "1.21.11",
+      "26.1",
+      "26.1.1",
+      "26.1.2",
+      "26.2",
+      "26.3"
+    ],
+    "loaders": [
+      "iris",
+      "optifine"
+    ],
+    "license": {
+      "id": "LicenseRef-All-Rights-Reserved",
+      "name": "",
+      "url": null
+    },
+    "source": null,
+    "download": "https://cdn.modrinth.com/data/Q1vvjJYV/versions/Y68yiql9/BSL_v10.1.8.zip",
+    "archive": "build\\iris-research-20261025\\packs\\bsl-shaders\\BSL_v10.1.8.zip",
+    "sha512": "94a3c25d6820868db624e11347873e6b572e7cd571967d9ac6f4690ca5d37ca302a7645d85eec800e0654541e3825fba14d37b5a25d3996aaf038178552be26f",
+    "bytes": 1134153,
+    "aaOptions": [
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1106,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1107,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1109,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1110,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1112,
+        "optionKey": "FXAA_SUBPIXEL"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1113,
+        "optionKey": "FXAA_SUBPIXEL"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1120,
+        "optionKey": "FXAA_EDGE_SENSITIVITY"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1121,
+        "optionKey": "FXAA_EDGE_SENSITIVITY"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1126,
+        "optionKey": "TAA_MODE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1127,
+        "optionKey": "TAA_MODE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1131,
+        "optionKey": "TAA_SELECTIVE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 1132,
+        "optionKey": "TAA_SELECTIVE"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 184,
+        "optionKey": "WATER_SHARPNESS",
+        "declaration": "#define WATER_SHARPNESS 0.2"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 242,
+        "optionKey": "FXAA",
+        "declaration": "#define FXAA"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 243,
+        "optionKey": "TAA",
+        "declaration": "#define TAA"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 245,
+        "optionKey": "FXAA_SUBPIXEL",
+        "declaration": "#define FXAA_SUBPIXEL 0.50"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 246,
+        "optionKey": "FXAA_EDGE_SENSITIVITY",
+        "declaration": "#define FXAA_EDGE_SENSITIVITY 1"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 248,
+        "optionKey": "TAA_MODE",
+        "declaration": "#define TAA_MODE 0"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 249,
+        "optionKey": "TAA_SELECTIVE",
+        "declaration": "#define TAA_SELECTIVE"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 251,
+        "optionKey": "SHARPEN",
+        "declaration": "#define SHARPEN -1"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 252,
+        "optionKey": "SHARPEN_CLAMP",
+        "declaration": "#define SHARPEN_CLAMP"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 490,
+        "optionKey": "SHARPEN_ENABLED",
+        "declaration": "#define SHARPEN_ENABLED"
+      }
+    ]
+  },
+  {
+    "slug": "photon-shader",
+    "title": "Photon Shaders",
+    "version": "v1.4",
+    "versionId": "BnGklH5y",
+    "published": "2026-10-19T12:27:40.842387Z",
+    "gameVersions": [
+      "1.16.5",
+      "1.17",
+      "1.17.1",
+      "1.18",
+      "1.18.1",
+      "1.18.2",
+      "1.19",
+      "1.19.1",
+      "1.19.2",
+      "1.19.3",
+      "1.19.4",
+      "1.20",
+      "1.20.1",
+      "1.20.2",
+      "1.20.3",
+      "1.20.4",
+      "1.20.5",
+      "1.20.6",
+      "1.21",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.9",
+      "1.21.10",
+      "1.21.11",
+      "26.1",
+      "26.1.1",
+      "26.1.2",
+      "26.2",
+      "26.3"
+    ],
+    "loaders": [
+      "iris",
+      "optifine"
+    ],
+    "license": {
+      "id": "LicenseRef-",
+      "name": "",
+      "url": "https://github.com/sixthsurge/photon/blob/main/LICENSE"
+    },
+    "source": "https://github.com/sixthsurge/photon",
+    "download": "https://cdn.modrinth.com/data/lLqFfGNs/versions/BnGklH5y/photon_v1.4.zip",
+    "archive": "build\\iris-research-20261025\\packs\\photon-shader\\photon_v1.4.zip",
+    "sha512": "2dec87084dccf91a72a06235ecbfb3627f066699b5f70583f06077cba61433aedbfa6af28eb68bf1cdc726149cc3d9a587517cfab59e6a24e9d6a40b6874d655",
+    "bytes": 3857333,
+    "aaOptions": [
+      {
+        "file": "shaders\\settings.glsl",
+        "line": 275,
+        "optionKey": "BLOCKY_CLOUDS_SHARPNESS",
+        "declaration": "#define BLOCKY_CLOUDS_SHARPNESS 0.20"
+      },
+      {
+        "file": "shaders\\settings.glsl",
+        "line": 488,
+        "optionKey": "TAA",
+        "declaration": "#define TAA"
+      },
+      {
+        "file": "shaders\\settings.glsl",
+        "line": 489,
+        "optionKey": "FXAA",
+        "declaration": "#define FXAA"
+      },
+      {
+        "file": "shaders\\settings.glsl",
+        "line": 490,
+        "optionKey": "TAAU",
+        "declaration": "#define TAAU"
+      },
+      {
+        "file": "shaders\\settings.glsl",
+        "line": 491,
+        "optionKey": "TAAU_RENDER_SCALE",
+        "declaration": "#define TAAU_RENDER_SCALE 0.75"
+      },
+      {
+        "file": "shaders\\settings.glsl",
+        "line": 598,
+        "optionKey": "PHOTONICS_SHARP_MAX_SAMPLES",
+        "declaration": "#define PHOTONICS_SHARP_MAX_SAMPLES 20"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 647,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 648,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 649,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 650,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 651,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 652,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 653,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 654,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\es_MX.lang",
+        "line": 647,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\es_MX.lang",
+        "line": 648,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\es_MX.lang",
+        "line": 649,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\es_MX.lang",
+        "line": 650,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\es_MX.lang",
+        "line": 651,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\es_MX.lang",
+        "line": 652,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\es_MX.lang",
+        "line": 653,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\es_MX.lang",
+        "line": 654,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\et_EE.lang",
+        "line": 608,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\et_EE.lang",
+        "line": 609,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\et_EE.lang",
+        "line": 610,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\et_EE.lang",
+        "line": 611,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\et_EE.lang",
+        "line": 612,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\et_EE.lang",
+        "line": 613,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\et_EE.lang",
+        "line": 614,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\et_EE.lang",
+        "line": 615,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\it_IT.lang",
+        "line": 610,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\it_IT.lang",
+        "line": 611,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\it_IT.lang",
+        "line": 612,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\it_IT.lang",
+        "line": 613,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\it_IT.lang",
+        "line": 614,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\it_IT.lang",
+        "line": 615,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\it_IT.lang",
+        "line": 616,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\it_IT.lang",
+        "line": 617,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\ko_KR.lang",
+        "line": 626,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\ko_KR.lang",
+        "line": 627,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\ko_KR.lang",
+        "line": 628,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\ko_KR.lang",
+        "line": 629,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\ko_KR.lang",
+        "line": 630,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\ko_KR.lang",
+        "line": 631,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\ko_KR.lang",
+        "line": 632,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\ko_KR.lang",
+        "line": 633,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\nl_NL.lang",
+        "line": 616,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\nl_NL.lang",
+        "line": 617,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\nl_NL.lang",
+        "line": 618,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\nl_NL.lang",
+        "line": 619,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\nl_NL.lang",
+        "line": 620,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\nl_NL.lang",
+        "line": 621,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\nl_NL.lang",
+        "line": 622,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\nl_NL.lang",
+        "line": 623,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\ru_RU.lang",
+        "line": 625,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\ru_RU.lang",
+        "line": 626,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\ru_RU.lang",
+        "line": 627,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\ru_RU.lang",
+        "line": 628,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\ru_RU.lang",
+        "line": 629,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\ru_RU.lang",
+        "line": 630,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\ru_RU.lang",
+        "line": 631,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\ru_RU.lang",
+        "line": 632,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\zh_CN.lang",
+        "line": 611,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\zh_CN.lang",
+        "line": 612,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\zh_CN.lang",
+        "line": 613,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\zh_CN.lang",
+        "line": 614,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\zh_CN.lang",
+        "line": 615,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\zh_CN.lang",
+        "line": 616,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\zh_CN.lang",
+        "line": 617,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\zh_CN.lang",
+        "line": 618,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\zh_TW.lang",
+        "line": 609,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\zh_TW.lang",
+        "line": 610,
+        "optionKey": "TAA"
+      },
+      {
+        "file": "shaders\\lang\\zh_TW.lang",
+        "line": 611,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\zh_TW.lang",
+        "line": 612,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\zh_TW.lang",
+        "line": 613,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\zh_TW.lang",
+        "line": 614,
+        "optionKey": "TAAU"
+      },
+      {
+        "file": "shaders\\lang\\zh_TW.lang",
+        "line": 615,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\lang\\zh_TW.lang",
+        "line": 616,
+        "optionKey": "TAAU_RENDER_SCALE"
+      },
+      {
+        "file": "shaders\\program\\c4_taa_exposure.fsh",
+        "line": 68,
+        "optionKey": "TAA_VARIANCE_CLIPPING",
+        "declaration": "#define TAA_VARIANCE_CLIPPING"
+      },
+      {
+        "file": "shaders\\program\\c4_taa_exposure.fsh",
+        "line": 71,
+        "optionKey": "TAA_OFFCENTER_REJECTION",
+        "declaration": "#define TAA_OFFCENTER_REJECTION \\"
+      },
+      {
+        "file": "shaders\\program\\c4_taa_exposure.fsh",
+        "line": 74,
+        "optionKey": "TAAU_CONFIDENCE_REJECTION",
+        "declaration": "#define TAAU_CONFIDENCE_REJECTION \\"
+      },
+      {
+        "file": "shaders\\program\\c4_taa_exposure.fsh",
+        "line": 77,
+        "optionKey": "TAAU_FLICKER_REDUCTION",
+        "declaration": "#define TAAU_FLICKER_REDUCTION \\"
+      }
+    ]
+  },
+  {
+    "slug": "bliss-shader",
+    "title": "Bliss Shaders",
+    "version": "2.1.2",
+    "versionId": "kC2Y8q1P",
+    "published": "2025-11-23T03:14:46.231498Z",
+    "gameVersions": [
+      "1.17",
+      "1.17.1",
+      "1.18",
+      "1.18.1",
+      "1.18.2",
+      "1.19",
+      "1.19.1",
+      "1.19.2",
+      "1.19.3",
+      "1.19.4",
+      "1.20",
+      "1.20.1",
+      "1.20.2",
+      "1.20.3",
+      "1.20.4",
+      "1.20.5",
+      "1.20.6",
+      "1.21",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.9",
+      "1.21.10",
+      "1.21.11",
+      "26.1",
+      "26.1.1",
+      "26.1.2",
+      "26.2",
+      "26.3"
+    ],
+    "loaders": [
+      "iris",
+      "optifine"
+    ],
+    "license": {
+      "id": "LicenseRef-All-Rights-Reserved",
+      "name": "",
+      "url": "https://github.com/X0nk/Bliss-Shader/blob/main/LICENSE.md"
+    },
+    "source": "https://github.com/X0nk/Bliss-Shader",
+    "download": "https://cdn.modrinth.com/data/ZvMtQlho/versions/kC2Y8q1P/Bliss_v2.1.2_%28Chocapic13_Shaders_edit%29.zip",
+    "archive": "build\\iris-research-20261025\\packs\\bliss-shader\\Bliss_v2.1.2_(Chocapic13_Shaders_edit).zip",
+    "sha512": "dafc60be4980ec40f40edc0f2625cb0976f3c9ce5ed86383146a120480826bb1de70ef5e38b7f1437294ed4d38c6ef3c82ebef0ae4e00b8cee165788c9c18280",
+    "bytes": 1791406,
+    "aaOptions": [
+      {
+        "file": "shaders\\lib\\res_params.glsl",
+        "line": 9,
+        "optionKey": "UPSCALING_SHARPNENING",
+        "declaration": "#define UPSCALING_SHARPNENING 2.0 - SCALE_FACTOR - SCALE_FACTOR"
+      },
+      {
+        "file": "shaders\\lib\\res_params.glsl",
+        "line": 12,
+        "optionKey": "UPSCALING_SHARPNENING",
+        "declaration": "#define UPSCALING_SHARPNENING 0.0"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 515,
+        "optionKey": "TAA",
+        "declaration": "#define TAA"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 517,
+        "optionKey": "TAA_UPSCALING",
+        "declaration": "#define TAA_UPSCALING"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 539,
+        "optionKey": "DOF_JITTER_SHADOW",
+        "declaration": "#define DOF_JITTER_SHADOW"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 541,
+        "optionKey": "JITTER_STRENGTH",
+        "declaration": "#define JITTER_STRENGTH 1.0"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 551,
+        "optionKey": "CONTRAST_ADAPTATIVE_SHARPENING",
+        "declaration": "#define CONTRAST_ADAPTATIVE_SHARPENING"
+      },
+      {
+        "file": "shaders\\lib\\settings.glsl",
+        "line": 552,
+        "optionKey": "SHARPENING",
+        "declaration": "#define SHARPENING 0.35"
+      },
+      {
+        "file": "shaders\\world1\\gbuffers_weather.vsh",
+        "line": 2,
+        "optionKey": "TAA",
+        "declaration": "#define TAA"
+      }
+    ]
+  },
+  {
+    "slug": "rethinking-voxels",
+    "title": "Rethinking Voxels",
+    "version": "r0.1-beta9",
+    "versionId": "cpD4esk9",
+    "published": "2025-06-19T23:16:17.455162Z",
+    "gameVersions": [
+      "1.20.1",
+      "1.20.4",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.9",
+      "1.21.10"
+    ],
+    "loaders": [
+      "iris"
+    ],
+    "license": {
+      "id": "LicenseRef-Complementary-Agreement",
+      "name": "",
+      "url": "https://github.com/gri573/rethinking-voxels/blob/main/License.txt"
+    },
+    "source": "https://github.com/gri573/rethinking-voxels",
+    "download": "https://cdn.modrinth.com/data/kmwfVOoi/versions/cpD4esk9/rethinking-voxels_r0.1-beta9.zip",
+    "archive": "build\\iris-research-20261025\\packs\\rethinking-voxels\\rethinking-voxels_r0.1-beta9.zip",
+    "sha512": "1e32f41e67e527c3c60149677a05b61c6d305e440812e29abba745b8ed304954780ca48d58b834c49835790bc3c4d38f37c893c5cbdfea9edc07b72e1dabd296",
+    "bytes": 8301317,
+    "aaOptions": [
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 345,
+        "optionKey": "FXAA_DEFINE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 346,
+        "optionKey": "FXAA_DEFINE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 720,
+        "optionKey": "TAA_MODE"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 721,
+        "optionKey": "TAA_MODE"
+      },
+      {
+        "file": "shaders\\lang\\fr_FR.lang",
+        "line": 607,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lang\\fr_FR.lang",
+        "line": 608,
+        "optionKey": "FXAA"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 88,
+        "optionKey": "FXAA_DEFINE",
+        "declaration": "#define FXAA_DEFINE 1"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 187,
+        "optionKey": "IMAGE_SHARPENING",
+        "declaration": "#define IMAGE_SHARPENING 5"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 195,
+        "optionKey": "TAA_MODE",
+        "declaration": "#define TAA_MODE 1"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 551,
+        "optionKey": "TAA",
+        "declaration": "#define TAA"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 558,
+        "optionKey": "FXAA_TAA_INTERACTION",
+        "declaration": "#define FXAA_TAA_INTERACTION"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 559,
+        "optionKey": "TAA_MOVEMENT_IMPROVEMENT_FILTER",
+        "declaration": "#define TAA_MOVEMENT_IMPROVEMENT_FILTER"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 574,
+        "optionKey": "ENTITY_TAA_NOISY_CLOUD_FIX",
+        "declaration": "#define ENTITY_TAA_NOISY_CLOUD_FIX"
+      }
+    ]
+  },
+  {
+    "slug": "makeup-ultra-fast-shaders",
+    "title": "MakeUp - Ultra Fast",
+    "version": "9.6",
+    "versionId": "t4YRxQug",
+    "published": "2026-10-19T23:41:30.199784Z",
+    "gameVersions": [
+      "1.12.2",
+      "1.13",
+      "1.13.1",
+      "1.13.2",
+      "1.14",
+      "1.14.1",
+      "1.14.2",
+      "1.14.3",
+      "1.14.4",
+      "1.15",
+      "1.15.1",
+      "1.15.2",
+      "1.16",
+      "1.16.1",
+      "1.16.2",
+      "1.16.3",
+      "1.16.4",
+      "1.16.5",
+      "1.17",
+      "1.17.1",
+      "1.18",
+      "1.18.1",
+      "1.18.2",
+      "1.19",
+      "1.19.1",
+      "1.19.2",
+      "1.19.3",
+      "1.19.4",
+      "1.20",
+      "1.20.1",
+      "1.20.2",
+      "1.20.3",
+      "1.20.4",
+      "1.20.5",
+      "1.20.6",
+      "1.21",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.9",
+      "1.21.10",
+      "1.21.11",
+      "26.1",
+      "26.1.1",
+      "26.1.2",
+      "26.2",
+      "26.3"
+    ],
+    "loaders": [
+      "iris",
+      "optifine"
+    ],
+    "license": {
+      "id": "LGPL-3.0-or-later",
+      "name": "GNU Lesser General Public License v3.0 or later",
+      "url": null
+    },
+    "source": "https://github.com/javiergcim/MakeUpUltraFast",
+    "download": "https://cdn.modrinth.com/data/izsIPI7a/versions/t4YRxQug/MakeUp-UltraFast-9.6.zip",
+    "archive": "build\\iris-research-20261025\\packs\\makeup-ultra-fast-shaders\\MakeUp-UltraFast-9.6.zip",
+    "sha512": "fa7af14ac14bd77bc1c5d8abf5243e9f3dae08777272790de62b9f388db2f5383f8b00c61da358a356a43635afb7cab80ea7196ffd3a97e22d3184b76e9f3fd3",
+    "bytes": 406830,
+    "aaOptions": [
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 304,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\en_US.lang",
+        "line": 305,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\es_AR.lang",
+        "line": 304,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\es_AR.lang",
+        "line": 305,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\es_ES.lang",
+        "line": 304,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\es_ES.lang",
+        "line": 305,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\es_MX.lang",
+        "line": 304,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\es_MX.lang",
+        "line": 305,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\ko_KR.lang",
+        "line": 303,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\ko_KR.lang",
+        "line": 304,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\ru_RU.lang",
+        "line": 304,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\ru_RU.lang",
+        "line": 305,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\sv_SE.lang",
+        "line": 302,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\sv_SE.lang",
+        "line": 303,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\tr_TR.lang",
+        "line": 299,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\tr_TR.lang",
+        "line": 300,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\zh_CN.lang",
+        "line": 304,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lang\\zh_CN.lang",
+        "line": 305,
+        "optionKey": "SELECTIVE_TAA_V2"
+      },
+      {
+        "file": "shaders\\lib\\config.glsl",
+        "line": 90,
+        "optionKey": "IMAGE_SHARPENING",
+        "declaration": "#define IMAGE_SHARPENING"
+      },
+      {
+        "file": "shaders\\lib\\config.glsl",
+        "line": 91,
+        "optionKey": "SHARPENING",
+        "declaration": "#define SHARPENING 0.5"
+      },
+      {
+        "file": "shaders\\lib\\config.glsl",
+        "line": 330,
+        "optionKey": "SELECTIVE_TAA_V2",
+        "declaration": "#define SELECTIVE_TAA_V2"
+      }
+    ]
+  },
+  {
+    "slug": "solas-shader",
+    "title": "Solas Shader",
+    "version": "3.8",
+    "versionId": "XE9yh7pS",
+    "published": "2026-10-14T22:24:17.963697Z",
+    "gameVersions": [
+      "1.12.2",
+      "1.13",
+      "1.13.1",
+      "1.13.2",
+      "1.14",
+      "1.14.1",
+      "1.14.2",
+      "1.14.3",
+      "1.14.4",
+      "1.15",
+      "1.15.1",
+      "1.15.2",
+      "1.16",
+      "1.16.1",
+      "1.16.2",
+      "1.16.3",
+      "1.16.4",
+      "1.16.5",
+      "1.17",
+      "1.17.1",
+      "1.18",
+      "1.18.1",
+      "1.18.2",
+      "1.19",
+      "1.19.1",
+      "1.19.2",
+      "1.19.3",
+      "1.19.4",
+      "1.20",
+      "1.20.1",
+      "1.20.2",
+      "1.20.3",
+      "1.20.4",
+      "1.20.5",
+      "1.20.6",
+      "1.21",
+      "1.21.1",
+      "1.21.2",
+      "1.21.3",
+      "1.21.4",
+      "1.21.5",
+      "1.21.6",
+      "1.21.7",
+      "1.21.8",
+      "1.21.9",
+      "1.21.10",
+      "1.21.11",
+      "26.1",
+      "26.1.1",
+      "26.1.2",
+      "26.2",
+      "26.3"
+    ],
+    "loaders": [
+      "iris",
+      "optifine"
+    ],
+    "license": {
+      "id": "LicenseRef-All-Rights-Reserved",
+      "name": "",
+      "url": null
+    },
+    "source": "https://github.com/Septonious/Solas-Shader",
+    "download": "https://cdn.modrinth.com/data/EpQFjzrQ/versions/XE9yh7pS/Solas%20Shader%20V3.8.zip",
+    "archive": "build\\iris-research-20261025\\packs\\solas-shader\\Solas Shader V3.8.zip",
+    "sha512": "7ba384962859ec6a65659aeefd31c2f0e741b8f2983bc3636529a957bbee9d16eebe9201c88029e651fd26c1e59f0028e7b28e25995f0ebbcff66d728791c399",
+    "bytes": 1242074,
+    "aaOptions": [
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 433,
+        "optionKey": "TAA",
+        "declaration": "#define TAA"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 434,
+        "optionKey": "FXAA",
+        "declaration": "#define FXAA"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 435,
+        "optionKey": "FXAA_SUBPIXEL",
+        "declaration": "#define FXAA_SUBPIXEL 0.75"
+      },
+      {
+        "file": "shaders\\lib\\common.glsl",
+        "line": 436,
+        "optionKey": "FXAA_EDGE_SENSITIVITY",
+        "declaration": "#define FXAA_EDGE_SENSITIVITY 1"
+      }
+    ]
+  }
+]

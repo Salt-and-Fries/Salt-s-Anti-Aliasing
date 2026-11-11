@@ -1,0 +1,91 @@
+Runtime stability and DLSS synchronization fixes — 25 October 2026
+
+RESULT
+DLSS M/L synchronization warnings are corrected inside the mod for both approved
+runtime sets. The original native crash was traced using a full memory dump and
+Java Serviceability Agent. A focused compiler-pool compatibility measure is tested;
+this is not a blanket claim that all JVM/driver/overlay defects are fixed.
+
+DLSS SYNCHRONIZATION
+Both 310.9.1 / Streamline 2.14.1 and 310.9.16 / Streamline 2.14.16 reproduced the
+private-image clear WRITE_AFTER_WRITE warning before the repair. Updating the
+NVIDIA runtime alone did not remove it.
+The own JNI bridge (ABI 5) provides a process-local Vulkan layer. During DLSS
+evaluation only, it extends initial UNDEFINED-to-GENERAL shader-use image barriers
+with the missing transfer destination stage/access. Source scopes, layouts, queue
+ownership, image identities and subresource ranges are preserved. No new GPU
+command is inserted. Ordinary barriers/clears and already covered transitions pass
+through. K/Auto correction counters remain flat during steady-state captures.
+The final disabled-layer control reported six clear hazards; corresponding enabled
+stable/beta/legacy/private-import/development runs reported zero. Validation was
+active and its duplicate limit was raised; no message filtering was introduced.
+
+JVM CRASH DIAGNOSIS AND COMPILER ADAPTER
+The original jvm.dll+0xa7fdc7 access violation recurred with shared upcall arenas.
+The shared-arena experiment is therefore not used by the final mod/profiles.
+Matching Microsoft symbols resolved the address to __chkstk+0x37. Full-dump native
+unwinding identified JfrResolution::on_runtime_resolution and LinkResolver; jhsdb
+identified Worker-Main-7 executing MemoryBackend.getStringASCII / ThreadLocal
+initialization from GlslCompiler's Shaderc include resolver, through an FFM upcall.
+PipelineBuilder's asynchronous compile/reflection supplier now runs on a bounded
+Windows/Java 25 pool (at most eight normal-priority daemon threads, 4 MiB stacks,
+30-second idle timeout). The original supplier, inputs, futures/errors and deferred
+GPU-finalization scheduling are retained. OpenGL's initial sanity check reproduced
+the same original fault with the adapter gated off; the shared adapter subsequently
+passed OpenGL and Vulkan. This does not enable OpenGL AA.
+Windows TEB/VirtualQuery inspection confirmed 4,194,304 reserved stack bytes on the
+compiler threads. A smaller-stack dedicated-pool control also survived 18 cases;
+the exact contribution of isolation, scheduling and stack capacity remains uncertain.
+Qualified runs had no recurrence. An earlier heap-corruption exit was not fully
+diagnosed, and one Overwolf-hook crash occurred during invalid device creation.
+Those observations are retained as limits, not declared universally solved.
+
+FSR-ONLY DEVICE DECLARATION
+Without a configured DLSS runtime, validation exposed VUID-02833: a promoted
+descriptor-indexing feature structure coexisted with an EXT declaration requiring
+the descriptorIndexing umbrella bit. Normalization now retains individual features
+in Vulkan 1.2 and removes the redundant extension declaration. No NVIDIA feature
+list is needed for a valid FSR-only device. No-DLSS FSR2/3/FG, reload and Sodium
+controls completed after correction.
+
+PLAYER FLOW
+Existing approved 2.14.1 installations receive the synchronization repair by updating
+the mod. Complete 2.14.16 / 310.9.16 sets can also be imported through the existing
+setup flow; cross-release mixtures are rejected. Advanced settings display the
+detected version. NVIDIA runtime DLLs remain user supplied and absent from the jar.
+No launcher argument, JVM replacement, registry edit or overlay disabling is required
+for the tested compatibility measures. Normal run/26.3 options/config were preserved.
+
+VERIFICATION
+154 Java/shader/adapter tests passed; zero failures/errors/skips.
+One native test suite passed dispatch, destination-scope, source/range preservation,
+nested/thread-local scope and destruction checks. The no-SDK stub also built.
+116 functional capture groups in the main qualification, including 24 model/
+quality combinations at 1080p using the actual privately imported runtime and nine
+Gradle runClient groups. 16 deliberately disabled-layer control groups.
+36 additional completed no-DLSS Java/FSR control groups.
+The public jar, native binaries and per-run hashes are recorded in verification.json.
+One CPU supplier-pool backend gate was briefly tested and removed after the OpenGL
+callback crash reproduced; final common-pool smoke runs use the same jar hash as
+the full narrow-barrier qualification. All selected games exited normally.
+An interrupted control-file rename was a harness file-lock race; fresh-label resumed
+captures are separate. Stale/failed prototype/capture results are not counted.
+
+VISUAL AND SCOPE LIMITS
+K/M/L Quality screenshots and nearest-neighbor detail enlargements were inspected.
+The fixture's terrain, glass, water and pig render without obvious new corruption in
+those static samples. Moving-hand FG, reload/OIT and mode changes were exercised.
+These short checks do not certify all motion artifacts, resource packs, hardware,
+shader packs or AAA-equivalent output. The exact upstream JVM defect remains uncertain.
+
+BUILD
+salts-anti-aliasing-mc26.3-1.1.jar
+SHA-256: 42bd056016561945b142f3b37c4f7e8ff98fc8efa9f3a491f99a704866f876ed
+
+PRIMARY REFERENCES
+https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderLayerInterface.md
+https://docs.vulkan.org/refpages/latest/refpages/source/vkCmdPipelineBarrier.html
+https://github.com/NVIDIA-RTX/Streamline/releases/tag/v2.14.16
+https://github.com/LWJGL/lwjgl3/blob/master/doc/FFM.md
+https://raw.githubusercontent.com/openjdk/jdk25u/jdk-25.0.2%2B10/src/hotspot/share/jfr/support/jfrResolution.cpp
+https://learn.microsoft.com/en-us/windows/win32/devnotes/-win32-__chkstk

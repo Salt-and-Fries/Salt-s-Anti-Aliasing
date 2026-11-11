@@ -17,6 +17,9 @@
 #include <sl_dlss.h>
 #include <sl_helpers_vk.h>
 #include <sl_matrix_helpers.h>
+#if defined(_WIN32)
+#include "vulkan_clear_compat.h"
+#endif
 #endif
 
 namespace {
@@ -158,7 +161,30 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
 
 extern "C" JNIEXPORT jint JNICALL
 Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNativeBridge_abiVersionNative(JNIEnv*, jclass) {
-    return 4;
+    return 5;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNativeBridge_enableClearCompatibilityNative(
+        JNIEnv* env, jclass, jstring directory) {
+#if defined(SALTS_DLSS_WITH_STREAMLINE) && defined(_WIN32)
+    return salts::dlss_clear::enable_layer(to_wstring(env, directory)) ? JNI_TRUE : JNI_FALSE;
+#else
+    return JNI_FALSE;
+#endif
+}
+
+extern "C" JNIEXPORT jlongArray JNICALL
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNativeBridge_clearCompatibilityStatisticsNative(
+        JNIEnv* env, jclass) {
+    jlong values[2]{};
+#if defined(SALTS_DLSS_WITH_STREAMLINE) && defined(_WIN32)
+    values[0] = static_cast<jlong>(salts::dlss_clear::device_count());
+    values[1] = static_cast<jlong>(salts::dlss_clear::barrier_count());
+#endif
+    auto result = env->NewLongArray(2);
+    if (result) env->SetLongArrayRegion(result, 0, 2, values);
+    return result;
 }
 
 extern "C" JNIEXPORT jobjectArray JNICALL
@@ -468,6 +494,9 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_dlss_DlssNat
 
     sl::BaseStructure* inputs[] = {&viewport};
     const sl::BaseStructure* constInputs[] = {inputs[0]};
+#if defined(_WIN32)
+    salts::dlss_clear::EvaluationScope clearCompatibilityScope;
+#endif
     result = slEvaluateFeature(
             sl::kFeatureDLSS,
             *token,

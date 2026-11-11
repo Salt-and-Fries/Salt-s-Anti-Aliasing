@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.gui.screens.options.VideoSettingsScreen;
 import net.minecraft.network.chat.Component;
 
+import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
 import org.betterLostItems.salts_anti_aliasing.client.gui.AntiAliasingConfigScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,6 +37,8 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
                             ordinal = 1))
     private void saltsAntiAliasing$addSettings(
             OptionsList list, OptionInstance<?>[] qualityOptions, Operation<Void> original) {
+        // The selected Graphics API is only a preference for the next launch.
+        boolean vulkanRunning = SaltsAntiAliasingClient.runtime().isVulkanActive();
         Button settings =
                 Button.builder(
                                 Component.translatable("screen.salts_anti_aliasing.config"),
@@ -46,8 +49,11 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
                         .tooltip(
                                 Tooltip.create(
                                         Component.translatable(
-                                                "screen.salts_anti_aliasing.config.tooltip")))
+                                                vulkanRunning
+                                                        ? "screen.salts_anti_aliasing.config.tooltip"
+                                                        : "screen.salts_anti_aliasing.config.vulkan_required")))
                         .build();
+        settings.active = vulkanRunning;
         // Vanilla 26.3 ends this section with an unpaired Weather Effect Radius option.
         if (qualityOptions.length % 2 == 1
                 && qualityOptions[qualityOptions.length - 1] == options.weatherRadius()) {

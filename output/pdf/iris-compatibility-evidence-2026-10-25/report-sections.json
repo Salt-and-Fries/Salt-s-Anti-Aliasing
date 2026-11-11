@@ -1,0 +1,118 @@
+[
+  {
+    "page": 1,
+    "title": "Iris shader compatibility"
+  },
+  {
+    "page": 2,
+    "title": "1. Evidence and scope"
+  },
+  {
+    "page": 3,
+    "title": "2. The reproduced blocker"
+  },
+  {
+    "page": 4,
+    "title": "3. Where the render pipelines meet"
+  },
+  {
+    "page": 5,
+    "title": "4. Current mod audit: what is missing"
+  },
+  {
+    "page": 6,
+    "title": "5. FXAA, SMAA, NIS, and FSR1"
+  },
+  {
+    "page": 7,
+    "title": "6. MSAA and SSAA need different strategies"
+  },
+  {
+    "page": 8,
+    "title": "7. TAA, DLSS/DLAA, and FSR2/3"
+  },
+  {
+    "page": 9,
+    "title": "8. Shader-pack audit: common raster packs"
+  },
+  {
+    "page": 10,
+    "title": "9. Shader-pack audit: temporal dependencies"
+  },
+  {
+    "page": 11,
+    "title": "10. Can we disable and gray out pack AA?"
+  },
+  {
+    "page": 12,
+    "title": "11. One owner for temporal reconstruction"
+  },
+  {
+    "page": 13,
+    "title": "12. Motion vectors must follow shader geometry"
+  },
+  {
+    "page": 14,
+    "title": "13. Jitter and depth conventions"
+  },
+  {
+    "page": 15,
+    "title": "14. Scene color, exposure, and post effects"
+  },
+  {
+    "page": 16,
+    "title": "15. Transparency, reactive masks, and details"
+  },
+  {
+    "page": 17,
+    "title": "16. Hands, HUD, and frame generation"
+  },
+  {
+    "page": 18,
+    "title": "17. Lifetime, multi-view rendering, and safety"
+  },
+  {
+    "page": 19,
+    "title": "18. Architectural choices"
+  },
+  {
+    "page": 20,
+    "title": "19. GPU interop: feasible, not implemented"
+  },
+  {
+    "page": 21,
+    "title": "20. Real-game reference images"
+  },
+  {
+    "page": 22,
+    "title": "21. Detail comparison: disabling pack AA"
+  },
+  {
+    "page": 23,
+    "title": "22. Findings register and starting fixes"
+  },
+  {
+    "page": 24,
+    "title": "23. Recommended implementation sequence"
+  },
+  {
+    "page": 25,
+    "title": "24. Validation plan before a support claim"
+  },
+  {
+    "page": 26,
+    "title": "25. An isolated pack-parser problem"
+  },
+  {
+    "page": 27,
+    "title": "26. Source index: Iris and shader interface"
+  },
+  {
+    "page": 28,
+    "title": "27. Source index: SDKs and exact pack samples"
+  },
+  {
+    "page": 29,
+    "title": "28. Reproduction and remaining limits"
+  }
+]
