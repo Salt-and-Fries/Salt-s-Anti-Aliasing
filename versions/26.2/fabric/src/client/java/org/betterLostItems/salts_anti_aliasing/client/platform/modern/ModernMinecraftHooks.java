@@ -1,0 +1,375 @@
+package org.betterLostItems.salts_anti_aliasing.client.platform.modern;
+
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.GpuTextureView;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
+import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
+import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.render.common.RenderRuntime;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneDlssController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneXessController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneSgsrController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneFsrController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneMsaaController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneScaleController;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanSceneTemporalController;
+import org.joml.Matrix4f;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+/**
+ * Central bridge between Fabric 26.2 Minecraft hook points and the shared mod runtime.
+ *
+ * <p>Mixins should be as small and boring as possible. Their job is to land on a
+ * Minecraft method that exists in this version family, collect the raw values exposed by
+ * that method, and immediately delegate here. Keeping that delegation centralized gives
+ * future version jars one obvious translation layer to replace while the core config,
+ * pipeline planning, metrics, and mode semantics stay stable.</p>
+ *
+ * <p>This class is intentionally allowed to depend on Minecraft classes and on the modern
+ * Vulkan/GPU controllers. Code below this layer should avoid knowing which mixin fired or
+ * which Minecraft descriptor was used to reach the hook.</p>
+ */
+public final class ModernMinecraftHooks {
+    private static final long EDGE_DEBUG_TOGGLE_DEBOUNCE_MS = 250L;
+    private static long lastEdgeDebugToggleMs;
+
+    /**
+     * Creates a modern minecraft hooks instance with the collaborators or initial state supplied by
+     * the caller.
+     */
+    private ModernMinecraftHooks() {
+    }
+
+    /**
+     * Prepares the per-frame temporal jitter before the world projection and camera state are consumed.
+     */
+    public static boolean beginEntityGeometrySubmission(net.minecraft.client.renderer.entity.state.EntityRenderState state) {
+        return org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.enterEntity(
+                ((org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityTemporalState)state).saltsAntiAliasing$entityId());
+    }
+    public static boolean beginBlockGeometrySubmission(net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState state) {
+        return state.blockPos==null?org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.enterEntity(-1):
+                org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.enterBlock(state.blockPos.asLong());
+    }
+    public static void endGeometrySubmission() { org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.exitSubmission(); }
+    public static void tagGeometrySubmission(Object submit) { org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.tagSubmission(submit); }
+    public static com.mojang.blaze3d.vertex.VertexConsumer captureSubmittedGeometry(Object submit,Object kind,Object layer,com.mojang.blaze3d.vertex.VertexConsumer consumer) {
+        return org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.captureSubmitted(submit,kind,layer,consumer);
+    }
+    public static com.mojang.blaze3d.vertex.VertexConsumer captureModelGeometry(net.minecraft.client.renderer.feature.ModelFeatureRenderer.Submit<?> submit,com.mojang.blaze3d.vertex.VertexConsumer consumer) {
+        return org.betterLostItems.salts_anti_aliasing.client.render.vulkan.EntityMotionGeometry.capture(submit,consumer);
+    }
+
+    public static void prepareTemporalJitter(GameRenderer gameRenderer) {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        boolean temporalActive = runtime != null && runtime.isTemporalRenderingActive();
+        RenderTarget mainTarget = gameRenderer.mainRenderTarget();
+        if(runtime!=null) org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanTextureDetail.beginScene(
+                runtime.effectiveConfigSnapshot(),mainTarget.width,gameRenderer.gameRenderState().windowRenderState.width);
+        if (runtime != null) VulkanSceneTemporalController.instance().configureTuning(runtime.configSnapshot().tuning);
+        int jitterPhaseCount = VulkanSceneFsrController.instance().activeJitterPhaseCount();
+        if (runtime != null && runtime.activeMode() == AntiAliasingMode.DLSS_SUPER_RESOLUTION) {
+            jitterPhaseCount = VulkanSceneDlssController.instance().activeJitterPhaseCount();
+        }
+        if (runtime != null && runtime.activeMode() == AntiAliasingMode.XESS_SUPER_RESOLUTION)
+            jitterPhaseCount = VulkanSceneXessController.instance().activeJitterPhaseCount();
+        if (runtime != null && runtime.activeMode().usesSgsr2QualityControl()) jitterPhaseCount=VulkanSceneSgsrController.instance().activeJitterPhaseCount();
+        VulkanSceneTemporalController.instance().prepareFrameJitter(
+                temporalActive,
+                mainTarget.width,
+                mainTarget.height,
+                jitterPhaseCount,
+                runtime == null ? null : runtime.activeMode()
+        );
+    }
+
+    /**
+     * Captures and jitters Minecraft's final world projection without mutating shared camera state.
+     */
+    public static Matrix4f configureTemporalProjection(
+            Matrix4f projectionMatrix,
+            CameraRenderState cameraRenderState
+    ) {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        boolean temporalActive = runtime != null && runtime.isTemporalRenderingActive();
+        return VulkanSceneTemporalController.instance().configureProjection(
+                projectionMatrix,
+                cameraRenderState,
+                temporalActive
+        );
+    }
+
+    /**
+     * Starts scene-only rendering work before Minecraft renders the 3D world.
+     */
+    public static void beginSceneRendering(GameRenderer gameRenderer) {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        if (runtime != null) {
+            runtime.beginSceneRendering(gameRenderer);
+        }
+    }
+
+    /**
+     * Resolves any temporary scene targets after Minecraft finishes the 3D world.
+     */
+    public static void endSceneRendering(GameRenderer gameRenderer) {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        if (runtime != null) {
+            runtime.endSceneRendering(gameRenderer);
+        }
+    }
+
+    /**
+     * Applies native-resolution post effects after scene rendering but before HUD/menu drawing.
+     */
+    public static void applyScenePostProcessing(GameRenderer gameRenderer) {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        if (runtime != null) {
+            runtime.applyScenePostProcessing(gameRenderer);
+        }
+    }
+
+    /**
+     * Records a frame sample once Minecraft has finished a visible world frame.
+     */
+    public static void recordRenderedFrame(GameRenderer gameRenderer, boolean renderLevel) {
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        if(runtime!=null) VulkanSceneFsrController.instance().prepareFrameGenerationPresentation();
+        if (runtime != null) runtime.maintainWithoutWorld(gameRenderer);
+        if (runtime != null && renderLevel) {
+            Minecraft minecraft = Minecraft.getInstance();
+            runtime.recordRenderedFrame(minecraft.getFrameTimeNs(), minecraft.getFps());
+        }
+    }
+
+    /**
+     * Lets the scaled-scene controller temporarily replace Minecraft's main render target.
+     */
+    public static RenderTarget overrideMainRenderTarget() {
+        RenderTarget msaaTarget = VulkanSceneMsaaController.instance().overrideMainTarget();
+        if (msaaTarget != null) {
+            return msaaTarget;
+        }
+
+        RenderTarget dlssTarget = VulkanSceneDlssController.instance().overrideMainTarget();
+        if (dlssTarget != null) {
+            return dlssTarget;
+        }
+
+        RenderTarget xessTarget = VulkanSceneXessController.instance().overrideMainTarget();
+        if (xessTarget != null) {
+            return xessTarget;
+        }
+
+        RenderTarget sgsrTarget = VulkanSceneSgsrController.instance().overrideMainTarget();
+        if (sgsrTarget != null) {
+            return sgsrTarget;
+        }
+
+        RenderTarget fsrTarget = VulkanSceneFsrController.instance().overrideMainTarget();
+        if (fsrTarget != null) {
+            return fsrTarget;
+        }
+
+        return VulkanSceneScaleController.instance().overrideMainTarget();
+    }
+
+    /**
+     * Flushes metrics during the normal Minecraft shutdown hooks.
+     */
+    public static void shutdownMetrics() {
+        if (SaltsAntiAliasingClient.runtimeOrNull() != null) {
+            SaltsAntiAliasingClient.runtime().shutdownMetrics();
+        }
+    }
+
+    /** Flushes the latest report without ending the session while renderer shutdown is pending. */
+    public static void flushMetrics() {
+        if (SaltsAntiAliasingClient.runtimeOrNull() != null) {
+            SaltsAntiAliasingClient.runtime().flushMetrics();
+        }
+    }
+
+    /**
+     * Releases native renderer integrations after the window surface no longer owns a swapchain.
+     */
+    public static void shutdownNativeIntegrations() {
+        if (SaltsAntiAliasingClient.runtimeOrNull() != null) {
+            SaltsAntiAliasingClient.runtime().shutdownNativeIntegrations();
+        }
+    }
+
+    /**
+     * Redirects color texture reads while a Vulkan scene controller owns the main target.
+     */
+    public static GpuTexture redirectColorTexture(RenderTarget target) {
+        GpuTexture msaaTexture = VulkanSceneMsaaController.instance().overrideColorTexture(target);
+        if (msaaTexture != null) {
+            return msaaTexture;
+        }
+
+        GpuTexture dlssTexture = VulkanSceneDlssController.instance().overrideColorTexture(target);
+        if (dlssTexture != null) {
+            return dlssTexture;
+        }
+
+        GpuTexture xessTexture = VulkanSceneXessController.instance().overrideColorTexture(target);
+        if (xessTexture != null) {
+            return xessTexture;
+        }
+
+        GpuTexture sgsrTexture = VulkanSceneSgsrController.instance().overrideColorTexture(target);
+        if (sgsrTexture != null) {
+            return sgsrTexture;
+        }
+
+        GpuTexture fsrTexture = VulkanSceneFsrController.instance().overrideColorTexture(target);
+        if (fsrTexture != null) {
+            return fsrTexture;
+        }
+
+        return VulkanSceneScaleController.instance().overrideColorTexture(target);
+    }
+
+    /**
+     * Redirects color texture view reads while a Vulkan scene controller owns the main target.
+     */
+    public static GpuTextureView redirectColorTextureView(RenderTarget target) {
+        GpuTextureView msaaTextureView = VulkanSceneMsaaController.instance().overrideColorTextureView(target);
+        if (msaaTextureView != null) {
+            return msaaTextureView;
+        }
+
+        GpuTextureView dlssTextureView = VulkanSceneDlssController.instance().overrideColorTextureView(target);
+        if (dlssTextureView != null) {
+            return dlssTextureView;
+        }
+
+        GpuTextureView xessTextureView = VulkanSceneXessController.instance().overrideColorTextureView(target);
+        if (xessTextureView != null) {
+            return xessTextureView;
+        }
+
+        GpuTextureView sgsrTextureView = VulkanSceneSgsrController.instance().overrideColorTextureView(target);
+        if (sgsrTextureView != null) {
+            return sgsrTextureView;
+        }
+
+        GpuTextureView fsrTextureView = VulkanSceneFsrController.instance().overrideColorTextureView(target);
+        if (fsrTextureView != null) {
+            return fsrTextureView;
+        }
+
+        return VulkanSceneScaleController.instance().overrideColorTextureView(target);
+    }
+
+    /**
+     * Redirects depth texture reads while a Vulkan scene controller owns the main target.
+     */
+    public static GpuTexture redirectDepthTexture(RenderTarget target) {
+        GpuTexture msaaTexture = VulkanSceneMsaaController.instance().overrideDepthTexture(target);
+        if (msaaTexture != null) {
+            return msaaTexture;
+        }
+
+        GpuTexture dlssTexture = VulkanSceneDlssController.instance().overrideDepthTexture(target);
+        if (dlssTexture != null) {
+            return dlssTexture;
+        }
+
+        GpuTexture xessTexture = VulkanSceneXessController.instance().overrideDepthTexture(target);
+        if (xessTexture != null) {
+            return xessTexture;
+        }
+
+        GpuTexture sgsrTexture = VulkanSceneSgsrController.instance().overrideDepthTexture(target);
+        if (sgsrTexture != null) {
+            return sgsrTexture;
+        }
+
+        GpuTexture fsrTexture = VulkanSceneFsrController.instance().overrideDepthTexture(target);
+        if (fsrTexture != null) {
+            return fsrTexture;
+        }
+
+        return VulkanSceneScaleController.instance().overrideDepthTexture(target);
+    }
+
+    /**
+     * Redirects depth texture view reads while a Vulkan scene controller owns the main target.
+     */
+    public static GpuTextureView redirectDepthTextureView(RenderTarget target) {
+        GpuTextureView msaaTextureView = VulkanSceneMsaaController.instance().overrideDepthTextureView(target);
+        if (msaaTextureView != null) {
+            return msaaTextureView;
+        }
+
+        GpuTextureView dlssTextureView = VulkanSceneDlssController.instance().overrideDepthTextureView(target);
+        if (dlssTextureView != null) {
+            return dlssTextureView;
+        }
+
+        GpuTextureView xessTextureView = VulkanSceneXessController.instance().overrideDepthTextureView(target);
+        if (xessTextureView != null) {
+            return xessTextureView;
+        }
+
+        GpuTextureView sgsrTextureView = VulkanSceneSgsrController.instance().overrideDepthTextureView(target);
+        if (sgsrTextureView != null) {
+            return sgsrTextureView;
+        }
+
+        GpuTextureView fsrTextureView = VulkanSceneFsrController.instance().overrideDepthTextureView(target);
+        if (fsrTextureView != null) {
+            return fsrTextureView;
+        }
+
+        return VulkanSceneScaleController.instance().overrideDepthTextureView(target);
+    }
+
+    /**
+     * Keeps depth-copy behavior coherent when Minecraft copies from or to a redirected scene target.
+     */
+    public static boolean redirectCopyDepth(RenderTarget target, RenderTarget sourceTarget) {
+        return VulkanSceneMsaaController.instance().redirectCopyDepth(target, sourceTarget)
+                || VulkanSceneDlssController.instance().redirectCopyDepth(target, sourceTarget)
+                || VulkanSceneXessController.instance().redirectCopyDepth(target, sourceTarget)
+                || VulkanSceneSgsrController.instance().redirectCopyDepth(target, sourceTarget)
+                || VulkanSceneFsrController.instance().redirectCopyDepth(target, sourceTarget)
+                || VulkanSceneScaleController.instance().redirectCopyDepth(target, sourceTarget);
+    }
+
+    /**
+     * Handles the debug-view toggle from Minecraft's debug-key path.
+     */
+    public static void toggleEdgeDebug(Minecraft minecraft, int key, CallbackInfoReturnable<Boolean> callbackInfo) {
+        if (key != InputConstants.KEY_K) {
+            return;
+        }
+
+        long now = Util.getMillis();
+        if (now - lastEdgeDebugToggleMs < EDGE_DEBUG_TOGGLE_DEBOUNCE_MS) {
+            callbackInfo.setReturnValue(true);
+            return;
+        }
+
+        RenderRuntime runtime = SaltsAntiAliasingClient.runtimeOrNull();
+        if (runtime == null) {
+            return;
+        }
+
+        lastEdgeDebugToggleMs = now;
+        boolean enabled = runtime.toggleDebugViews();
+        minecraft.gui.hud.setOverlayMessage(
+                Component.literal("Salt's Anti Aliasing Edge View: " + (enabled ? "ON" : "OFF")),
+                false
+        );
+        callbackInfo.setReturnValue(true);
+    }
+}

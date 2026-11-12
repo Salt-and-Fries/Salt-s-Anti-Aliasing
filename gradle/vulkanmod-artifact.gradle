@@ -1,0 +1,109 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import java.security.MessageDigest
+import java.util.zip.ZipFile
+
+def matrixFile = rootProject.file('versions/vulkanmod/compatibility/official-targets.json')
+def targetPin = new JsonSlurper().parse(matrixFile).find { it.minecraft == project.minecraft_version }
+if (targetPin == null || targetPin.modrinthVersion != project.vulkanmod_version_id)
+    throw new GradleException("Unpinned VulkanMod target: ${project.minecraft_version}")
+def sha256 = { byte[] bytes -> MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString() }
+
+def pinnedArtifact = configurations.create('vulkanmodPinnedArtifact') {
+    canBeResolved = true
+    canBeConsumed = false
+    transitive = false
+}
+dependencies.add(pinnedArtifact.name, "maven.modrinth:vulkanmod:${targetPin.modrinthVersion}")
+def verifyDependency = tasks.register('verifyVulkanModDependency') {
+    inputs.file(matrixFile)
+    inputs.files(pinnedArtifact)
+    doLast {
+        def artifact = pinnedArtifact.singleFile
+        def actual = MessageDigest.getInstance('SHA-512').digest(artifact.bytes).encodeHex().toString()
+        if (actual != targetPin.sha512)
+            throw new GradleException("VulkanMod ${targetPin.modrinthVersion} failed its official SHA-512 check")
+    }
+}
+
+def provenanceDir = layout.buildDirectory.dir('generated/vulkanmod-provenance')
+def generateProvenance = tasks.register('generateVulkanModProvenance') {
+    dependsOn verifyDependency
+    inputs.file(matrixFile)
+    inputs.dir(rootProject.file('native/redist'))
+    inputs.file(rootProject.file('native/fsr_bridge/patches/fidelityfx-1.1.4-vulkan-correctness.patch'))
+    inputs.property('adapter', project.vulkanmod_adapter)
+    inputs.property('minecraft', project.minecraft_version)
+    outputs.dir(provenanceDir)
+    doLast {
+        def nativeRoot = rootProject.file('native/redist').toPath()
+        def nativeHashes = new TreeMap<String, String>()
+        rootProject.fileTree('native/redist').matching { include '**/*.dll' }.files.each { file ->
+            nativeHashes[nativeRoot.relativize(file.toPath()).toString().replace('\\', '/')] = sha256(file.bytes)
+        }
+        def output = provenanceDir.get().file('assets/salts_anti_aliasing/vulkanmod-build.json').asFile
+        output.parentFile.mkdirs()
+        output.text = JsonOutput.prettyPrint(JsonOutput.toJson([
+                schema: 1, minecraft: project.minecraft_version, loader: 'fabric', adapter: project.vulkanmod_adapter,
+                vulkanmod: targetPin,
+                fidelityFxRevision: 'c6efa6bf7f2027b3ec94f28578bb5965eabb9e55',
+                fidelityFxPatchSha256: sha256(rootProject.file('native/fsr_bridge/patches/fidelityfx-1.1.4-vulkan-correctness.patch').bytes),
+                nativeSha256: nativeHashes])) + '\n'
+    }
+}
+tasks.named('processResources') {
+    dependsOn generateProvenance
+    from(provenanceDir)
+}
+
+def publicJar = tasks.named(project.minecraft_version.startsWith('26.') ? 'jar' : 'remapJar')
+tasks.register('verifyPublicJar') {
+    dependsOn publicJar
+    inputs.file(publicJar.flatMap { it.archiveFile })
+    doLast {
+        new ZipFile(publicJar.get().archiveFile.get().asFile).withCloseable { zip ->
+            def names = zip.entries().collect { it.name }
+            def json = { name ->
+                def entry = zip.getEntry(name)
+                if (entry == null) throw new GradleException("Missing artifact metadata: ${name}")
+                zip.getInputStream(entry).withCloseable { new JsonSlurper().parse(it) }
+            }
+            def metadata = json('fabric.mod.json')
+            if (metadata.id != 'salts_anti_aliasing' || metadata.environment != 'client'
+                    || metadata.depends.minecraft != project.minecraft_version || metadata.depends.vulkanmod != targetPin.vulkanmod)
+                throw new GradleException("Incorrect Minecraft/Fabric/VulkanMod dependency in ${publicJar.get().archiveFileName.get()}")
+            metadata.entrypoints.values().flatten().each { entrypoint ->
+                if (!names.contains(entrypoint.replace('.', '/') + '.class'))
+                    throw new GradleException("Missing entrypoint: ${entrypoint}")
+            }
+            metadata.mixins.each { registration ->
+                def mixins = json(registration instanceof String ? registration : registration.config)
+                ((mixins.mixins ?: []) + (mixins.client ?: [])).each { name ->
+                    if (!names.contains((mixins.package + '.' + name).replace('.', '/') + '.class'))
+                        throw new GradleException("Missing registered mixin: ${name}")
+                }
+            }
+            if (names.any { it.startsWith('org/betterLostItems/salts_anti_aliasing/validation/') || it.startsWith('net/vulkanmod/') })
+                throw new GradleException('Validation code and VulkanMod classes must remain outside the public jar')
+            if (names.any { it.tokenize('/').last() ==~ /(?i)(nvngx_.*|sl\..*|NvLowLatencyVk)\.dll/ })
+                throw new GradleException('NVIDIA executable runtime binaries must remain user supplied')
+            def provenance = json('assets/salts_anti_aliasing/vulkanmod-build.json')
+            if (provenance.minecraft != project.minecraft_version || provenance.vulkanmod.sha512 != targetPin.sha512)
+                throw new GradleException('VulkanMod artifact provenance does not match the pinned target')
+            provenance.nativeSha256.each { name, expected ->
+                def entry = zip.getEntry('assets/salts_anti_aliasing/native/' + name)
+                if (entry == null) throw new GradleException("Missing native runtime: ${name}")
+                def actual = zip.getInputStream(entry).withCloseable { sha256(it.readAllBytes()) }
+                if (actual != expected) throw new GradleException("Native runtime checksum mismatch: ${name}")
+            }
+            ['native/windows-x86_64/LICENSE-AMD-FidelityFX.txt',
+             'native/dlss/windows-x86_64/LICENSE-Streamline.txt',
+             'native/xess/windows-x86_64/LICENSE-Intel-XeSS.txt',
+             'licenses/sgsr/LICENSE-SGSR.txt', 'licenses/sgsr/source-manifest.json'].each { name ->
+                if (!names.contains('assets/salts_anti_aliasing/' + name))
+                    throw new GradleException("Missing native/shader license or provenance: ${name}")
+            }
+        }
+    }
+}
+tasks.named('check') { dependsOn tasks.named('verifyPublicJar') }

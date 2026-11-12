@@ -1,0 +1,146 @@
+package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
+
+import com.mojang.blaze3d.systems.RenderPassDescriptor;
+import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.GpuTextureView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+/**
+ * Render-thread scoped Vulkan MSAA state read by mixins that patch Minecraft's Vulkan internals.
+ */
+public final class VulkanMsaaState {
+    private static final ThreadLocal<Integer> TEXTURE_SAMPLE_COUNT = ThreadLocal.withInitial(() -> 1);
+    private static final ThreadLocal<Boolean> SCENE_ALPHA_TO_COVERAGE =
+            ThreadLocal.withInitial(() -> false);
+    private static final ThreadLocal<Boolean> HAND_RENDERING = ThreadLocal.withInitial(() -> false);
+    private static final ThreadLocal<Integer> PIPELINE_SAMPLE_COUNT = ThreadLocal.withInitial(() -> 1);
+    private static final ThreadLocal<Boolean> PIPELINE_ALPHA_TO_COVERAGE =
+            ThreadLocal.withInitial(() -> false);
+    private static final ThreadLocal<Integer> RENDER_PASS_SAMPLE_COUNT = ThreadLocal.withInitial(() -> 1);
+
+    private VulkanMsaaState() {
+    }
+
+    static <T> T withTextureSampleCount(int samples, Supplier<T> action) {
+        int previousSamples = TEXTURE_SAMPLE_COUNT.get();
+        TEXTURE_SAMPLE_COUNT.set(sanitize(samples));
+        try {
+            return action.get();
+        } finally {
+            TEXTURE_SAMPLE_COUNT.set(previousSamples);
+        }
+    }
+
+    public static int textureSampleCount(int originalSamples) {
+        int samples = TEXTURE_SAMPLE_COUNT.get();
+        return samples > 1 ? samples : originalSamples;
+    }
+
+    public static int currentTextureSampleCount() {
+        return TEXTURE_SAMPLE_COUNT.get();
+    }
+
+    public static void beginScene(boolean alphaToCoverage) {
+        SCENE_ALPHA_TO_COVERAGE.set(alphaToCoverage);
+    }
+
+    public static void endScene() {
+        SCENE_ALPHA_TO_COVERAGE.set(false);
+    }
+
+    public static boolean currentSceneAlphaToCoverage() {
+        return SCENE_ALPHA_TO_COVERAGE.get();
+    }
+
+    public static void beginHand(boolean alphaToCoverage) {
+        HAND_RENDERING.set(true);
+        beginScene(alphaToCoverage);
+    }
+
+    public static void endHand() {
+        HAND_RENDERING.set(false);
+        endScene();
+    }
+
+    public static boolean currentHandRendering() { return HAND_RENDERING.get(); }
+
+    public static void beginRenderPass(RenderPassDescriptor descriptor) {
+        RENDER_PASS_SAMPLE_COUNT.set(sampleCount(descriptor));
+    }
+
+    public static void endRenderPass() {
+        RENDER_PASS_SAMPLE_COUNT.set(1);
+    }
+
+    public static int currentRenderPassSampleCount() {
+        return RENDER_PASS_SAMPLE_COUNT.get();
+    }
+
+    public static <T> T withPipelineSampleCount(int samples, Supplier<T> action) {
+        return withPipelineState(samples, false, action);
+    }
+
+    public static <T> T withPipelineState(
+            int samples,
+            boolean alphaToCoverage,
+            Supplier<T> action
+    ) {
+        int previousSamples = PIPELINE_SAMPLE_COUNT.get();
+        boolean previousAlphaToCoverage = PIPELINE_ALPHA_TO_COVERAGE.get();
+        PIPELINE_SAMPLE_COUNT.set(sanitize(samples));
+        PIPELINE_ALPHA_TO_COVERAGE.set(alphaToCoverage);
+        try {
+            return action.get();
+        } finally {
+            PIPELINE_SAMPLE_COUNT.set(previousSamples);
+            PIPELINE_ALPHA_TO_COVERAGE.set(previousAlphaToCoverage);
+        }
+    }
+
+    public static int pipelineSampleCount(int originalSamples) {
+        int samples = PIPELINE_SAMPLE_COUNT.get();
+        return samples > 1 ? samples : originalSamples;
+    }
+
+    public static boolean pipelineAlphaToCoverageEnabled() {
+        return PIPELINE_SAMPLE_COUNT.get() > 1 && PIPELINE_ALPHA_TO_COVERAGE.get();
+    }
+
+    private static int sanitize(int samples) {
+        return Math.max(1, samples);
+    }
+
+    private static int sampleCount(RenderPassDescriptor descriptor) {
+        List<Integer> sampleCounts = new ArrayList<>();
+        for (RenderPassDescriptor.Attachment<?> attachment : descriptor.colorAttachments()) {
+            addSampleCount(sampleCounts, attachment);
+        }
+        addSampleCount(sampleCounts, descriptor.depthAttachment());
+        return VulkanMsaaCompatibility.commonAttachmentSampleCount(
+                sampleCounts.stream().mapToInt(Integer::intValue).toArray()
+        );
+    }
+
+    private static void addSampleCount(
+            List<Integer> sampleCounts,
+            RenderPassDescriptor.Attachment<?> attachment
+    ) {
+        if (attachment != null && attachment.textureView() != null) {
+            sampleCounts.add(sampleCount(attachment.textureView()));
+        }
+    }
+
+    public static int sampleCount(GpuTextureView textureView) {
+        if (textureView == null) {
+            return 1;
+        }
+
+        GpuTexture texture = textureView.texture();
+        return texture instanceof VulkanSampledTexture sampledTexture
+                ? Math.max(1, sampledTexture.saltsAntiAliasing$sampleCount())
+                : 1;
+    }
+}

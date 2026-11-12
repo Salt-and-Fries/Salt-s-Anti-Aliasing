@@ -17,7 +17,8 @@ target_include_directories(salts_dlss_bridge PRIVATE ${JNI_INCLUDE_DIRS})
 target_link_libraries(salts_dlss_bridge PRIVATE ${JNI_LIBRARIES})
 
 if (WIN32)
-    target_compile_definitions(salts_dlss_bridge PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+    # Older Java 17/21 distributions preload their own pre-17.10 MSVC runtime.
+    target_compile_definitions(salts_dlss_bridge PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
 endif()
 
 if (WIN32 AND SALTS_DLSS_WITH_STREAMLINE AND SALTS_DLSS_BUILD_TESTS)

@@ -75,3 +75,6 @@ inputs. Readbacks are bounded to approximately 256 MiB plus two input images. Th
 teardown or the diagnostic JNI flush, after waiting for SDK/GPU completion. PPM files and JSON metadata
 include generated/rendered flags, frame IDs and CPU callback times. Those times are not monitor
 scanout times or input-latency measurements. Leave this variable unset for ordinary play and profiling.
+
+Presentation draining also waits for the SDK presenter CPU to finish its Vulkan queue
+calls; a GPU timeline signal alone occurs before vkQueuePresentKHR returns.

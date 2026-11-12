@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "salts_anti_aliasing_validation",
+  "version": "1.0.0",
+  "name": "Salt's Anti Aliasing VulkanMod development validation",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": ["org.betterLostItems.salts_anti_aliasing.validation.VulkanModSmokeTest"]
+  },
+  "mixins": ["salts_anti_aliasing.validation.mixins.json"],
+  "depends": {"salts_anti_aliasing": "*", "fabric-client-gametest-api-v1": "*"}
+}

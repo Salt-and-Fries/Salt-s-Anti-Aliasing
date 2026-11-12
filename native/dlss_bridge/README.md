@@ -26,6 +26,12 @@ The Java code requires bridge ABI 5 and rejects older DLLs. The bridge uses manu
 integration, queries device requirements before device creation, tags reverse-Z depth and pixel
 motion vectors, and invokes Streamline's common presentation hooks each frame.
 
+Windows builds define `_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR`: older Java distributions may
+preload an MSVC runtime predating constexpr mutex initialization. This keeps this bridge's
+mutex construction compatible with that runtime. NVIDIA's user-supplied runtime has its own
+requirements; Corretto 21.0.3 returned Streamline error 24 in testing, while Java 21.0.11
+initialized successfully. No NVIDIA binaries are modified or redistributed by this fix.
+
 The ABI 4 resource contract removes the unsupported modern-model bias-current-color mask, chains explicit Vulkan
 subresource ranges (including depth aspect), initializes pinhole metadata, and passes the
 source color encoding to the settings query. It exposes the SDK's estimated feature VRAM

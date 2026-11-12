@@ -1,0 +1,157 @@
+package org.betterLostItems.salts_anti_aliasing.client.config;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import net.fabricmc.loader.api.FabricLoader;
+import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.Consumer;
+
+/**
+ * Fabric-backed persistence adapter for the shared anti-aliasing config.
+ *
+ * <p>The in-memory {@link AntiAliasingConfig} is plain data and can be reused by every
+ * version jar. This manager is the Fabric 26.2 implementation of loading, validating,
+ * editing, and saving that data.</p>
+ */
+public final class ConfigManager {
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    private final Path configPath;
+    private AntiAliasingConfig config = new AntiAliasingConfig();
+
+    /**
+     * Creates a config manager instance with the collaborators or initial state supplied by the
+     * caller.
+     * @param configPath config path value supplied by the caller or Minecraft callback
+     */
+    private ConfigManager(Path configPath) {
+        this.configPath = configPath;
+        config.sanitize();
+    }
+
+    /**
+     * Handles create default as part of the anti-aliasing render, configuration, or compatibility
+     * flow.
+     * @return a newly created instance configured for the current mod/runtime context
+     */
+    public static ConfigManager createDefault() {
+        Path configDir = FabricLoader.getInstance().getConfigDir();
+        return new ConfigManager(configDir.resolve(SaltsAntiAliasing.MOD_ID + ".json"));
+    }
+
+    /**
+     * Loads config from disk, creating or repairing the file when needed.
+     */
+    public synchronized void load() {
+        if (Files.notExists(configPath)) {
+            save();
+            return;
+        }
+
+        try (Reader reader = Files.newBufferedReader(configPath)) {
+            AntiAliasingConfig loaded = GSON.fromJson(reader, AntiAliasingConfig.class);
+            config = loaded == null ? new AntiAliasingConfig() : loaded;
+            boolean migrated = config.needsMigration();
+            config.sanitize();
+            if (migrated) {
+                save();
+            }
+        } catch (IOException | JsonSyntaxException exception) {
+            SaltsAntiAliasing.LOGGER.warn("Falling back to default config after failing to read {}", configPath, exception);
+            MetricsDiagnostics.error(
+                    "configuration",
+                    "configuration_load_failed",
+                    exception,
+                    "configPath", configPath,
+                    "fallback", "defaults"
+            );
+            config = new AntiAliasingConfig();
+            config.sanitize();
+            save();
+        }
+    }
+
+    /**
+     * Returns a defensive copy so renderer code can use a stable frame-local view.
+     */
+    public synchronized AntiAliasingConfig snapshot() {
+        return config.copy();
+    }
+
+    public synchronized void editLive(Consumer<AntiAliasingConfig> editor) {
+        editor.accept(config);
+        config.sanitize();
+    }
+
+    /** Image-quality reset keeps explicitly configured native runtime locations. */
+    public synchronized void resetControls() {
+        AntiAliasingConfig old=config;
+        config=new AntiAliasingConfig();
+        config.dlssBridgePath=old.dlssBridgePath;config.dlssPluginPath=old.dlssPluginPath;
+        config.dlssLogPath=old.dlssLogPath;config.dlssApplicationId=old.dlssApplicationId;
+        config.fsrBridgePath=old.fsrBridgePath;config.fsrRuntimePath=old.fsrRuntimePath;config.fsrLogPath=old.fsrLogPath;
+        config.sanitize();save();
+    }
+
+    /**
+     * Handles mode as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @return active anti-aliasing mode
+     */
+    public synchronized AntiAliasingMode mode() {
+        return config.mode;
+    }
+
+    /**
+     * Coordinates record metrics enabled within the anti-aliasing render, configuration, or compatibility flow.
+     * @return whether the operation or state is enabled
+     */
+    public synchronized boolean recordMetricsEnabled() {
+        return config.recordMetrics;
+    }
+
+    /**
+     * Applies a mutation, re-sanitizes the config, and persists the new value.
+     */
+    public synchronized void edit(Consumer<AntiAliasingConfig> editor) {
+        AntiAliasingConfig previous = config.copy();
+        editor.accept(config);
+        config.sanitize();
+        save();
+        MetricsDiagnostics.info(
+                "configuration",
+                "configuration_changed",
+                "configPath", configPath,
+                "previous", MetricsDiagnostics.configSnapshot(previous),
+                "current", MetricsDiagnostics.configSnapshot(config)
+        );
+    }
+
+    /**
+     * Writes the current config to disk.
+     */
+    public synchronized void save() {
+        try {
+            Files.createDirectories(configPath.getParent());
+            try (Writer writer = Files.newBufferedWriter(configPath)) {
+                GSON.toJson(config, writer);
+            }
+        } catch (IOException exception) {
+            SaltsAntiAliasing.LOGGER.error("Failed to save config to {}", configPath, exception);
+            MetricsDiagnostics.error(
+                    "configuration",
+                    "configuration_save_failed",
+                    exception,
+                    "configPath", configPath,
+                    "configuration", MetricsDiagnostics.configSnapshot(config)
+            );
+        }
+    }
+}

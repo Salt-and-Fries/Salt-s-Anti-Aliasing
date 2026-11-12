@@ -1,0 +1,128 @@
+// VulkanMod-backed targets share their GPU implementation, not Minecraft's native Vulkan APIs.
+group = rootProject.group
+
+// Only Mod Menu's public screen-factory API is needed for compilation. Some historical
+// POMs pull unrelated optional integrations from repositories their API does not need.
+configurations.matching { it.name == 'modCompileOnly' }.configureEach { configuration ->
+    configuration.dependencies.withType(ExternalModuleDependency).all { dependency ->
+        if (dependency.group == 'com.terraformersmc' && dependency.name == 'modmenu')
+            dependency.transitive = false
+    }
+}
+
+if (project.hasProperty('clientJavaHome')) {
+    tasks.withType(JavaExec).configureEach {
+        executable = new File(project.property('clientJavaHome').toString(), 'bin/java.exe').absolutePath
+    }
+}
+
+sourceSets.main {
+    java.srcDir rootProject.file('versions/vulkanmod/src/main/java')
+    java.srcDir rootProject.file('versions/vulkanmod/fabric/src/main/java')
+    java.srcDir rootProject.file("versions/vulkanmod/adapters/${project.vulkanmod_adapter}/src/main/java")
+    if (!(project.vulkanmod_adapter in ['mc1_18_2', 'mc1_19_2', 'mc1_19_3', 'mc1_19_4', 'mc1_20']))
+        java.srcDir rootProject.file('versions/vulkanmod/adapters/shared_object_backend/src/main/java')
+    if (!(project.vulkanmod_adapter in ['mc1_18_2', 'mc1_19_2', 'mc1_19_3', 'mc1_19_4', 'mc1_20_2', 'mc1_20_5']))
+        java.srcDir rootProject.file('versions/vulkanmod/adapters/shared_arena_upload/src/main/java')
+    resources.srcDir rootProject.file('versions/26.2/common/src/main/resources')
+    resources.srcDir rootProject.file('versions/vulkanmod/src/main/resources')
+    resources.exclude 'pack.mcmeta'
+}
+
+dependencies {
+    if (project.minecraft_version in ['1.18.2', '1.19.2']) {
+        // These games predate Minecraft's JOML migration. VulkanMod supplies the
+        // same library in its published jar; Loom needs it explicitly in development.
+        compileOnly 'org.joml:joml:1.10.4'
+        runtimeOnly 'org.joml:joml:1.10.4'
+    }
+    if (project.minecraft_version.startsWith('26.'))
+        implementation "maven.modrinth:vulkanmod:${project.vulkanmod_version_id}"
+    else
+        modImplementation "maven.modrinth:vulkanmod:${project.vulkanmod_version_id}"
+    compileOnly "org.lwjgl:lwjgl-vulkan:${project.vulkanmod_lwjgl_version}"
+    compileOnly "org.lwjgl:lwjgl-vma:${project.vulkanmod_lwjgl_version}"
+    compileOnly "org.lwjgl:lwjgl-shaderc:${project.vulkanmod_lwjgl_version}"
+    // Loom does not put VulkanMod's non-mod nested libraries on the development classpath.
+    // VulkanMod already provides these in a player's installation; keep them out of our jar.
+    runtimeOnly "org.lwjgl:lwjgl-vulkan:${project.vulkanmod_lwjgl_version}"
+    runtimeOnly "org.lwjgl:lwjgl-vma:${project.vulkanmod_lwjgl_version}"
+    runtimeOnly "org.lwjgl:lwjgl-shaderc:${project.vulkanmod_lwjgl_version}"
+    runtimeOnly "org.lwjgl:lwjgl-vma:${project.vulkanmod_lwjgl_version}:natives-windows"
+    runtimeOnly "org.lwjgl:lwjgl-shaderc:${project.vulkanmod_lwjgl_version}:natives-windows"
+}
+
+if (project.minecraft_version == '1.18.2') {
+    // Match the LWJGL libraries shipped by this VulkanMod release instead of the
+    // game's 3.2.x libraries, including their matching native classifiers.
+    configurations.configureEach {
+        resolutionStrategy.eachDependency { dependency ->
+            if (dependency.requested.group == 'org.lwjgl') dependency.useVersion(project.vulkanmod_lwjgl_version)
+        }
+    }
+}
+
+loom {
+    runs.client {
+        runDir rootProject.file("run/${project.minecraft_version}").absolutePath
+        vmArg '-Dorg.lwjgl.system.stackSize=512'
+        if (project.hasProperty('dlssRuntimeDirectory'))
+            vmArg "-Dsalts.dlss.pluginPath=${rootProject.file(project.property('dlssRuntimeDirectory')).absolutePath}"
+    }
+}
+
+processResources {
+    // The raw Vulkan backend compiles its GLSL directly. Newer Minecraft post-chain JSON
+    // would otherwise be parsed (and rejected) by older clients during resource reload.
+    exclude 'assets/salts_anti_aliasing/post_effect/**'
+    from(rootProject.file('native/redist')) {
+        into 'assets/salts_anti_aliasing/native'
+    }
+}
+
+jar {
+    exclude '**/nvngx_*.dll', '**/sl.*.dll', '**/NvLowLatencyVk.dll', '**/native/dlss/**/bundle.properties'
+}
+
+def legacyValidation = project.hasProperty('vulkanmod_legacy_validation') && project.vulkanmod_legacy_validation
+fabricApi.configureTests {
+    createSourceSet = true
+    modId = 'salts_anti_aliasing_validation'
+    enableGameTests = false
+    enableClientGameTests = !legacyValidation
+    clearRunDirectory = false
+}
+if (legacyValidation) {
+    loom.runs.create('clientGameTest') {
+        inherit loom.runs.client
+        source sourceSets.gametest
+        programArgs '--username', 'Player0'
+    }
+    tasks.named('runClientGameTest') {
+        doFirst {
+            def result = rootProject.file("run/${project.minecraft_version}/validation/salts-validation-result.json")
+            if (result.exists()) result.delete()
+        }
+        doLast {
+            def result = rootProject.file("run/${project.minecraft_version}/validation/salts-validation-result.json")
+            if (!result.exists()) throw new GradleException('Legacy client validation exited without a result')
+            def report = new groovy.json.JsonSlurper().parse(result)
+            if (report.status != 'PASS') throw new GradleException("Legacy client validation failed: ${report.failure}")
+        }
+    }
+}
+sourceSets.gametest {
+    java.srcDir rootProject.file("versions/vulkanmod/adapters/${project.vulkanmod_adapter}/src/gametest/java")
+    resources.srcDir rootProject.file("versions/vulkanmod/adapters/${project.vulkanmod_adapter}/src/gametest/resources")
+}
+loom.runs.named('clientGameTest') {
+    runDir rootProject.file("run/${project.minecraft_version}/validation").absolutePath
+    vmArg '-Dorg.lwjgl.system.stackSize=512'
+    if (project.hasProperty('dlssRuntimeDirectory'))
+        vmArg "-Dsalts.dlss.pluginPath=${rootProject.file(project.property('dlssRuntimeDirectory')).absolutePath}"
+    programArgs '--width', '1280', '--height', '720'
+}
+
+apply from: rootProject.file('gradle/vulkanmod-artifact.gradle')
+apply from: rootProject.file('gradle/vulkanmod-production-validation.gradle')
+apply from: rootProject.file('gradle/vulkanmod-validation-evidence.gradle')

@@ -1,0 +1,1384 @@
+{
+  "schema": 1,
+  "hardware": "Windows 11 / NVIDIA GeForce RTX 3060 Ti / NVIDIA 591.86",
+  "validationLayerSha256": "ae8cb2a1efa9860976029ae7d15957f9eb3393e22df29ffe584e555abeae8999",
+  "artifacts": {
+    "1.18.2": {
+      "jar": "versions/1.18.2/fabric/build/libs/salts-anti-aliasing-mc1.18.2-1.1.jar",
+      "sha256": "8ac84a8cc2cd6f46188e206bb5b9c9b730e1b6408bd4a7c37f9bac8a17dfec6a",
+      "payloadSha256": "8a2de1874877b301af385042e71b887efa0e4c5af38af65f3eefc3b721a2d49a",
+      "bytes": 63156027,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "Temurin 17.0.19",
+          "log": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation/1.18.2-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.18.2/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.18.2/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 568,
+          "displayPresentsAtFgCheck": 1134,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "JOtvsq3o",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.18.2-1.1.jar"
+    },
+    "1.19.2": {
+      "jar": "versions/1.19.2/fabric/build/libs/salts-anti-aliasing-mc1.19.2-1.1.jar",
+      "sha256": "c620b99db6aab8fc195a4aa34cb7b3c0e6b90b1cbb30ddbf0c8cc5e242658f9b",
+      "payloadSha256": "b0974c2bee16822af21aaaf79e8e604833730b8fe5aaf2c22e0eb92c8c6d3d0d",
+      "bytes": 63145775,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "Temurin 17.0.19",
+          "log": "tmp/vulkanmod-port/java21-builds-and-old-depth-idle-final.log",
+          "layerLog": "tmp/vulkanmod-port/old-depth-idle-final-validation/1.19.2-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.19.2/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.19.2/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 585,
+          "displayPresentsAtFgCheck": 1168,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "W6KPVWT3",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.19.2-1.1.jar"
+    },
+    "1.19.3": {
+      "jar": "versions/1.19.3/fabric/build/libs/salts-anti-aliasing-mc1.19.3-1.1.jar",
+      "sha256": "7218828a39b6a26db3fb6a7b06f3e3a8094f4d650cfc6c9c225c433d73f8217e",
+      "payloadSha256": "8ecaec206fd76c102b497d3ffc24ec843b72c547425fb57f3f53c8966167d65d",
+      "bytes": 63143364,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "Temurin 17.0.19",
+          "log": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation/1.19.3-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.19.3/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.19.3/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 562,
+          "displayPresentsAtFgCheck": 1122,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "mslg9G1S",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.19.3-1.1.jar"
+    },
+    "1.19.4": {
+      "jar": "versions/1.19.4/fabric/build/libs/salts-anti-aliasing-mc1.19.4-1.1.jar",
+      "sha256": "9e7c5e0d1b912a14b409a5c2a7f7a9288a374814b1435dcb578f8bec4ff9827a",
+      "payloadSha256": "146bd8049bb6bf90d10b6a16c37b4040c0d77b8b7c9db7db5d6e04d0515b1d4e",
+      "bytes": 63121731,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "Temurin 17.0.19",
+          "log": "tmp/vulkanmod-port/java21-builds-and-old-depth-idle-final.log",
+          "layerLog": "tmp/vulkanmod-port/old-depth-idle-final-validation/1.19.4-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.19.4/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.19.4/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 549,
+          "displayPresentsAtFgCheck": 1096,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "rGsZuGn8",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.19.4-1.1.jar"
+    },
+    "1.20": {
+      "jar": "versions/1.20/fabric/build/libs/salts-anti-aliasing-mc1.20-1.1.jar",
+      "sha256": "ba1beefde10ac9470ff7b9390af6d254746bc5749504b0624ee9cb15b12ab254",
+      "payloadSha256": "06c5d0a8080766ad82188244a33f2e0fa6062326541181306d4e89b60cd12b5a",
+      "bytes": 63116485,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "Temurin 17.0.19",
+          "log": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation/1.20-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.20/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.20/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 599,
+          "displayPresentsAtFgCheck": 1194,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "ZhvilXaM",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.20-1.1.jar"
+    },
+    "1.20.1": {
+      "jar": "versions/1.20.1/fabric/build/libs/salts-anti-aliasing-mc1.20.1-1.1.jar",
+      "sha256": "4f211fcc91ed10798f2adb7e6b8eb074d018b8d6a7b2d5c3d5e29a902b6304f7",
+      "payloadSha256": "a6f59f3807fd254a1b6e3eb4ca208489a1cca31a1b0e95cead9f8c5eb3924913",
+      "bytes": 63116490,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "Temurin 17.0.19",
+          "log": "tmp/vulkanmod-port/1.20.1-collected-jar-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/1.20.1-collected-jar-final-validation/1.20.1-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.20.1/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.20.1/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 598,
+          "displayPresentsAtFgCheck": 1192,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "ZhvilXaM",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.20.1-1.1.jar"
+    },
+    "1.20.2": {
+      "jar": "versions/1.20.2/fabric/build/libs/salts-anti-aliasing-mc1.20.2-1.1.jar",
+      "sha256": "b4ffd944c31267a73e815c6ddef815d2d6ca5f5bdb6526ceef17fb05c5635e3e",
+      "payloadSha256": "54f90f2c461a2c27ce1dca688fd8200ca348e5a2c5eb868c2aae0c01c7060703",
+      "bytes": 63116209,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "Temurin 17.0.19",
+          "log": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation/1.20.2-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.20.2/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.20.2/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 589,
+          "displayPresentsAtFgCheck": 1174,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "nC4iQVVW",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.20.2-1.1.jar"
+    },
+    "1.20.3": {
+      "jar": "versions/1.20.3/fabric/build/libs/salts-anti-aliasing-mc1.20.3-1.1.jar",
+      "sha256": "42aa023c06092c7eb82de88b1fc3a54950cee573f75214182af349e3e51287c0",
+      "payloadSha256": "2dd51cdf671388e1a9b02c9258c687dff43b5e6f5edf497e484045aa5442d956",
+      "bytes": 63115862,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "Temurin 17.0.19",
+          "log": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation/1.20.3-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.20.3/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.20.3/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 586,
+          "displayPresentsAtFgCheck": 1170,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "hZjQjfpD",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.20.3-1.1.jar"
+    },
+    "1.20.4": {
+      "jar": "versions/1.20.4/fabric/build/libs/salts-anti-aliasing-mc1.20.4-1.1.jar",
+      "sha256": "da62b0392e7167f1b7be5f310dc2a6a158f7ff0260bdfca85b1d98877b557063",
+      "payloadSha256": "a9899d6d1c8fa5eec691ade8099584b4bb0cafcc975db05de94746cdcc9519aa",
+      "bytes": 63115858,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "Temurin 17.0.19",
+          "log": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java17-final-atlas-and-sync-validation/1.20.4-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.20.4/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.20.4/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 591,
+          "displayPresentsAtFgCheck": 1178,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "hZjQjfpD",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.20.4-1.1.jar"
+    },
+    "1.20.5": {
+      "jar": "versions/1.20.5/fabric/build/libs/salts-anti-aliasing-mc1.20.5-1.1.jar",
+      "sha256": "436d1406302afcce030ae484ba30518dbf4689ea353ef47a4fce89951d5e1ad5",
+      "payloadSha256": "ca3ce38744c43673989d1b34ece4243368a3dad8dc6bfc0c9c5d0dd2a10c9eac",
+      "bytes": 63111708,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 21.0.11",
+          "log": "tmp/vulkanmod-port/java21-resize-copy-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java21-resize-copy-final-validation/1.20.5-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.20.5/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.20.5/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 587,
+          "displayPresentsAtFgCheck": 1172,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "bPsylH8I",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.20.5-1.1.jar"
+    },
+    "1.20.6": {
+      "jar": "versions/1.20.6/fabric/build/libs/salts-anti-aliasing-mc1.20.6-1.1.jar",
+      "sha256": "18f6f78c345307a405d5c104f3b47835af3062b90959778e3e841a88d90b62c2",
+      "payloadSha256": "a6da124ec89d95562b919b453b6be291a66631a8aa968535658dd79f3b3ef480",
+      "bytes": 63111708,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 21.0.11",
+          "log": "tmp/vulkanmod-port/java21-resize-copy-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java21-resize-copy-final-validation/1.20.6-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.20.6/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.20.6/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 588,
+          "displayPresentsAtFgCheck": 1174,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "bPsylH8I",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.20.6-1.1.jar"
+    },
+    "1.21": {
+      "jar": "versions/1.21/fabric/build/libs/salts-anti-aliasing-mc1.21-1.1.jar",
+      "sha256": "1954d237601f61881f838ac04fda3143681636312f3a3e5442235ecf63e52d60",
+      "payloadSha256": "0c9680fd6b5ea27ebd26e58db1bb33e17e0c93518907e2c92f998d34b6d187f2",
+      "bytes": 63111605,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 21.0.11",
+          "log": "tmp/vulkanmod-port/java21-copy-sampler-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java21-copy-sampler-final-validation/1.21-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.21/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.21/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 564,
+          "displayPresentsAtFgCheck": 1124,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "2eqroDKD",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.21-1.1.jar"
+    },
+    "1.21.1": {
+      "jar": "versions/1.21.1/fabric/build/libs/salts-anti-aliasing-mc1.21.1-1.1.jar",
+      "sha256": "2378ab443a4940284dfe72577305455a4df965ed4d27a69ed3ab85d01a96ebb2",
+      "payloadSha256": "f668ae5cb72d1aacb847575ee275918c332aa3379e443eec126c605ec46ebf66",
+      "bytes": 63111607,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 21.0.11",
+          "log": "tmp/vulkanmod-port/java21-copy-sampler-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java21-copy-sampler-final-validation/1.21.1-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.21.1/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.21.1/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 565,
+          "displayPresentsAtFgCheck": 1126,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "2eqroDKD",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.21.1-1.1.jar"
+    },
+    "1.21.2": {
+      "jar": "versions/1.21.2/fabric/build/libs/salts-anti-aliasing-mc1.21.2-1.1.jar",
+      "sha256": "7312c9847f17c45855e63435351bb5867ec3c3e27d1052d5a121bc408402de08",
+      "payloadSha256": "cf6f9c9234a5f668bb534e805267e59913d16c344fdd9d593250c86c80e77885",
+      "bytes": 63110290,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 21.0.11",
+          "log": "tmp/vulkanmod-port/java21-copy-sampler-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java21-copy-sampler-final-validation/1.21.2-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.21.2/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.21.2/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 156,
+          "displayPresentsAtFgCheck": 310,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "mr9uxFGT",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.21.2-1.1.jar"
+    },
+    "1.21.3": {
+      "jar": "versions/1.21.3/fabric/build/libs/salts-anti-aliasing-mc1.21.3-1.1.jar",
+      "sha256": "22c256c43bb26e656981e0841359d150073f701177da96145323f9315af21227",
+      "payloadSha256": "8e8447cb8d5888c8fe732a51c856b3209a9e4b77b372f8d392d03d1c04696ebc",
+      "bytes": 63110290,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 21.0.11",
+          "log": "tmp/vulkanmod-port/java21-copy-sampler-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java21-copy-sampler-final-validation/1.21.3-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.21.3/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.21.3/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 156,
+          "displayPresentsAtFgCheck": 310,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "mr9uxFGT",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.21.3-1.1.jar"
+    },
+    "1.21.4": {
+      "jar": "versions/1.21.4/fabric/build/libs/salts-anti-aliasing-mc1.21.4-1.1.jar",
+      "sha256": "4d2275e0530fc093d4dc1717b847cf472b894cfc92f29324cd32afc99a45db11",
+      "payloadSha256": "c4d90476eca1f7ea8d3fd3cd0b7f89d17a1900e12a76d5b78734a2582e93e5ca",
+      "bytes": 63107781,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 21.0.11",
+          "log": "tmp/vulkanmod-port/java21-final-full-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java21-final-full-validation/1.21.4-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.21.4/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.21.4/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 161,
+          "displayPresentsAtFgCheck": 320,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "RAtVo03C",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.21.4-1.1.jar"
+    },
+    "1.21.5": {
+      "jar": "versions/1.21.5/fabric/build/libs/salts-anti-aliasing-mc1.21.5-1.1.jar",
+      "sha256": "d04a0150fbc83028e66b17f28e595462fe8751e30f060e13b0ffdf88a750e3aa",
+      "payloadSha256": "62037d931672e9d07e1956b01624bcc13676c461fcc5c86348cb0a1264600e92",
+      "bytes": 63110006,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 21.0.11",
+          "log": "tmp/vulkanmod-port/java21-final-full-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java21-final-full-validation/1.21.5-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.21.5/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.21.5/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 160,
+          "displayPresentsAtFgCheck": 318,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "7pYvUnJk",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.21.5-1.1.jar"
+    },
+    "1.21.9": {
+      "jar": "versions/1.21.9/fabric/build/libs/salts-anti-aliasing-mc1.21.9-1.1.jar",
+      "sha256": "0b54eba29a836f6e20deea14c8563215b98a75054edc65484311844ea14763f2",
+      "payloadSha256": "434111fa4933f19c9f9392e1f4b80da063ced3c472c92f6b5af03dc8ddbfcdae",
+      "bytes": 63103535,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 21.0.11",
+          "log": "tmp/vulkanmod-port/java21-resize-copy-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java21-resize-copy-final-validation/1.21.9-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.21.9/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.21.9/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 160,
+          "displayPresentsAtFgCheck": 318,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "jkDMvvWU",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.21.9-1.1.jar"
+    },
+    "1.21.10": {
+      "jar": "versions/1.21.10/fabric/build/libs/salts-anti-aliasing-mc1.21.10-1.1.jar",
+      "sha256": "f499e55e3148a66d544c138ea092526780df4a6615ede06f86987a3691f9da41",
+      "payloadSha256": "4e764467a895e00cd3b0c1e9f189f988be8d87f484f641d7357cb6ffca473576",
+      "bytes": 63103537,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 21.0.11",
+          "log": "tmp/vulkanmod-port/java21-resize-copy-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java21-resize-copy-final-validation/1.21.10-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.21.10/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.21.10/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 160,
+          "displayPresentsAtFgCheck": 318,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "jkDMvvWU",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.21.10-1.1.jar"
+    },
+    "1.21.11": {
+      "jar": "versions/1.21.11/fabric/build/libs/salts-anti-aliasing-mc1.21.11-1.1.jar",
+      "sha256": "c541bc59bc46d5a9d7ef0e911f86a313acfbc8b68288d3d26d2c2c2aac094dfe",
+      "payloadSha256": "6c05feb6b374c85688d9504de96ac9ce3f4731249eedbab5e2bf2576b4807ca6",
+      "bytes": 63101151,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 21.0.11",
+          "log": "tmp/vulkanmod-port/java21-resize-copy-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java21-resize-copy-final-validation/1.21.11-runPackagedClientValidation.txt",
+          "resultMarker": "run/1.21.11/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/1.21.11/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 160,
+          "displayPresentsAtFgCheck": 318,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "hWKRTXbQ",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc1.21.11-1.1.jar"
+    },
+    "26.1": {
+      "jar": "versions/26.1/fabric/build/libs/salts-anti-aliasing-mc26.1-1.1.jar",
+      "sha256": "c00b5b94bf409f66327815f91a3b9307ac37955a10c62bbecd76889d174736dc",
+      "payloadSha256": "f2990b2c0b7ab54c7704a9203d974c29fb90ff996a2991222adfe3139850c900",
+      "bytes": 63100219,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 25.0.3",
+          "log": "tmp/vulkanmod-port/java25-vulkanmod-and-root-build-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java25-vulkanmod-final-validation/26.1-runPackagedClientValidation.txt",
+          "resultMarker": "run/26.1/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/26.1/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 160,
+          "displayPresentsAtFgCheck": 318,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "CEmnv55N",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc26.1-1.1.jar"
+    },
+    "26.1.1": {
+      "jar": "versions/26.1.1/fabric/build/libs/salts-anti-aliasing-mc26.1.1-1.1.jar",
+      "sha256": "c237d2cb89f5c938651aa16e624638408d8a51cd685b1e77f88077ca714711f9",
+      "payloadSha256": "580992e122ef5924ab97363af0f10a1e4c9d9f82fa2e64a5117daa6770c14cc8",
+      "bytes": 63100220,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 25.0.3",
+          "log": "tmp/vulkanmod-port/java25-vulkanmod-and-root-build-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java25-vulkanmod-final-validation/26.1.1-runPackagedClientValidation.txt",
+          "resultMarker": "run/26.1.1/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/26.1.1/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 161,
+          "displayPresentsAtFgCheck": 320,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "CEmnv55N",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc26.1.1-1.1.jar"
+    },
+    "26.1.2": {
+      "jar": "versions/26.1.2/fabric/build/libs/salts-anti-aliasing-mc26.1.2-1.1.jar",
+      "sha256": "83f455fbf5ca003da3b7e681fdfb08a20f242f44d8cbf10d9054d5a57955e6f0",
+      "payloadSha256": "64a47f791d470bfdfe3a3301b0e723dfd9bdaa626f5dc51982461075058a7e64",
+      "bytes": 63100214,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 25.0.3",
+          "log": "tmp/vulkanmod-port/java25-vulkanmod-and-root-build-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/java25-vulkanmod-final-validation/26.1.2-runPackagedClientValidation.txt",
+          "resultMarker": "run/26.1.2/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/26.1.2/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 161,
+          "displayPresentsAtFgCheck": 320,
+          "qualityChecks": 55
+        }
+      },
+      "vulkanmodVersionId": "CEmnv55N",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      },
+      "suite": "Full 15 modes, all quality, lifecycle, UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc26.1.2-1.1.jar"
+    },
+    "26.2": {
+      "jar": "versions/26.2/fabric/build/libs/salts-anti-aliasing-mc26.2-1.1.jar",
+      "sha256": "a5277fc8beb26ebc736f64893a7d6f43c0f49a1531ae6fa591310d3c706395a9",
+      "payloadSha256": "28e4785b890ab6680c854f2a67056f043e876a2106b2e12ad971547d0432b1e1",
+      "bytes": 63191998,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 25.0.3",
+          "log": "tmp/vulkanmod-port/modern-default-and-root-build-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/modern-default-final-validation/26.2-runPackagedClientValidation.txt",
+          "resultMarker": "run/26.2/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/26.2/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "OFF",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 217,
+          "displayPresentsAtFgCheck": 432
+        },
+        "stable": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 25.0.3",
+          "log": "tmp/vulkanmod-port/modern-stable-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/modern-stable-final-validation/26.2-runPackagedClientValidation.txt",
+          "resultMarker": "run/26.2/packaged-validation-sodium-stable/salts-validation-result.json",
+          "clientLog": "run/26.2/packaged-validation-sodium-stable/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "OFF",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 214,
+          "displayPresentsAtFgCheck": 426
+        },
+        "beta": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 25.0.3",
+          "log": "tmp/vulkanmod-port/modern-beta-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/modern-beta-final-validation/26.2-runPackagedClientValidation.txt",
+          "resultMarker": "run/26.2/packaged-validation-sodium-beta/salts-validation-result.json",
+          "clientLog": "run/26.2/packaged-validation-sodium-beta/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "OFF",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 215,
+          "displayPresentsAtFgCheck": 428
+        }
+      },
+      "suite": "15-mode parity, hand target, settings UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc26.2-1.1.jar",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      }
+    },
+    "26.3": {
+      "jar": "versions/26.3/fabric/build/libs/salts-anti-aliasing-mc26.3-1.1.jar",
+      "sha256": "8dc5390d0090e866d5aed265a929ed34fb3b73b61a7382388826a684366a0d3d",
+      "payloadSha256": "f9076c885c4c79e71bf02c9dc20171e8ad4a2cdd05500e230386036fd7d59cfe",
+      "bytes": 63194459,
+      "status": "PASS",
+      "validationProfiles": {
+        "default": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 25.0.3",
+          "log": "tmp/vulkanmod-port/modern-default-and-root-build-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/modern-default-final-validation/26.3-runPackagedClientValidation.txt",
+          "resultMarker": "run/26.3/packaged-validation/salts-validation-result.json",
+          "clientLog": "run/26.3/packaged-validation/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "OFF",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 215,
+          "displayPresentsAtFgCheck": 428
+        },
+        "stable": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 25.0.3",
+          "log": "tmp/vulkanmod-port/modern-stable-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/modern-stable-final-validation/26.3-runPackagedClientValidation.txt",
+          "resultMarker": "run/26.3/packaged-validation-sodium-stable/salts-validation-result.json",
+          "clientLog": "run/26.3/packaged-validation-sodium-stable/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "OFF",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 215,
+          "displayPresentsAtFgCheck": 428
+        },
+        "beta": {
+          "status": "PASS",
+          "syncValidation": true,
+          "validationErrors": 0,
+          "clientJava": "JDK 25.0.3",
+          "log": "tmp/vulkanmod-port/modern-beta-final-validation.log",
+          "layerLog": "tmp/vulkanmod-port/modern-beta-final-validation/26.3-runPackagedClientValidation.txt",
+          "resultMarker": "run/26.3/packaged-validation-sodium-beta/salts-validation-result.json",
+          "clientLog": "run/26.3/packaged-validation-sodium-beta/logs/latest.log",
+          "renderedModes": [
+            "DLSS_SUPER_RESOLUTION",
+            "FSR1_UPSCALE",
+            "FSR2_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION",
+            "FSR3_SUPER_RESOLUTION_FRAME_GENERATION",
+            "FXAA",
+            "MSAA",
+            "NIS_UPSCALE",
+            "OFF",
+            "SGSR1_UPSCALE",
+            "SGSR2_SUPER_RESOLUTION",
+            "SMAA",
+            "SSAA",
+            "TAA",
+            "XESS_SUPER_RESOLUTION"
+          ],
+          "offBaselineCaptured": true,
+          "renderedPresentsAtFgCheck": 213,
+          "displayPresentsAtFgCheck": 424
+        }
+      },
+      "suite": "15-mode parity, hand target, settings UI, native evaluation, confirmed FG",
+      "releaseJar": "build/libs/salts-anti-aliasing-mc26.3-1.1.jar",
+      "nativeSha256": {
+        "dlss/windows-x86_64/salts_dlss_bridge.dll": "0f73f3f6b2c05eb3b2d1380dfc24562070856b4b2975bd7433486b65c2ab51d5",
+        "windows-x86_64/amd_fidelityfx_vk.dll": "2c2377d25819656704a4158e76a9af48db5c2bf20688d99fb6cec7c13e09347f",
+        "windows-x86_64/salts_fsr_bridge.dll": "908658015aa362feb480c8587f8d4e3743cec14e3838efe2000cf89f61155d34",
+        "xess/windows-x86_64/libxess.dll": "251659dd84a3e84de67c886a4186e01f3eca49b00641906fe38bb6b807e5d5b7",
+        "xess/windows-x86_64/salts_xess_bridge.dll": "9fafdec12a35987b3079148c4de8405c23ddaf880b19bc8db6e517a2a6cfcdad"
+      }
+    }
+  },
+  "qualifiedAtLocal": "2026-11-11T22:53:35",
+  "timezone": "America/Phoenix",
+  "officialFabricTargetsSource": "https://api.modrinth.com/v2/project/vulkanmod/version",
+  "officialFabricTargetsAuditSha256": "f8fb89a3bdb0fd2ab0564baa146febc6be4669291eeab6165d16b5612d940e7a",
+  "scope": "23 official VulkanMod Fabric targets plus built-in Vulkan 26.2/26.3; default/stable/beta Sodium profiles on both built-in targets",
+  "limits": "Tested Windows/NVIDIA scenarios; other operating systems, GPUs, drivers, resource packs and mod combinations require separate qualification. No performance benchmark.",
+  "unitTests": {
+    "vulkanmodBackend": {
+      "tests": 52,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "fabric26.2": {
+      "tests": 166,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "fabric26.3": {
+      "tests": 164,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "fidelityFxPatchSha256": "a7323b8abef3696c203c14fdc19519123759af2bb0c00eea2fa2c402270263c3",
+  "userSuppliedDlssRuntimeSha256": {
+    "NvLowLatencyVk.dll": "2a77dc3e1c724b7eea5755be0ae7423752e79a2459fae72181a9f00e3507e5d6",
+    "nvngx_dlss.dll": "3975567b8943c53acce397f2b72380092f84f162d00b0d2c7d08a1025c563983",
+    "sl.common.dll": "82924a8954dd671e09351c5de0eb87ad0eb25b944cc9f9ab955ca1d9950de15d",
+    "sl.dlss.dll": "73bf52c0cfaa5900a8f3f4a91306e4625e7cca696dfb305aae44c9f97b582e1f",
+    "sl.interposer.dll": "8c87c9499461da561edd529aa9bf7831d67d7b94ebb1c1a5ed54ef4934e1ea4c"
+  }
+}

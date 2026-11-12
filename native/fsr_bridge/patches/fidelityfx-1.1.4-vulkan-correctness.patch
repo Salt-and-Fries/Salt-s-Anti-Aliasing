@@ -1,5 +1,40 @@
+diff --git a/sdk/include/FidelityFX/gpu/fsr2/ffx_fsr2_callbacks_glsl.h b/sdk/include/FidelityFX/gpu/fsr2/ffx_fsr2_callbacks_glsl.h
+index 8d6964b..162dfcc 100644
+--- a/sdk/include/FidelityFX/gpu/fsr2/ffx_fsr2_callbacks_glsl.h
++++ b/sdk/include/FidelityFX/gpu/fsr2/ffx_fsr2_callbacks_glsl.h
+@@ -345,7 +345,7 @@ layout (set = 0, binding = 1001) uniform sampler s_LinearClamp;
+ 	layout (set = 0, binding = FSR2_BIND_UAV_DILATED_MOTION_VECTORS, rg16f)           writeonly uniform image2D  rw_dilated_motion_vectors;
+ #endif
+ #if defined FSR2_BIND_UAV_DILATED_DEPTH
+-	layout (set = 0, binding = FSR2_BIND_UAV_DILATED_DEPTH, r16f)                     writeonly uniform image2D  rw_dilatedDepth;
++	layout (set = 0, binding = FSR2_BIND_UAV_DILATED_DEPTH, r32f)                     writeonly uniform image2D  rw_dilatedDepth;
+ #endif
+ #if defined FSR2_BIND_UAV_INTERNAL_UPSCALED
+ 	layout (set = 0, binding = FSR2_BIND_UAV_INTERNAL_UPSCALED, rgba16f)              writeonly uniform image2D  rw_internal_upscaled_color;
+@@ -360,7 +360,7 @@ layout (set = 0, binding = 1001) uniform sampler s_LinearClamp;
+ 	layout(set = 0, binding = FSR2_BIND_UAV_NEW_LOCKS, r8)				 		      uniform image2D    rw_new_locks;
+ #endif
+ #if defined FSR2_BIND_UAV_PREPARED_INPUT_COLOR
+-	layout (set = 0, binding = FSR2_BIND_UAV_PREPARED_INPUT_COLOR, rgba16)            writeonly uniform image2D  rw_prepared_input_color;
++	layout (set = 0, binding = FSR2_BIND_UAV_PREPARED_INPUT_COLOR, rgba16f)           writeonly uniform image2D  rw_prepared_input_color;
+ #endif
+ #if defined FSR2_BIND_UAV_LUMA_HISTORY
+ 	layout (set = 0, binding = FSR2_BIND_UAV_LUMA_HISTORY, rgba8)                     uniform image2D  rw_luma_history;
+diff --git a/sdk/include/FidelityFX/gpu/fsr3upscaler/ffx_fsr3upscaler_callbacks_glsl.h b/sdk/include/FidelityFX/gpu/fsr3upscaler/ffx_fsr3upscaler_callbacks_glsl.h
+index d0cbf9d..c5bbbfc 100644
+--- a/sdk/include/FidelityFX/gpu/fsr3upscaler/ffx_fsr3upscaler_callbacks_glsl.h
++++ b/sdk/include/FidelityFX/gpu/fsr3upscaler/ffx_fsr3upscaler_callbacks_glsl.h
+@@ -395,7 +395,7 @@ FfxFloat32x4 SampleHistory(FfxFloat32x2 fUV)
+ #endif
+ 
+ #if defined(FSR3UPSCALER_BIND_UAV_LUMA_HISTORY)
+-layout (set = 0, binding = FSR3UPSCALER_BIND_UAV_LUMA_HISTORY, rgba8) uniform image2D  rw_luma_history;
++layout (set = 0, binding = FSR3UPSCALER_BIND_UAV_LUMA_HISTORY, rgba16f) uniform image2D  rw_luma_history;
+ 
+ void StoreLumaHistory(FfxInt32x2 iPxPos, FfxFloat32x4 fLumaHistory)
+ {
 diff --git a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.cpp b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.cpp
-index 5c47b25..5e4b9fc 100644
+index 5c47b25..eb9e030 100644
 --- a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.cpp
 +++ b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.cpp
 @@ -760,13 +760,13 @@ FfxErrorCode ffxFrameInterpolationSwapchainGetGpuMemoryUsageVK(FfxSwapchain game
@@ -43,7 +78,15 @@ index 5c47b25..5e4b9fc 100644
                                  // VK_SUBOPTIMAL_KHR & VK_ERROR_OUT_OF_DATE_KHR: the swapchain has been recreated
                                  FFX_ASSERT_MESSAGE_FORMAT(res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR || res == VK_ERROR_OUT_OF_DATE_KHR,
                                                            "presentToSwapChain failed with error %d",
-@@ -1123,7 +1123,6 @@ DWORD WINAPI composeAndPresent_presenterThread(LPVOID pParam)
+@@ -1069,6 +1069,7 @@ DWORD WINAPI copyAndPresent_presenterThread(LPVOID pParam)
+                     }
+ 
+                     numFramesSentForPresentation = entry.numFramesSentForPresentationBase + entry.numFramesToPresent;
++                    presenter->lastCompletedPresentIndex.store(numFramesSentForPresentation, std::memory_order_release);
+                 }
+             }
+         }
+@@ -1123,7 +1124,6 @@ DWORD WINAPI composeAndPresent_presenterThread(LPVOID pParam)
                          if (frameInfo.doPresent)
                          {
                              SubmissionSemaphores toSignal;
@@ -51,7 +94,7 @@ index 5c47b25..5e4b9fc 100644
  
                              // signal replacement buffer availability
                              // this is the last present of this entry
-@@ -1148,6 +1147,7 @@ DWORD WINAPI composeAndPresent_presenterThread(LPVOID pParam)
+@@ -1148,6 +1148,7 @@ DWORD WINAPI composeAndPresent_presenterThread(LPVOID pParam)
  
                              if (res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR)
                              {
@@ -59,7 +102,15 @@ index 5c47b25..5e4b9fc 100644
                                  toWait.add(acquireSemaphore);
  
                                  res = compositeSwapChainFrame(presenter,
-@@ -1481,12 +1481,7 @@ VkResult FrameInterpolationSwapChainVK::init(const VkSwapchainCreateInfoKHR* pCr
+@@ -1188,6 +1189,7 @@ DWORD WINAPI composeAndPresent_presenterThread(LPVOID pParam)
+                     }
+ 
+                     numFramesSentForPresentation = entry.numFramesSentForPresentationBase + entry.numFramesToPresent;
++                    presenter->lastCompletedPresentIndex.store(numFramesSentForPresentation, std::memory_order_release);
+                 }
+             }
+         }
+@@ -1481,12 +1483,7 @@ VkResult FrameInterpolationSwapChainVK::init(const VkSwapchainCreateInfoKHR* pCr
      // create non-timeline semaphores
      semaphoreCreateInfo.pNext = nullptr;
  
@@ -73,7 +124,7 @@ index 5c47b25..5e4b9fc 100644
      for (uint32_t i = 0; i < FFX_FRAME_INTERPOLATION_SWAP_CHAIN_MAX_ACQUIRE_SEMAPHORE_COUNT; ++i)
      {
          res = createSemaphoreFormat(presentInfo.acquireSemaphores[i], "AMD FSR AcquireSemaphore %d", i);
-@@ -1727,6 +1722,11 @@ void FrameInterpolationSwapChainVK::destroySwapchain(VkDevice device, const VkAl
+@@ -1727,6 +1724,11 @@ void FrameInterpolationSwapChainVK::destroySwapchain(VkDevice device, const VkAl
      if (device == VK_NULL_HANDLE)
          return;
  
@@ -85,7 +136,28 @@ index 5c47b25..5e4b9fc 100644
      auto destroySemaphore = [device, pAllocator](VkSemaphore& semaphore) {
          vkDestroySemaphore(device, semaphore, pAllocator);
          semaphore = VK_NULL_HANDLE;
-@@ -2283,7 +2283,7 @@ VkResult FrameInterpolationSwapChainVK::queuePresentNonInterpolated(VkCommands*
+@@ -1920,6 +1922,11 @@ bool FrameInterpolationSwapChainVK::waitForPresents()
+ 
+     FFX_ASSERT(waitRes);
+ 
++    // The present timeline is signaled before the presenter calls vkQueuePresentKHR.
++    // Wait for that host call to return before touching its externally synchronized queue.
++    while (presentInfo.lastCompletedPresentIndex.load(std::memory_order_acquire) < presentInfo.lastScheduledPresentIndex)
++        SwitchToThread();
++
+     // wait for queue idle too, to make sure all the semaphores are signaled
+     VkResult res = VK_SUCCESS; 
+     if (res == VK_SUCCESS && presentInfo.asyncComputeQueue.queue != VK_NULL_HANDLE)
+@@ -2233,6 +2240,8 @@ VkResult FrameInterpolationSwapChainVK::presentInterpolated(const VkPresentInfoK
+     }
+ 
+     presentInfo.resetTimer              = frameInterpolationResetCondition;
++    if (entry.numFramesToPresent > 0)
++        presentInfo.lastScheduledPresentIndex = entry.numFramesSentForPresentationBase + entry.numFramesToPresent;
+     presentInfo.scheduledInterpolations = entry;
+     LeaveCriticalSection(&presentInfo.scheduledFrameCriticalSection);
+ 
+@@ -2283,7 +2292,7 @@ VkResult FrameInterpolationSwapChainVK::queuePresentNonInterpolated(VkCommands*
  
      pCommands->execute(semaphoresToWait, semaphoresToSignal);
  
@@ -94,7 +166,7 @@ index 5c47b25..5e4b9fc 100644
      FFX_ASSERT_MESSAGE_FORMAT(presentRes == VK_SUCCESS || presentRes == VK_SUBOPTIMAL_KHR || presentRes == VK_ERROR_OUT_OF_DATE_KHR,
                                "[queuePresentNonInterpolated] present failed with error %d",
                                presentRes);
-@@ -2552,7 +2552,7 @@ VkResult FrameInterpolationSwapChainVK::presentNonInterpolatedWithUiCompositionO
+@@ -2552,7 +2561,7 @@ VkResult FrameInterpolationSwapChainVK::presentNonInterpolatedWithUiCompositionO
          FFX_ASSERT_MESSAGE_FORMAT(res == VK_SUCCESS, "[queuePresentNonInterpolated] queue family ownership transfer to present queue failed with error %d", res);
      }
  
@@ -103,6 +175,20 @@ index 5c47b25..5e4b9fc 100644
      FFX_ASSERT_MESSAGE_FORMAT(presentRes == VK_SUCCESS || presentRes == VK_SUBOPTIMAL_KHR || presentRes == VK_ERROR_OUT_OF_DATE_KHR,
                                "[queuePresentNonInterpolated] present failed with error %d",
                                presentRes);
+diff --git a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.h b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.h
+index 0218ade..20c2c0a 100644
+--- a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.h
++++ b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK.h
+@@ -190,6 +190,9 @@ struct FrameinterpolationPresentInfo
+     VkSemaphore compositionSemaphore                                                         = VK_NULL_HANDLE;
+ 
+     uint64_t    lastPresentSemaphoreValue = 0;
++    // A GPU timeline signal precedes vkQueuePresentKHR; track host completion too.
++    uint64_t lastScheduledPresentIndex = 0;
++    std::atomic<uint64_t> lastCompletedPresentIndex{0};
+ 
+     VkSemaphore acquireSemaphores[FFX_FRAME_INTERPOLATION_SWAP_CHAIN_MAX_ACQUIRE_SEMAPHORE_COUNT] = {};
+     uint32_t    nextAcquireSemaphoreIndex                                                         = 0;
 diff --git a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_DebugPacing.cpp b/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_DebugPacing.cpp
 index 48af082..5c46e01 100644
 --- a/sdk/src/backends/vk/FrameInterpolationSwapchain/FrameInterpolationSwapchainVK_DebugPacing.cpp
@@ -190,3 +276,16 @@ index 0aa8ea3..6881f0b 100644
  
  FFX_API FfxErrorCode ffxFrameInterpolationUiComposition(const FfxPresentCallbackDescription* params, void* unusedUserCtx);
 +void releaseUiCompositionForDevice(VkDevice device, const VkAllocationCallbacks* allocator);
+diff --git a/sdk/src/backends/vk/ffx_vk.cpp b/sdk/src/backends/vk/ffx_vk.cpp
+index d914479..71c10a2 100644
+--- a/sdk/src/backends/vk/ffx_vk.cpp
++++ b/sdk/src/backends/vk/ffx_vk.cpp
+@@ -1529,7 +1529,7 @@ FfxErrorCode CreateBackendContextVK(FfxInterface* backendInterface, FfxEffect ef
+         descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+         descriptorPoolCreateInfo.pNext = nullptr;
+         descriptorPoolCreateInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+-        descriptorPoolCreateInfo.poolSizeCount = 5;
++        descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(std::size(poolSizes));
+         descriptorPoolCreateInfo.pPoolSizes = poolSizes;
+         descriptorPoolCreateInfo.maxSets = backendContext->maxEffectContexts * FFX_MAX_PASS_COUNT * MAX_PIPELINE_USAGE_PER_FRAME * FFX_MAX_QUEUED_FRAMES;
+ 

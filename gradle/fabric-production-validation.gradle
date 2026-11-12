@@ -1,0 +1,64 @@
+import groovy.json.JsonSlurper
+import net.fabricmc.loom.task.prod.ClientProductionRunTask
+import org.gradle.process.ExecSpec
+
+/** Runs the public modern jar with the same runtime and layer evidence as older ports. */
+abstract class SaltsModernProductionClientTask extends ClientProductionRunTask {
+    @Override
+    protected void configureCommand(ExecSpec exec) {
+        if (project.hasProperty('clientJavaHome'))
+            exec.commandLine(new File(project.property('clientJavaHome').toString(), 'bin/java.exe').absolutePath)
+        else
+            super.configureCommand(exec)
+        if (project.hasProperty('vulkanValidationLogDirectory'))
+            exec.environment 'VK_KHRONOS_VALIDATION_LOG_FILENAME',
+                    new File(project.rootProject.file(project.property('vulkanValidationLogDirectory')),
+                            "${project.minecraft_version}-${name}.txt").absolutePath
+    }
+}
+
+dependencies {
+    productionRuntimeMods "net.fabricmc.fabric-api:fabric-api:${project.minecraft_version == '26.2' ? project.fabric_version_26_2 : project.fabric_version}"
+    if (project.hasProperty('sodiumProfile'))
+        productionRuntimeMods "maven.modrinth:sodium:${project.property('sodiumProfile') == 'stable' ? project.sodium_stable_runtime : project.sodium_beta_runtime}"
+}
+
+def validationJar = tasks.register('validationJar', Jar) {
+    archiveClassifier = 'validation'
+    destinationDirectory = layout.buildDirectory.dir('validation')
+    from sourceSets.gametest.output
+}
+
+tasks.register('runPackagedClientValidation', SaltsModernProductionClientTask) {
+    group = 'verification'
+    description = 'Exercises the distributable jar on Minecraft Vulkan in an isolated validation world.'
+    dependsOn tasks.named('verifyPublicJar')
+    if (project.hasProperty('sodiumProfile')) dependsOn tasks.named('verifySodiumRuntime')
+    mods.from tasks.named('jar'), validationJar
+    def suffix = project.hasProperty('sodiumProfile') ? "-sodium-${project.property('sodiumProfile')}" : ''
+    runDir = rootProject.layout.projectDirectory.dir("run/${project.minecraft_version}/packaged-validation${suffix}")
+    programArgs.addAll '--username', 'Player0', '--version', project.minecraft_version, '--accessToken', 'FabricMC',
+            '--graphicsBackend', 'VULKAN', '--width', '1280', '--height', '720'
+    jvmArgs.addAll '-Dfabric.client.gametest', '-Dfabric.client.gametest.modid=salts_anti_aliasing_validation'
+    if (project.hasProperty('dlssRuntimeDirectory'))
+        jvmArgs.add "-Dsalts.dlss.pluginPath=${rootProject.file(project.property('dlssRuntimeDirectory')).absolutePath}"
+    doFirst {
+        def result = runDir.file('salts-validation-result.json').get().asFile
+        if (result.exists() && !result.delete()) throw new GradleException("Cannot clear previous result: ${result}")
+    }
+    doLast {
+        def result = runDir.file('salts-validation-result.json').get().asFile
+        if (!result.isFile() || new JsonSlurper().parse(result).status != 'PASS')
+            throw new GradleException("Packaged validation did not pass: ${result}")
+    }
+}
+
+gradle.projectsEvaluated {
+    tasks.named('runPackagedClientValidation') {
+        rootProject.allprojects.each { target ->
+            mustRunAfter target.tasks.matching { it.name == 'downloadAssets' }
+        }
+    }
+}
+
+apply from: rootProject.file('gradle/vulkanmod-validation-evidence.gradle')

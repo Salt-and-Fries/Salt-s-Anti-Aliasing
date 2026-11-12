@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "salts_anti_aliasing_validation",
+  "version": "1.0.0",
+  "name": "Salt's Anti Aliasing 26.2 GPU validation",
+  "environment": "client",
+  "mixins": ["salts_anti_aliasing.validation.mixins.json"],
+  "entrypoints": {
+    "fabric-client-gametest": [
+      "org.betterLostItems.salts_anti_aliasing.validation.AntiAliasingParityTest"
+    ]
+  },
+  "depends": {
+    "salts_anti_aliasing": "*",
+    "fabric-client-gametest-api-v1": "*"
+  }
+}

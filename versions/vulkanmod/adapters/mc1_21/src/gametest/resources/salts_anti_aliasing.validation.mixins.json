@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "org.betterLostItems.salts_anti_aliasing.validation.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ScreenshotFrameMixin",
+    "CreateWorldAccessor",
+    "TerrainProjectionMixin",
+    "VulkanImageNamesMixin",
+    "ValidationCallsiteMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

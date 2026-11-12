@@ -1,0 +1,25 @@
+// A requested Khronos validation run must also complete native resource teardown cleanly.
+def verifyValidationLog = { configuredLog ->
+    if (!configuredLog) return
+    def log = new File(configuredLog)
+    if (!log.isFile()) throw new GradleException("Vulkan validation did not produce its requested log: ${log}")
+    def errors = log.getText('UTF-8').split('Validation Error:').toList().drop(1)
+    if (!errors.isEmpty())
+        throw new GradleException("Vulkan validation failed (${errors.size()} errors). See ${log.absolutePath}\n${errors.first().take(1800)}")
+}
+for (taskName in ['runClientGameTest', 'runPackagedClientValidation']) {
+    tasks.named(taskName).configure { validationTask ->
+        def directory = project.findProperty('vulkanValidationLogDirectory')
+        def configuredLog = directory
+                ? new File(rootProject.file(directory), "${project.minecraft_version}-${validationTask.name}.txt").absolutePath
+                : System.getenv('VK_KHRONOS_VALIDATION_LOG_FILENAME')
+        if (directory && validationTask instanceof JavaExec)
+            validationTask.environment 'VK_KHRONOS_VALIDATION_LOG_FILENAME', configuredLog
+        if (directory) doFirst {
+            def log = new File(configuredLog)
+            log.parentFile.mkdirs()
+            if (log.exists() && !log.delete()) throw new GradleException("Cannot clear previous validation log: ${log}")
+        }
+        doLast { verifyValidationLog(configuredLog) }
+    }
+}

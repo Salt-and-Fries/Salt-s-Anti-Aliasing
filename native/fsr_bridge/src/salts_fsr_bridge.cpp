@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <chrono>
 #include <cstdlib>
+#include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <map>
@@ -755,6 +756,9 @@ VkResult create_frame_generation_swapchain(
             || create_info == nullptr
             || out_swapchain == nullptr
             || device != g_vk_device) {
+        std::fprintf(stderr, "Salt's FSR: swapchain prerequisites unavailable (initialized=%d provider=%d swapchainProvider=%d queues=%d deviceMatch=%d)\n",
+                g_initialized, g_frame_generation_provider_available, g_frame_generation_swapchain_provider_available,
+                g_frame_generation_queues_available, device == g_vk_device);
         return VK_ERROR_FEATURE_NOT_PRESENT;
     }
 
@@ -763,9 +767,11 @@ VkResult create_frame_generation_swapchain(
         return VK_ERROR_FORMAT_NOT_SUPPORTED;
     }
     if (!queue_supports_present(g_vk_frame_generation_present_queue_family, create_info->surface)) {
+        std::fprintf(stderr, "Salt's FSR: private queue family cannot present to this surface\n");
         return VK_ERROR_FEATURE_NOT_PRESENT;
     }
     if (g_frame_generation_swapchain != VK_NULL_HANDLE) {
+        std::fprintf(stderr, "Salt's FSR: previous frame-generation swapchain is still alive\n");
         return VK_ERROR_INITIALIZATION_FAILED;
     }
 
@@ -797,6 +803,7 @@ VkResult create_frame_generation_swapchain(
 
         ffxReturnCode_t result = g_ffx_create_context(&g_frame_generation_swapchain_context, &create_desc.header, nullptr);
         if (result != FFX_API_RETURN_OK) {
+            std::fprintf(stderr, "Salt's FSR: swapchain context creation failed with FidelityFX code %u\n", static_cast<unsigned>(result));
             destroy_frame_generation_swapchain_context();
             return VK_ERROR_FEATURE_NOT_PRESENT;
         }
@@ -813,6 +820,7 @@ VkResult create_frame_generation_swapchain(
                 || replacement_query.pOutAcquireNextImageKHR == nullptr
                 || replacement_query.pOutQueuePresentKHR == nullptr
                 || replacement_query.pOutGetLastPresentCountFFXAPI == nullptr) {
+            std::fprintf(stderr, "Salt's FSR: swapchain replacement query failed with FidelityFX code %u\n", static_cast<unsigned>(result));
             destroy_frame_generation_swapchain_context();
             return VK_ERROR_FEATURE_NOT_PRESENT;
         }
@@ -846,6 +854,7 @@ VkResult create_frame_generation_swapchain(
             g_frame_generation_swapchain_height,
             backbuffer_format);
     if (framegen_result != FFX_API_RETURN_OK) {
+        std::fprintf(stderr, "Salt's FSR: frame-generation context creation failed with FidelityFX code %u\n", static_cast<unsigned>(framegen_result));
         destroy_frame_generation_swapchain_context();
         return VK_ERROR_FEATURE_NOT_PRESENT;
     }
@@ -1102,6 +1111,17 @@ Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativ
             && g_frame_generation_swapchain != VK_NULL_HANDLE
             ? JNI_TRUE
             : JNI_FALSE;
+#endif
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_betterLostItems_salts_1anti_1aliasing_client_render_vulkan_fsr_FsrNativeBridge_waitForPresentsNative(
+        JNIEnv*, jclass) {
+    std::lock_guard<std::mutex> lock(g_mutex);
+#if defined(SALTS_FSR_WITH_FFX_SDK)
+    // vkDeviceWaitIdle requires external synchronization of every device queue,
+    // including the replacement swapchain's background presentation queue.
+    drain_frame_generation_work();
 #endif
 }
 

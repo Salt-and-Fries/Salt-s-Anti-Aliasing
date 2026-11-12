@@ -1,0 +1,253 @@
+package org.betterLostItems.salts_anti_aliasing.mixin.client;
+
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanFeatureSupport;
+
+import com.mojang.blaze3d.shaders.GpuDebugOptions;
+import com.mojang.blaze3d.systems.BackendCreationException;
+import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.blaze3d.vulkan.VulkanPhysicalDevice;
+import com.mojang.blaze3d.vulkan.VulkanBackend;
+import com.mojang.blaze3d.shaders.ShaderSource;
+import com.mojang.blaze3d.vulkan.init.VulkanFeature;
+import com.mojang.blaze3d.vulkan.init.VulkanPNextStruct;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss.DlssRuntime;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.fsr.FsrRuntime;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.vulkan.EXTDescriptorIndexing;
+import org.lwjgl.vulkan.EXTSubgroupSizeControl;
+import org.lwjgl.vulkan.KHRDedicatedAllocation;
+import org.lwjgl.vulkan.KHRGetMemoryRequirements2;
+import org.lwjgl.vulkan.KHRShaderFloat16Int8;
+import org.lwjgl.vulkan.VK12;
+import org.lwjgl.vulkan.VkDevice;
+import org.lwjgl.vulkan.VkPhysicalDeviceDescriptorIndexingFeatures;
+import org.lwjgl.vulkan.VkPhysicalDeviceFeatures2;
+import org.lwjgl.vulkan.VkPhysicalDeviceSubgroupSizeControlFeatures;
+import org.lwjgl.vulkan.VkPhysicalDeviceVulkan12Features;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Gives optional native upscalers a chance to initialize before Vulkan handles are created.
+ */
+@Mixin(targets = "com.mojang.blaze3d.vulkan.VulkanBackend")
+public abstract class VulkanBackendMixin {
+    @Shadow
+    private static VkDevice createDevice(
+            Collection<String> deviceExtensions,
+            VulkanPhysicalDevice physicalDevice,
+            Set<VulkanFeature> vulkanFeatures
+    ) throws BackendCreationException {
+        throw new AssertionError();
+    }
+
+    @Inject(method = "createDevice(JLcom/mojang/blaze3d/shaders/ShaderSource;Lcom/mojang/blaze3d/shaders/GpuDebugOptions;Ljava/lang/Runnable;)Lcom/mojang/blaze3d/systems/GpuDevice;", at = @At("HEAD"))
+    private void saltsAntiAliasing$preInitializeDlss(
+            long window, ShaderSource shaderSource, GpuDebugOptions debugOptions, Runnable criticalShaderLoader,
+            CallbackInfoReturnable<GpuDevice> callbackInfo
+    ) throws BackendCreationException {
+        MetricsDiagnostics.info(
+                "vulkan.device",
+                "native_upscaler_preinitialization",
+                "gpuDebugOptions", debugOptions
+        );
+        DlssRuntime.instance().preInitializeFromEnvironment();
+        FsrRuntime.instance().preInitializeFromEnvironment();
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.xess.XessRuntime.instance().preInitializeFromEnvironment();
+    }
+
+    @Redirect(
+            method = "createDevice(JLcom/mojang/blaze3d/shaders/ShaderSource;Lcom/mojang/blaze3d/shaders/GpuDebugOptions;Ljava/lang/Runnable;)Lcom/mojang/blaze3d/systems/GpuDevice;",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/vulkan/VulkanBackend;createDevice(Ljava/util/Collection;Lcom/mojang/blaze3d/vulkan/VulkanPhysicalDevice;Ljava/util/Set;)Lorg/lwjgl/vulkan/VkDevice;"
+            )
+    )
+    private VkDevice saltsAntiAliasing$createDeviceWithFidelityFxSupport(
+            Collection<String> originalExtensions,
+            VulkanPhysicalDevice physicalDevice,
+            Set<VulkanFeature> originalFeatures
+    ) throws BackendCreationException {
+        Set<String> deviceExtensions = new HashSet<>(originalExtensions);
+        Set<VulkanFeature> vulkanFeatures = new HashSet<>(originalFeatures);
+        saltsAntiAliasing$enableFidelityFxDeviceSupport(deviceExtensions, physicalDevice, vulkanFeatures);
+        saltsAntiAliasing$enableDlssDeviceSupport(deviceExtensions, physicalDevice, vulkanFeatures);
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.xess.XessDeviceRequirements.enable(deviceExtensions, vulkanFeatures, physicalDevice);
+        // Streamline uses the core private-data path when the instance advertises Vulkan 1.3.
+        // This bit must be enabled explicitly even though the extension became core.
+        if (physicalDevice.vkPhysicalDevice().getInstance().getCapabilities().apiVersion >= org.lwjgl.vulkan.VK13.VK_API_VERSION_1_3
+                && DlssRuntime.instance().hasConfiguredRuntime())
+            saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice, VulkanFeatureSupport.feature(VulkanFeatureSupport.struct(org.lwjgl.vulkan.VkPhysicalDevicePrivateDataFeatures.class), "privateData"));
+        var handShading = org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanMsaaCapabilities.HAND_SAMPLE_SHADING;
+        saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice, handShading);
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanDeviceFeatureNormalizer
+                .normalize(deviceExtensions, vulkanFeatures);
+        VkDevice device = createDevice(deviceExtensions, physicalDevice, vulkanFeatures);
+        org.betterLostItems.salts_anti_aliasing.client.render.vulkan.VulkanMsaaCapabilities
+                .recordSampleShading(device, vulkanFeatures.contains(handShading));
+        return device;
+    }
+
+    private static void saltsAntiAliasing$enableFidelityFxDeviceSupport(
+            Collection<String> deviceExtensions,
+            VulkanPhysicalDevice physicalDevice,
+            Set<VulkanFeature> vulkanFeatures
+    ) {
+        Set<String> extensionsBefore = Set.copyOf(deviceExtensions);
+        Set<VulkanFeature> featuresBefore = Set.copyOf(vulkanFeatures);
+        // FidelityFX's half-precision permutations also declare core SPIR-V Int16.
+        saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice,
+                VulkanFeatureSupport.feature(VulkanBackend.VK10_FEATURES_STRUCT, "shaderInt16"));
+        // The SDK's FG swapchain shaders use unformatted storage-image reads as well as writes.
+        // Blaze3D uses Vulkan 1.2, so physical-device support alone (or a 1.3 driver) is not enough.
+        boolean frameGenerationFeatures = true;
+        for (String name : java.util.List.of("shaderStorageImageReadWithoutFormat", "shaderStorageImageWriteWithoutFormat")) {
+            VulkanFeature feature = VulkanFeatureSupport.feature(VulkanBackend.VK10_FEATURES_STRUCT, name);
+            if (saltsAntiAliasing$isFeatureSupported(physicalDevice, feature)) vulkanFeatures.add(feature);
+            else {
+                frameGenerationFeatures = false;
+                MetricsDiagnostics.warn("fsr.frame_generation", "required_device_feature_missing", "feature", name);
+            }
+        }
+        FsrRuntime.instance().setFrameGenerationDeviceFeaturesAvailable(frameGenerationFeatures);
+        if (physicalDevice.hasDeviceExtension(KHRGetMemoryRequirements2.VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME)) {
+            deviceExtensions.add(KHRGetMemoryRequirements2.VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
+
+            if (physicalDevice.hasDeviceExtension(KHRDedicatedAllocation.VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME)) {
+                deviceExtensions.add(KHRDedicatedAllocation.VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
+            }
+        }
+
+        if (physicalDevice.hasDeviceExtension(KHRShaderFloat16Int8.VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME)) {
+            deviceExtensions.add(KHRShaderFloat16Int8.VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME);
+        }
+        saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice, new VulkanFeature(
+                VulkanBackend.VK12_FEATURES_STRUCT,
+                "shaderFloat16",
+                VkPhysicalDeviceVulkan12Features.SHADERFLOAT16
+        ));
+
+        if (physicalDevice.hasDeviceExtension(EXTSubgroupSizeControl.VK_EXT_SUBGROUP_SIZE_CONTROL_EXTENSION_NAME)) {
+            deviceExtensions.add(EXTSubgroupSizeControl.VK_EXT_SUBGROUP_SIZE_CONTROL_EXTENSION_NAME);
+            VulkanPNextStruct subgroupSizeControlStruct = VulkanFeatureSupport.struct(VkPhysicalDeviceSubgroupSizeControlFeatures.class);
+            saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice, new VulkanFeature(
+                    subgroupSizeControlStruct,
+                    "subgroupSizeControl",
+                    VkPhysicalDeviceSubgroupSizeControlFeatures.SUBGROUPSIZECONTROL
+            ));
+            saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice, new VulkanFeature(
+                    subgroupSizeControlStruct,
+                    "computeFullSubgroups",
+                    VkPhysicalDeviceSubgroupSizeControlFeatures.COMPUTEFULLSUBGROUPS
+            ));
+        }
+
+        if (physicalDevice.hasDeviceExtension(EXTDescriptorIndexing.VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME)) {
+            deviceExtensions.add(EXTDescriptorIndexing.VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+            VulkanPNextStruct descriptorIndexingStruct = VulkanFeatureSupport.struct(VkPhysicalDeviceDescriptorIndexingFeatures.class);
+            saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice, new VulkanFeature(
+                    descriptorIndexingStruct,
+                    "shaderStorageBufferArrayNonUniformIndexing",
+                    VkPhysicalDeviceDescriptorIndexingFeatures.SHADERSTORAGEBUFFERARRAYNONUNIFORMINDEXING
+            ));
+            saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice, new VulkanFeature(
+                    descriptorIndexingStruct,
+                    "descriptorBindingPartiallyBound",
+                    VkPhysicalDeviceDescriptorIndexingFeatures.DESCRIPTORBINDINGPARTIALLYBOUND
+            ));
+            saltsAntiAliasing$addSupportedFeature(vulkanFeatures, physicalDevice, new VulkanFeature(
+                    descriptorIndexingStruct,
+                    "runtimeDescriptorArray",
+                    VkPhysicalDeviceDescriptorIndexingFeatures.RUNTIMEDESCRIPTORARRAY
+            ));
+        }
+        MetricsDiagnostics.info(
+                "vulkan.device",
+                "fidelityfx_device_requirements_evaluated",
+                "deviceName", physicalDevice.deviceName(),
+                "vendorName", physicalDevice.vendorName(),
+                "driverInfo", physicalDevice.driverInfo(),
+                "extensionsBefore", extensionsBefore,
+                "extensionsAfter", deviceExtensions,
+                "featuresBefore", featuresBefore,
+                "featuresAfter", vulkanFeatures
+        );
+    }
+
+    private static void saltsAntiAliasing$enableDlssDeviceSupport(
+            Set<String> extensions, VulkanPhysicalDevice physicalDevice, Set<VulkanFeature> features) {
+        var runtime = DlssRuntime.instance();
+        if (runtime.hasConfiguredRuntime()) {
+            // Streamline's common Vulkan compute shaders declare this core capability even
+            // though it is absent from the extension-only DLSS requirements list.
+            VulkanFeature unformattedWrites = VulkanFeatureSupport.feature(VulkanBackend.VK10_FEATURES_STRUCT, "shaderStorageImageWriteWithoutFormat");
+            if (saltsAntiAliasing$isFeatureSupported(physicalDevice, unformattedWrites)) features.add(unformattedWrites);
+            else runtime.rejectVulkanRequirements("Missing shaderStorageImageWriteWithoutFormat");
+        }
+        for (String requirement : runtime.vulkanRequirements()) {
+            if (requirement.startsWith("device:")) {
+                String name = requirement.substring(7);
+                if (physicalDevice.hasDeviceExtension(name)) extensions.add(name);
+                else runtime.rejectVulkanRequirements("Missing device extension " + name);
+            } else if (requirement.startsWith("12:")) {
+                String name = requirement.substring(3);
+                try {
+                    int offset = VkPhysicalDeviceVulkan12Features.class.getField(name.toUpperCase(java.util.Locale.ROOT)).getInt(null);
+                    VulkanFeature feature = new VulkanFeature(VulkanBackend.VK12_FEATURES_STRUCT, name, offset);
+                    if (saltsAntiAliasing$isFeatureSupported(physicalDevice, feature)) features.add(feature);
+                    else runtime.rejectVulkanRequirements("Missing Vulkan 1.2 feature " + name);
+                } catch (ReflectiveOperationException exception) {
+                    runtime.rejectVulkanRequirements("Unknown Vulkan feature " + name);
+                }
+            } else if (requirement.startsWith("13:")) {
+                // Blaze3D 26.2 creates a Vulkan 1.2 device. Do not claim a newer feature is enabled.
+                runtime.rejectVulkanRequirements("The configured DLSS runtime requires Vulkan 1.3: " + requirement);
+            } else if ((requirement.startsWith("computeQueues:") || requirement.startsWith("graphicsQueues:"))
+                    && Integer.parseInt(requirement.substring(requirement.indexOf(':') + 1)) > 0) {
+                runtime.rejectVulkanRequirements("The configured DLSS runtime needs additional queues: " + requirement);
+            }
+        }
+        MetricsDiagnostics.info("vulkan.device", "dlss_device_requirements_evaluated",
+                "requirements", java.util.List.of(runtime.vulkanRequirements()), "extensions", extensions);
+    }
+
+    private static void saltsAntiAliasing$addSupportedFeature(
+            Set<VulkanFeature> vulkanFeatures,
+            VulkanPhysicalDevice physicalDevice,
+            VulkanFeature feature
+    ) {
+        boolean supported = saltsAntiAliasing$isFeatureSupported(physicalDevice, feature);
+        MetricsDiagnostics.infoOnce(
+                "vulkan.feature." + physicalDevice.deviceName() + "." + feature,
+                "vulkan.device",
+                "optional_device_feature_queried",
+                "deviceName", physicalDevice.deviceName(),
+                "feature", feature,
+                "supported", supported
+        );
+        if (supported) {
+            vulkanFeatures.add(feature);
+        }
+    }
+
+    private static boolean saltsAntiAliasing$isFeatureSupported(
+            VulkanPhysicalDevice physicalDevice,
+            VulkanFeature feature
+    ) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            VkPhysicalDeviceFeatures2 features = VkPhysicalDeviceFeatures2.calloc(stack).sType$Default();
+            feature.struct().findOrCreateStructInPNextChain(features, stack);
+            VK12.vkGetPhysicalDeviceFeatures2(physicalDevice.vkPhysicalDevice(), features);
+            return feature.get(features);
+        }
+    }
+}

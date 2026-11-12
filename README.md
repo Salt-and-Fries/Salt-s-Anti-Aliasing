@@ -2,30 +2,39 @@
 
 Salt's Anti Aliasing is a client-side Fabric mod that adds anti-aliasing, sharpening, and spatial upscaling controls to Minecraft.
 
-This branch is the **Fabric 26.3 branch**. It targets:
+This branch is **multi-version-test**, using the template's Prism project structure. It contains Fabric implementations for every Minecraft release advertised by VulkanMod, plus the original built-in Vulkan targets. All 25 main jars passed packaged GPU qualification on the tested Windows/RTX 3060 Ti configuration; see the [validation results](docs/vulkanmod-port-progress.md) and [exact artifact report](docs/fabric-validation-report.json).
 
 ```text
-Minecraft/Fabric target: 26.3
+VulkanMod targets: 1.18.2; 1.19.2–1.19.4; 1.20–1.20.6;
+                  1.21–1.21.5; 1.21.9–1.21.11; 26.1–26.1.2
+Built-in Vulkan targets: 26.2 and 26.3
 Fabric Loader >= project loader_version
-Fabric API matching 26.3
-Java 25
+Fabric API matching each Minecraft version
+Java 17 for 1.18.2–1.20.4; Java 21 for 1.20.5–1.21.11; Java 25 for 26.x
 ```
 
-This branch is intentionally kept separate from the 1.21.8-1.21.11 modern jar and any legacy or mid 1.21 jars. The code layout should match those branches wherever the Minecraft APIs allow it, but the hook descriptors and renderer adapter remain branch-specific.
-
-## Version Jar Strategy
-
-The project is expected to ship separate jar families from related branches:
+## Project Layout
 
 ```text
-legacy jar       -> early 1.21 renderer, old integer texture/FBO path
-mid jar          -> transitional GPU texture renderer
-modern jar       -> 1.21.8-1.21.11 modern GPU texture view/framegraph path
-fabric 26.2 jar -> 26.2 renderer descriptors and Fabric API surface
-fabric 26.3 jar -> 26.3 renderer descriptors and Fabric API surface
+versions/
+  common/src/main/          Portable config, render API/planning, and shared assets
+  vulkanmod/
+    src/main/              Shared VulkanMod GPU backend and rendering algorithms
+    fabric/src/main/       Shared Fabric configuration and native runtime support
+    adapters/              Typed Minecraft/VulkanMod renderer and UI families
+    compatibility/         Official dependency pins, hashes, and release matrix
+  <older version>/fabric/  Per-version metadata, mixin registration, and public jar
+  26.2/                    Built-in Vulkan / Blaze3D / GLFW adapters and shaders
+  26.3/
+    common/src/main/        26.3 shader resources and renderer policies
+    fabric/src/main/        Fabric initializer and mod metadata
+    fabric/src/client/      26.3 Fabric runtime, UI, compatibility, and mixins
+    fabric/src/test/        Existing unit and shader/native integration checks
 ```
 
-The point of this split is to avoid one giant jar full of runtime version checks, reflection, and fragile optional mixins. Each jar owns the Minecraft hook layer for its renderer family while sharing the same mode concepts and pipeline planning model where practical.
+The version/loader matrix is declared in `settings.gradle.kts`; `build.gradle.kts` configures Prism metadata and dependencies. `gradle/fabric.gradle` configures the built-in Vulkan targets; `gradle/fabric-vulkanmod.gradle` configures older targets. Minecraft 26.2 and 26.3 require no VulkanMod. Earlier jars require the exact VulkanMod release pinned in their metadata and [compatibility matrix](versions/vulkanmod/compatibility/build-targets.json). VulkanMod does not advertise 1.21.6–1.21.8. See [project structure and build commands](docs/project-structure.md) and [26.2 implementation and validation](docs/fabric-26.2-implementation-validation.md).
+
+The [Fabric installation table](docs/fabric-compatibility.md) lists the matching native mod, Fabric API, and Java version for each release.
 
 ## Architecture Goal
 
@@ -62,7 +71,7 @@ org.betterLostItems.salts_anti_aliasing
 - `client.platform.modern` may know about Minecraft classes and renderer hook descriptors.
 - `client.render.vulkan` may know about Minecraft's Vulkan/GPU resources and renderer internals.
 - Version checks should not be added here to support unrelated jar families.
-- If another Minecraft/Fabric target needs a genuinely different render path, create or update the matching jar branch.
+- Future targets belong in their own version/loader directories with their own renderer adapters.
 
 ## Rendering Modes
 
@@ -86,7 +95,7 @@ FSR1 Upscale
 TAA
 ```
 
-Sharpening is an independent 0–100% control available with every mode, including Off, and defaults to 0%. The shared planner expresses each mode as conceptual passes and targets. The runtime requires Minecraft's Vulkan backend for every anti-aliasing mode; non-Vulkan sessions keep saved settings but block rendering and mode cycling until Minecraft is restarted on Vulkan.
+Sharpening is an independent 0–100% control available with every mode, including Off, and defaults to 0%. The shared planner expresses each mode as conceptual passes and targets. Anti-aliasing requires Vulkan: older jars use their pinned VulkanMod backend, while 26.2 and 26.3 use Minecraft's built-in backend. Non-Vulkan modern sessions keep saved settings but block rendering and mode cycling until Minecraft is restarted on Vulkan.
 
 SGSR 1 and SGSR 2 use Qualcomm's BSD-licensed portable shaders and need no separate vendor runtime. SGSR 1 is spatial, with optional pre-AA and directional edges; SGSR 2 uses the official two-pass fragment temporal path. Both offer independent Native, Quality, Balanced and Performance settings. They run on RTX 3060 Ti; Snapdragon/Adreno qualification is pending external testing. See [SGSR setup](docs/sgsr-setup.md), [tester instructions](docs/sgsr-testing.md) and [validation results](docs/sgsr-validation.md).
 
@@ -302,11 +311,13 @@ This keeps version-porting work contained. Other jar branches can provide a faca
 .\gradlew.bat build
 ```
 
-Build with Java 25 or newer. The distributable for this branch is
-`build/libs/salts-anti-aliasing-mc26.3-1.1.jar`; the Minecraft version is included
-in the filename to distinguish it from sibling releases.
+Run Gradle with Java 25 or newer. The root build verifies and collects all 25
+main Fabric jars as `build/libs/salts-anti-aliasing-mc<version>-1.1.jar`.
+Each target also produces its jar under `versions/<version>/fabric/build/libs/`.
 
-The primary development target is set in `gradle.properties`:
+The 25 Fabric targets are registered in `settings.gradle.kts` and `build.gradle.kts`.
+Older dependency pins are in the [compatibility matrix](versions/vulkanmod/compatibility/build-targets.json);
+built-in Vulkan pins remain in `gradle.properties`. The primary short launch command targets 26.3:
 
 ```properties
 minecraft_version=26.3
@@ -320,6 +331,16 @@ minecraft_version=26.3
 
 The dev run uses the configured Minecraft version and Fabric API in `gradle.properties`.
 Its game directory is `run/26.3`, separate from older development worlds and mods.
+
+For the 26.2 build and development client:
+
+```powershell
+.\gradlew.bat :26.2:fabric:build
+.\gradlew.bat :26.2:fabric:runClient
+```
+
+The 26.2 client uses `run/26.2`. Older targets use the same qualified task names
+with their Minecraft version and keep development files in `run/<version>`.
 
 ## Minecraft 26.3 Port
 

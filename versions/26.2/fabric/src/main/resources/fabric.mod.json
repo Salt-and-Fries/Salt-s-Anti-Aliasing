@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "id": "salts_anti_aliasing",
+  "version": "${version}",
+  "name": "Salt's Anti Aliasing",
+  "description": "Client-side anti-aliasing, sharpening, and upscale pipeline foundation for Minecraft.",
+  "icon": "assets/salts_anti_aliasing/icon.png",
+  "authors": ["Salt and Fries"],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/salts-anti-aliasing",
+    "sources": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing",
+    "issues": "https://github.com/Salt-and-Fries/Salt-s-Anti-Aliasing/issues"
+  },
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": [
+      "org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingDataGenerator"
+    ],
+    "client": [
+      "org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient"
+    ],
+    "modmenu": [
+      "org.betterLostItems.salts_anti_aliasing.client.compat.modmenu.SaltsAntiAliasingModMenuApi"
+    ],
+    "sodium:config_api_user": [
+      "org.betterLostItems.salts_anti_aliasing.client.compat.sodium.SaltsAntiAliasingSodiumConfig"
+    ],
+    "main": [
+      "org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing"
+    ]
+  },
+  "mixins": [
+    "salts_anti_aliasing.mixins.json",
+    {
+      "config": "salts_anti_aliasing.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}",
+    "java": ">=25"
+  },
+  "suggests": {
+    "modmenu": "*",
+    "sodium": "*"
+  }
+}

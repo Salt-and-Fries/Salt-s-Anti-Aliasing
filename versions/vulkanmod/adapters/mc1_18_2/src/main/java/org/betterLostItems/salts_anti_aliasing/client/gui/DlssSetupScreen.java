@@ -1,0 +1,192 @@
+package org.betterLostItems.salts_anti_aliasing.client.gui;
+
+import org.betterLostItems.salts_anti_aliasing.client.gui.legacy.*;
+
+import org.betterLostItems.salts_anti_aliasing.client.gui.legacy.*;
+import org.betterLostItems.salts_anti_aliasing.client.gui.legacy.*;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+
+import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.dlss.*;
+
+import java.nio.file.Path;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+
+/** User-supplied runtime setup remains reachable even when DLSS cannot be selected yet. */
+public final class DlssSetupScreen extends Screen {
+    private final Screen previous;
+    private final List<MultiLineTextWidget> text = new ArrayList<>();
+    private HeaderAndFooterLayout layout;
+    private ScrollableLayout scroll;
+    private boolean busy;
+    private Component feedback;
+
+    public DlssSetupScreen(Screen previous) {
+        super(org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.dlss_setup"));
+        this.previous = previous;
+    }
+
+    @Override
+    protected void init() {
+        text.clear();
+        layout = new HeaderAndFooterLayout(this);
+        layout.addToHeader(new org.betterLostItems.salts_anti_aliasing.client.gui.legacy.StringWidget(title, font));
+        VerticalLayout body = new VerticalLayout(12);
+        body.defaultCellSetting().alignHorizontallyCenter();
+        addText(
+                body,
+                org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable(
+                        "screen.salts_anti_aliasing.dlss_setup.intro",
+                        DlssRuntimeFiles.SUPPORTED_VERSION));
+        addText(
+                body,
+                org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable(
+                        "screen.salts_anti_aliasing.dlss_setup.status",
+                        org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.literal(DlssRuntime.instance().status().message())));
+        if (!DlssRuntimeFiles.supportedPlatform())
+            addText(body, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.dlss_setup.platform"));
+        LegacyButton download =
+                body.addChild(
+                        LegacyButton.builder(
+                                        org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable(
+                                                "screen.salts_anti_aliasing.dlss_setup.download"),
+                                        b -> {
+                                            net.minecraft.Util.getPlatform().openUri(DlssRuntimeFiles.DOWNLOAD_URL);
+                                        })
+                                .width(260)
+                                .build());
+        download.active = !busy;
+        addPicker(body, false, "file");
+        addPicker(body, true, "folder");
+        addText(body, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.dlss_setup.instructions"));
+        if (feedback != null) addText(body, feedback);
+        var config = SaltsAntiAliasingClient.runtime().configSnapshot();
+        if (!config.dlssPluginPath.isBlank()) {
+            addText(
+                    body,
+                    org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.dlss_setup.connected"));
+            addText(body, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.literal(config.dlssPluginPath));
+        }
+        if (System.getProperty("salts.dlss.pluginPath") != null
+                || System.getenv("SALTS_DLSS_PLUGIN_PATH") != null)
+            addText(body, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.dlss_setup.override"));
+        scroll =
+                layout.addToContents(
+                        new ScrollableLayout(minecraft, body, Math.max(40, height - 80)));
+        layout.addToFooter(
+                LegacyButton.builder(CommonComponents.GUI_DONE, b -> onClose()).width(200).build());
+        repositionElements();
+        layout.visitWidgets(this::addRenderableWidget);
+    }
+
+    private void addPicker(VerticalLayout body, boolean folder, String key) {
+        LegacyButton button =
+                body.addChild(
+                        LegacyButton.builder(
+                                        org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable(
+                                                "screen.salts_anti_aliasing.dlss_setup." + key),
+                                        b -> choose(folder))
+                                .width(260)
+                                .build());
+        button.active = !busy && DlssRuntimeFiles.supportedPlatform();
+    }
+
+    private void addText(VerticalLayout body, Component value) {
+        text.add(
+                body.addChild(
+                        new MultiLineTextWidget(value, font)
+                                .setMaxWidth(Math.max(80, Math.min(500, width - 48)))));
+    }
+
+    private void choose(boolean folder) {
+        if (busy) return;
+        busy = true;
+        feedback = org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.dlss_setup.picking");
+        refresh();
+        NativeRuntimeFilePicker.choose(minecraft, folder, this::picked);
+    }
+
+    private void picked(NativeRuntimeFilePicker.Selection selection) {
+        if (selection.error() != null) {
+            finishError(selection.error());
+            return;
+        }
+        if (selection.path() == null) {
+            busy = false;
+            feedback = org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.dlss_setup.cancelled");
+            refresh();
+            return;
+        }
+        feedback = org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.dlss_setup.importing");
+        refresh();
+        Path gameDirectory = minecraft.gameDirectory.toPath();
+        CompletableFuture.supplyAsync(
+                        () -> {
+                            try {
+                                return DlssRuntimeFiles.install(selection.path(), gameDirectory);
+                            } catch (Exception exception) {
+                                throw new java.util.concurrent.CompletionException(exception);
+                            }
+                        },
+                        task -> {
+                            var worker = new Thread(task, "Salt's DLSS runtime import");
+                            worker.setDaemon(true);
+                            worker.start();
+                        })
+                .whenComplete((path, failure) -> minecraft.execute(() -> imported(path, failure)));
+    }
+
+    private void imported(Path path, Throwable failure) {
+        if (failure != null) {
+            Throwable cause = failure.getCause() == null ? failure : failure.getCause();
+            SaltsAntiAliasing.LOGGER.warn("DLSS runtime import failed", cause);
+            finishError(cause.getMessage());
+            return;
+        }
+        DlssRuntime.instance().requireRestart();
+        SaltsAntiAliasingClient.runtime()
+                .editSettings(
+                        config -> {
+                            // The mod supplies its matching bridge.
+                            config.dlssBridgePath = "";
+                            config.dlssPluginPath = path.toString();
+                        });
+        busy = false;
+        feedback = org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.dlss_setup.success");
+        refresh();
+    }
+
+    private void finishError(String detail) {
+        busy = false;
+        feedback =
+                org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable(
+                        "screen.salts_anti_aliasing.dlss_setup.failed",
+                        detail == null ? "Unknown error" : detail);
+        refresh();
+    }
+
+    private void refresh() {
+        if (minecraft.screen == this) {
+            clearWidgets();
+            init();
+        }
+    }
+
+    protected void repositionElements() {
+        if (layout == null) return;
+        for (var widget : text) widget.setMaxWidth(Math.max(80, Math.min(500, width - 48)));
+        int contentHeight = Math.max(40, (height - layout.getHeaderHeight() - layout.getFooterHeight()) - 8);
+        scroll.setMaxHeight(contentHeight);
+
+        layout.arrangeElements();
+    }
+
+    @Override
+    public void onClose() {
+        minecraft.setScreen(previous);
+    }
+}

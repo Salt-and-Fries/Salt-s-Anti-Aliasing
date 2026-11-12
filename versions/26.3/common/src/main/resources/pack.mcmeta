@@ -1,0 +1,7 @@
+{
+  "pack": {
+    "description": "Salt's Anti Aliasing resources",
+    "min_format": [97, 1],
+    "max_format": [97, 1]
+  }
+}

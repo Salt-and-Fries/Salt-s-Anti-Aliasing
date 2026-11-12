@@ -2,10 +2,14 @@
 Run with Python 3 from any directory; no third-party packages are required.
 """
 from pathlib import Path
-import re,json,hashlib,shutil,urllib.request
+import argparse,re,json,hashlib,shutil,urllib.request
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--minecraft-version',choices=['26.2','26.3'],default='26.3')
+args=parser.parse_args()
 root=Path(__file__).resolve().parents[1]
-sdk=root/'build/sgsr-sdk';assets=root/'src/main/resources/assets/salts_anti_aliasing'
-manifest=json.loads((assets/'licenses/sgsr/source-manifest.json').read_text())
+sdk=root/'build/sgsr-sdk';assets=root/f'versions/{args.minecraft_version}/common/src/main/resources/assets/salts_anti_aliasing'
+shared_assets=root/'versions/common/src/main/resources/assets/salts_anti_aliasing'
+manifest=json.loads((shared_assets/'licenses/sgsr/source-manifest.json').read_text())
 commit=manifest['commit']
 # Download only pinned upstream inputs. Fail before changing packaged shaders if any digest differs.
 for name in ['LICENSE',*manifest['files']]:
@@ -81,8 +85,11 @@ for kind in ['entity','particle']:
                       'fragColor=vec4(clamp(motion,vec2(-2.0),vec2(2.0))*0.2495+vec2(32767.0/65535.0),0.0,1.0);')
     (shaders/'post'/f'sgsr2_{kind}_motion.fsh').write_text(text)
 
-notices=assets/'licenses/sgsr';notices.mkdir(parents=True,exist_ok=True)
+notices=shared_assets/'licenses/sgsr';notices.mkdir(parents=True,exist_ok=True)
 shutil.copy2(sdk/'LICENSE',notices/'LICENSE-SGSR.txt')
 manifest['repository']='https://github.com/SnapdragonGameStudios/snapdragon-gsr'
 (notices/'source-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
-print('Imported pinned SGSR shaders and notices')
+if args.minecraft_version=='26.2':
+    for path in (shaders/'post').glob('sgsr*.fsh'):
+        path.write_text(path.read_text().replace('#include <salts_anti_aliasing:','#moj_import <salts_anti_aliasing:'))
+print(f'Imported pinned SGSR shaders and notices for Minecraft {args.minecraft_version}')

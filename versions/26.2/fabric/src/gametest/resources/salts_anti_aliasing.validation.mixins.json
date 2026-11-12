@@ -1,0 +1,7 @@
+{
+  "required": true,
+  "package": "org.betterLostItems.salts_anti_aliasing.validation.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": ["IntegratedServerShutdownMixin"],
+  "injectors": {"defaultRequire": 1}
+}

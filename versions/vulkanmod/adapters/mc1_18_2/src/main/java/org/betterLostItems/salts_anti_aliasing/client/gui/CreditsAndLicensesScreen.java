@@ -1,0 +1,143 @@
+package org.betterLostItems.salts_anti_aliasing.client.gui;
+
+import org.betterLostItems.salts_anti_aliasing.client.gui.legacy.*;
+
+import org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyButton;
+import org.betterLostItems.salts_anti_aliasing.client.gui.legacy.MultiLineTextWidget;
+import org.betterLostItems.salts_anti_aliasing.client.gui.legacy.HeaderAndFooterLayout;
+import org.betterLostItems.salts_anti_aliasing.client.gui.VerticalLayout;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+/** Presents attribution and the exact licenses included with the release runtime. */
+public final class CreditsAndLicensesScreen extends Screen {
+    private static final String RUNTIME_ROOT =
+            "assets/salts_anti_aliasing/native/dlss/windows-x86_64/";
+    private final Screen previous;
+    private final String document;
+    private final List<MultiLineTextWidget> textWidgets = new ArrayList<>();
+    private HeaderAndFooterLayout layout;
+    private ScrollableLayout scroll;
+
+    public CreditsAndLicensesScreen(Screen previous) {
+        this(previous, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.credits"), null);
+    }
+
+    private CreditsAndLicensesScreen(Screen previous, Component title, String document) {
+        super(title);
+        this.previous = previous;
+        this.document =
+                document == null
+                        ? null
+                        : document.replace("\r\n", "\n").replace('\r', '\n').replace("\t", "    ");
+    }
+
+    @Override
+    protected void init() {
+        textWidgets.clear();
+        layout = new HeaderAndFooterLayout(this);
+        layout.addToHeader(new org.betterLostItems.salts_anti_aliasing.client.gui.legacy.StringWidget(title, font));
+        VerticalLayout body = new VerticalLayout(12);
+        body.defaultCellSetting().alignHorizontallyCenter();
+        if (document != null) {
+            addText(body, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.literal(document));
+        } else {
+            addText(body, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.credits.developer"));
+            addText(body, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.credits.nvidia"));
+            addText(body, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.translatable("screen.salts_anti_aliasing.credits.third_party"));
+            addText(body, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.literal("Intel XeSS SDK — Copyright Intel Corporation. Unmodified Intel runtime; Intel Simplified Software License."));
+            addText(body, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.literal("Snapdragon Game Super Resolution — Qualcomm Innovation Center, Inc. BSD 3-Clause licensed shaders."));
+            addLicenseButton(body,"Qualcomm SGSR License","assets/salts_anti_aliasing/licenses/sgsr/LICENSE-SGSR.txt");
+            addLicenseButton(body, "Intel XeSS License", "xess/windows-x86_64/LICENSE-Intel-XeSS.txt");
+            addLicenseButton(body, "Intel XeSS Third Party Notices", "xess/windows-x86_64/third-party-programs.txt");
+            addLicenseButton(body, "NVIDIA DLSS License", "LICENSE-NVIDIA-DLSS.txt");
+            addLicenseButton(body, "NVIDIA Streamline License", "LICENSE-Streamline.txt");
+            addLicenseButton(body, "NVIDIA Runtime Terms", "END-USER-TERMS.txt");
+        }
+        scroll =
+                layout.addToContents(
+                        new ScrollableLayout(minecraft, body, Math.max(40, height - 80)));
+        layout.addToFooter(
+                LegacyButton.builder(CommonComponents.GUI_BACK, button -> onClose()).width(200).build());
+        repositionElements();
+        layout.visitWidgets(this::addRenderableWidget);
+    }
+
+    private void addText(VerticalLayout body, Component text) {
+        MultiLineTextWidget widget =
+                body.addChild(
+                        new MultiLineTextWidget(text, font)
+                                .setMaxWidth(Math.max(80, Math.min(500, width - 48))));
+        textWidgets.add(widget);
+    }
+
+    private void addLicenseButton(VerticalLayout body, String label, String file) {
+        String resource = file.startsWith("assets/") ? file : file.contains("/") ? "assets/salts_anti_aliasing/native/" + file : RUNTIME_ROOT + file;
+        Path downloaded = file.contains("/") ? null : downloadedLicense(file);
+        if (getClass().getClassLoader().getResource(resource) == null && downloaded == null) return;
+        body.addChild(
+                LegacyButton.builder(
+                                org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.literal(label),
+                                button -> {
+                                    String text;
+                                    try (var input =
+                                            getClass()
+                                                    .getClassLoader()
+                                                    .getResourceAsStream(resource)) {
+                                        text =
+                                                input != null
+                                                        ? new String(
+                                                                input.readAllBytes(),
+                                                                StandardCharsets.UTF_8)
+                                                        : downloaded == null
+                                                                ? "License unavailable."
+                                                                : Files.readString(downloaded);
+                                    } catch (IOException exception) {
+                                        text =
+                                                "License unavailable. The complete license is also"
+                                                        + " included in the mod jar.";
+                                    }
+                                    minecraft.setScreen(
+                                            new CreditsAndLicensesScreen(
+                                                    this, org.betterLostItems.salts_anti_aliasing.client.gui.legacy.LegacyComponents.literal(label), text));
+                                })
+                        .width(200)
+                        .build());
+    }
+
+    private Path downloadedLicense(String file) {
+        var runtime =
+                org.betterLostItems.salts_anti_aliasing.client.SaltsAntiAliasingClient
+                        .runtimeOrNull();
+        if (runtime == null || runtime.configSnapshot().dlssPluginPath.isBlank()) return null;
+        try {
+            Path path = Path.of(runtime.configSnapshot().dlssPluginPath).resolve(file);
+            return Files.isRegularFile(path) && Files.size(path) <= 1024 * 1024 ? path : null;
+        } catch (IOException | RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    protected void repositionElements() {
+        if (layout == null) return;
+        for (MultiLineTextWidget widget : textWidgets)
+            widget.setMaxWidth(Math.max(80, Math.min(500, width - 48)));
+        int contentHeight = Math.max(40, (height - layout.getHeaderHeight() - layout.getFooterHeight()) - 8);
+        scroll.setMaxHeight(contentHeight);
+
+        layout.arrangeElements();
+    }
+
+    @Override
+    public void onClose() {
+        minecraft.setScreen(previous);
+    }
+}

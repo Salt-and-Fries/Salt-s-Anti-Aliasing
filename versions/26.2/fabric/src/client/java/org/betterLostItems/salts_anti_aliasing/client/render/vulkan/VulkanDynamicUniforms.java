@@ -1,0 +1,262 @@
+package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
+
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
+import org.betterLostItems.salts_anti_aliasing.client.config.RenderTuning;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.renderer.PostChain;
+import net.minecraft.client.renderer.PostPass;
+import org.betterLostItems.salts_anti_aliasing.mixin.client.PostChainAccessor;
+import org.betterLostItems.salts_anti_aliasing.mixin.client.PostPassAccessor;
+import org.lwjgl.system.MemoryStack;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Map;
+
+/**
+ * Populates runtime uniform values for post-processing shaders so JSON-defined effects can respond
+ * to config, resolution, and history state.
+ */
+final class VulkanDynamicUniforms {
+    private static final String NIS_SHARPEN_UNIFORM = "NisSharpenConfig";
+    private static final String TAA_UNIFORM = "TaaConfig";
+    private static final String DLSS_MOTION_UNIFORM = "DlssMotionConfig";
+    private static final String FSR_MOTION_UNIFORM = "FsrMotionConfig";
+    private static final int WRITABLE_UNIFORM_USAGE = GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST;
+
+    private static final Map<GpuBuffer, Integer> LAST_UPLOADED_HASHES = new java.util.WeakHashMap<>();
+
+    /**
+     * Creates a Vulkan dynamic uniforms instance with the collaborators or initial state supplied
+     * by the caller.
+     */
+    private VulkanDynamicUniforms() {
+    }
+
+    static void updateTuning(PostChain chain, AntiAliasingConfig config) {
+        RenderTuning t=config.tuning;
+        for(PostPass pass:((PostChainAccessor)chain).saltsAntiAliasing$passes()){
+            Map<String,GpuBuffer> uniforms=((PostPassAccessor)pass).saltsAntiAliasing$customUniforms();
+            updateUniformBuffer(uniforms,"FxaaConfig",b->{b.putFloat(t.fxaaSubpixel);b.putFloat(t.fxaaEdgeThreshold);b.putFloat(t.fxaaMinContrast);});
+            updateUniformBuffer(uniforms,"SmaaConfig",b->{
+                b.putFloat(t.smaaThreshold);
+                b.putFloat(switch(t.smaaQuality){case LOW->4;case MEDIUM->8;case HIGH->16;case ULTRA->32;});
+                b.putFloat(switch(t.smaaQuality){case LOW,MEDIUM->0;case HIGH->8;case ULTRA->16;});
+                b.putFloat(t.smaaQuality==RenderTuning.SmaaQuality.LOW || t.smaaQuality==RenderTuning.SmaaQuality.MEDIUM?0:25);
+            });
+            updateUniformBuffer(uniforms,"SsaaConfig",b->{b.putFloat(t.ssaaLinearLight?1:0);b.putFloat(t.ssaaFilter.ordinal());});
+            updateUniformBuffer(uniforms,NIS_SHARPEN_UNIFORM,b->{b.putFloat(config.sharpenStrength);b.putFloat(t.sharpener.ordinal());b.putFloat(t.sharpenLimit);});
+        }
+    }
+
+    /**
+     * Handles update taa as part of the anti-aliasing render, configuration, or compatibility flow.
+     * @param postChain post chain value supplied by the caller or Minecraft callback
+     * @param controller controller value supplied by the caller or Minecraft callback
+     */
+    static void updateTaa(PostChain postChain, VulkanSceneTemporalController controller) {
+        for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
+            Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
+            writeTaaUniform(customUniforms, controller);
+            updateUniformBuffer(customUniforms,"TaaDisplayConfig",b->b.putFloat(controller.tuning().debugView.ordinal()));
+        }
+    }
+
+    static void updateDlssMotion(PostChain postChain, VulkanSceneTemporalController controller, int width, int height) {
+        for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
+            Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
+            writeDlssMotionUniform(customUniforms, controller, width, height);
+        }
+    }
+
+    static void updateFsrMotion(PostChain postChain, VulkanSceneTemporalController controller, int width, int height) {
+        for (PostPass pass : ((PostChainAccessor) postChain).saltsAntiAliasing$passes()) {
+            Map<String, GpuBuffer> customUniforms = ((PostPassAccessor) pass).saltsAntiAliasing$customUniforms();
+            writeFsrMotionUniform(customUniforms, controller, width, height);
+        }
+    }
+
+    /**
+     * Coordinates write taa uniform within the anti-aliasing render, configuration, or compatibility flow.
+     * @param customUniforms custom uniforms value supplied by the caller or Minecraft callback
+     * @param controller controller value supplied by the caller or Minecraft callback
+     */
+    private static void writeTaaUniform(Map<String, GpuBuffer> customUniforms, VulkanSceneTemporalController controller) {
+        updateUniformBuffer(customUniforms, TAA_UNIFORM, bufferData -> {
+            putMatrix(bufferData, controller.currentJitteredClipToWorldArray());
+            putMatrix(bufferData, controller.previousViewProjectionArray());
+            bufferData.putFloat(controller.baseHistoryWeight());
+            bufferData.putFloat(controller.lumaRejection());
+            bufferData.putFloat(controller.depthRejection());
+            bufferData.putFloat(controller.varianceGamma());
+            bufferData.putFloat(controller.currentJitterTexelX());
+            bufferData.putFloat(controller.currentJitterTexelY());
+            bufferData.putFloat(controller.previousJitterTexelX());
+            bufferData.putFloat(controller.previousJitterTexelY());
+            bufferData.putFloat(controller.cameraMotionAmount());
+            // std140 aligns the following vec4 to the next 16-byte boundary.
+            bufferData.putFloat(0.0f);
+            bufferData.putFloat(0.0f);
+            bufferData.putFloat(0.0f);
+            float[] translation = controller.cameraTranslationToPreviousArray();
+            bufferData.putFloat(translation[0]);
+            bufferData.putFloat(translation[1]);
+            bufferData.putFloat(translation[2]);
+            bufferData.putFloat(0.0f);
+            bufferData.putFloat(controller.tuning().taaHistoryFilter.ordinal());
+            bufferData.putFloat(controller.tuning().debugView.ordinal());
+            bufferData.putFloat(0.0f);
+            bufferData.putFloat(0.0f);
+        });
+    }
+
+    private static void writeDlssMotionUniform(
+            Map<String, GpuBuffer> customUniforms,
+            VulkanSceneTemporalController controller,
+            int width,
+            int height
+    ) {
+        updateUniformBuffer(customUniforms, DLSS_MOTION_UNIFORM, bufferData -> {
+            putMatrix(bufferData, controller.currentJitteredClipToWorldArray());
+            putMatrix(bufferData, controller.currentViewProjectionArray());
+            putMatrix(bufferData, controller.previousViewProjectionArray());
+            bufferData.putFloat(Math.max(1, width));
+            bufferData.putFloat(Math.max(1, height));
+            bufferData.putFloat(0.0f);
+            bufferData.putFloat(0.0f);
+            float[] cameraTranslation = controller.cameraTranslationToPreviousArray();
+            bufferData.putFloat(cameraTranslation[0]);
+            bufferData.putFloat(cameraTranslation[1]);
+            bufferData.putFloat(cameraTranslation[2]);
+            bufferData.putFloat(0.0f);
+        });
+    }
+
+    private static void writeFsrMotionUniform(
+            Map<String, GpuBuffer> customUniforms,
+            VulkanSceneTemporalController controller,
+            int width,
+            int height
+    ) {
+        updateUniformBuffer(customUniforms, FSR_MOTION_UNIFORM, bufferData -> {
+            putMatrix(bufferData, controller.currentJitteredClipToWorldArray());
+            putMatrix(bufferData, controller.currentViewProjectionArray());
+            putMatrix(bufferData, controller.previousViewProjectionArray());
+            bufferData.putFloat(Math.max(1, width));
+            bufferData.putFloat(Math.max(1, height));
+            bufferData.putFloat(0.0f);
+            bufferData.putFloat(0.0f);
+            float[] cameraTranslation = controller.cameraTranslationToPreviousArray();
+            bufferData.putFloat(cameraTranslation[0]);
+            bufferData.putFloat(cameraTranslation[1]);
+            bufferData.putFloat(cameraTranslation[2]);
+            bufferData.putFloat(0.0f);
+        });
+    }
+
+    private static void putMatrix(ByteBuffer bufferData, float[] values) {
+        for (int i = 0; i < 16; i++) {
+            bufferData.putFloat(i < values.length ? values[i] : 0.0f);
+        }
+    }
+
+    /**
+     * Coordinates update uniform buffer within the anti-aliasing render, configuration, or compatibility flow.
+     * @param customUniforms custom uniforms value supplied by the caller or Minecraft callback
+     * @param uniformName uniform name value supplied by the caller or Minecraft callback
+     * @param writer writer value supplied by the caller or Minecraft callback
+     */
+    private static void updateUniformBuffer(
+            Map<String, GpuBuffer> customUniforms,
+            String uniformName,
+            UniformWriter writer
+    ) {
+        GpuBuffer previousBuffer = customUniforms.get(uniformName);
+        if (previousBuffer == null) {
+            return;
+        }
+
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            ByteBuffer bufferData = stack.malloc((int) previousBuffer.size()).order(ByteOrder.nativeOrder());
+            writer.write(bufferData);
+            while (bufferData.hasRemaining()) {
+                bufferData.put((byte) 0);
+            }
+            bufferData.flip();
+
+            int uploadHash = hash(bufferData);
+            GpuBuffer writableBuffer = ensureWritableUniformBuffer(customUniforms, uniformName, previousBuffer, bufferData);
+            if (writableBuffer != previousBuffer) {
+                LAST_UPLOADED_HASHES.put(writableBuffer, uploadHash);
+                return;
+            }
+
+            Integer lastUploadHash = LAST_UPLOADED_HASHES.get(writableBuffer);
+            if (lastUploadHash != null && lastUploadHash == uploadHash) {
+                return;
+            }
+
+            RenderSystem.getDevice().createCommandEncoder().writeToBuffer(writableBuffer.slice(), bufferData);
+            LAST_UPLOADED_HASHES.put(writableBuffer, uploadHash);
+        }
+    }
+
+    /**
+     * Coordinates ensure writable uniform buffer within the anti-aliasing render, configuration, or compatibility flow.
+     * @param customUniforms custom uniforms value supplied by the caller or Minecraft callback
+     * @param uniformName uniform name value supplied by the caller or Minecraft callback
+     * @param previousBuffer previous buffer value supplied by the caller or Minecraft callback
+     * @param initialData initial data value supplied by the caller or Minecraft callback
+     * @return ensure writable uniform buffer produced by this helper
+     */
+    private static GpuBuffer ensureWritableUniformBuffer(
+            Map<String, GpuBuffer> customUniforms,
+            String uniformName,
+            GpuBuffer previousBuffer,
+            ByteBuffer initialData
+    ) {
+        if (!previousBuffer.isClosed() && (previousBuffer.usage() & GpuBuffer.USAGE_COPY_DST) != 0) {
+            return previousBuffer;
+        }
+
+        GpuBuffer replacement = RenderSystem.getDevice().createBuffer(
+                () -> "Salt's Anti Aliasing " + uniformName,
+                WRITABLE_UNIFORM_USAGE,
+                initialData
+        );
+        GpuBuffer old = customUniforms.put(uniformName, replacement);
+        if (old != null && !old.isClosed()) {
+            old.close();
+        }
+        LAST_UPLOADED_HASHES.remove(old);
+        return replacement;
+    }
+
+    /**
+     * Checks hash without mutating runtime or configuration state.
+     * @param bufferData buffer data value supplied by the caller or Minecraft callback
+     * @return whether the requested state is present
+     */
+    private static int hash(ByteBuffer bufferData) {
+        ByteBuffer duplicate = bufferData.duplicate();
+        int hash = 1;
+        while (duplicate.hasRemaining()) {
+            hash = 31 * hash + duplicate.get();
+        }
+        return hash;
+    }
+
+    /**
+     * Contract for uniform writer behavior so Vulkan-specific code can depend on a small,
+     * testable surface.
+     */
+    @FunctionalInterface
+    private interface UniformWriter {
+        /**
+         * Handles write as part of the anti-aliasing render, configuration, or compatibility flow.
+         * @param bufferData buffer data value supplied by the caller or Minecraft callback
+         */
+        void write(ByteBuffer bufferData);
+    }
+}

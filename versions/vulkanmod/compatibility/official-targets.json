@@ -1,0 +1,186 @@
+[
+  {
+    "minecraft": "1.18.2",
+    "vulkanmod": "0.2.5",
+    "modrinthVersion": "JOtvsq3o",
+    "published": "2023-03-23T14:46:55.378101Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/JOtvsq3o/VulkanMod_1.18.2-0.2.5.jar",
+    "sha512": "95f1a7d78bc0f6114cd7c0b1c3c19ffc7bad3cf977a3e4e5c048757304af3ac3d5ec1a4ac7621eed98889ff48aa137bb3b0f7677ecf54f1236f4e821a46a2513"
+  },
+  {
+    "minecraft": "1.19.2",
+    "vulkanmod": "0.3.1",
+    "modrinthVersion": "W6KPVWT3",
+    "published": "2023-05-26T16:01:29.523452Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/W6KPVWT3/VulkanMod_1.19.2-0.3.1%2B1.jar",
+    "sha512": "30ad4da17de0fe95e37f995ef29352e766726f73a85852b986130cd6cc42db2aa739efe0ef00c636f10132f107e9a059bf94398c9e8f64408b710ea2a67e2f22"
+  },
+  {
+    "minecraft": "1.19.3",
+    "vulkanmod": "0.2.3",
+    "modrinthVersion": "mslg9G1S",
+    "published": "2023-03-05T21:57:31.486204Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/mslg9G1S/VulkanMod_1.19.3-0.2.3.jar",
+    "sha512": "a642f3a41fbeda0d7788dad4a4b8698a99ae7badc42fc983898d597ad98073496ddc474cf46d4d8782676ce7df6f5151218184754a9a0af685e31a94329ed51b"
+  },
+  {
+    "minecraft": "1.19.4",
+    "vulkanmod": "0.3.2",
+    "modrinthVersion": "rGsZuGn8",
+    "published": "2023-06-09T16:13:54.819759Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/rGsZuGn8/VulkanMod_1.19.4-0.3.2.jar",
+    "sha512": "996f58ea3d442c53bfeace6c8cf6568c35caf83a6d9074e5687d9ea68b5e8911452e6ebfacd9c3257fe31db0ec10f4120119b25c6bd153d99e6d163ff7923963"
+  },
+  {
+    "minecraft": "1.20",
+    "vulkanmod": "0.5.2",
+    "modrinthVersion": "ZhvilXaM",
+    "published": "2024-12-13T17:17:07.575386Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/ZhvilXaM/VulkanMod_1.20.1-0.5.2.jar",
+    "sha512": "788907e12f7662a3025942e281660cd4dcdbbd4a950f8dfbbaec8da9a771a1cb431e4a481f63078f14d73dd0ebaa676fbe24cac22a422a5a7a4e49d70ffcc357"
+  },
+  {
+    "minecraft": "1.20.1",
+    "vulkanmod": "0.5.2",
+    "modrinthVersion": "ZhvilXaM",
+    "published": "2024-12-13T17:17:07.575386Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/ZhvilXaM/VulkanMod_1.20.1-0.5.2.jar",
+    "sha512": "788907e12f7662a3025942e281660cd4dcdbbd4a950f8dfbbaec8da9a771a1cb431e4a481f63078f14d73dd0ebaa676fbe24cac22a422a5a7a4e49d70ffcc357"
+  },
+  {
+    "minecraft": "1.20.2",
+    "vulkanmod": "0.3.9",
+    "modrinthVersion": "nC4iQVVW",
+    "published": "2023-12-24T18:18:06.351068Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/nC4iQVVW/VulkanMod_1.20.2-0.3.9.jar",
+    "sha512": "2c9c3644bb5264214556c8beffd1253d7c8b36e993474d62b81ef387d6344bdf0cdf3bb6e5092c689970e26318ac4b7d84fbcbda4a88b77e2199e383db775930"
+  },
+  {
+    "minecraft": "1.20.3",
+    "vulkanmod": "0.4.7",
+    "modrinthVersion": "hZjQjfpD",
+    "published": "2024-08-22T14:04:59.396355Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/hZjQjfpD/VulkanMod_1.20.4-0.4.7.jar",
+    "sha512": "eb9d46cee4fb91d7c706684936580bc50b681a755f469f0150fa2891496f5f1c5af6a63338a48bbaf55cc31209e0299f5835d4a2d651f4296e6b3f3c6c65922c"
+  },
+  {
+    "minecraft": "1.20.4",
+    "vulkanmod": "0.4.7",
+    "modrinthVersion": "hZjQjfpD",
+    "published": "2024-08-22T14:04:59.396355Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/hZjQjfpD/VulkanMod_1.20.4-0.4.7.jar",
+    "sha512": "eb9d46cee4fb91d7c706684936580bc50b681a755f469f0150fa2891496f5f1c5af6a63338a48bbaf55cc31209e0299f5835d4a2d651f4296e6b3f3c6c65922c"
+  },
+  {
+    "minecraft": "1.20.5",
+    "vulkanmod": "0.4.2",
+    "modrinthVersion": "bPsylH8I",
+    "published": "2024-05-19T16:14:24.822536Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/bPsylH8I/VulkanMod_1.20.6-0.4.2.jar",
+    "sha512": "d64a4e7a99674111b372ff40fd7df46b26752c16d7928d66ba9b544dc79f988107db9bc8f70c4030ab3423eaf4ea4e7c1a680032a914950b88f4d9203d763644"
+  },
+  {
+    "minecraft": "1.20.6",
+    "vulkanmod": "0.4.2",
+    "modrinthVersion": "bPsylH8I",
+    "published": "2024-05-19T16:14:24.822536Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/bPsylH8I/VulkanMod_1.20.6-0.4.2.jar",
+    "sha512": "d64a4e7a99674111b372ff40fd7df46b26752c16d7928d66ba9b544dc79f988107db9bc8f70c4030ab3423eaf4ea4e7c1a680032a914950b88f4d9203d763644"
+  },
+  {
+    "minecraft": "1.21",
+    "vulkanmod": "0.6.7+1.21.1",
+    "modrinthVersion": "2eqroDKD",
+    "published": "2026-05-31T22:28:40.903292Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/2eqroDKD/VulkanMod-0.6.7%2B1.21.1.jar",
+    "sha512": "2de36869bbc765637e874300af691cfa5208983e79485dcbfc3c5f8d2490d502065082a97dd7933334ed4d0e37f18234d0c9c5bf27b1217a3e2c032c52154ff0"
+  },
+  {
+    "minecraft": "1.21.1",
+    "vulkanmod": "0.6.7+1.21.1",
+    "modrinthVersion": "2eqroDKD",
+    "published": "2026-05-31T22:28:40.903292Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/2eqroDKD/VulkanMod-0.6.7%2B1.21.1.jar",
+    "sha512": "2de36869bbc765637e874300af691cfa5208983e79485dcbfc3c5f8d2490d502065082a97dd7933334ed4d0e37f18234d0c9c5bf27b1217a3e2c032c52154ff0"
+  },
+  {
+    "minecraft": "1.21.2",
+    "vulkanmod": "0.5.3",
+    "modrinthVersion": "mr9uxFGT",
+    "published": "2024-12-23T15:53:35.892393Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/mr9uxFGT/VulkanMod_1.21.3-0.5.3.jar",
+    "sha512": "ac3aabe0dc125447cf8a674eb005b4bc36865b9800aebd26243451b815ee9f8d300f30de38080d2146e899b7309ee66027d0b60988dc79f14ed9a69e426608c3"
+  },
+  {
+    "minecraft": "1.21.3",
+    "vulkanmod": "0.5.3",
+    "modrinthVersion": "mr9uxFGT",
+    "published": "2024-12-23T15:53:35.892393Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/mr9uxFGT/VulkanMod_1.21.3-0.5.3.jar",
+    "sha512": "ac3aabe0dc125447cf8a674eb005b4bc36865b9800aebd26243451b815ee9f8d300f30de38080d2146e899b7309ee66027d0b60988dc79f14ed9a69e426608c3"
+  },
+  {
+    "minecraft": "1.21.4",
+    "vulkanmod": "0.5.6",
+    "modrinthVersion": "RAtVo03C",
+    "published": "2025-06-01T21:11:17.487083Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/RAtVo03C/VulkanMod_1.21.4-0.5.6.jar",
+    "sha512": "833457ffed8f1f53aebab2c4e5f8b454f1f6cdde9a1c8db5f7a112de80b54c33f4a0d7e06586b3e37c5e45e872f6817ad3abede2022d1da6417342273c7e68d9"
+  },
+  {
+    "minecraft": "1.21.5",
+    "vulkanmod": "0.5.6",
+    "modrinthVersion": "7pYvUnJk",
+    "published": "2025-06-01T21:11:48.355497Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/7pYvUnJk/VulkanMod_1.21.5-0.5.6.jar",
+    "sha512": "d8d9d68780ea5a7d8f09e354d2e1fce9ebca952e11d0a209bdf5804438334f7844512113010c5ac56566f558730bd3bfb87d516f9bae4ebd9d28967b89b1f2b9"
+  },
+  {
+    "minecraft": "1.21.9",
+    "vulkanmod": "0.6.6",
+    "modrinthVersion": "jkDMvvWU",
+    "published": "2026-05-17T15:01:37.270436Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/jkDMvvWU/VulkanMod_1.21.10-0.6.6.jar",
+    "sha512": "15d2dfb5f834e0335cfa69b50b1ae92d9c1583871d054c0c6a9c26ffb0f4f7a4d17cd110679bcb77147f30bcac304b92cfbd8fa0f37d7c1da64375ef3d99759f"
+  },
+  {
+    "minecraft": "1.21.10",
+    "vulkanmod": "0.6.6",
+    "modrinthVersion": "jkDMvvWU",
+    "published": "2026-05-17T15:01:37.270436Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/jkDMvvWU/VulkanMod_1.21.10-0.6.6.jar",
+    "sha512": "15d2dfb5f834e0335cfa69b50b1ae92d9c1583871d054c0c6a9c26ffb0f4f7a4d17cd110679bcb77147f30bcac304b92cfbd8fa0f37d7c1da64375ef3d99759f"
+  },
+  {
+    "minecraft": "1.21.11",
+    "vulkanmod": "0.6.8+1.21.11",
+    "modrinthVersion": "hWKRTXbQ",
+    "published": "2026-06-14T22:52:11.287279Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/hWKRTXbQ/VulkanMod-0.6.8%2B1.21.11.jar",
+    "sha512": "cbc25c9baee5e3d0e187476ce0b461a5b278341140df9764f4032d1186d8eab8607680480ce09f63887772a7547626d57b11b6a8a90bd5f53de0196bbfc573bb"
+  },
+  {
+    "minecraft": "26.1",
+    "vulkanmod": "0.6.8+26.1.2",
+    "modrinthVersion": "CEmnv55N",
+    "published": "2026-06-14T22:52:31.224288Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/CEmnv55N/VulkanMod-0.6.8%2B26.1.2.jar",
+    "sha512": "7ceb53215a09516f0e452adb1ffd17e4ac48d40ecf3f65d7cabd3a42da71b9673bf321d10e76a42cadf47f2aea3c26d4e7e6cba6d6ae8fc62b4731201c5f249f"
+  },
+  {
+    "minecraft": "26.1.1",
+    "vulkanmod": "0.6.8+26.1.2",
+    "modrinthVersion": "CEmnv55N",
+    "published": "2026-06-14T22:52:31.224288Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/CEmnv55N/VulkanMod-0.6.8%2B26.1.2.jar",
+    "sha512": "7ceb53215a09516f0e452adb1ffd17e4ac48d40ecf3f65d7cabd3a42da71b9673bf321d10e76a42cadf47f2aea3c26d4e7e6cba6d6ae8fc62b4731201c5f249f"
+  },
+  {
+    "minecraft": "26.1.2",
+    "vulkanmod": "0.6.8+26.1.2",
+    "modrinthVersion": "CEmnv55N",
+    "published": "2026-06-14T22:52:31.224288Z",
+    "url": "https://cdn.modrinth.com/data/JYQhtZtO/versions/CEmnv55N/VulkanMod-0.6.8%2B26.1.2.jar",
+    "sha512": "7ceb53215a09516f0e452adb1ffd17e4ac48d40ecf3f65d7cabd3a42da71b9673bf321d10e76a42cadf47f2aea3c26d4e7e6cba6d6ae8fc62b4731201c5f249f"
+  }
+]

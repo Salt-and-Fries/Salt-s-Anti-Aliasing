@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "salts_anti_aliasing",
+  "version": "${version}",
+  "name": "Salt's Anti Aliasing",
+  "description": "Client-side anti-aliasing, sharpening, and upscaling using VulkanMod.",
+  "icon": "assets/salts_anti_aliasing/icon.png",
+  "authors": [
+    "Salt and Fries"
+  ],
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "preLaunch": [
+      "org.betterLostItems.salts_anti_aliasing.vulkanmod.VulkanModPreLaunch"
+    ],
+    "client": [
+      "org.betterLostItems.salts_anti_aliasing.vulkanmod.SaltsVulkanModClient"
+    ],
+    "modmenu": [
+      "org.betterLostItems.salts_anti_aliasing.client.compat.modmenu.SaltsAntiAliasingModMenuApi"
+    ]
+  },
+  "mixins": [
+    "salts_anti_aliasing.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "vulkanmod": "0.6.7+1.21.1",
+    "minecraft": "${minecraft_version}",
+    "java": ">=21"
+  }
+}

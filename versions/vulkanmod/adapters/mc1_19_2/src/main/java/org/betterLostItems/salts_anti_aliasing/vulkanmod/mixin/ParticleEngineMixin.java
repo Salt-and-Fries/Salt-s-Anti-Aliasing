@@ -1,0 +1,26 @@
+package org.betterLostItems.salts_anti_aliasing.vulkanmod.mixin;
+
+import net.minecraft.client.particle.ParticleEngine;
+import org.betterLostItems.salts_anti_aliasing.vulkanmod.motion.ParticleMotionGeometry;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(ParticleEngine.class)
+public class ParticleEngineMixin {
+    @Inject(method = "render", at = @At("HEAD"))
+    private void saltsAntiAliasing$beginParticleFrame(CallbackInfo ci) {
+        ParticleMotionGeometry.beginExtraction();
+    }
+
+    @Inject(method = "setLevel", at = @At("HEAD"))
+    private void saltsAntiAliasing$clearParticleHistory(CallbackInfo ci) {
+        ParticleMotionGeometry.clear();
+    }
+    @Inject(method = "reload", at = @At("HEAD"))
+    private void salts$reloadParticleHistory(org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<?> ci) {
+        ParticleMotionGeometry.clear();
+    }
+}
+

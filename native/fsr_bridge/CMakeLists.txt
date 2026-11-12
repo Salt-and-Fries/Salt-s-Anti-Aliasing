@@ -16,7 +16,8 @@ target_include_directories(salts_fsr_bridge PRIVATE ${JNI_INCLUDE_DIRS})
 target_link_libraries(salts_fsr_bridge PRIVATE ${JNI_LIBRARIES} ${CMAKE_DL_LIBS})
 
 if (WIN32)
-    target_compile_definitions(salts_fsr_bridge PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+    # Keep mutex initialization compatible with the MSVC runtime bundled by older JREs.
+    target_compile_definitions(salts_fsr_bridge PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
 endif()
 
 if (SALTS_FSR_WITH_FFX_SDK)

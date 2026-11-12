@@ -1,0 +1,84 @@
+import groovy.json.JsonSlurper
+import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.prod.ClientProductionRunTask
+import org.gradle.process.ExecSpec
+
+// Use the same explicitly selected JRE for development and packaged-jar validation.
+abstract class SaltsProductionClientTask extends ClientProductionRunTask {
+    @Override
+    protected void configureCommand(ExecSpec exec) {
+        if (project.hasProperty('clientJavaHome'))
+            exec.commandLine(new File(project.property('clientJavaHome').toString(), 'bin/java.exe').absolutePath)
+        else
+            super.configureCommand(exec)
+        if (project.hasProperty('vulkanValidationLogDirectory'))
+            exec.environment 'VK_KHRONOS_VALIDATION_LOG_FILENAME',
+                    new File(project.rootProject.file(project.property('vulkanValidationLogDirectory')),
+                            "${project.minecraft_version}-${name}.txt").absolutePath
+        def modeProperty = "vulkanValidationModes.${project.minecraft_version}"
+        if (project.hasProperty(modeProperty)) {
+            def modes = project.property(modeProperty).toString().trim()
+            if (modes.isEmpty()) throw new GradleException("${modeProperty} must name rendering modes")
+            exec.environment 'SALTS_VULKANMOD_TEST_MODES', modes
+        }
+    }
+}
+
+def pins = new JsonSlurper().parse(rootProject.file('versions/vulkanmod/compatibility/build-targets.json'))
+        .find { it.minecraft == project.minecraft_version }
+def legacyValidation = project.hasProperty('vulkanmod_legacy_validation') && project.vulkanmod_legacy_validation
+dependencies {
+    productionRuntimeMods "net.fabricmc.fabric-api:fabric-api:${pins.fabricApi}"
+    productionRuntimeMods "maven.modrinth:vulkanmod:${pins.modrinthVersion}"
+}
+
+def validationJar = tasks.register('validationJar', Jar) {
+    archiveClassifier = 'validation-dev'
+    destinationDirectory = layout.buildDirectory.dir('validation')
+    from sourceSets.gametest.output
+}
+def packagedValidation = validationJar
+if (!project.minecraft_version.startsWith('26.')) {
+    packagedValidation = tasks.register('remapValidationJar', RemapJarTask) {
+        archiveClassifier = 'validation'
+        destinationDirectory = layout.buildDirectory.dir('validation')
+        inputFile = validationJar.flatMap { it.archiveFile }
+        classpath.from sourceSets.gametest.compileClasspath
+    }
+}
+
+tasks.register('runPackagedClientValidation', SaltsProductionClientTask) {
+    group = 'verification'
+    description = 'Runs the real distributable jar and an isolated validation mod outside Loom development mode.'
+    dependsOn tasks.named('verifyPublicJar')
+    mods.from packagedValidation
+    runDir = rootProject.layout.projectDirectory.dir("run/${project.minecraft_version}/packaged-validation")
+    programArgs.addAll '--username', 'Player0', '--version', project.minecraft_version, '--accessToken', 'FabricMC',
+            '--width', '1280', '--height', '720'
+    if (!legacyValidation) {
+        jvmArgs.add '-Dfabric.client.gametest'
+        jvmArgs.add '-Dfabric.client.gametest.modid=salts_anti_aliasing_validation'
+    }
+    if (project.hasProperty('dlssRuntimeDirectory'))
+        jvmArgs.add "-Dsalts.dlss.pluginPath=${rootProject.file(project.property('dlssRuntimeDirectory')).absolutePath}"
+    doFirst {
+            def result = runDir.file('salts-validation-result.json').get().asFile
+            if (result.exists()) result.delete()
+    }
+    doLast {
+            def result = runDir.file('salts-validation-result.json').get().asFile
+            if (!result.exists()) throw new GradleException('Packaged client validation exited without a result')
+            def report = new JsonSlurper().parse(result)
+            if (report.status != 'PASS') throw new GradleException("Packaged client validation failed: ${report.failure}")
+    }
+}
+
+// Loom targets share the assets cache. Honour other downloads already present in a
+// multi-version task graph without downloading unrelated versions for a focused run.
+gradle.projectsEvaluated {
+    tasks.named('runPackagedClientValidation') {
+        rootProject.allprojects.each { target ->
+            mustRunAfter target.tasks.matching { it.name == 'downloadAssets' }
+        }
+    }
+}

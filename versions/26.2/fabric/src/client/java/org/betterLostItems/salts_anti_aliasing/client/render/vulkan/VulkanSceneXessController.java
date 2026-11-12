@@ -1,0 +1,473 @@
+package org.betterLostItems.salts_anti_aliasing.client.render.vulkan;
+
+import com.mojang.blaze3d.GpuFormat;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.systems.CommandEncoder;
+import com.mojang.blaze3d.systems.CommandEncoderBackend;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.blaze3d.vulkan.VulkanCommandEncoder;
+import com.mojang.blaze3d.vulkan.VulkanConst;
+import com.mojang.blaze3d.vulkan.VulkanGpuTexture;
+import com.mojang.blaze3d.vulkan.VulkanGpuTextureView;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
+import org.betterLostItems.salts_anti_aliasing.SaltsAntiAliasing;
+import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingConfig;
+import org.betterLostItems.salts_anti_aliasing.client.config.AntiAliasingMode;
+import org.betterLostItems.salts_anti_aliasing.client.metrics.MetricsDiagnostics;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.xess.XessOptimalSettings;
+import org.betterLostItems.salts_anti_aliasing.client.render.vulkan.xess.XessRuntime;
+import org.betterLostItems.salts_anti_aliasing.mixin.client.CommandEncoderAccessor;
+import org.lwjgl.vulkan.VK12;
+import org.lwjgl.vulkan.VkCommandBuffer;
+import org.lwjgl.vulkan.KHRSynchronization2;
+import org.lwjgl.vulkan.VkImageMemoryBarrier2;
+import org.lwjgl.vulkan.VkDependencyInfo;
+import org.lwjgl.system.MemoryStack;
+
+
+/**
+ * Owns the XeSS Super Resolution scene target, motion-vector target, and native Intel SDK
+ * evaluate call.
+ */
+public final class VulkanSceneXessController {
+    private static final VulkanSceneXessController INSTANCE = new VulkanSceneXessController();
+    private static final String SCENE_TARGET_LABEL = "Salt's XeSS Scene";
+    private static final String MOTION_VECTOR_TARGET_LABEL = "Salt's XeSS Motion Vectors";
+
+    private String lastConfiguration;
+    public void retry() { disabledAfterFailure=false; resetHistoryPending=true; }
+    public RenderTarget motionTarget() { return motionVectorTarget; }
+    private final NativeFeatureRetirement retirement=new NativeFeatureRetirement();
+    private boolean disabledAfterFailure;
+    private boolean destroyResourcesAfterFrame;
+    private boolean active;
+    private TextureTarget sceneTarget;
+    private TextureTarget motionVectorTarget;
+    private VulkanStorageColorTarget outputTarget;
+    private boolean resetHistoryPending = true;
+    private TextureTarget linearTarget;
+    private RenderTarget mainTarget;
+    private XessOptimalSettings optimalSettings = new XessOptimalSettings(1, 1);
+
+    private VulkanSceneXessController() {
+    }
+
+    public long allocatedTargetBytes() { return VulkanOwnedTargetMemory.bytes(sceneTarget,linearTarget,motionVectorTarget,outputTarget); }
+
+    public static VulkanSceneXessController instance() {
+        return INSTANCE;
+    }
+
+    /** XeSS coverage is independent of the native TAA tuning and changes with render scale. */
+    public int activeJitterPhaseCount() {
+        return active && mainTarget != null
+                ? optimalSettings.jitterPhaseCount(mainTarget.width, mainTarget.height)
+                : 0;
+    }
+
+    public void beginSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
+        RenderSystem.assertOnRenderThread();
+        destroyResourcesIfPending();
+        clearFrameState();
+
+        String configuration=config.mode+":"+config.xessQualityPreset+":"+gameRenderer.mainRenderTarget().getColorTexture().getFormat()+":"+gameRenderer.mainRenderTarget().width+"x"+gameRenderer.mainRenderTarget().height;
+        if (!configuration.equals(lastConfiguration)) { retry(); lastConfiguration=configuration; }
+        if (config.mode != AntiAliasingMode.XESS_SUPER_RESOLUTION) { destroyResources(); retirement.inactive(()->XessRuntime.instance().releaseRenderResources()); return; }
+        retirement.active();
+        if (disabledAfterFailure || !XessRuntime.instance().isReady()) {
+            return;
+        }
+
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null) {
+            return;
+        }
+
+        RenderTarget mainTarget = gameRenderer.mainRenderTarget();
+        if (!mainTarget.useDepth || mainTarget.width <= 0 || mainTarget.height <= 0) {
+            return;
+        }
+
+        try {
+            optimalSettings = XessRuntime.instance().queryOptimalSettings(
+                    config.xessQualityPreset, mainTarget.width, mainTarget.height);
+            if (sceneTarget == null || sceneTarget.width != optimalSettings.renderWidth()
+                    || sceneTarget.height != optimalSettings.renderHeight() || outputTarget.width != mainTarget.width
+                    || outputTarget.height != mainTarget.height) resetHistoryPending = true;
+            ensureTargets(optimalSettings.renderWidth(), optimalSettings.renderHeight(), mainTarget.width, mainTarget.height);
+            this.mainTarget = mainTarget;
+            active = true;
+        } catch (RuntimeException exception) {
+            disableAfterFailure("Disabling XeSS after a setup failure", exception);
+        }
+    }
+
+    public void endSceneRendering(GameRenderer gameRenderer, AntiAliasingConfig config) {
+        RenderSystem.assertOnRenderThread();
+        if (!active) {
+            clearFrameState();
+            return;
+        }
+
+        try {
+            active = false;
+            if (!VulkanSceneTemporalController.instance().hasValidFrameMatrices()) {
+                resolveSceneColor(sceneTarget, mainTarget);
+                resetHistoryPending = true;
+                return;
+            }
+            try(var gpuTiming=VulkanGpuProfiler.scope("XeSS.motion")) { generateMotionVectors(); }
+            int result; try(var gpuTiming=VulkanGpuProfiler.scope("XeSS.native")) { result=evaluateXess(); }
+            if (result < 0) {
+                SaltsAntiAliasing.LOGGER.warn("XeSS evaluate failed with result {}; falling back to linear scene resolve", result);
+                MetricsDiagnostics.warn(
+                        "xess.controller",
+                        "linear_resolve_fallback",
+                        "result", result,
+                        "optimalSettings", optimalSettings,
+                        "sceneSize", sceneTarget == null ? "unavailable" : sceneTarget.width + "x" + sceneTarget.height,
+                        "outputSize", mainTarget == null ? "unavailable" : mainTarget.width + "x" + mainTarget.height
+                );
+                resolveSceneColor(sceneTarget, mainTarget);
+                org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.failure(config.mode,"XeSS result "+result);
+                disabledAfterFailure = true;
+                destroyResourcesAfterFrame = true;
+            } else {
+                VulkanFsrColorTransferRenderer.instance().encode(outputTarget, mainTarget);
+                org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.success(config.mode,sceneTarget.width,sceneTarget.height);
+                MetricsDiagnostics.infoOnce("xess.evaluate.success." + sceneTarget.width + "x" + sceneTarget.height
+                                + "." + mainTarget.width + "x" + mainTarget.height,
+                        "xess.controller", "evaluation_succeeded", "renderWidth", sceneTarget.width,
+                        "renderHeight", sceneTarget.height, "outputWidth", mainTarget.width, "outputHeight", mainTarget.height);
+            }
+            resetHistoryPending = false;
+        } catch (RuntimeException exception) {
+            try {
+                resolveSceneColor(sceneTarget, mainTarget);
+            } catch (RuntimeException fallbackException) {
+                exception.addSuppressed(fallbackException);
+            }
+            disableAfterFailure("Disabling XeSS after an evaluate failure", exception);
+        } finally {
+            clearFrameState();
+        }
+    }
+
+    public RenderTarget overrideMainTarget() {
+        return active ? sceneTarget : null;
+    }
+
+    public GpuTexture overrideColorTexture(RenderTarget target) {
+        RenderTarget redirectedTarget = mappedTarget(target);
+        return redirectedTarget == null ? null : redirectedTarget.getColorTexture();
+    }
+
+    public GpuTextureView overrideColorTextureView(RenderTarget target) {
+        RenderTarget redirectedTarget = mappedTarget(target);
+        return redirectedTarget == null ? null : redirectedTarget.getColorTextureView();
+    }
+
+    public GpuTexture overrideDepthTexture(RenderTarget target) {
+        RenderTarget redirectedTarget = mappedTarget(target);
+        return redirectedTarget == null ? null : redirectedTarget.getDepthTexture();
+    }
+
+    public GpuTextureView overrideDepthTextureView(RenderTarget target) {
+        RenderTarget redirectedTarget = mappedTarget(target);
+        return redirectedTarget == null ? null : redirectedTarget.getDepthTextureView();
+    }
+
+    public boolean redirectCopyDepth(RenderTarget target, RenderTarget sourceTarget) {
+        RenderTarget redirectedTarget = mappedTarget(target);
+        RenderTarget redirectedSource = mappedTarget(sourceTarget);
+        if (redirectedTarget == null && redirectedSource == null) {
+            return false;
+        }
+
+        RenderTarget resolvedTarget = redirectedTarget != null ? redirectedTarget : target;
+        RenderTarget resolvedSource = redirectedSource != null ? redirectedSource : sourceTarget;
+        if (resolvedTarget == resolvedSource) {
+            return true;
+        }
+
+        if (resolvedTarget.getDepthTexture() == null || resolvedSource.getDepthTexture() == null) {
+            return true;
+        }
+
+        resolvedTarget.copyDepthFrom(resolvedSource);
+        return true;
+    }
+
+    private int evaluateXess() {
+        if (sceneTarget == null || mainTarget == null || motionVectorTarget == null) {
+            return -1;
+        }
+        long inputColorImage = image(linearTarget.getColorTexture());
+        long inputColorView = view(linearTarget.getColorTextureView());
+        long outputColorImage = image(outputTarget.getColorTexture());
+        long outputColorView = view(outputTarget.getColorTextureView());
+        long depthImage = image(sceneTarget.getDepthTexture());
+        long depthView = view(sceneTarget.getDepthTextureView());
+        long motionVectorImage = image(motionVectorTarget.getColorTexture());
+        long motionVectorView = view(motionVectorTarget.getColorTextureView());
+        if (inputColorImage == 0L
+                || inputColorView == 0L
+                || outputColorImage == 0L
+                || outputColorView == 0L
+                || depthImage == 0L
+                || depthView == 0L
+                || motionVectorImage == 0L
+                || motionVectorView == 0L) {
+            MetricsDiagnostics.warnOnce(
+                    "xess.controller.missing-handles",
+                    "xess.controller",
+                    "evaluate_handles_incomplete",
+                    "inputColorImage", hex(inputColorImage),
+                    "inputColorView", hex(inputColorView),
+                    "outputColorImage", hex(outputColorImage),
+                    "outputColorView", hex(outputColorView),
+                    "depthImage", hex(depthImage),
+                    "depthView", hex(depthView),
+                    "motionVectorImage", hex(motionVectorImage),
+                    "motionVectorView", hex(motionVectorView)
+            );
+            return -2;
+        }
+
+        VulkanSceneTemporalController temporal = VulkanSceneTemporalController.instance();
+        CommandEncoder commandEncoder = RenderSystem.getDevice().createCommandEncoder();
+        CommandEncoderBackend backend = ((CommandEncoderAccessor) commandEncoder).saltsAntiAliasing$backend();
+        if (!(backend instanceof VulkanCommandEncoder vulkanCommandEncoder)) {
+            MetricsDiagnostics.warnOnce(
+                    "xess.controller.command-encoder",
+                    "xess.controller",
+                    "non_vulkan_command_encoder",
+                    "backendType", backend == null ? "null" : backend.getClass().getName()
+            );
+            return -3;
+        }
+
+        VkCommandBuffer commandBuffer = vulkanCommandEncoder.allocateAndBeginTransientCommandBuffer();
+        int result;
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            nativeResourceBarrier(commandBuffer, stack, true);
+            result = XessRuntime.instance().evaluate(commandBuffer.address(),
+                    new long[]{inputColorImage, inputColorView, outputColorImage, outputColorView,
+                            depthImage, depthView, motionVectorImage, motionVectorView},
+                    resourceFormats(), sceneTarget.width, sceneTarget.height,
+                    temporal.currentJitterTexelX(), temporal.currentJitterTexelY(),
+                    temporal.resetHistoryThisFrame() || resetHistoryPending);
+            nativeResourceBarrier(commandBuffer, stack, false);
+        }
+        int endResult = VK12.vkEndCommandBuffer(commandBuffer);
+        if (endResult != VK12.VK_SUCCESS) {
+            MetricsDiagnostics.warn(
+                    "xess.controller",
+                    "command_buffer_end_failed",
+                    "result", endResult,
+                    "commandBuffer", hex(commandBuffer.address())
+            );
+            return endResult;
+        }
+        vulkanCommandEncoder.execute(commandBuffer);
+        vulkanCommandEncoder.submit();
+        return result;
+    }
+
+    private GpuTexture[] nativeResources() {
+        return new GpuTexture[] {linearTarget.getColorTexture(), outputTarget.getColorTexture(),
+                sceneTarget.getDepthTexture(), motionVectorTarget.getColorTexture()};
+    }
+
+    private int[] resourceFormats() {
+        return java.util.Arrays.stream(nativeResources()).mapToInt(texture -> VulkanConst.toVk(texture.getFormat())).toArray();
+    }
+
+    private void nativeResourceBarrier(VkCommandBuffer commandBuffer, MemoryStack stack, boolean before) {
+        GpuTexture[] textures = nativeResources();
+        var barriers = VkImageMemoryBarrier2.calloc(textures.length, stack);
+        for (int index = 0; index < textures.length; index++) {
+            var barrier = barriers.get(index).sType$Default()
+                    .srcStageMask(KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR)
+                    .srcAccessMask(KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR)
+                    .dstStageMask(KHRSynchronization2.VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR)
+                    .dstAccessMask(KHRSynchronization2.VK_ACCESS_2_MEMORY_READ_BIT_KHR | KHRSynchronization2.VK_ACCESS_2_MEMORY_WRITE_BIT_KHR)
+                    .oldLayout(!before && index != 1 ? VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK12.VK_IMAGE_LAYOUT_GENERAL)
+                    .newLayout(before && index != 1 ? VK12.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK12.VK_IMAGE_LAYOUT_GENERAL)
+                    .srcQueueFamilyIndex(VK12.VK_QUEUE_FAMILY_IGNORED).dstQueueFamilyIndex(VK12.VK_QUEUE_FAMILY_IGNORED)
+                    .image(image(textures[index]));
+            barrier.subresourceRange().aspectMask(VulkanConst.formatAspectMask(textures[index].getFormat()))
+                    .baseMipLevel(0).levelCount(1).baseArrayLayer(0).layerCount(1);
+        }
+        KHRSynchronization2.vkCmdPipelineBarrier2KHR(commandBuffer,
+                VkDependencyInfo.calloc(stack).sType$Default().pImageMemoryBarriers(barriers));
+    }
+
+    private void generateMotionVectors() {
+        if (sceneTarget == null || motionVectorTarget == null) {
+            return;
+        }
+
+        VulkanFsrColorTransferRenderer.instance().decode(sceneTarget, linearTarget);
+        VulkanMotionVectorRenderer.xess().render(
+                sceneTarget,
+                motionVectorTarget,
+                VulkanSceneTemporalController.instance()
+        );
+        VulkanParticleMotionRenderer.render(sceneTarget, motionVectorTarget, VulkanSceneTemporalController.instance());
+    }
+
+    private void ensureTargets(int width, int height, int outputWidth, int outputHeight) {
+        GpuFormat colorFormat = GpuFormat.RGBA8_UNORM;
+        if (linearTarget == null) linearTarget = new TextureTarget("Salt's XeSS Linear Input", width, height, false, GpuFormat.RGBA16_FLOAT);
+        else if (linearTarget.width != width || linearTarget.height != height) linearTarget.resize(width, height);
+        if (outputTarget == null) {
+            outputTarget = new VulkanStorageColorTarget("Salt's XeSS Output", outputWidth, outputHeight, GpuFormat.RGBA16_FLOAT);
+        } else if (outputTarget.width != outputWidth || outputTarget.height != outputHeight) {
+            outputTarget.resize(outputWidth, outputHeight);
+        }
+        if (sceneTarget == null) {
+            sceneTarget = new TextureTarget(SCENE_TARGET_LABEL, width, height, true, colorFormat);
+            recordTargetChange("created", SCENE_TARGET_LABEL, sceneTarget, colorFormat);
+        } else if (sceneTarget.width != width || sceneTarget.height != height) {
+            int previousWidth = sceneTarget.width;
+            int previousHeight = sceneTarget.height;
+            sceneTarget.resize(width, height);
+            recordTargetResize(SCENE_TARGET_LABEL, sceneTarget, previousWidth, previousHeight, colorFormat);
+        }
+
+        if (motionVectorTarget == null) {
+            motionVectorTarget = new TextureTarget(MOTION_VECTOR_TARGET_LABEL, width, height, true, GpuFormat.RG16_FLOAT);
+            recordTargetChange("created", MOTION_VECTOR_TARGET_LABEL, motionVectorTarget, GpuFormat.RG16_FLOAT);
+        } else if (motionVectorTarget.width != width || motionVectorTarget.height != height) {
+            int previousWidth = motionVectorTarget.width;
+            int previousHeight = motionVectorTarget.height;
+            motionVectorTarget.resize(width, height);
+            recordTargetResize(
+                    MOTION_VECTOR_TARGET_LABEL,
+                    motionVectorTarget,
+                    previousWidth,
+                    previousHeight,
+                    GpuFormat.RG16_FLOAT
+            );
+        }
+    }
+
+    private void resolveSceneColor(TextureTarget sceneTarget, RenderTarget mainTarget) {
+        if (sceneTarget == null || mainTarget == null) {
+            return;
+        }
+
+        VulkanColorBlitter.blitColor(sceneTarget, mainTarget);
+    }
+
+    private RenderTarget mappedTarget(RenderTarget target) {
+        if (!active || target != mainTarget) {
+            return null;
+        }
+
+        return sceneTarget;
+    }
+
+    private void disableAfterFailure(String message, RuntimeException exception) {
+        disabledAfterFailure = true;
+        org.betterLostItems.salts_anti_aliasing.client.render.common.RenderingHealth.failure(AntiAliasingMode.XESS_SUPER_RESOLUTION,exception.getMessage());
+        destroyResourcesAfterFrame = mainTarget != null;
+        if (!destroyResourcesAfterFrame) {
+            destroyResources();
+        }
+        clearFrameState();
+        SaltsAntiAliasing.LOGGER.error(message, exception);
+        MetricsDiagnostics.error(
+                "xess.controller",
+                "controller_disabled_after_failure",
+                exception,
+                "message", message,
+                "optimalSettings", optimalSettings,
+                "destroyResourcesAfterFrame", destroyResourcesAfterFrame
+        );
+    }
+
+    private void destroyResourcesIfPending() {
+        if (!destroyResourcesAfterFrame) {
+            return;
+        }
+
+        destroyResourcesAfterFrame = false;
+        destroyResources();
+    }
+
+    private void destroyResources() {
+        if (sceneTarget != null) VulkanParticleMotionRenderer.release();
+        resetHistoryPending = true;
+        if (linearTarget != null) { linearTarget.destroyBuffers(); linearTarget = null; }
+        if (outputTarget != null) {
+            outputTarget.destroyBuffers();
+            outputTarget = null;
+        }
+        if (sceneTarget != null) {
+            recordTargetChange("destroyed", SCENE_TARGET_LABEL, sceneTarget, sceneTarget.getColorTexture().getFormat());
+            sceneTarget.destroyBuffers();
+            sceneTarget = null;
+        }
+        if (motionVectorTarget != null) {
+            recordTargetChange("destroyed", MOTION_VECTOR_TARGET_LABEL, motionVectorTarget, GpuFormat.RG16_FLOAT);
+            motionVectorTarget.destroyBuffers();
+            motionVectorTarget = null;
+        }
+    }
+
+    private void clearFrameState() {
+        active = false;
+        mainTarget = null;
+    }
+
+    private static long image(GpuTexture texture) {
+        return texture instanceof VulkanGpuTexture vulkanTexture ? vulkanTexture.vkImage() : 0L;
+    }
+
+    private static long view(GpuTextureView textureView) {
+        return textureView instanceof VulkanGpuTextureView vulkanTextureView ? vulkanTextureView.vkImageView() : 0L;
+    }
+
+    private static void recordTargetChange(String action, String label, RenderTarget target, GpuFormat format) {
+        MetricsDiagnostics.info(
+                "xess.resources",
+                "target_" + action,
+                "label", label,
+                "width", target.width,
+                "height", target.height,
+                "useDepth", target.useDepth,
+                "format", format
+        );
+    }
+
+    private static void recordTargetResize(
+            String label,
+            RenderTarget target,
+            int previousWidth,
+            int previousHeight,
+            GpuFormat format
+    ) {
+        MetricsDiagnostics.info(
+                "xess.resources",
+                "target_resized",
+                "label", label,
+                "previousWidth", previousWidth,
+                "previousHeight", previousHeight,
+                "width", target.width,
+                "height", target.height,
+                "useDepth", target.useDepth,
+                "format", format
+        );
+    }
+
+    private static String hex(long value) {
+        return value == 0L ? "0x0" : "0x" + Long.toUnsignedString(value, 16);
+    }
+
+}

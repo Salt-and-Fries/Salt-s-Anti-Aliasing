@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "org.betterLostItems.salts_anti_aliasing.validation.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "IntegratedServerShutdownMixin",
+    "TerrainProjectionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -12,4 +12,10 @@ Binary presentation semaphores are indexed by the acquired swapchain image
 and signaled only after a successful acquisition.
 Per-image semaphores are allocated once rather than overwritten and leaked.
 UI composition/debug caches are released after the proxy's work is drained.
+FSR 2 GLSL storage image declarations match the allocated R32 float depth and
+RGBA16 float prepared-color images. Descriptor pools include storage buffers.
+FSR 3 luminance-history storage declarations match the allocated RGBA16 float images.
 Reproduction instructions: native/fsr_bridge/Build-FidelityFxRuntime.ps1.
+
+Presentation draining also waits for the SDK presenter CPU to finish its Vulkan queue
+calls; a GPU timeline signal alone occurs before vkQueuePresentKHR returns.
